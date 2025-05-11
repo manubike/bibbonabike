@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Assistenza Bici 24h - BibbonaBike</title>
+  <meta name="description" content="Assistenza e recupero bici 24 ore su 24 a Bibbona. Interventi rapidi in zona Cecina, San Vincenzo, Bolgheri. Meccanico bici sul posto.">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="icon" href="img/icononly.png" type="image/png" />
+
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container" style="display: flex; align-items: center; justify-content: space-between;">
+      <a href="index.html"><img src="img/fulllogo_transparent_nobuffer.png" alt="Magona Bike Garage" class="logo" /></a>
+      <div>
+        <h1 style="margin: 0; font-size: 1.8em; color: white;">Assistenza 24h</h1>
+        <p class="subtitle" style="color: #eee; font-size: 1em;">Recupero bici e interventi meccanici sul posto</p>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="intro-hero">
+      <div class="intro-overlay">
+        <h2 class="fade-in">Pronto intervento bici 24 ore su 24</h2>
+        <p class="fade-in">Sei rimasto a piedi con la bici in zona Bibbona, Cecina, San Vincenzo o Bolgheri? Offriamo un servizio di assistenza e recupero biciclette attivo 24h su 24.</p>
+        <p class="fade-in">Dal guasto improvviso alla foratura o problemi meccanici, veniamo noi da te per farti ripartire.</p>
+        <a href="tel:+393313453207" class="btn-call fade-in">📞 Chiama subito</a>
+      </div>
+    </section>
+    
+    
+    <section class="form-section container" id="contatti-rapidi" style="margin-top: 40px;">
+      <h3>Contatti rapidi</h3>
+      <ul style="list-style: none; padding-left: 0; font-size: 1.1em;">
+        <li><i class="fa fa-phone"></i> <strong>Telefono:</strong> <a href="tel:+393313453207">+39 331 345 3207</a></li>
+        <li><i class="fab fa-whatsapp"></i> <strong>WhatsApp:</strong> <a href="https://wa.me/393313453207" target="_blank">Chatta ora</a></li>
+        <li><i class="fa fa-map-marker-alt"></i> <strong>Copertura:</strong> Bibbona, Cecina, Bolgheri, Marina di Bibbona, San Vincenzo, Costa degli Etruschi</li>
+      </ul>
+      <p class="soon">Servizio attivo tutti i giorni, 24 ore su 24. Anche nei festivi 🚨</p>
+    </section>  
+
+    <section class="seo-block container" style="margin-top: 40px;">
+      <h3>Servizi disponibili</h3>
+      <ul>
+        <li>✔️ Recupero bici in panne</li>
+        <li>✔️ Riparazioni urgenti sul posto</li>
+        <li>✔️ Cambio camera d'aria o copertoni</li>
+        <li>✔️ Riparazione catena, cambio, freni</li>
+        <li>✔️ Trasporto bici a Magona Bike Garage</li>
+      </ul>
+      <p>Il nostro servizio è pensato per chi cerca <strong>meccanico bici a domicilio</strong>, <strong>assistenza rapida bici Bibbona</strong>, o <strong>pronto intervento bici Cecina</strong>. BibbonaBike è sempre con te!</p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container" style="text-align: center;">
+      <img src="img/fulllogo_transparent_nobuffer.png" alt="Magona Bike Garage" class="footer-logo" />
+      <p>&copy; 2025 Magona Bike Garage – BibbonaBike.com</p>
+      <div class="social-icons" style="margin-top: 10px;">
+        <a href="https://wa.me/393313453207" target="_blank" aria-label="WhatsApp">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+        <a href="https://www.instagram.com/magonabikegarage" target="_blank" aria-label="Instagram">
+          <i class="fab fa-instagram"></i>
+        </a>
+      </div>
+    </div>
+  </footer>
+  <script>
+    const faders = document.querySelectorAll('.fade-in');
+  
+    const appearOptions = {
+      threshold: 0.2
+    };
+  
+    const appearOnScroll = new IntersectionObserver(function (entries, observer) {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, appearOptions);
+  
+    faders.forEach(el => {
+      appearOnScroll.observe(el);
+    });
+  </script>
+    <script>
+      const introHero = document.querySelector('.intro-hero');
+      const introOverlay = document.querySelector('.intro-overlay');
+    
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            introHero.classList.add('visible');
+            introOverlay.classList.add('visible');
+          }
+        });
+      }, { threshold: 0.3 });
+    
+      observer.observe(introHero);
+    </script>
+    
+</body>
+</html>
