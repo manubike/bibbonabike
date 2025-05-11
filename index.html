@@ -3,45 +3,290 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BibbonaBike - In Arrivo</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to right, #4caf50, #2e7d32);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      text-align: center;
-      flex-direction: column;
-      padding: 20px;
-    }
-    h1 {
-      font-size: 3em;
-      margin-bottom: 0.3em;
-    }
-    p {
-      font-size: 1.2em;
-      max-width: 600px;
-    }
-    img {
-      max-width: 200px;
-      margin-bottom: 30px;
-    }
-    .soon {
-      font-style: italic;
-      opacity: 0.8;
-    }
-  </style>
+  <title>Magona Bike Garage – BibbonaBike</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="img/icononly.png" type="image/png" />
 </head>
 <body>
 
-  <img src="img/fulllogo_transparent.png" alt="Bibbona Bike Garage Logo" />
-  <h1>Magona Bike</h1>
-  <p>Il punto di riferimento per il noleggio bici, l'officina e una gustosa area ristoro... nel cuore della Toscana!</p>
-  <p class="soon">Il sito è in arrivo. Resta sintonizzato 🚴‍♂️💨</p>
+    <header class="site-header" id="header">
+        <div class="container">
+          <img src="img/fulllogo_transparent_nobuffer.png" alt="BibbonaBike Logo" class="logo" />
+          <button class="menu-toggle" id="menuBtn" onclick="toggleMenu()">☰</button>
+          
+          <nav>
+            <ul>
+              <li><a href="index.html" class="active">Home</a></li>
+              <li><a href="assistenza.html">Assistenza 24h</a></li>
+              <li><a href="#noleggio">Noleggio</a></li>
+              <li><a href="info.html">Info</a></li>
+            </ul>
+          </nav>
+      
+          <!-- Spostato dentro per essere gestito dal toggle -->
+          <div class="social-header" id="socialIcons">
+            <a href="https://wa.me/393313453207" target="_blank" aria-label="WhatsApp">
+              <i class="fab fa-whatsapp"></i>
+            </a>
+            <a href="https://www.instagram.com/magonabikegarage" target="_blank" aria-label="Instagram">
+              <i class="fab fa-instagram"></i>
+            </a>
+          </div>
+          
+        </div>
+      </header>
+      
 
+  <section class="hero">
+    <div class="hero-content animated">
+      <img src="img/fulllogo_transparent_nobuffer.png" alt="Magona Bike Garage" class="hero-logo" />
+      <div class="hero-text">
+        <h1 id="slideshow-title" class="fade-text">Pedala la libertà tra i sentieri toscani</h1>
+        <p>Noleggio bici, officina e ristoro a Bibbona. Tutto in un solo punto.</p>
+        <a href="#noleggio" class="btn-primary scroll-btn">
+            <span class="icon-bike">🚴‍♂️</span> Prenota la tua bici
+          </a>
+          
+    </div>
+    </div>
+  </section>
+
+  <main class="container">
+    <section class="services">
+      <h2>I nostri servizi</h2>
+      <div class="grid">
+        <div class="service-card">
+          <h3>Noleggio Bici</h3>
+          <p>E-Bike, MTB, Bici da Corsa. Tutte pronte per farti esplorare la Costa degli Etruschi.</p>
+        </div>
+        <div class="service-card">
+          <h3>Officina</h3>
+          <p>Riparazioni, revisioni e manutenzioni complete per ogni tipo di bici.</p>
+        </div>
+        <div class="service-card">
+          <h3>Ristoro</h3>
+          <p>Area relax con caffetteria e spuntini per ricaricare anche te, non solo la bici.</p>
+        </div>
+      </div>
+    </section>
+    <section class="rental-section">
+        <h2>Noleggio Biciclette</h2>
+        <div class="bike-grid">
+          <div class="bike-card">
+            <img src="img/bike-ebike.jpg" alt="E-Bike" />
+            <div class="bike-info">
+              <h3>42,00€ <span>| giorno</span></h3>
+              <p class="bike-type">E-bike</p>
+              <a href="#prenota" class="btn-secondary">SELEZIONA »</a>
+            </div>
+          </div>
+          <div class="bike-card">
+            <img src="img/bike-ebike.jpg" alt="E-Bike" />
+            <div class="bike-info">
+              <h3>42,00€ <span>| giorno</span></h3>
+              <p class="bike-type">E-bike</p>
+              <a href="#prenota" class="btn-secondary">SELEZIONA »</a>
+            </div>
+          </div>      
+          <div class="bike-card">
+            <img src="img/bike-ebike.jpg" alt="Mountain Bike" />
+            <div class="bike-info">
+              <h3>20,00€ <span>| giorno</span></h3>
+              <p class="bike-type">Mountain bike</p>
+              <a href="#prenota" class="btn-secondary">SELEZIONA »</a>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <section class="form-section" id="noleggio">
+        <div class="container">
+          <h2>Prenota ora il tuo noleggio</h2>
+          <form id="noleggioForm" class="form-card">
+            <div class="form-group icon-input">
+              <label for="name">Nome e Cognome</label>
+              <i class="fa fa-user"></i>
+              <input type="text" id="name" name="name" placeholder="Mario Rossi" required />
+            </div>
+      
+            <div class="form-group icon-input">
+              <label for="email">Email</label>
+              <i class="fa fa-envelope"></i>
+              <input type="email" id="email" name="email" placeholder="esempio@email.com" required />
+            </div>
+      
+            <div class="form-group icon-input">
+              <label for="bikeType">Tipo di bici</label>
+              <i class="fa fa-bicycle"></i>
+              <select id="bikeType" name="bikeType" required>
+                <option value="">Seleziona</option>
+                <option value="MTB">MTB</option>
+                <option value="E-Bike">E-Bike</option>
+                <option value="Bici da Corsa">Bici da Corsa</option>
+              </select>
+            </div>
+      
+            <div class="form-group icon-input">
+              <label for="date">Data</label>
+              <i class="fa fa-calendar-alt"></i>
+              <input type="date" id="date" name="date" required />
+            </div>
+      
+            <div class="form-group icon-input">
+              <label for="duration">Durata (ore)</label>
+              <i class="fa fa-clock"></i>
+              <input type="number" id="duration" name="duration" min="1" max="24" placeholder="Es: 3" required />
+            </div>
+      
+            <div class="form-group icon-input">
+              <label for="notes">Note</label>
+              <i class="fa fa-pen"></i>
+              <textarea id="notes" name="notes" placeholder="Es. casco, seggiolino, preferenze bici..."></textarea>
+            </div>
+      
+            <button type="submit" class="btn-primary">Invia richiesta</button>
+            <p id="responseMessage"></p>
+          </form>
+        </div>
+      </section>
+      
+  </main>
+
+  <footer>
+    <div class="container">
+      <img src="img/fulllogo_transparent_nobuffer.png" alt="Magona Bike Garage" class="footer-logo" />
+      <p>&copy; 2025 BibbonaBike – Magona Bike Garage | Powered by Anon 💚</p>
+      <div class="social-icons">
+        <a href="https://wa.me/393471234567" target="_blank" aria-label="WhatsApp">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+        <a href="https://www.instagram.com/magonabikegarage" target="_blank" aria-label="Instagram">
+          <i class="fab fa-instagram"></i>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script>
+    function toggleMenu() {
+      const nav = document.querySelector('nav ul');
+      const header = document.getElementById('header');
+      const btn = document.getElementById('menuBtn');
+  
+      nav.classList.toggle('show');
+      header.classList.toggle('menu-open');
+  
+      // Cambia icona
+      if (btn.textContent === "☰") {
+        btn.textContent = "✖";
+      } else {
+        btn.textContent = "☰";
+      }
+    }
+  
+    // Logo effetto pulse opzionale
+    const logo = document.querySelector('.logo');
+    logo.addEventListener('click', () => {
+      logo.classList.toggle('pulse');
+    });
+  </script>
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      setTimeout(() => {
+        document.querySelector('.hero-content').classList.add('show');
+      }, 400); // Delay in ms
+    });
+  </script>
+  <script>
+    const slogans = [
+      "Pedala la libertà tra i sentieri toscani",
+      "Scopri la Toscana. Una pedalata alla volta.",
+      "Dove finisce l’asfalto, inizia l’avventura",
+      "Bike. Relax. Officina. Tutto in un solo posto.",
+      "Magona Bike Garage: la tua sella in Toscana",
+      "Bibbona su due ruote, 24 ore su 24"
+    ];
+  
+    const title = document.getElementById("slideshow-title");
+    let index = 0;
+  
+    function showNextSlogan() {
+      title.classList.remove("visible");
+      setTimeout(() => {
+        index = (index + 1) % slogans.length;
+        title.textContent = slogans[index];
+        title.classList.add("visible");
+      }, 500);
+    }
+  
+    title.classList.add("visible");
+    setInterval(showNextSlogan, 4000);
+  </script>
+  
+  <script>
+    // Scroll fluido + scroll-to-form
+    document.querySelectorAll('.scroll-btn').forEach(btn => {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+  
+    // Animazione apparizione del form
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, {
+      threshold: 0.2
+    });
+  
+    const formCard = document.querySelector('.form-card');
+    if (formCard) observer.observe(formCard);
+  </script>
+ <script>
+    const scriptURL = "https://script.google.com/macros/s/AKfycby8ZJo0zy3QU6emP6uqEGs4nU2b_lrlOdixDfpL2QXt0jIByH6P8dCIsYjYDBUcdr8ecQ/exec";
+        document.getElementById('noleggioForm').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const form = e.target;
+          const data = {
+            name: form.name.value,
+            email: form.email.value,
+            bikeType: form.bikeType.value,
+            date: form.date.value,
+            duration: form.duration.value,
+            notes: form.notes.value
+          };
+          const responseMsg = document.getElementById('responseMessage');
+          responseMsg.textContent = 'Invio in corso...';
+          try {
+            const res = await fetch(scriptURL, {
+              method: 'POST',
+              body: JSON.stringify(data)
+            });
+            const json = await res.json();
+            if (json.status === 'success') {
+              responseMsg.textContent = '✅ Richiesta inviata con successo!';
+              form.reset();
+            } else {
+              responseMsg.textContent = '❌ Errore durante invio.';
+            }
+          } catch (err) {
+            console.error(err);
+            responseMsg.textContent = '❌ Connessione fallita.';
+          }
+        });
+      </script>
+  
 </body>
 </html>
+
