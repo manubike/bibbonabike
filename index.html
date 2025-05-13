@@ -104,7 +104,7 @@
       
       <section class="form-section" id="noleggio">
         <div class="container">
-          <h2>Prenota ora il tuo noleggio</h2>
+          <h2 style="text-align: center;">Prenota ora il tuo noleggio</h2>
           <form id="noleggioForm" class="form-card">
             <div class="form-group icon-input">
               <label for="name">Nome e Cognome</label>
@@ -163,7 +163,7 @@
         <a href="https://wa.me/393471234567" target="_blank" aria-label="WhatsApp">
           <i class="fab fa-whatsapp"></i>
         </a>
-        <a href="https://www.instagram.com/magonabikegarage" target="_blank" aria-label="Instagram">
+        <a href="https://www.instagram.com/magona_bike_garage/" target="_blank" aria-label="Instagram">
           <i class="fab fa-instagram"></i>
         </a>
       </div>
@@ -253,40 +253,39 @@
     const formCard = document.querySelector('.form-card');
     if (formCard) observer.observe(formCard);
   </script>
- <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycby8ZJo0zy3QU6emP6uqEGs4nU2b_lrlOdixDfpL2QXt0jIByH6P8dCIsYjYDBUcdr8ecQ/exec";
-        document.getElementById('noleggioForm').addEventListener('submit', async function(e) {
-          e.preventDefault();
-          const form = e.target;
-          const data = {
-            name: form.name.value,
-            email: form.email.value,
-            bikeType: form.bikeType.value,
-            date: form.date.value,
-            duration: form.duration.value,
-            notes: form.notes.value
-          };
-          const responseMsg = document.getElementById('responseMessage');
-          responseMsg.textContent = 'Invio in corso...';
-          try {
-            const res = await fetch(scriptURL, {
-              method: 'POST',
-              body: JSON.stringify(data)
-            });
-            const json = await res.json();
-            if (json.status === 'success') {
-              responseMsg.textContent = '✅ Richiesta inviata con successo!';
-              form.reset();
-            } else {
-              responseMsg.textContent = '❌ Errore durante invio.';
-            }
-          } catch (err) {
-            console.error(err);
-            responseMsg.textContent = '❌ Connessione fallita.';
-          }
-        });
-      </script>
+<script>
+  const form = document.getElementById('noleggioForm');
+  const responseMsg = document.getElementById('responseMessage');
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+
+    responseMsg.textContent = 'Invio in corso...';
+
+    try {
+      const formData = new FormData(form);
+      const res = await fetch("https://workers-bibbonabike.zonkeynet.workers.dev/submit", {
+        method: 'POST',
+        body: formData
+      });
+
+      const result = await res.json();
+      if (result.status === 'success') {
+        responseMsg.textContent = '✅ Richiesta inviata! Ti contatteremo presto.';
+        form.reset();
+      } else {
+        responseMsg.textContent = '❌ Errore: ' + (result.message || 'invio fallito');
+      }
+    } catch (err) {
+      console.error(err);
+      responseMsg.textContent = '❌ Connessione fallita.';
+    }
+  });
+</script>
+
   
 </body>
 </html>
+
 
