@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terminale Riparazioni – BibbonaBike</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="img/icononly.png" type="image/png">
+</head>
+<body>
+<div class="monitor-container">
+  <img src="img/monitor.png" alt="Monitor retro" class="monitor-frame" />
+
+  <div class="monitor-screen">
+    <div class="terminal-output" id="output"></div>
+    <input id="input" type="text" placeholder="Digita un comando e premi Invio..." />
+  </div>
+</div>
+
+<svg style="display:none">
+  <filter id="fisheye">
+    <feImage xlink:href="#fisheyeMap" result="map" />
+    <feDisplacementMap in="SourceGraphic" in2="map" scale="30" xChannelSelector="R" yChannelSelector="G" />
+  </filter>
+</svg>
+
+
+  <script src="script.js"></script>
+</body>
+</html>

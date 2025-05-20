@@ -31,7 +31,7 @@
   
   /* HEADER */
   .site-header {
-    background: var(--green);
+    background: linear-gradient(to right, #2e7d32, #66bb6a);
     color: var(--white);
     padding: 10px 0;
     position: sticky;
@@ -39,6 +39,7 @@
     z-index: 1000;
     transition: all 0.4s ease;
   }
+
   
   .site-header .container {
     display: flex;
@@ -188,25 +189,25 @@
     border-radius: 12px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   }
+ 
   .btn-primary {
-    background: var(--light-green);
-    color: white;
-    padding: 12px 25px;
-    border: none;
-    border-radius: 5px;
-    font-size: 1em;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-block;
-    max-width: 100%;
-    box-sizing: border-box;
-  }
-  
-  .btn-primary:hover {
-    background: var(--green);
-  }
-  
+  background: linear-gradient(to right, #66bb6a, #2e7d32);
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1em;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  max-width: 100%;
+  box-sizing: border-box;
+  transition: background 0.3s ease;
+}
 
+.btn-primary:hover {
+  background: linear-gradient(to right, #2e7d32, #66bb6a);
+}
 
   /* ICON*/
   .icon-input {
@@ -464,47 +465,41 @@
   
     nav ul {
       flex-direction: column;
-      background: var(--green);
+      background: linear-gradient(to right, #2e7d32, #66bb6a);
       width: 100%;
       overflow: hidden;
       max-height: 0;
       opacity: 0;
       pointer-events: none;
       transition: max-height 0.5s ease, opacity 0.4s ease;
+      padding: 0;
+      margin: 0;
     }
 
     nav ul.show {
-      max-height: 500px; /* abbastanza spazio per il menu */
+      max-height: 300px; /* spazio sufficiente per le voci */
       opacity: 1;
       pointer-events: auto;
       padding: 1rem 0;
     }
 
+    /* === VOCE DI MENU (li) ANIMATA === */
     nav ul li {
       opacity: 0;
       transform: translateY(-10px);
     }
 
+    /* Applica animazione con delay alle voci una per una */
     nav ul.show li {
       animation: fadeInNav 0.4s ease forwards;
     }
 
-    nav ul.show li:nth-child(1) {
-      animation-delay: 0.1s;
-    }
+    nav ul.show li:nth-child(1) { animation-delay: 0.1s; }
+    nav ul.show li:nth-child(2) { animation-delay: 0.2s; }
+    nav ul.show li:nth-child(3) { animation-delay: 0.3s; }
+    nav ul.show li:nth-child(4) { animation-delay: 0.4s; }
 
-    nav ul.show li:nth-child(2) {
-      animation-delay: 0.2s;
-    }
-
-    nav ul.show li:nth-child(3) {
-      animation-delay: 0.3s;
-    }
-
-    nav ul.show li:nth-child(4) {
-      animation-delay: 0.4s;
-    }
-
+    /* === KEYFRAMES ANIMAZIONE === */
     @keyframes fadeInNav {
       0% {
         opacity: 0;
@@ -532,7 +527,15 @@
     nav a:hover {
       text-decoration: underline;
     }
-  
+    
+    nav a i {
+    margin-right: 8px;
+    transition: transform 0.3s ease;
+    }
+
+    nav a:hover i {
+      transform: scale(1.2);
+    }
     .hero-content h1 {
       font-size: 2em;
     }

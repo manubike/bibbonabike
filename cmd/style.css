@@ -1,0 +1,70 @@
+body {
+  margin: 0;
+  background-color: #0f1e13;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-family: 'Courier New', monospace;
+}
+
+.monitor-container {
+  position: relative;
+  width: 90vw;
+  max-width: 600px;
+  aspect-ratio: 1; /* o 4 / 3 se sai la proporzione esatta */
+}
+
+.monitor-frame {
+  width: 100%;
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+
+/* QUESTO È L’ELEMENTO "NELLO SCHERMO" */
+.monitor-screen {
+  position: absolute;
+  top: 19%;      /* REGOLA QUI! */
+  left: 13%;     /* REGOLA QUI! */
+  width: 74%;    /* REGOLA QUI! */
+  height: 64%;   /* REGOLA QUI! */
+  background-color: transparent;
+  color: #5aff84;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  font-size: 1rem;
+  overflow: hidden;
+  border-radius: 0;
+}
+
+.terminal-output {
+  flex: 1;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  line-height: 1.2;
+  color: #5aff84;
+  font-size: 0.95rem;
+  scrollbar-width: none;
+  transform: perspective(600px) scale(1.01) rotateX(3deg);
+  text-shadow: 0 0 2px #5aff84;
+}
+
+
+.terminal-output::-webkit-scrollbar {
+  display: none;                /* Chrome, Safari, Edge */
+}
+
+#input {
+  padding: 0.4rem;
+  font-size: 0.9rem;
+  background-color: transparent;
+  color: #5aff84;
+  border: none;
+  border-top: 1px solid #5aff84;
+  outline: none;
+  box-sizing: border-box;
+  width: 100%;
+}
