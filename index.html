@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Magona Bike Garage – BibbonaBike</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="css/footer.css" />
   <link rel="stylesheet" href="css/services.css" />
@@ -28,10 +30,10 @@
           <nav>
             <ul>
               <li><a href="#"><i class="fas fa-home"></i> Home</a></li>
-              <li><a href="#assistenza.html"><i class="fas fa-tools"></i> Assistenza 24h</a></li>
+              <li><a href="#Officina"><i class="fas fa-tools"></i> Assistenza 24h</a></li>
               <li><a href="#noleggio"><i class="fas fa-bicycle"></i> Noleggio</a></li>
               <li><a href="#tour"><i class="fas fa-map-marked-alt"></i> Tour</a></li>
-              <li><a href="#"><i class="fas fa-info-circle"></i> Info</a></li>
+              <li><a href="#footerCredits"><i class="fas fa-info-circle"></i> Info</a></li>
             </ul>
           </nav>
 
@@ -267,8 +269,10 @@
 
   </main>
   <section class="footer-transition"></section>
+  
 <footer>
   <div class="footerhero">
+
     <!-- Parallax layers -->
     <div class="parallax-layer layer-6"></div>
     <div class="parallax-layer layer-5"></div>
@@ -280,6 +284,7 @@
     <div class="parallax-layer layer-3"></div>
     <div class="parallax-layer layer-2"></div>
     <div class="parallax-layer layer-1"></div>
+    <div id="footerCredits" class="footer-phrases"></div>
 
     <!-- ✅ Contenuto statico del footer -->
     <div class="footer-overlay hidden">
@@ -475,5 +480,45 @@
     tourSlides[currentTour].classList.add('active');
   }, 5000);
 </script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const message = document.getElementById("chiSiamoScroll");
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          message.style.animationPlayState = "running";
+        }
+      });
+    }, { threshold: 0.5 });
+
+    if (message) {
+      message.style.animationPlayState = "paused"; // di default fermo
+      observer.observe(message);
+    }
+  });
+</script>
+<script>
+  const phrases = [
+    "Chi siamo?",
+    "Appassionati di bici, natura e avventura.",
+    "Magona Bike Garage è più di un'officina.",
+    "È un punto di ritrovo per chi ama pedalare tra i paesaggi toscani."
+  ];
+
+  const container = document.getElementById("footerCredits");
+
+  phrases.forEach((text, i) => {
+    const p = document.createElement("p");
+    p.textContent = text;
+    p.style.animationDelay = `${i * 2}s`;
+    container.appendChild(p);
+  });
+</script>
+
+
+
+
+
+
 </body>
 </html>

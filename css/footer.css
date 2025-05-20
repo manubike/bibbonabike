@@ -6,12 +6,63 @@
 /* ========== FOOTER & ANIMATED BAR ========== */
 footer {
   position: relative;
-  background-color: #2e7d32;
+  /* background-color: #2e7d32; */
   color: white;
   font-family: 'Inter', sans-serif;
   font-size: 0.95rem;
   overflow: hidden;
 }
+
+.footer-phrases {
+  position: absolute;
+  font-family: 'Dancing Script', cursive;
+  font-size: 1.8rem;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  bottom: 200px; /* Spazio sopra la .footer-bar */
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  text-align: center;
+  color: white;
+  font-size: 1.1rem;
+  z-index: 10; /* assicurati che sia sopra la footer-bar */
+  padding: 0 1rem;
+  padding-bottom: 10px;
+
+}
+
+.footer-phrases p {
+  margin: 0.6rem 0;
+  opacity: 0;
+  transform: translateY(-30px);
+  animation: fadeFromTop 0.6s ease forwards;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.85);
+  max-width: 100%;
+  word-break: break-word;
+}
+
+@media (max-width: 768px) {
+  .footer-phrases {
+    bottom: 150px; /* più alto nei mobile per stare sopra il logo e il testo */
+    font-size: 1rem;
+  }
+}
+
+.footer-phrases p:nth-child(1) { animation-delay: 0s; }
+.footer-phrases p:nth-child(2) { animation-delay: 2s; }
+.footer-phrases p:nth-child(3) { animation-delay: 4s; }
+.footer-phrases p:nth-child(4) { animation-delay: 6s; }
+
+@keyframes fadeInDown {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 
 .footer-overlay {
   position: absolute;
@@ -75,7 +126,101 @@ footer {
   height: 120px;
   background: linear-gradient(to bottom, rgba(255,255,255,1), rgba(214,239,255,1));
 }
+.footer-scroll-credits {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 600px;
+  text-align: center;
+  font-size: 1rem;
+  color: white;
+  z-index: 3;
+  overflow: hidden;
+}
 
+.footer-scroll-credits p {
+  margin: 8px 0;
+  animation: scrollUpFade 1s ease forwards;
+  opacity: 0;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes scrollUpFade {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+#footerCredits {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.7);
+  align-items: center;
+  font-size: 1.6rem;
+  color: white;
+  text-align: center;
+  pointer-events: none;
+  animation: scroll-to-center 5s ease-out forwards;
+  gap: 0.5rem;
+  font-family: 'Dancing Script', cursive; /* Se vuoi uno stile elegante */
+  line-height: 1.6;
+
+
+}
+
+#footerCredits p {
+  margin: 0.2rem 0;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 1s ease forwards;
+}
+
+#footerCredits p:nth-child(1) { animation-delay: 0s; }
+#footerCredits p:nth-child(2) { animation-delay: 2s; }
+#footerCredits p:nth-child(3) { animation-delay: 4s; }
+#footerCredits p:nth-child(4) { animation-delay: 6s; }
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scroll-to-center {
+  from {
+    bottom: 0;
+  }
+  to {
+    bottom: 55%;
+  }
+}
+/* Responsive font scaling */
+@media (max-width: 768px) {
+  #footerCredits {
+    font-size: 1.4rem;
+    bottom: 60%;
+    line-height: 1.4;
+  }
+}
+
+@media (max-width: 480px) {
+  #footerCredits {
+    font-size: 1.4rem;
+    bottom: 62%;
+    line-height: 1.3;
+  }
+}
 /* ========== SCROLL TO TOP BUTTON ========== */
 #scrollToTop {
   position: fixed;
