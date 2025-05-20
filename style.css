@@ -407,7 +407,6 @@
   /* Menu animato */
   .site-header.menu-open .logo {
     height: 50px;
-    margin: 0;
     display: inline-block;
   }
   
@@ -443,7 +442,23 @@
       margin: 0;
       display: block;
     }
-  
+    
+  /* LOGO STILE SPECIFICO PER TEXT.PNG */
+    .logo-text {
+      height: 60px;
+      max-width: 200px;
+      object-fit: contain;
+      transition: transform 0.3s ease;
+    }
+
+    /* MOBILE: CENTRA E RIDIMENSIONA */
+    @media (max-width: 768px) {
+      .logo-text {
+        height: 48px;
+        margin: 0 auto;
+        display: block;
+      }
+    }
     .menu-toggle {
       display: block;
       font-size: 2rem;
