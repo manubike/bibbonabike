@@ -6,6 +6,13 @@
   <title>Magona Bike Garage – BibbonaBike</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/footer.css" />
+  <link rel="stylesheet" href="css/services.css" />
+  <link rel="stylesheet" href="css/officina.css" />
+  <link rel="stylesheet" href="css/noleggio.css" />
+  <link rel="stylesheet" href="css/booking.css" />
+  <link rel="stylesheet" href="css/tour.css">
+
 
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" href="img/icononly.png" type="image/png" />
@@ -22,6 +29,7 @@
               <li><a href="index.html" class="active">Home</a></li>
               <li><a href="assistenza.html">Assistenza 24h</a></li>
               <li><a href="#noleggio">Noleggio</a></li>
+              <li><a href="#tour">Tour</a></li>
               <li><a href="info.html">Info</a></li>
             </ul>
           </nav>
@@ -40,136 +48,283 @@
       </header>
       
 
-  <section class="hero">
-    <div class="hero-content animated">
-      <img src="img/fulllogo_transparent_nobuffer.png" alt="Magona Bike Garage" class="hero-logo" />
-      <div class="hero-text">
-        <h1 id="slideshow-title" class="fade-text">Pedala la libertà tra i sentieri toscani</h1>
-        <p>Noleggio bici, officina e ristoro a Bibbona. Tutto in un solo punto.</p>
-        <a href="#noleggio" class="btn-primary scroll-btn">
+    <section class="hero">
+      <!-- Video Background -->
+      <video autoplay muted loop playsinline preload="auto" class="hero-video">
+        <source src="video/video.webm" type="video/webm">
+        <source src="video/video.mp4" type="video/mp4">
+        Il tuo browser non supporta i video HTML5.
+      </video>
+
+      <!-- Contenuto -->
+      <div class="hero-content animated">
+        <img src="img/fulllogo_transparent_nobuffer.png" alt="Magona Bike Garage" class="hero-logo" />
+        <div class="hero-text">
+          <h1 id="slideshow-title" class="fade-text">Pedala la libertà tra i sentieri toscani</h1>
+          <p>Noleggio bici, officina e ristoro a Bibbona. Tutto in un solo punto.</p>
+          <a href="#noleggio" class="btn-primary scroll-btn">
             <span class="icon-bike">🚴‍♂️</span> Prenota la tua bici
           </a>
-          
-    </div>
-    </div>
-  </section>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sezione servizi -->  
 
   <main class="container">
     <section class="services">
-      <h2>I nostri servizi</h2>
+      <h2 class="section-title">I nostri servizi</h2>
       <div class="grid">
-        <div class="service-card">
+        <div class="service-card enhanced">
+          <i class="fas fa-bicycle service-icon"></i>
           <h3>Noleggio Bici</h3>
           <p>E-Bike, MTB, Bici da Corsa. Tutte pronte per farti esplorare la Costa degli Etruschi.</p>
         </div>
-        <div class="service-card">
+        <div class="service-card enhanced">
+          <i class="fas fa-tools service-icon"></i>
           <h3>Officina</h3>
           <p>Riparazioni, revisioni e manutenzioni complete per ogni tipo di bici.</p>
         </div>
-        <div class="service-card">
+        <div class="service-card enhanced">
+          <i class="fas fa-mug-hot service-icon"></i>
           <h3>Ristoro</h3>
           <p>Area relax con caffetteria e spuntini per ricaricare anche te, non solo la bici.</p>
         </div>
       </div>
     </section>
-    <section class="rental-section">
-        <h2>Noleggio Biciclette</h2>
-        <div class="bike-grid">
-          <div class="bike-card">
-            <img src="img/bike-ebike.jpg" alt="E-Bike" />
-            <div class="bike-info">
-              <h3>42,00€ <span>| giorno</span></h3>
-              <p class="bike-type">E-bike</p>
-              <a href="#prenota" class="btn-secondary">SELEZIONA »</a>
-            </div>
-          </div>
-          <div class="bike-card">
-            <img src="img/bike-ebike.jpg" alt="E-Bike" />
-            <div class="bike-info">
-              <h3>42,00€ <span>| giorno</span></h3>
-              <p class="bike-type">E-bike</p>
-              <a href="#prenota" class="btn-secondary">SELEZIONA »</a>
-            </div>
-          </div>      
-          <div class="bike-card">
-            <img src="img/bike-ebike.jpg" alt="Mountain Bike" />
-            <div class="bike-info">
-              <h3>20,00€ <span>| giorno</span></h3>
-              <p class="bike-type">Mountain bike</p>
-              <a href="#prenota" class="btn-secondary">SELEZIONA »</a>
-            </div>
-          </div>
-        </div>
-      </section>
-      
-      <section class="form-section" id="noleggio">
-        <div class="container">
-          <h2 style="text-align: center;">Prenota ora il tuo noleggio</h2>
-          <form id="noleggioForm" class="form-card">
-            <div class="form-group icon-input">
-              <label for="name">Nome e Cognome</label>
-              <i class="fa fa-user"></i>
-              <input type="text" id="name" name="name" placeholder="Mario Rossi" required />
-            </div>
-      
-            <div class="form-group icon-input">
-              <label for="email">Email</label>
-              <i class="fa fa-envelope"></i>
-              <input type="email" id="email" name="email" placeholder="esempio@email.com" required />
-            </div>
-      
-            <div class="form-group icon-input">
-              <label for="bikeType">Tipo di bici</label>
-              <i class="fa fa-bicycle"></i>
-              <select id="bikeType" name="bikeType" required>
-                <option value="">Seleziona</option>
-                <option value="MTB">MTB</option>
-                <option value="E-Bike">E-Bike</option>
-                <option value="Bici da Corsa">Bici da Corsa</option>
-              </select>
-            </div>
-      
-            <div class="form-group icon-input">
-              <label for="date">Data</label>
-              <i class="fa fa-calendar-alt"></i>
-              <input type="date" id="date" name="date" required />
-            </div>
-      
-            <div class="form-group icon-input">
-              <label for="duration">Durata (ore)</label>
-              <i class="fa fa-clock"></i>
-              <input type="number" id="duration" name="duration" min="1" max="24" placeholder="Es: 3" required />
-            </div>
-      
-            <div class="form-group icon-input">
-              <label for="notes">Note</label>
-              <i class="fa fa-pen"></i>
-              <textarea id="notes" name="notes" placeholder="Es. casco, seggiolino, preferenze bici..."></textarea>
-            </div>
-      
-            <button type="submit" class="btn-primary">Invia richiesta</button>
-            <p id="responseMessage"></p>
-          </form>
-        </div>
-      </section>
-      
-  </main>
 
-  <footer>
-    <div class="container">
-      <img src="img/fulllogo_transparent_nobuffer.png" alt="Magona Bike Garage" class="footer-logo" />
-      <p>&copy; 2025 BibbonaBike – Magona Bike Garage | Powered by Anon 💚</p>
-      <div class="social-icons">
-        <a href="https://wa.me/393471234567" target="_blank" aria-label="WhatsApp">
-          <i class="fab fa-whatsapp"></i>
-        </a>
-        <a href="https://www.instagram.com/magona_bike_garage/" target="_blank" aria-label="Instagram">
-          <i class="fab fa-instagram"></i>
-        </a>
+    <!-- Sezione OFFICINA -->
+    <section class="officina-section">
+      <div class="officina-content">
+        <div class="feature">
+          <img src="img/frame3@2x.png" alt="Telaio bici" class="feature__frame">
+          <img src="img/wheel-hr4.png" alt="Ruota posteriore" class="feature__wheel feature__wheel--rear">
+          <img src="img/wheel-hr4.png" alt="Ruota anteriore" class="feature__wheel feature__wheel--front">
+        </div>
+        <div class="officina-text">
+          <h2><i class="fas fa-tools"></i> Officina</h2>
+          <p>
+            <strong>Affidati ai nostri esperti meccanici</strong> per qualsiasi intervento: dalle riparazioni rapide alle revisioni complete.<br>
+            Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre efficiente e sicura.<br><br>
+            <a href="assistenza.html" class="btn-primary">Scopri il servizio assistenza 24h</a>
+          </p>
+        </div>
+      </div>
+    </section>
+    <section class="rental-section">
+      <h2 class="section-title"><i class="fas fa-bicycle"></i> Noleggio Biciclette</h2>
+      <div class="bike-grid">
+        <div class="bike-card">
+          <img src="img/bike-ebike.jpg" alt="E-Bike" />
+          <div class="bike-info">
+            <h3>42,00€ <span>| giorno</span></h3>
+            <p class="bike-type">E-bike</p>
+            <a href="#prenota" class="btn-secondary">SELEZIONA »</a>
+          </div>
+        </div>
+        <div class="bike-card">
+          <img src="img/bike-ebike.jpg" alt="E-Bike" />
+          <div class="bike-info">
+            <h3>42,00€ <span>| giorno</span></h3>
+            <p class="bike-type">E-bike</p>
+            <a href="#prenota" class="btn-secondary">SELEZIONA »</a>
+          </div>
+        </div>
+        <div class="bike-card">
+          <img src="img/bike-ebike.jpg" alt="Mountain Bike" />
+          <div class="bike-info">
+            <h3>20,00€ <span>| giorno</span></h3>
+            <p class="bike-type">Mountain bike</p>
+            <a href="#prenota" class="btn-secondary">SELEZIONA »</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOUR SECTION -->
+    <section class="tour-section" id="tour">
+      <div class="tour-slideshow">
+        <div class="tour-slide active" style="background-image: url('img/tour1.jpg');"></div>
+        <div class="tour-slide" style="background-image: url('img/tour2.jpg');"></div>
+        <div class="tour-slide" style="background-image: url('img/tour3.jpg');"></div>
+      </div>
+      <div class="tour-overlay">
+        <h2><i class="fas fa-route"></i> Tour Guidati</h2>
+        <div class="tour-cards">
+          <div class="tour-card">
+            <div class="tour-thumb" style="background-image: url('img/tour1.jpg');"></div>
+            <h3>Tour Pineta & Costa</h3>
+            <p>Sentieri nella pineta e lungo la costa tra Bibbona e Marina.</p>
+            <ul class="tour-details">
+              <li><strong>Tipo:</strong> Tour Informativo</li>
+              <li><strong>Prezzo:</strong> 40 €</li>
+              <li><strong>Durata:</strong> 4h</li>
+              <li><strong>Distanza:</strong> 31 km</li>
+              <li><strong>Dislivello:</strong> 643 m</li>
+              <li><strong>Difficoltà:</strong> <span class="difficulty-dot" style="background-color: green;"></span> Facile</li>
+            </ul>
+            <a href="#noleggio" class="btn-primary">Prenota il tour</a>
+          </div>
+                    <div class="tour-card">
+            <div class="tour-thumb" style="background-image: url('img/tour2.jpg');"></div>
+            <h3>Tour Pineta & Costa</h3>
+            <p>Sentieri nella pineta e lungo la costa tra Bibbona e Marina.</p>
+            <ul class="tour-details">
+              <li><strong>Tipo:</strong> Tour Informativo</li>
+              <li><strong>Prezzo:</strong> 40 €</li>
+              <li><strong>Durata:</strong> 4h</li>
+              <li><strong>Distanza:</strong> 31 km</li>
+              <li><strong>Dislivello:</strong> 643 m</li>
+              <li><strong>Difficoltà:</strong> <span class="difficulty-dot" style="background-color: green;"></span> Facile</li>
+            </ul>
+          <div class="buttons">
+            <a href="#noleggio">Prenota</a>
+            <a href="#noleggio">Dettagli</a>
+          </div>
+          </div>
+          <div class="tour-card">
+            <div class="tour-thumb" style="background-image: url('img/tour3.jpg');"></div>
+            <h3>Tour Colline Toscane</h3>
+            <p>Panorami mozzafiato tra vigne, oliveti e borghi antichi.</p>
+            <ul class="tour-details">
+              <li><strong>Tipo:</strong> Tour Informativo</li>
+              <li><strong>Prezzo:</strong> 40 €</li>
+              <li><strong>Durata:</strong> 4h</li>
+              <li><strong>Distanza:</strong> 31 km</li>
+              <li><strong>Dislivello:</strong> 643 m</li>
+              <li><strong>Difficoltà:</strong> <span class="difficulty-dot" style="background-color: green;"></span> Facile</li>
+            </ul>
+            <a href="#noleggio" class="btn-primary">Prenota il tour</a>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <section class="form-section" id="noleggio">
+      <div class="container">
+        <h2 class="section-title"><i class="fas fa-calendar-check"></i> Prenota ora il tuo noleggio</h2>
+        <form id="noleggioForm" class="form-card">
+          <div class="form-group icon-input">
+            <label for="name">Nome e Cognome</label>
+            <i class="fa fa-user"></i>
+            <input type="text" id="name" name="name" required />
+          </div>
+          <div class="form-group icon-input">
+            <label for="email">Email</label>
+            <i class="fa fa-envelope"></i>
+            <input type="email" id="email" name="email" required />
+          </div>
+          <div class="form-group icon-input">
+            <label for="bikeType">Tipo di bici</label>
+            <i class="fa fa-bicycle"></i>
+            <select id="bikeType" name="bikeType" required>
+              <option value="">Seleziona</option>
+              <option value="MTB">MTB</option>
+              <option value="E-Bike">E-Bike</option>
+              <option value="Bici da Corsa">Bici da Corsa</option>
+            </select>
+          </div>
+          <div class="form-group icon-input">
+            <label for="quantity">Quantità</label>
+            <i class="fa fa-plus"></i>
+            <input type="number" id="quantity" name="quantity" value="1" min="1" required />
+          </div>
+          <div class="form-group icon-input">
+            <label for="date">Data</label>
+            <i class="fa fa-calendar-alt"></i>
+            <input type="date" id="date" name="date" required />
+          </div>
+          <div class="form-group icon-input">
+            <label for="duration">Durata (ore)</label>
+            <i class="fa fa-clock"></i>
+            <input type="number" id="duration" name="duration" min="1" max="24" required />
+          </div>
+          <div class="form-group icon-input">
+            <label for="notes">Note (altezza, attrezzature richieste)</label>
+            <i class="fa fa-pen"></i>
+            <textarea id="notes" name="notes"></textarea>
+          </div>
+
+          <p class="price-summary"><strong>Totale:</strong> €<span id="totalAmount">0.00</span>
+            <input type="hidden" name="total" id="totalHidden" value="0.00">
+          </p>
+          <button type="submit" class="btn-primary">📩 Invia richiesta</button>
+          <p id="responseMessage"></p>
+        </form>
+
+        <form id="paypalForm" action="https://www.paypal.com/cgi-bin/webscr" style="display: none; margin-top: 20px; text-align: center;" method="post" target="_blank" class="paypal-form">
+          <input type="hidden" name="cmd" value="_xclick">
+          <input type="hidden" name="business" value="tua-paypal@email.com">
+          <input type="hidden" name="item_name" value="Prenotazione bici">
+          <input type="hidden" name="amount" id="paypalAmount" value="0.00">
+          <input type="hidden" name="currency_code" value="EUR">
+          <button type="submit" class="btn-primary">💳 Paga con PayPal</button>
+        </form>
+      </div>
+    </section>
+
+  </main>
+<footer>
+  <div class="footerhero">
+    <!-- Parallax layers -->
+    <div class="parallax-layer layer-6"></div>
+    <div class="parallax-layer layer-5"></div>
+    <div class="parallax-layer layer-4"></div>
+    <div class="parallax-layer bike-1"></div>
+    <div class="parallax-layer bike-2"></div>
+    <div class="parallax-layer bike-3"></div>
+    <div class="parallax-layer bike-4"></div>
+    <div class="parallax-layer layer-3"></div>
+    <div class="parallax-layer layer-2"></div>
+    <div class="parallax-layer layer-1"></div>
+
+    <!-- ✅ Contenuto statico del footer -->
+    <div class="footer-overlay hidden">
+      <div class="footer-bar">
+        <img src="img/fulllogo_transparent_nobuffer.png" alt="Magona Bike Garage" />
+        <p>&copy; 2025 Magona Bike Garage – BibbonaBike.com</p>
+        <div class="footer-social">
+          <a href="https://wa.me/393313453207" target="_blank" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+          <a href="https://www.instagram.com/magonabikegarage" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        </div>
       </div>
     </div>
-  </footer>
+  </div>
+</footer>
 
+<!-- ↑ Pulsante Scroll to Top -->
+<button id="scrollToTop" aria-label="Torna su">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="20" height="20">
+    <path d="M12 4l-8 8h5v8h6v-8h5z"/>
+  </svg>
+</button>
+<!-- ✅ JS Scroll to Top + Reveal Footer -->
+<script>
+  // Scroll to Top
+  const scrollBtn = document.getElementById("scrollToTop");
+  window.addEventListener("scroll", () => {
+    scrollBtn.style.display = window.scrollY > 300 ? "block" : "none";
+  });
+  scrollBtn.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  // Reveal footer
+  document.addEventListener("DOMContentLoaded", () => {
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.remove("hidden");
+          entry.target.classList.add("visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.4 });
+
+    const footer = document.querySelector('.footer-overlay');
+    if (footer) observer.observe(footer);
+  });
+</script>
   <script src="js/main.js"></script>
   <script>
     function toggleMenu() {
@@ -274,6 +429,8 @@
       if (result.status === 'success') {
         responseMsg.textContent = '✅ Richiesta inviata! Ti contatteremo presto.';
         form.reset();
+          // Mostra il pulsante PayPal
+        document.getElementById("paypalForm").style.display = "block";
       } else {
         responseMsg.textContent = '❌ Errore: ' + (result.message || 'invio fallito');
       }
@@ -283,9 +440,37 @@
     }
   });
 </script>
+  <script>
+    const prezzi = { "MTB": 20, "E-Bike": 42, "Bici da Corsa": 30 };
+    const bikeType = document.getElementById("bikeType");
+    const quantity = document.getElementById("quantity");
+    const totalAmount = document.getElementById("totalAmount");
+    const paypalAmount = document.getElementById("paypalAmount");
 
-  
+    function aggiornaPrezzo() {
+      const tipo = bikeType.value;
+      const quantita = parseInt(quantity.value || 1);
+      const prezzo = prezzi[tipo] || 0;
+      const totale = prezzo * quantita;
+      totalAmount.textContent = totale.toFixed(2);
+      paypalAmount.value = totale.toFixed(2);
+      document.getElementById("totalHidden").value = totale.toFixed(2);
+    }
+
+
+    bikeType.addEventListener("change", aggiornaPrezzo);
+    quantity.addEventListener("input", aggiornaPrezzo);
+    document.addEventListener("DOMContentLoaded", aggiornaPrezzo);
+  </script>
+  <script>
+  // Slideshow automatica
+  let tourSlides = document.querySelectorAll('.tour-slide');
+  let currentTour = 0;
+  setInterval(() => {
+    tourSlides[currentTour].classList.remove('active');
+    currentTour = (currentTour + 1) % tourSlides.length;
+    tourSlides[currentTour].classList.add('active');
+  }, 5000);
+</script>
 </body>
 </html>
-
-

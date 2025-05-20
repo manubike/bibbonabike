@@ -1,0 +1,83 @@
+/* ======= SEZIONE NOLEGGIO ======= */
+/* SECTION BIKE */
+.rental-section {
+    background: white;
+    padding: 60px 20px;
+    text-align: center;
+  }
+  
+  .rental-section h2 {
+    font-size: 2em;
+    margin-bottom: 40px;
+   /*  color: #2e7d32; */
+  }
+  
+  .bike-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 40px;
+    justify-items: center;
+  }
+  
+  .bike-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    padding: 20px;
+    transition: transform 0.3s ease;
+  }
+  
+  .bike-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .bike-card img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  .bike-info {
+    margin-top: 15px;
+  }
+  
+  .bike-info h3 {
+    font-size: 1.4em;
+    margin: 0;
+  }
+  
+  .bike-info span {
+    font-size: 0.9em;
+    color: #777;
+  }
+  
+  .bike-type {
+    font-size: 0.9em;
+    color: #2e7d32;
+    margin: 5px 0 15px;
+    font-weight: bolder;
+  }
+  
+  .btn-secondary {
+    background-color: var(--light-green);
+    color: white;
+    padding: 10px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.3s ease;
+  }
+  
+  .btn-secondary:hover {
+    background-color: #5cb2c1;
+  }
+
+/* ======= RESPONSIVE ======= */
+@media (max-width: 768px) {
+  .bike-card {
+    width: 90%;
+  }
+
+  .rental-section .section-title {
+    font-size: 1.8rem;
+  }
+}

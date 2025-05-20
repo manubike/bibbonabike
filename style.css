@@ -80,28 +80,79 @@
   }
   
   /* HERO */
-  .hero {
-    background: url('img/bike-banner-home.png') no-repeat center center/cover;
-    padding: 100px 20px;
-    color: white;
-    text-align: center;
-    position: relative;
-    min-height: 70vh;
+.hero {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  min-height: 600px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-color: #000; /* fallback se video non carica */
+}
+
+.hero-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  z-index: 0;
+  opacity: 0.75;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  color: white;
+  padding: 2rem;
+  max-width: 900px;
+  animation: fadeInUp 1.2s ease both;
+}
+
+.hero-logo {
+  width: 220px;
+  margin-bottom: 1.2rem;
+}
+
+.hero-text h1,
+.hero-text p {
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-content {
+    padding: 1rem;
+  }
+
   .hero-logo {
     width: 180px;
-    max-width: 60%;
-    margin: 0 auto 20px;
-    opacity: 0;
-    transform: scale(0.7);
-    transition: all 1s ease-in-out;
   }
-  
-  .hero-text {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: all 1s ease-in-out 0.4s;
+
+  .hero-text h1 {
+    font-size: 1.6rem;
   }
+
+  .hero-text p {
+    font-size: 1rem;
+  }
+}
+
+
   
   .hero-content.show .hero-logo {
     opacity: 1;
@@ -111,11 +162,6 @@
   .hero-content.show .hero-text {
     opacity: 1;
     transform: translateY(0);
-  }
-  .hero-content {
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 0 1rem;
   }
   
   .hero-content h1 {
@@ -160,25 +206,6 @@
     background: var(--green);
   }
   
-  /* SERVIZI */
-  .services {
-    background: white;
-    padding: 40px 0;
-    text-align: center;
-  }
-  
-  .services .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 20px;
-    margin-top: 30px;
-  }
-  
-  .service-card {
-    background: var(--gray);
-    padding: 20px;
-    border-radius: 8px;
-  }
 
 
   /* ICON*/
@@ -355,49 +382,6 @@
   }
     
 
-  /* FORM */
-  .form-section {
-    background: white;
-    padding: 40px 0;
-    margin-top: 20px;
-  }
-  
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    max-width: 600px;
-    margin: auto;
-    padding: 0 1rem;
-  }
-  
-  input,
-  select,
-  textarea {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 1em;
-    width: 100%;
-  }
-
-  #contatti-rapidi {
-    padding: 20px;
-  }
-  /* FOOTER */
-  footer {
-    background: #222;
-    color: white;
-    padding: 20px 0;
-    text-align: center;
-    margin-top: 40px;
-  }
-  
-  .footer-logo {
-    height: 80px;
-    margin-bottom: 10px;
-  }
-  
   /* MENU TOGGLE */
   .menu-toggle {
     display: none;
@@ -433,76 +417,7 @@
   }
 
 
-/* SECTION BIKE */
-.rental-section {
-    background: white;
-    padding: 60px 20px;
-    text-align: center;
-  }
-  
-  .rental-section h2 {
-    font-size: 2em;
-    margin-bottom: 40px;
-   /*  color: #2e7d32; */
-  }
-  
-  .bike-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 40px;
-    justify-items: center;
-  }
-  
-  .bike-card {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-    padding: 20px;
-    transition: transform 0.3s ease;
-  }
-  
-  .bike-card:hover {
-    transform: translateY(-5px);
-  }
-  
-  .bike-card img {
-    max-width: 100%;
-    height: auto;
-  }
-  
-  .bike-info {
-    margin-top: 15px;
-  }
-  
-  .bike-info h3 {
-    font-size: 1.4em;
-    margin: 0;
-  }
-  
-  .bike-info span {
-    font-size: 0.9em;
-    color: #777;
-  }
-  
-  .bike-type {
-    font-size: 0.9em;
-    color: #666;
-    margin: 5px 0 15px;
-  }
-  
-  .btn-secondary {
-    background-color: var(--light-green);
-    color: white;
-    padding: 10px 16px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: bold;
-    transition: background 0.3s ease;
-  }
-  
-  .btn-secondary:hover {
-    background-color: #5cb2c1;
-  }
+
   
 /* RESPONSIVE */
 @media (max-width: 768px) {
@@ -548,20 +463,59 @@
     }
   
     nav ul {
-      display: none;
       flex-direction: column;
       background: var(--green);
       width: 100%;
-      margin: 0;
-      padding: 1rem;
-      /*box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      border-top: 1px solid #ffffff22;*/
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: max-height 0.5s ease, opacity 0.4s ease;
     }
-  
+
     nav ul.show {
-      display: flex;
+      max-height: 500px; /* abbastanza spazio per il menu */
+      opacity: 1;
+      pointer-events: auto;
+      padding: 1rem 0;
     }
-  
+
+    nav ul li {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+
+    nav ul.show li {
+      animation: fadeInNav 0.4s ease forwards;
+    }
+
+    nav ul.show li:nth-child(1) {
+      animation-delay: 0.1s;
+    }
+
+    nav ul.show li:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    nav ul.show li:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+
+    nav ul.show li:nth-child(4) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes fadeInNav {
+      0% {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
     nav li {
       margin: 0;
     }

@@ -1,0 +1,171 @@
+/* ======= TOUR SECTION ======= */
+.tour-section {
+  position: relative;
+  width: 100%;
+  min-height: 500px;
+  overflow: hidden;
+  color: white;
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+}
+.tour-thumb {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  background-size: cover;
+  background-position: center;
+  margin-bottom: 1rem;
+}
+
+/* ======= SLIDESHOW BACKGROUND ======= */
+.tour-slideshow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.tour-slide {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+.tour-slide.active {
+  opacity: 1;
+}
+
+/* ======= OVERLAY CONTENT ======= */
+.tour-overlay {
+  position: relative;
+  z-index: 1;
+  padding: 4rem 1rem;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.tour-overlay h2 {
+  font-size: 2.2rem;
+  margin-bottom: 2rem;
+}
+
+.tour-cards {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.tour-card {
+  background-color: rgba(255, 255, 255, 0.95);
+  color: #333;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  max-width: 320px;
+  flex: 1 1 300px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tour-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+}
+
+.tour-card h3 {
+  margin-top: 0;
+  font-size: 1.4rem;
+  color: #2e7d32;
+}
+
+.tour-card p {
+  font-size: 1rem;
+  margin: 1rem 0;
+}
+.tour-card .buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 1.2rem;
+  flex-wrap: wrap;
+  --b: 4px;
+  --h: 2.2em;
+}
+
+.tour-card .buttons a {
+  --_c: #88C100;
+  flex: calc(1.25 + var(--_s, 0));
+  min-width: 0;
+  font-size: 18px;
+  font-weight: 600;
+  height: var(--h);
+  text-align: center;
+  color: var(--_c);
+  text-decoration: none;
+  border: var(--b) solid var(--_c);
+  background: conic-gradient(at calc(100% - 1.3 * var(--b)) 0, var(--_c) 209deg, #0000 211deg) border-box;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 0.577 * var(--h)) 100%, 0 100%);
+  padding: 0 calc(0.288 * var(--h)) 0 0;
+  margin: 0 calc(-0.288 * var(--h)) 0 0;
+  box-sizing: border-box;
+  transition: flex 0.4s;
+}
+
+.tour-card .buttons a + a {
+  --_c: #FF003C;
+  flex: calc(.75 + var(--_s, 0));
+  background: conic-gradient(from -90deg at calc(1.3 * var(--b)) 100%, var(--_c) 119deg, #0000 121deg) border-box;
+  clip-path: polygon(calc(0.577 * var(--h)) 0, 100% 0, 100% 100%, 0 100%);
+  margin: 0 0 0 calc(-0.288 * var(--h));
+  padding: 0 0 0 calc(0.288 * var(--h));
+}
+
+.tour-card .buttons a:hover,
+.tour-card .buttons a:active:not(:focus-visible) {
+  --_s: .75;
+}
+
+.tour-card .buttons a:active {
+  box-shadow: inset 0 0 0 100vmax var(--_c);
+  color: white;
+}
+
+.tour-card .btn-primary {
+  background-color: #2e7d32;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 0.95rem;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.tour-card .btn-primary:hover {
+  background-color: #388e3c;
+  transform: scale(1.05);
+}
+
+/* ======= RESPONSIVE ======= */
+@media (max-width: 768px) {
+  .tour-overlay h2 {
+    font-size: 1.8rem;
+  }
+
+  .tour-cards {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .tour-card {
+    width: 100%;
+  }
+}

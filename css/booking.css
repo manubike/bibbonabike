@@ -1,0 +1,118 @@
+/* ======= SEZIONE FORM PRENOTAZIONE ======= */
+.form-section {
+  padding: 4rem 1rem;
+  background: linear-gradient(to bottom, #ffffff, #f1f8f5);
+}
+
+.section-title {
+  text-align: center;
+  font-size: 2.2rem;
+  color: #2e7d32;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-card {
+  background-color: #fff;
+  max-width: 650px;
+  margin: 0 auto;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.icon-input i {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  color: #2e7d32;
+}
+
+.icon-input input,
+.icon-input select,
+.icon-input textarea {
+  width: 100%;
+  padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.icon-input input:focus,
+.icon-input select:focus,
+.icon-input textarea:focus {
+  border-color: #2e7d32;
+  box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.15);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.price-summary {
+  font-size: 1.1rem;
+  color: #444;
+  margin-bottom: 1rem;
+}
+
+.btn-primary {
+  background-color: #2e7d32;
+  color: #fff;
+  padding: 0.7rem 1.4rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-color: #388e3c;
+  transform: scale(1.05);
+}
+
+#responseMessage {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  color: #2e7d32;
+  text-align: center;
+}
+
+.paypal-form {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+/* ======= RESPONSIVE ======= */
+@media (max-width: 600px) {
+  .form-card {
+    padding: 1.5rem 1rem;
+  }
+
+  .section-title {
+    font-size: 1.8rem;
+    flex-direction: column;
+  }
+
+  .icon-input i {
+    left: 10px;
+  }
+
+  .icon-input input,
+  .icon-input select,
+  .icon-input textarea {
+    padding-left: 2.2rem;
+  }
+}

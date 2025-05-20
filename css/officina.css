@@ -1,0 +1,83 @@
+.officina-section {
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.officina-section h2 {
+  font-size: 2rem;
+  color: #2e7d32;
+  margin-bottom: 2rem;
+  margin-top: 3rem;
+}
+
+.officina-desc {
+  font-size: 1.1rem;
+  color: #333;
+  max-width: 700px;
+  margin: 2rem auto 0;
+  line-height: 1.6;
+}
+
+.feature {
+  position: relative;
+  top: 2em;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  height: auto;
+  overflow: hidden;
+}
+
+.feature__frame {
+  width: 100%;
+  max-width: 1000px;
+  animation: frame ease 5s forwards;
+  z-index: 2;
+  position: relative;
+}
+
+.feature__wheel {
+  position: absolute;
+  width: 38%;
+  bottom: 0;
+  z-index: 1;
+}
+
+.feature__wheel--rear {
+  left: 0;
+  transform: rotate(120deg);
+  animation: rear-wheel ease 5s forwards;
+}
+
+.feature__wheel--front {
+  right: 0;
+  animation: front-wheel ease 5s forwards;
+}
+
+@keyframes frame {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes front-wheel {
+  0% {
+    transform: translateX(100%) rotate(0deg);
+  }
+  100% {
+    transform: translateX(0) rotate(320deg);
+  }
+}
+
+@keyframes rear-wheel {
+  0% {
+    transform: translateX(100%) rotate(0deg);
+  }
+  100% {
+    transform: translateX(0) rotate(440deg);
+  }
+}
+
