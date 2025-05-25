@@ -37,3 +37,19 @@
         }
       });
     });
+
+  // Chiude il menu mobile al clic su un link del nav
+  document.querySelectorAll("nav a").forEach(link => {
+    link.addEventListener("click", () => {
+      const navList = document.querySelector("nav ul");
+      const header = document.getElementById("header");
+      const menuBtn = document.getElementById("menuBtn");
+
+      // Chiude il menu mobile se è aperto
+      if (navList.classList.contains("show")) {
+        navList.classList.remove("show");
+        header.classList.remove("menu-open");
+        menuBtn.textContent = "☰";
+      }
+    });
+  });

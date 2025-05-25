@@ -33,6 +33,7 @@
               <li><a href="#Officina"><i class="fas fa-tools"></i> Assistenza 24h</a></li>
               <li><a href="#noleggio"><i class="fas fa-bicycle"></i> Noleggio</a></li>
               <li><a href="#tour"><i class="fas fa-map-marked-alt"></i> Tour</a></li>
+              <li><a href="#eventi"><i class="fas fa-calendar-alt"></i> Eventi</a></li>
               <li><a href="#footerCredits"><i class="fas fa-info-circle"></i> Info</a></li>
             </ul>
           </nav>
@@ -46,7 +47,7 @@
             <a href="https://www.instagram.com/magona_bike_garage/" target="_blank" aria-label="Instagram">
               <i class="fab fa-instagram"></i>
             </a>
-            <a href="https://www.instagram.com/magona_bike_garage/" target="_blank" aria-label="Facebook">
+            <a href="https://www.facebook.com/61555867481698/" target="_blank" aria-label="Facebook">
             <i class="fab fa-facebook"></i>
           </a>
           </div>
@@ -76,8 +77,7 @@
       </div>
     </section>
 
-    <!-- Sezione servizi -->  
-
+  <!-- Sezione servizi -->  
   <main class="container">
     <section class="services">
       <h2 class="section-title">I nostri servizi</h2>
@@ -391,7 +391,6 @@
 
   
   <script>
-
     // Animazione apparizione del form
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
@@ -440,26 +439,27 @@
         }
       });
     </script>
-<script>
-  const prezzi = { "MTB": 20, "E-Bike": 42, "Bici da Corsa": 30 };
-  let prezzoTourCorrente = 0;
 
-  function aggiornaPrezzo() {
-    const tipo = document.getElementById("bikeType").value;
-    const quantita = parseInt(document.getElementById("quantity").value || 1);
-    const prezzo = prezzi[tipo] || 0;
-    const totale = (prezzo * quantita) + prezzoTourCorrente;
+    <script>
+      const prezzi = { "MTB": 20, "E-Bike": 42, "Bici da Corsa": 30 };
+      let prezzoTourCorrente = 0;
 
-    document.getElementById("totalAmount").textContent = totale.toFixed(2);
-    document.getElementById("totalHidden").value = totale.toFixed(2);
-    const paypalAmount = document.getElementById("paypalAmount");
-    if (paypalAmount) paypalAmount.value = totale.toFixed(2);
-  }
+      function aggiornaPrezzo() {
+        const tipo = document.getElementById("bikeType").value;
+        const quantita = parseInt(document.getElementById("quantity").value || 1);
+        const prezzo = prezzi[tipo] || 0;
+        const totale = (prezzo * quantita) + prezzoTourCorrente;
 
-  document.getElementById("bikeType").addEventListener("change", aggiornaPrezzo);
-  document.getElementById("quantity").addEventListener("input", aggiornaPrezzo);
-  document.addEventListener("DOMContentLoaded", aggiornaPrezzo);
-</script>
+        document.getElementById("totalAmount").textContent = totale.toFixed(2);
+        document.getElementById("totalHidden").value = totale.toFixed(2);
+        const paypalAmount = document.getElementById("paypalAmount");
+        if (paypalAmount) paypalAmount.value = totale.toFixed(2);
+      }
+
+      document.getElementById("bikeType").addEventListener("change", aggiornaPrezzo);
+      document.getElementById("quantity").addEventListener("input", aggiornaPrezzo);
+      document.addEventListener("DOMContentLoaded", aggiornaPrezzo);
+    </script>
 
   <script>
   // Slideshow automatica
@@ -471,6 +471,7 @@
     tourSlides[currentTour].classList.add('active');
   }, 5000);
 </script>
+
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const message = document.getElementById("chiSiamoScroll");
@@ -488,6 +489,7 @@
     }
   });
 </script>
+
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const feature = document.getElementById("bikeFeature");
@@ -506,6 +508,7 @@
     observer.observe(feature);
   });
 </script>
+
 <script>
   document.querySelectorAll(".tour-book").forEach(button => {
     button.addEventListener("click", function () {

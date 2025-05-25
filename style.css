@@ -486,7 +486,7 @@
       flex-direction: column;
       background: linear-gradient(to right, #2e7d32, #66bb6a);
       width: 100%;
-      overflow: hidden;
+      overflow: visible; 
       max-height: 0;
       opacity: 0;
       pointer-events: none;
@@ -496,10 +496,11 @@
     }
 
     nav ul.show {
-      max-height: 300px; /* spazio sufficiente per le voci */
+      max-height: 400px; /* spazio sufficiente per le voci */
       opacity: 1;
       pointer-events: auto;
       padding: 1rem 0;
+      transition: max-height 0.5s ease, opacity 0.4s ease;
     }
 
     /* === VOCE DI MENU (li) ANIMATA === */
@@ -517,6 +518,9 @@
     nav ul.show li:nth-child(2) { animation-delay: 0.2s; }
     nav ul.show li:nth-child(3) { animation-delay: 0.3s; }
     nav ul.show li:nth-child(4) { animation-delay: 0.4s; }
+    nav ul.show li:nth-child(5) { animation-delay: 0.5s; }
+    nav ul.show li:nth-child(6) { animation-delay: 0.6s; }
+
 
     /* === KEYFRAMES ANIMAZIONE === */
     @keyframes fadeInNav {
