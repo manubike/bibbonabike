@@ -1,1 +1,81 @@
 
+        // Scroll to Top
+        const scrollBtn = document.getElementById("scrollToTop");
+        window.addEventListener("scroll", () => {
+            scrollBtn.style.display = window.scrollY > 300 ? "block" : "none";
+        });
+        scrollBtn.addEventListener("click", () => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+
+        // Reveal footer
+        document.addEventListener("DOMContentLoaded", () => {
+            const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                entry.target.classList.remove("hidden");
+                entry.target.classList.add("visible");
+                observer.unobserve(entry.target);
+                }
+            });
+            }, { threshold: 0.4 });
+
+            const footer = document.querySelector('.footer-overlay');
+            if (footer) observer.observe(footer);
+        });
+  
+    
+    // Animazione apparizione del form
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, {
+      threshold: 0.2
+    });
+  
+    const formCard = document.querySelector('.form-card');
+    if (formCard) observer.observe(formCard);
+
+    // Slideshow automatica
+    let tourSlides = document.querySelectorAll('.tour-slide');
+    let currentTour = 0;
+    setInterval(() => {
+        tourSlides[currentTour].classList.remove('active');
+        currentTour = (currentTour + 1) % tourSlides.length;
+        tourSlides[currentTour].classList.add('active');
+    }, 5000);
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const message = document.getElementById("chiSiamoScroll");
+        const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+            message.style.animationPlayState = "running";
+            }
+        });
+        }, { threshold: 0.5 });
+
+        if (message) {
+        message.style.animationPlayState = "paused"; // di default fermo
+        observer.observe(message);
+        }
+    });
+    document.addEventListener("DOMContentLoaded", () => {
+        const feature = document.getElementById("bikeFeature");
+
+        const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+            feature.classList.add("animate-bike");
+            observer.disconnect(); // esegui solo una volta
+            }
+        });
+        }, {
+        threshold: 0.4
+        });
+
+        observer.observe(feature);
+    });

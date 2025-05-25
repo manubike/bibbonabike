@@ -1,3 +1,11 @@
+#Officina::before {
+  content: "";
+  display: block;
+  height: 80px;
+  margin-top: -80px;
+  visibility: hidden;
+}
+
 .officina-section {
   padding: 3rem 1rem;
   text-align: center;
@@ -28,10 +36,31 @@
   overflow: hidden;
 }
 
+/* INIZIALMENTE SENZA ANIMAZIONE */
+.feature__frame,
+.feature__wheel--front,
+.feature__wheel--rear {
+  animation: none;
+}
+
+/* ATTIVA ANIMAZIONE QUANDO DIVENTA VISIBILE */
+.animate-bike .feature__frame {
+  animation: frame ease 5s forwards;
+}
+
+.animate-bike .feature__wheel--rear {
+  animation: rear-wheel ease 5s forwards;
+  transform: rotate(120deg); /* manteniamo valore iniziale */
+}
+
+.animate-bike .feature__wheel--front {
+  animation: front-wheel ease 5s forwards;
+}
+
+/* POSIZIONAMENTO */
 .feature__frame {
   width: 100%;
   max-width: 1000px;
-  animation: frame ease 5s forwards;
   z-index: 2;
   position: relative;
 }
@@ -46,14 +75,13 @@
 .feature__wheel--rear {
   left: 0;
   transform: rotate(120deg);
-  animation: rear-wheel ease 5s forwards;
 }
 
 .feature__wheel--front {
   right: 0;
-  animation: front-wheel ease 5s forwards;
 }
 
+/* ANIMAZIONI */
 @keyframes frame {
   0% {
     transform: translateX(-100%);
@@ -80,4 +108,3 @@
     transform: translateX(0) rotate(440deg);
   }
 }
-
