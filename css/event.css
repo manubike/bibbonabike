@@ -1,0 +1,221 @@
+.eventi-slider-section {
+  padding: 4rem 1rem;
+  background-color: #fdfdfd;
+}
+
+.section-title {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #2e7d32;
+}
+
+.slider-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.eventi-slider {
+  display: flex;
+  align-items: stretch; /* 🔥 tutte alte uguali */
+  gap: 1.5rem;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 1rem 0;
+}
+
+/* === CARD CONTAINER === */
+.evento-card {
+  flex: 0 0 300px;
+  perspective: 1000px;
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* base */
+}
+
+/* Animazione di apparizione */
+.evento-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* === CARD INTERNA === */
+.evento-inner {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, background 0.3s ease;
+  transform-style: preserve-3d;
+  height: 100%; /* 👈 forza tutta la card */
+}
+
+.evento-tag {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  border-radius: 20px;
+  background: gray;
+  color: white;
+  z-index: 2;
+  text-transform: uppercase;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+/* Differenzia per tipo */
+.evento-corso {
+  background-color: #1976d2; /* blu */
+}
+
+.evento-evento {
+  background-color: #c62828; /* rosso scuro */
+}
+
+/* Assicurati che .evento-inner sia positioned */
+.evento-inner {
+  position: relative;
+}
+
+/* Effetto hover 3D */
+.evento-card:hover .evento-inner {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.evento-inner img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.evento-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* spinge il bottone in basso */
+  flex-grow: 1;
+  padding: 1rem;
+  gap: 0.5rem;
+}
+
+.evento-info h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #2e7d32;
+}
+
+.evento-info p {
+  font-size: 0.95rem;
+  color: #444;
+}
+.evento-info p:nth-of-type(2) {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;  /* 👈 massimo 3 righe */
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* === BOTTONI SLIDER === */
+.slider-btn {
+  position: absolute;
+  top: 40%;
+  transform: translateY(-50%);
+  background: #2e7d32;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  padding: 12px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.prev-btn {
+  left: 0;
+}
+
+.next-btn {
+  right: 0;
+}
+.evento-card .buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 1.2rem;
+  flex-wrap: wrap;
+  --b: 4px;
+  --h: 2.2em;
+}
+
+.evento-card .buttons a {
+  --_c: #88C100;
+  flex: calc(1.25 + var(--_s, 0));
+  min-width: 0;
+  font-size: 18px;
+  font-weight: 600;
+  height: var(--h);
+  text-align: center;
+  color: var(--_c);
+  text-decoration: none;
+  border: var(--b) solid var(--_c);
+  background: conic-gradient(at calc(100% - 1.3 * var(--b)) 0, var(--_c) 209deg, #0000 211deg) border-box;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 0.577 * var(--h)) 100%, 0 100%);
+  padding: 0 calc(0.288 * var(--h)) 0 0;
+  margin: 0 calc(-0.288 * var(--h)) 0 0;
+  box-sizing: border-box;
+  transition: flex 0.4s;
+}
+
+.evento-card .buttons a + a {
+  --_c: #3c8ace;
+  flex: calc(.75 + var(--_s, 0));
+  background: conic-gradient(from -90deg at calc(1.3 * var(--b)) 100%, var(--_c) 119deg, #0000 121deg) border-box;
+  clip-path: polygon(calc(0.577 * var(--h)) 0, 100% 0, 100% 100%, 0 100%);
+  margin: 0 0 0 calc(-0.288 * var(--h));
+  padding: 0 0 0 calc(0.288 * var(--h));
+}
+
+.evento-card .buttons a:hover,
+.evento-card .buttons a:active:not(:focus-visible) {
+  --_s: .75;
+}
+
+.evento-card .buttons a:active {
+  box-shadow: inset 0 0 0 100vmax var(--_c);
+  color: white;
+}
+
+/* Nasconde le frecce su mobile */
+@media (max-width: 768px) {
+  .slider-btn {
+    display: none;
+  }
+}
+
+/* Mobile tweaks */
+@media (max-width: 480px) {
+  .evento-card {
+    flex: 0 0 90%;
+  }
+}
+@media (max-width: 768px) {
+  .eventi-slider {
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+    gap: 2rem;
+  }
+
+  .evento-card {
+    flex: 1 1 100%;
+    max-width: 90%;
+    margin: 0 auto;
+  }
+}

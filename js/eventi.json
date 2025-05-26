@@ -1,0 +1,29 @@
+[
+  {
+    "title": "Magona Bike & Kidz!",
+    "date": "Domenica 1 Giugno",
+    "time": "ore 09:00",
+    "description": "Escursione guidata sotto le stelle tra i sentieri della pineta. Luci incluse!",
+    "image": "img/event2.png",
+    "type": "evento",
+    "whatsapp": "Vorrei prenotare il tour notturno"
+  },
+  {
+    "title": "Corso Meccanica Base",
+    "date": "Sabato 8 Giugno",
+    "time": "ore 10:00",
+    "description": "Riparazioni rapide, regolazione freni, sostituzione catena con i nostri meccanici esperti.",
+    "image": "img/logonbike.png",
+    "type": "corso",
+    "whatsapp": "Vorrei iscrivermi al corso meccanica"
+  },
+  {
+    "title": "Summer MTB Camp Bibbona",
+    "date": "dal 10/06 ogni Lun, Mar, Gio",
+    "time": "13:00 – 15:30",
+    "description": "Impara la guida in MTB, manutenzione bici, orientamento e divertimento tra i boschi di Bibbona!",
+    "image": "img/summer-bike-camp.png",
+    "type": "evento",
+    "whatsapp": "Vorrei iscrivermi al Summer Bike Camp"
+  }
+]
