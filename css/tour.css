@@ -57,12 +57,14 @@
 
 .tour-cards {
   display: flex;
+  flex-direction: row;
   justify-content: center;
   gap: 2rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap; 
   max-width: 1200px;
   margin: 0 auto;
 }
+
 
 .tour-card {
   background-color: rgba(255, 255, 255, 0.95);
@@ -73,6 +75,40 @@
   max-width: 320px;
   flex: 1 1 300px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card-border-wrapper {
+  position: relative;
+  border-radius: 16px;
+  padding: 4px; /* spessore del bordo */
+  background: linear-gradient(270deg, #66bb6a, #2e7d32, #66bb6a);
+  background-size: 600% 600%;
+  animation: borderFlow 6s linear infinite;
+}
+
+.card-border-wrapper .tour-card {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  height: 100%;
+  box-shadow: 0 8px 20px rgb(17 208 167 / 88%);
+
+}
+
+/* riusa la tua animazione esistente */
+@keyframes borderFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+.tour-card.glow {
+  filter: url(#border-glow);
+  transition: filter 0.4s ease;
 }
 
 .tour-card:hover {

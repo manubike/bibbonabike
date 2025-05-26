@@ -24,7 +24,6 @@
             if (footer) observer.observe(footer);
         });
   
-    
     // Animazione apparizione del form
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
@@ -79,3 +78,5 @@
 
         observer.observe(feature);
     });
+
+    

@@ -22,7 +22,6 @@
   <link rel="icon" href="img/icononly.png" type="image/png" />
 </head>
 <body>
-
     <header class="site-header" id="header">
         <div class="container">
           <img src="img/icononly_transparent_nobuffer.png" alt="BibbonaBike Logo" class="logo" />
@@ -132,7 +131,7 @@
           <div class="bike-info">
             <h3>42,00€ <span>| giorno</span></h3>
             <p class="bike-type">E-bike</p>
-            <a href="#prenota" class="btn-secondary">SELEZIONA »</a>
+            <a href="#prenota" class="btn-secondary bike-select" data-bike="E-Bike">SELEZIONA »</a>
           </div>
         </div>
         <div class="bike-card">
@@ -140,7 +139,7 @@
           <div class="bike-info">
             <h3>42,00€ <span>| giorno</span></h3>
             <p class="bike-type">E-bike</p>
-            <a href="#prenota" class="btn-secondary">SELEZIONA »</a>
+            <a href="#prenota" class="btn-secondary bike-select" data-bike="E-Bike">SELEZIONA »</a>
           </div>
         </div>
         <div class="bike-card">
@@ -148,7 +147,7 @@
           <div class="bike-info">
             <h3>20,00€ <span>| giorno</span></h3>
             <p class="bike-type">Mountain bike</p>
-            <a href="#prenota" class="btn-secondary">SELEZIONA »</a>
+            <a href="#prenota" class="btn-secondary bike-select" data-bike="MTB">SELEZIONA »</a>
           </div>
         </div>
       </div>
@@ -166,44 +165,50 @@
         <div class="tour-cards">
           
           <!-- CARD 1 -->
-          <div class="tour-card">
-            <div class="tour-thumb" style="background-image: url('img/tour1.jpg');"></div>
-            <h3>Tour Pineta & Costa</h3>
-            <p>Sentieri nella pineta e lungo la costa tra Bibbona e Marina.</p>
-            <ul class="tour-details">
-              <li><strong>Tipo:</strong> Tour Informativo</li>
-              <li><strong>Prezzo:</strong> 40 €</li>
-              <li><strong>Durata:</strong> 4h</li>
-              <li><strong>Distanza:</strong> 31 km</li>
-              <li><strong>Dislivello:</strong> 643 m</li>
-              <li><strong>Difficoltà:</strong> <span class="difficulty-dot" style="background-color: green;"></span> Facile</li>
-            </ul>
-            <div class="buttons">
-            <a href="#noleggio" class="btn-primary scroll-btn tour-book" data-tour="Tour Pineta & Costa">Prenota</a>
-            <a href="#noleggio">Info</a>
-          </div>
-          </div>
-          <!-- CARD 2 -->
-          <div class="tour-card">
-            <div class="tour-thumb" style="background-image: url('img/tour2.jpg');"></div>
-            <h3>Tour Collina & Vigneti</h3>
-            <p>Strade bianche tra le vigne di Bibbona e le colline toscane.</p>
-            <ul class="tour-details">
-              <li><strong>Tipo:</strong> Tour Informativo</li>
-              <li><strong>Prezzo:</strong> 40 €</li>
-              <li><strong>Durata:</strong> 4h</li>
-              <li><strong>Distanza:</strong> 31 km</li>
-              <li><strong>Dislivello:</strong> 643 m</li>
-              <li><strong>Difficoltà:</strong> <span class="difficulty-dot" style="background-color: green;"></span> Facile</li>
-            </ul>
-            <div class="buttons">
-              <a href="#noleggio" class="btn-primary scroll-btn tour-book" data-tour="Tour Collina & Vigneti">Prenota</a>
+          <div class="card-border-wrapper">
+            <div class="tour-card glow">
+              <div class="tour-thumb" style="background-image: url('img/tour1.jpg');"></div>
+              <h3>Tour Pineta & Costa</h3>
+              <p>Sentieri nella pineta e lungo la costa tra Bibbona e Marina.</p>
+              <ul class="tour-details">
+                <li><strong>Tipo:</strong> Tour Informativo</li>
+                <li><strong>Prezzo:</strong> 40 €</li>
+                <li><strong>Durata:</strong> 4h</li>
+                <li><strong>Distanza:</strong> 31 km</li>
+                <li><strong>Dislivello:</strong> 643 m</li>
+                <li><strong>Difficoltà:</strong> <span class="difficulty-dot" style="background-color: green;"></span> Facile</li>
+              </ul>
+              <div class="buttons">
+              <a href="#noleggio" class="btn-primary scroll-btn tour-book" data-tour="Tour Pineta & Costa">Prenota</a>
               <a href="#noleggio">Info</a>
+            </div>
+            </div>
+          </div>
+          
+          <!-- CARD 2 -->
+          <div class="card-border-wrapper">
+            <div class="tour-card glow">
+              <div class="tour-thumb" style="background-image: url('img/tour2.jpg');"></div>
+              <h3>Tour Collina & Vigneti</h3>
+              <p>Strade bianche tra le vigne di Bibbona e le colline toscane.</p>
+              <ul class="tour-details">
+                <li><strong>Tipo:</strong> Tour Informativo</li>
+                <li><strong>Prezzo:</strong> 40 €</li>
+                <li><strong>Durata:</strong> 4h</li>
+                <li><strong>Distanza:</strong> 31 km</li>
+                <li><strong>Dislivello:</strong> 643 m</li>
+                <li><strong>Difficoltà:</strong> <span class="difficulty-dot" style="background-color: green;"></span> Facile</li>
+              </ul>
+              <div class="buttons">
+                <a href="#noleggio" class="btn-primary scroll-btn tour-book" data-tour="Tour Collina & Vigneti">Prenota</a>
+                <a href="#noleggio">Info</a>
+              </div>
             </div>
           </div>
 
           <!-- CARD 3 -->
-          <div class="tour-card">
+          <div class="card-border-wrapper">
+          <div class="tour-card glow">
             <div class="tour-thumb" style="background-image: url('img/tour3.jpg');"></div>
             <h3>Tour Colline Toscane</h3>
             <p>Panorami mozzafiato tra vigne, oliveti e borghi antichi.</p>
@@ -218,6 +223,7 @@
             <div class="buttons">
             <a href="#noleggio" class="btn-primary scroll-btn tour-book" data-tour="Tour Colline Toscane">Prenota</a>
             <a href="#noleggio">Info</a>
+          </div>
           </div>
           </div>
         </div>
@@ -345,7 +351,7 @@
           <a href="https://www.google.com/maps/place/Via+del+Mandorlo,+1,+57020+Bibbona+LI" 
             target="_blank" 
             style="color: inherit; text-decoration: none;">
-            <i class="fas fa-map-marker-alt"></i> Via del Mandorlo 1, Bibbona 57020
+          <i class="fas fa-map-marker-alt animated-icon"></i> Via del Mandorlo 1, Bibbona 57020
           </a>
         </p>
         <p>&copy; 2025 Magona Bike Garage – BibbonaBike.com</p>
@@ -629,6 +635,28 @@
   }
 </script>
 
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".bike-select").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const selectedBike = btn.dataset.bike;
+        const selectElement = document.getElementById("bikeType");
+
+        if (selectElement) {
+          selectElement.value = selectedBike;
+          selectElement.dispatchEvent(new Event('change')); // aggiorna prezzo se necessario
+        }
+
+        setTimeout(() => {
+          const form = document.getElementById("noleggioForm");
+          if (form) {
+            form.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }, 100); // attende che la navigazione hash sia completa
+      });
+    });
+  });
+</script>
 
 
 

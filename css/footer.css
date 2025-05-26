@@ -28,7 +28,7 @@ footer {
   text-align: center;
   color: white;
   font-size: 1.1rem;
-  z-index: 10; /* assicurati che sia sopra la footer-bar */
+  z-index: 10; 
   padding: 0 1rem;
   padding-bottom: 10px;
 
@@ -172,7 +172,7 @@ footer {
   pointer-events: none;
   animation: scroll-to-center 5s ease-out forwards;
   gap: 0.5rem;
-  font-family: 'Dancing Script', cursive; /* Se vuoi uno stile elegante */
+  font-family: 'Dancing Script', cursive; 
   line-height: 1.6;
 
 
@@ -426,5 +426,26 @@ footer {
   }
   100% {
     background-position: 2000px 100%;
+  }
+}
+.animated-icon {
+  animation: bouncePulse 2.5s ease-in-out infinite;
+  transform-origin: center bottom;
+  color: #ffffff;
+  filter: drop-shadow(0 0 5px rgba(255, 235, 59, 0.6));
+}
+
+@keyframes bouncePulse {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  30% {
+    transform: translateY(-5px) scale(1.1);
+    opacity: 0.85;
+  }
+  60% {
+    transform: translateY(2px) scale(0.95);
+    opacity: 0.95;
   }
 }
