@@ -574,3 +574,209 @@
     }
   }
   
+/* Aggiungiamo stile e visibilità condizionata del widget chat solo quando il footer è visibile */
+
+#chatWidget {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  font-family: 'Inter', sans-serif;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.9);
+  transition: all 0.5s ease-in-out;
+}
+
+#chatWidget.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
+}
+
+#chatToggle {
+  background: linear-gradient(135deg, #3c8ace, #00897b);
+  border: none;
+  color: white;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  font-size: 1.6rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  transition: background 0.3s ease;
+}
+
+#chatToggle:hover {
+  background: linear-gradient(135deg, #3c8ace, #00796b);
+}
+
+#chatBox {
+  background: #012c51e3;
+  color: white;
+  width: 320px;
+  max-height: 440px;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+  box-shadow: 0 0 16px rgba(0,0,0,0.5);
+  backdrop-filter: blur(8px);
+  animation: fadeInUp 0.5s ease;
+}
+
+#chatToggle {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+#chatBox.hidden {
+  display: none;
+}
+
+#chatMessages {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+#chatMessages .msg {
+  padding: 8px 12px;
+  margin: 6px 0;
+  border-radius: 12px;
+  max-width: 85%;
+  white-space: pre-wrap;
+  animation: fadeIn 0.4s ease forwards;
+}
+
+/* Per WebKit (Chrome, Safari) */
+#chatMessages::-webkit-scrollbar {
+  display: none;
+}
+
+/* Per Firefox */
+#chatMessages {
+  scrollbar-width: none; /* nasconde la barra in Firefox */
+}
+
+/* Generale */
+#chatMessages {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  overflow-y: auto;
+}
+
+.msg.user {
+  background: linear-gradient(to right, #00c7b7, #009688);
+  color: white;
+  align-self: flex-end;
+}
+
+.msg.bot {
+  background: #333;
+  align-self: flex-start;
+}
+
+#chatInput {
+  border: none;
+  padding: 10px;
+  font-size: 1rem;
+  width: calc(100% - 20px);
+  resize: none;
+  margin: 0 10px;
+  height: 60px;
+  background: #2c2c2c;
+  color: white;
+  border-radius: 8px;
+}
+
+#chatSend {
+  background: #297ec8;
+  border: none;
+  color: white;
+  padding: 10px;
+  margin: 10px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+#chatSend:hover {
+  background: #0f64ae;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.typing {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 8px 12px;
+  margin: 6px 0;
+  border-radius: 12px;
+  background: #333;
+  max-width: 60px;
+  align-self: flex-start;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  background-color: #ccc;
+  border-radius: 50%;
+  animation: bounce 1.2s infinite ease-in-out;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  40% {
+    transform: scale(1.6);
+    opacity: 1;
+  }
+}
+
+.chat-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.chat-icon:hover {
+  transform: scale(1.1);
+}
