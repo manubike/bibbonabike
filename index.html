@@ -79,6 +79,12 @@
         Il tuo browser non supporta i video HTML5.
       </video>
 
+        <div id="weatherWidget" class="weather-widget hidden">
+          <img id="weatherIcon" src="" alt="Meteo" />
+          <span id="weatherTemp"></span>
+        </div>
+
+
       <!-- Contenuto -->
       <div class="hero-content animated">
         <img src="img/fulllogo_transparent_nobuffer.png" alt="Magona Bike Garage" class="hero-logo" />
@@ -299,7 +305,7 @@
           </div>
 
           <div class="form-group icon-input">
-            <label for="duration">Durata (ore)</label>
+            <label for="duration">Durata (Giorni)</label>
             <i class="fa fa-clock"></i>
             <input type="number" id="duration" name="duration" min="1" max="24" required />
           </div>
@@ -776,6 +782,34 @@ document.addEventListener("DOMContentLoaded", () => {
   if (footer) chatFooterObserver.observe(footer);
 });
 </script>
+</script>
+
+  <script>
+    async function loadWeather() {
+      try {
+        // Chiama direttamente il tuo worker, senza query string
+        const res = await fetch("https://weather.zonkeynet.workers.dev/");
+        const data = await res.json();
+
+        if (!data.weather || !data.weather[0]) throw new Error("Dati meteo non validi");
+
+        const iconCode = data.weather[0].icon;
+        const temp = Math.round(data.main.temp);
+
+        document.getElementById("weatherIcon").src = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+        document.getElementById("weatherTemp").textContent = `${temp}°C`;
+        document.getElementById("weatherWidget").classList.remove("hidden");
+
+      } catch (err) {
+        console.error("Errore meteo:", err);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", loadWeather);
+  </script>
+
+
+
 
 </body>
 </html>

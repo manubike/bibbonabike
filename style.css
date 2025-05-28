@@ -780,3 +780,49 @@
 .chat-icon:hover {
   transform: scale(1.1);
 }
+
+.weather-widget {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  /* background: rgba(0, 0, 0, 0.65);   aumentato opacità per visibilità */
+  color: #ffffff;                  /* testo bianco puro */
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); */
+  backdrop-filter: blur(6px);     /* effetto vetro */
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.3s ease;
+}
+
+.weather-widget img {
+  width: 40px;
+  height: 40px;
+  filter: drop-shadow(0 0 3px rgba(255,255,255,0.2));
+}
+@media (max-width: 768px) {
+  .weather-widget {
+    top: 10px;
+    right: 10px;
+    font-size: 0.9rem;
+    padding: 6px 10px;
+  }
+
+  .weather-widget img {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+.hidden {
+    opacity: 0;
+    visibility: hidden;
+  }
+
