@@ -1,7 +1,6 @@
 /* ======= SEZIONE FORM PRENOTAZIONE ======= */
 .form-section {
   padding: 4rem 1rem;
-/*  background: linear-gradient(to bottom, #ffffff, #f1f8f5); */
 }
 
 .section-title {
@@ -95,24 +94,87 @@ textarea {
   text-align: center;
 }
 
-/* ======= RESPONSIVE ======= */
+/* ======= CAMPO TOUR SELEZIONATO ======= */
+/* Stile per l'etichetta */
+#tourField label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.4rem;
+  color: #2e7d32;
+}
+
+/* Wrapper per l'input e il pulsante di rimozione */
+.tour-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f9fff9;
+  border: 2px solid #4caf50;
+  padding: 10px 12px;
+  border-radius: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  flex-wrap: wrap;
+}
+
+/* Icona all'interno del wrapper */
+.tour-input-wrapper i {
+  color: #2e7d32;
+  margin-right: 6px;
+  font-size: 1rem;
+}
+
+/* Stile per l'input */
+.tour-input-wrapper input {
+  flex: 1 1 auto;
+  border: none;
+  background: transparent;
+  font-weight: bold;
+  font-size: 1rem;
+  color: #2e7d32;
+  min-width: 0;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.tour-input-wrapper input:focus {
+  outline: none;
+}
+
+/* Stile per il pulsante di rimozione */
+#removeTourBtn {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  color: #c62828;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 5px;
+}
+
+#removeTourBtn:hover {
+  color: #e53935;
+}
+
+/* Responsive: adattamento per schermi piccoli */
 @media (max-width: 600px) {
-  .form-card {
-    padding: 1.5rem 1rem;
-  }
-
-  .section-title {
-    font-size: 1.8rem;
+  .tour-input-wrapper {
     flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
+  #tourField label {
+    display: none;
   }
 
-  .icon-input i {
-    left: 10px;
+  .tour-input-wrapper input {
+    width: 100%;
+    font-size: 1rem;
+    text-align: left;
   }
 
-  .icon-input input,
-  .icon-input select,
-  .icon-input textarea {
-    padding-left: 2.2rem;
+  #removeTourBtn {
+    align-self: flex-end;
   }
 }
+

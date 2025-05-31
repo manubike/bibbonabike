@@ -383,9 +383,16 @@
       margin-top: 10px;
       justify-content: center;
       width: 100%;
+      gap: 20px; 
     }
-  }
-    
+
+   .social-header a {
+      font-size: 1.4rem;
+      padding: 10px;
+      align-items: center;
+      justify-content: center;
+    }
+  } 
 
   /* MENU TOGGLE */
   .menu-toggle {

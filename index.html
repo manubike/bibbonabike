@@ -136,10 +136,10 @@
             <strong>Affidati ai nostri esperti meccanici</strong> per qualsiasi intervento: dalle riparazioni rapide alle revisioni complete.<br>
             Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre efficiente e sicura.<br><br>
           </p>
-              <div class="officina-buttons" style="margin-top: 1.2rem;display: flex;gap: 1rem;align-content: space-between;flex-direction: row;align-items: center;flex-wrap: wrap;justify-content: center;">
-                <a href="tel:+393313453207" class="btn-primary"><i class="fas fa-phone"></i> Chiama</a>
-                <a href="https://wa.me/393313453207" target="_blank" class="btn-primary"><i class="fab fa-whatsapp"></i> Chatta su WhatsApp</a>
-              </div>
+          <div class="officina-buttons" style="margin-top: 1.2rem; display: flex; gap: 1rem; align-content: space-between; flex-direction: row; align-items: center; flex-wrap: wrap; justify-content: center;">
+            <span id="phoneLink"></span>
+            <span id="whatsappLink"></span>
+          </div>
         </div>
       </div>
     </section>
@@ -149,24 +149,24 @@
         <div class="bike-card">
           <img src="img/bike-ebike.jpg" alt="E-Bike" />
           <div class="bike-info">
-            <h3>42,00€ <span>| giorno</span></h3>
-            <p class="bike-type">E-bike</p>
-            <a href="#prenota" class="btn-secondary bike-select" data-bike="E-Bike">SELEZIONA »</a>
+            <h3>50,00€ <span>| giorno</span></h3>
+            <p class="bike-type">FULL</p>
+            <a href="#prenota" class="btn-secondary bike-select" data-bike="FULL">SELEZIONA »</a>
           </div>
         </div>
         <div class="bike-card">
           <img src="img/bike-ebike.jpg" alt="E-Bike" />
           <div class="bike-info">
-            <h3>42,00€ <span>| giorno</span></h3>
-            <p class="bike-type">E-bike</p>
-            <a href="#prenota" class="btn-secondary bike-select" data-bike="E-Bike">SELEZIONA »</a>
+            <h3>35,00€ <span>| giorno</span></h3>
+            <p class="bike-type">FRONT</p>
+            <a href="#prenota" class="btn-secondary bike-select" data-bike="FRONT">SELEZIONA »</a>
           </div>
         </div>
         <div class="bike-card">
           <img src="img/bike-ebike.jpg" alt="Mountain Bike" />
           <div class="bike-info">
-            <h3>20,00€ <span>| giorno</span></h3>
-            <p class="bike-type">Mountain bike</p>
+            <h3>45,00€ <span>| giorno</span></h3>
+            <p class="bike-type">MTB</p>
             <a href="#prenota" class="btn-secondary bike-select" data-bike="MTB">SELEZIONA »</a>
           </div>
         </div>
@@ -199,7 +199,7 @@
                 <li><strong>Difficoltà:</strong> <span class="difficulty-dot" style="background-color: green;"></span> Facile</li>
               </ul>
               <div class="buttons">
-              <a href="#noleggio" class="btn-primary scroll-btn tour-book" data-tour="Tour Pineta & Costa">Prenota</a>
+              <a href="#noleggio" class="btn-primary scroll-btn tour-book" data-tour-id="tour1" data-tour-name="Tour Pineta & Costa">Prenota</a>
               <a href="#noleggio">Info</a>
             </div>
             </div>
@@ -220,7 +220,7 @@
                 <li><strong>Difficoltà:</strong> <span class="difficulty-dot" style="background-color: green;"></span> Facile</li>
               </ul>
               <div class="buttons">
-                <a href="#noleggio" class="btn-primary scroll-btn tour-book" data-tour="Tour Collina & Vigneti">Prenota</a>
+                <a href="#noleggio" class="btn-primary scroll-btn tour-book" data-tour-id="tour2" data-tour-name="Tour Collina & Vigneti">Prenota</a>
                 <a href="#noleggio">Info</a>
               </div>
             </div>
@@ -241,7 +241,7 @@
               <li><strong>Difficoltà:</strong> <span class="difficulty-dot" style="background-color: green;"></span> Facile</li>
             </ul>
             <div class="buttons">
-            <a href="#noleggio" class="btn-primary scroll-btn tour-book" data-tour="Tour Colline Toscane">Prenota</a>
+            <a href="#noleggio" class="btn-primary scroll-btn tour-book" data-tour-id="tour3" data-tour-name="Tour Colline Toscane">Prenota</a>
             <a href="#noleggio">Info</a>
           </div>
           </div>
@@ -249,7 +249,8 @@
         </div>
       </div>
     </section>
-
+    
+    <!-- SEZIONE EVENTI / CORSI via json file event.json -->
     <section class="eventi-slider-section" id="eventi">
       <div class="container">
         <h2 class="section-title"><i class="fas fa-calendar-alt"></i> Corsi & Eventi</h2>
@@ -263,7 +264,7 @@
       </div>
     </section>
 
-    
+    <!-- FORM Noleggio / prenotazione -->
     <section class="form-section" id="noleggio"> 
       <div class="container">
         <h2 class="section-title"><i class="fas fa-calendar-check"></i> Prenota ora il tuo noleggio</h2>
@@ -287,8 +288,8 @@
             <select id="bikeType" name="bikeType" required>
               <option value="">Seleziona</option>
               <option value="MTB">MTB</option>
-              <option value="E-Bike">E-Bike</option>
-              <option value="Bici da Corsa">Bici da Corsa</option>
+              <option value="FULL">FULL</option>
+              <option value="FRONT">FRONT</option>
             </select>
           </div>
 
@@ -301,21 +302,37 @@
           <div class="form-group icon-input">
             <label for="date">Data</label>
             <i class="fa fa-calendar-alt"></i>
-            <input type="date" id="date" name="date" required />
+            <input type="date" id="date" name="date" required="">
           </div>
 
           <div class="form-group icon-input">
-            <label for="duration">Durata (Giorni)</label>
+            <label for="duration">Durata</label>
             <i class="fa fa-clock"></i>
-            <input type="number" id="duration" name="duration" min="1" max="24" required />
+            <select id="duration" name="duration" required>
+              <option value="0.5">½ giornata</option>
+              <option value="1">1 giorno</option>
+              <option value="2">2 giorni</option>
+              <option value="3">3 giorni</option>
+              <option value="4">4 giorni</option>
+              <option value="5">5 giorni</option>
+              <option value="6">6 giorni</option>
+              <option value="7">7 giorni</option>
+              <option value="8">Oltre 7 giorni</option>
+            </select>
           </div>
 
+
           <!-- 🔥 Campo tour dinamico, inizialmente nascosto -->
-          <div class="form-group icon-input" id="tourField" style="display: none;">
-            <label for="tourSelected">Tour selezionato</label>
+        <div class="form-group" id="tourField" style="display: none;">
+          <label for="tourSelected">Tour selezionato</label>
+          <div class="tour-input-wrapper">
             <i class="fa fa-map-marked-alt"></i>
             <input type="text" id="tourSelected" name="tourSelected" readonly />
+            <!-- ✖ pulsante JS verrà inserito dallo script -->
           </div>
+        </div>
+
+
 
           <div class="form-group icon-input">
             <label for="notes">Note (altezza, attrezzature richieste)</label>
@@ -331,15 +348,7 @@
           <button type="submit" class="btn-primary">📩 Invia richiesta</button>
           <p id="responseMessage"></p>
         </form>
-
-        <form id="paypalForm" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" class="paypal-form" style="display: none; margin-top: 20px; text-align: center;">
-          <input type="hidden" name="cmd" value="_xclick">
-          <input type="hidden" name="business" value="valexxxkiwy@gmail.com">
-          <input type="hidden" name="item_name" value="Prenotazione bici">
-          <input type="hidden" name="amount" id="paypalAmount" value="0.00">
-          <input type="hidden" name="currency_code" value="EUR">
-          <button type="submit" class="btn-primary">💳 Paga con PayPal</button>
-        </form>
+        <div id="paypalPlaceholder" style="margin-top: 20px; text-align: center;"></div>
       </div>
     </section>
 
@@ -441,6 +450,7 @@
   <script src="js/nav.js"></script>
   <script src="js/slogan.js"></script>
   <script src="js/event.js"></script>
+  <script src="js/booking.js"></script>
 
   
   <script>
@@ -458,61 +468,6 @@
     const formCard = document.querySelector('.form-card');
     if (formCard) observer.observe(formCard);
   </script>
-
-    <script>
-      // FORM Invio Mail
-      const form = document.getElementById('noleggioForm');
-      const responseMsg = document.getElementById('responseMessage');
-
-      form.addEventListener('submit', async function (e) {
-        e.preventDefault();
-
-
-        responseMsg.textContent = 'Invio in corso...';
-
-        try {
-          const formData = new FormData(form);
-          const res = await fetch("https://workers-bibbonabike.zonkeynet.workers.dev/submit", {
-            method: 'POST',
-            body: formData
-          });
-
-          const result = await res.json();
-          if (result.status === 'success') {
-            responseMsg.textContent = '✅ Richiesta inviata! Ti contatteremo presto.';
-            form.reset();
-              // Mostra il pulsante PayPal
-            document.getElementById("paypalForm").style.display = "block";
-          } else {
-            responseMsg.textContent = '❌ Errore: ' + (result.message || 'invio fallito');
-          }
-        } catch (err) {
-          console.error(err);
-          responseMsg.textContent = '❌ Connessione fallita.';
-        }
-      });
-    </script>
-
-    <script>
-      const prezzi = { "MTB": 20, "E-Bike": 42, "Bici da Corsa": 30 };
-      let prezzoTourCorrente = 0;
-
-      function aggiornaPrezzo() {
-        const tipo = document.getElementById("bikeType").value;
-        const quantita = parseInt(document.getElementById("quantity").value || 1);
-        const prezzo = prezzi[tipo] || 0;
-        const totale = (prezzo * quantita) + prezzoTourCorrente;
-
-        document.getElementById("totalAmount").textContent = totale.toFixed(2);
-        document.getElementById("totalHidden").value = totale.toFixed(2);
-        const paypalAmount = document.getElementById("paypalAmount");
-        if (paypalAmount) paypalAmount.value = totale.toFixed(2);
-      }
-
-      document.getElementById("bikeType").addEventListener("change", aggiornaPrezzo);
-      document.getElementById("quantity").addEventListener("input", aggiornaPrezzo);
-      document.addEventListener("DOMContentLoaded", aggiornaPrezzo);
-    </script>
 
   <script>
   // Slideshow automatica
@@ -562,132 +517,6 @@
   });
 </script>
 
-<script>
-  document.querySelectorAll(".tour-book").forEach(button => {
-    button.addEventListener("click", function () {
-      const selectedTour = this.dataset.tour;
-      const tourCard = this.closest(".tour-card");
-
-      // Estrai prezzo
-      const priceText = Array.from(tourCard.querySelectorAll(".tour-details li"))
-        .find(li => li.textContent.includes("Prezzo"));
-      const price = priceText ? parseFloat(priceText.textContent.replace(/[^\d,]/g, "").replace(",", ".")) : 0;
-
-      prezzoTourCorrente = price; // aggiorna prezzo tour selezionato
-      aggiornaPrezzo();
-
-      // Se wrapper già esiste, aggiorna input
-      let wrapper = document.getElementById("tourWrapper");
-      let input;
-
-      if (!wrapper) {
-        wrapper = document.createElement("div");
-        wrapper.classList.add("form-group", "icon-input");
-        wrapper.id = "tourWrapper";
-
-        const label = document.createElement("label");
-        label.setAttribute("for", "tourSelected");
-        label.textContent = "Tour selezionato";
-
-        const icon = document.createElement("i");
-        icon.className = "fa fa-map";
-
-        input = document.createElement("input");
-        input.type = "text";
-        input.id = "tourSelected";
-        input.name = "tourSelected";
-        input.readOnly = true;
-
-        const removeBtn = document.createElement("button");
-        removeBtn.type = "button";
-        removeBtn.textContent = "✖";
-        removeBtn.className = "remove-tour-btn";
-        removeBtn.style.marginLeft = "10px";
-        removeBtn.style.background = "none";
-        removeBtn.style.border = "none";
-        removeBtn.style.fontSize = "1.2rem";
-        removeBtn.style.cursor = "pointer";
-        removeBtn.style.color = "#c62828";
-        removeBtn.onclick = function () {
-          wrapper.remove();
-          prezzoTourCorrente = 0;
-          aggiornaPrezzo();
-        };
-
-        const fieldWrapper = document.createElement("div");
-        fieldWrapper.style.display = "flex";
-        fieldWrapper.style.alignItems = "center";
-        fieldWrapper.appendChild(icon);
-        fieldWrapper.appendChild(input);
-        fieldWrapper.appendChild(removeBtn);
-
-        wrapper.appendChild(label);
-        wrapper.appendChild(fieldWrapper);
-
-        const notesField = document.getElementById("notes");
-        notesField.closest(".form-group").before(wrapper);
-      } else {
-        input = wrapper.querySelector("input");
-      }
-
-      input.value = selectedTour;
-      wrapper.classList.add("animate-added");
-      wrapper.scrollIntoView({ behavior: "smooth", block: "center" });
-      setTimeout(() => wrapper.classList.remove("animate-added"), 800);
-
-      mostraMessaggioTemporaneo("✅ Tour aggiunto alla prenotazione", "success");
-    });
-  });
-
-  function mostraMessaggioTemporaneo(testo, tipo = "info") {
-    let msg = document.createElement("div");
-    msg.className = `toast-message ${tipo}`;
-    msg.textContent = testo;
-    document.body.appendChild(msg);
-    setTimeout(() => msg.classList.add("show"), 50);
-    setTimeout(() => {
-      msg.classList.remove("show");
-      setTimeout(() => msg.remove(), 300);
-    }, 2000);
-  }
-
-  function aggiornaPrezzo(tourPrezzo = 0) {
-    const bikeType = document.getElementById("bikeType").value;
-    const quantity = parseInt(document.getElementById("quantity").value || 1);
-    const prezzi = { "MTB": 20, "E-Bike": 42, "Bici da Corsa": 30 };
-
-    const noleggio = prezzi[bikeType] || 0;
-    const totale = (noleggio * quantity) + tourPrezzo;
-
-    document.getElementById("totalAmount").textContent = totale.toFixed(2);
-    document.getElementById("totalHidden").value = totale.toFixed(2);
-    const paypalAmount = document.getElementById("paypalAmount");
-    if (paypalAmount) paypalAmount.value = totale.toFixed(2);
-  }
-</script>
-
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll(".bike-select").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const selectedBike = btn.dataset.bike;
-        const selectElement = document.getElementById("bikeType");
-
-        if (selectElement) {
-          selectElement.value = selectedBike;
-          selectElement.dispatchEvent(new Event('change')); // aggiorna prezzo se necessario
-        }
-
-        setTimeout(() => {
-          const form = document.getElementById("noleggioForm");
-          if (form) {
-            form.scrollIntoView({ behavior: "smooth", block: "start" });
-          }
-        }, 100); // attende che la navigazione hash sia completa
-      });
-    });
-  });
-</script>
 
 <script>
   const toggle = document.getElementById("chatToggle");
@@ -782,9 +611,8 @@ document.addEventListener("DOMContentLoaded", () => {
   if (footer) chatFooterObserver.observe(footer);
 });
 </script>
-</script>
 
-  <script>
+<script>
     async function loadWeather() {
       try {
         // Chiama direttamente il tuo worker, senza query string
@@ -808,8 +636,24 @@ document.addEventListener("DOMContentLoaded", () => {
     document.addEventListener("DOMContentLoaded", loadWeather);
   </script>
 
+    <!-- ✅ just a test against bot...) -->
+  <script>
+    const phone = "+393313453207";
 
+    const callBtn = document.createElement("a");
+    callBtn.href = `tel:${phone}`;
+    callBtn.className = "btn-primary";
+    callBtn.innerHTML = `<i class="fas fa-phone"></i> Chiama`;
 
+    const waBtn = document.createElement("a");
+    waBtn.href = `https://wa.me/${phone.replace("+", "")}`;
+    waBtn.target = "_blank";
+    waBtn.className = "btn-primary";
+    waBtn.innerHTML = `<i class="fab fa-whatsapp"></i> Chatta su WhatsApp`;
+
+    document.getElementById("phoneLink").appendChild(callBtn);
+    document.getElementById("whatsappLink").appendChild(waBtn);
+  </script>
 
 </body>
 </html>
