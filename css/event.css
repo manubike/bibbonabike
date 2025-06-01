@@ -253,7 +253,10 @@
     top: auto;
     transform: translateY(100%);
     transition: transform 0.35s ease;
-    touch-action: none;
+    touch-action: auto;
+    overflow-y: auto; /* ✅  scroll verticale */
+    max-height: 90vh; /* ✅  contenuto */
+  }
   }
 
   .drawer.visible {
