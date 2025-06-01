@@ -833,3 +833,36 @@
     visibility: hidden;
   }
 
+.hero-mountain-divider {
+  position: relative;
+  width: 100%;
+  line-height: 0;
+  margin-top: -2px; /* elimina gap */
+  z-index: 2;
+}
+
+.hero-mountain-divider svg {
+  display: block;
+  width: 100%;
+  height: 120px;
+}
+
+.hero-mountain-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 120px;
+  z-index: 2;
+  line-height: 0;
+  pointer-events: none;
+}
+
+.hero-mountain-overlay svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.hero-mountain-overlay path {
+  filter: drop-shadow(0 -2px 5px rgba(0, 0, 0, 0.15));
+}

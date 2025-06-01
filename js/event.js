@@ -30,13 +30,11 @@ document.addEventListener("DOMContentLoaded", () => {
     overlay.classList.add("hidden");
   };
 
-  // Evento click su overlay
+  // Click su overlay o chiusura
   overlay.addEventListener("click", closeDrawer);
-
-  // Evento click su X
   closeBtn.addEventListener("click", closeDrawer);
 
-  // Swipe verso il basso per chiudere su mobile
+  // Swipe per chiusura mobile
   let startY = null;
   drawer.addEventListener("touchstart", e => {
     if (e.touches.length === 1) startY = e.touches[0].clientY;
@@ -54,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
     startY = null;
   });
 
-  // Fetch JSON eventi
+  // Fetch eventi
   fetch("js/eventi.json")
     .then(res => res.json())
     .then(eventi => {
@@ -62,7 +60,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const card = document.createElement("div");
         card.className = "evento-card";
 
-        // HTML interno
         card.innerHTML = `
           <div class="evento-inner">
             <div class="evento-tag evento-${ev.type}">${ev.type.toUpperCase()}</div>
@@ -73,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
               <p>${ev.description}</p>
               <div class="buttons">
                 <a href="#noleggio" class="btn-primary scroll-btn tour-book" data-tour="${ev.title}">Prenota</a>
-                <a href="#" class="info-btn">Info</a>
+                <a href="#" class="info-btn"><i class="fas fa-info-circle"></i> Info</a>
               </div>
             </div>
           </div>
@@ -82,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
         slider.appendChild(card);
         observer.observe(card);
 
-        // Tilt solo su desktop
+        // Effetto tilt su desktop
         if (window.innerWidth > 768) {
           const inner = card.querySelector(".evento-inner");
           card.addEventListener("mousemove", e => {
@@ -102,7 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
           });
         }
 
-        // Apertura pannello con dati
+        // Mostra drawer
         const infoBtn = card.querySelector(".info-btn");
         infoBtn.addEventListener("click", e => {
           e.preventDefault();
@@ -114,9 +111,14 @@ document.addEventListener("DOMContentLoaded", () => {
           document.getElementById("drawerPrice").textContent = ev.price || "–";
           document.getElementById("drawerDescription").textContent = ev.descriptionFull || ev.description;
 
-          document.getElementById("drawerBook").href = "#noleggio";
-          document.getElementById("drawerWhatsApp").href = `https://wa.me/393313453207?text=${encodeURIComponent(ev.whatsapp)}`;
-          document.getElementById("drawerEmail").href = `mailto:${ev.email || "info@bibbonabike.com"}?subject=Info evento: ${encodeURIComponent(ev.title)}`;
+          const drawerBook = document.getElementById("drawerBook");
+          drawerBook.href = "#noleggio";
+          drawerBook.addEventListener("click", closeDrawer); // chiude su click
+
+          document.getElementById("drawerWhatsApp").href =
+            `https://wa.me/393313453207?text=${encodeURIComponent(ev.whatsapp)}`;
+          document.getElementById("drawerEmail").href =
+            `mailto:${ev.email || "info@bibbonabike.com"}?subject=Info evento: ${encodeURIComponent(ev.title)}`;
 
           openDrawer();
         });
