@@ -259,6 +259,7 @@
       </div>
     </section>
     <!-- Drawer per i dettagli dell'evento -->
+    <div id="drawerOverlay" class="drawer-overlay hidden"></div>
     <div id="eventoDrawer" class="drawer hidden">
       <div class="drawer-content">
         <button class="drawer-close">&times;</button>
@@ -270,7 +271,8 @@
         <p id="drawerDescription"></p>
         <div class="drawer-buttons">
           <a id="drawerBook" href="#noleggio" class="btn-primary">📩 Prenota</a>
-          <a id="drawerWhatsApp" target="_blank" class="btn-primary">💬 WhatsApp</a>
+          <a id="drawerWhatsApp" target="_blank" class="btn-primary"><i class="fab fa-whatsapp"></i> Chatta su WhatsApp</a>
+          <a id="drawerCall" href="tel:+393313453207" class="btn-primary"><i class="fas fa-phone"></i> Chiama</a>
           <a id="drawerEmail" class="btn-primary">📧 Email</a>
         </div>
       </div>
@@ -329,7 +331,6 @@
               <option value="5">5 giorni</option>
               <option value="6">6 giorni</option>
               <option value="7">7 giorni</option>
-              <option value="8">Oltre 7 giorni</option>
             </select>
           </div>
 
