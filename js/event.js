@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }, { threshold: 0.3 });
 
-  // Apertura drawer + overlay
+  // Apertura drawer
   const openDrawer = () => {
     drawer.classList.remove("hidden");
     drawer.classList.add("visible");
@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     overlay.classList.add("visible");
   };
 
-  // Chiusura drawer + overlay
+  // Chiusura drawer
   const closeDrawer = () => {
     drawer.classList.remove("visible");
     drawer.classList.add("hidden");
@@ -30,29 +30,36 @@ document.addEventListener("DOMContentLoaded", () => {
     overlay.classList.add("hidden");
   };
 
-  // Click su overlay o chiusura
+  // Click su overlay o sulla X
   overlay.addEventListener("click", closeDrawer);
   closeBtn.addEventListener("click", closeDrawer);
 
-  // Swipe per chiusura mobile
+  // ➤ SWIPE SU MOBILE: chiude solo se scrollTop === 0
   let startY = null;
+
   drawer.addEventListener("touchstart", e => {
     if (e.touches.length === 1) startY = e.touches[0].clientY;
   });
+
   drawer.addEventListener("touchmove", e => {
     if (!startY) return;
+
     const currentY = e.touches[0].clientY;
     const diffY = currentY - startY;
-    if (diffY > 100) {
+
+    // Solo se è scrollato in cima
+    if (diffY > 100 && drawer.scrollTop === 0) {
+      e.preventDefault(); // evita il rimbalzo
       closeDrawer();
       startY = null;
     }
   });
+
   drawer.addEventListener("touchend", () => {
     startY = null;
   });
 
-  // Fetch eventi
+  // Fetch dati eventi
   fetch("js/eventi.json")
     .then(res => res.json())
     .then(eventi => {
@@ -79,9 +86,10 @@ document.addEventListener("DOMContentLoaded", () => {
         slider.appendChild(card);
         observer.observe(card);
 
-        // Effetto tilt su desktop
+        // Effetto Tilt su desktop
         if (window.innerWidth > 768) {
           const inner = card.querySelector(".evento-inner");
+
           card.addEventListener("mousemove", e => {
             const rect = card.getBoundingClientRect();
             const x = e.clientX - rect.left;
@@ -90,16 +98,18 @@ document.addEventListener("DOMContentLoaded", () => {
             const centerY = rect.height / 2;
             const rotateX = ((y - centerY) / centerY) * 10;
             const rotateY = ((x - centerX) / centerX) * -10;
+
             inner.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
             inner.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.15), transparent 80%)`;
           });
+
           card.addEventListener("mouseleave", () => {
             inner.style.transform = "rotateX(0deg) rotateY(0deg)";
             inner.style.background = "none";
           });
         }
 
-        // Mostra drawer
+        // Apertura drawer
         const infoBtn = card.querySelector(".info-btn");
         infoBtn.addEventListener("click", e => {
           e.preventDefault();
@@ -113,10 +123,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
           const drawerBook = document.getElementById("drawerBook");
           drawerBook.href = "#noleggio";
-          drawerBook.addEventListener("click", closeDrawer); // chiude su click
+          drawerBook.addEventListener("click", closeDrawer);
 
           document.getElementById("drawerWhatsApp").href =
             `https://wa.me/393313453207?text=${encodeURIComponent(ev.whatsapp)}`;
+
           document.getElementById("drawerEmail").href =
             `mailto:${ev.email || "info@bibbonabike.com"}?subject=Info evento: ${encodeURIComponent(ev.title)}`;
 
