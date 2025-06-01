@@ -1,29 +1,39 @@
 [
   {
-    "title": "Magona Bike & Kidz!",
-    "date": "Domenica 1 Giugno",
-    "time": "ore 09:00",
-    "description": "Escursione guidata sotto le stelle tra i sentieri della pineta. Luci incluse!",
-    "image": "img/event2.png",
-    "type": "evento",
-    "whatsapp": "Vorrei prenotare il tour notturno"
+    "title": "Bibbona Bike & Kidz!",
+    "date": "Sabato 15 Giugno",
+    "time": "ore 10:00",
+    "description": "Una giornata in pineta per bambini 8–12 anni: guida MTB, divertimento e natura!",
+    "descriptionFull": "Bibbona Bike & Kidz è un evento pensato per bambini dagli 8 ai 12 anni che vogliono avvicinarsi al mondo della mountain bike. Insieme scopriremo la pineta di Marina di Bibbona con percorsi semplici, tecniche di guida fondamentali e momenti di gioco. Il tutto si svolge in sicurezza, accompagnati da guide esperte. Merenda e assicurazione sono inclusi nel prezzo.\n\n📍 Ritrovo: Magona Bike Garage, ore 09:45\n🚴‍♂️ Inizio attività: ore 10:00\n🍪 Merenda a metà mattinata\n🎒 Portare: casco (obbligatorio), borraccia, abbigliamento comodo",
+    "price": "15 €",
+    "image": "img/event3.jpg",
+    "type": "corso",
+    "whatsapp": "Vorrei iscrivere mio/a figlio/a all'evento Bibbona Bike & Kidz del 15 Giugno",
+    "email": "vitiellomanuel1985@gmail.com"
   },
   {
     "title": "Corso Meccanica Base",
     "date": "Sabato 8 Giugno",
     "time": "ore 10:00",
     "description": "Riparazioni rapide, regolazione freni, sostituzione catena con i nostri meccanici esperti.",
+    "descriptionFull": "Partecipa al Corso di Meccanica Base e impara le competenze fondamentali per gestire in autonomia la manutenzione della tua bici. Durante il corso affronteremo:\n\n🔧 Sostituzione camera d’aria e copertoni\n🛠️ Regolazione freni V-Brake e a disco\n⛓️ Pulizia e sostituzione della catena\n⚙️ Controlli di sicurezza e attrezzatura base\n\nNon è richiesta esperienza. Il corso è pensato per appassionati e ciclisti di ogni livello. Materiali didattici e postazione attrezzata inclusi.",
+    "price": "20 €",
     "image": "img/logonbike.png",
     "type": "corso",
-    "whatsapp": "Vorrei iscrivermi al corso meccanica"
+    "whatsapp": "Vorrei iscrivermi al Corso Meccanica Base dell'8 Giugno",
+    "email": "info@bibbonabike.com"
   },
   {
     "title": "Summer MTB Camp Bibbona",
     "date": "dal 10/06 ogni Lun, Mar, Gio",
     "time": "13:00 – 15:30",
     "description": "Impara la guida in MTB, manutenzione bici, orientamento e divertimento tra i boschi di Bibbona!",
+    "descriptionFull": "Il Summer MTB Camp è un programma settimanale pensato per bambini e ragazzi dai 9 ai 14 anni. Ogni lezione include:\n\n🚴 Tecniche di guida MTB su sterrato e sentieri\n🔍 Attività di orientamento e giochi a squadre\n🛠️ Lezioni base di manutenzione bici\n🌳 Immersione nella natura con escursioni nei boschi di Bibbona\n\n📅 Quando: ogni Lunedì, Martedì e Giovedì dal 10 Giugno\n⏰ Orario: 13:00 – 15:30\n📍 Dove: Magona Bike Garage\n\nÈ possibile iscriversi anche per singole giornate. Casco obbligatorio.",
+    "price": "40 € a giornata / 100 € a settimana",
     "image": "img/summer-bike-camp.png",
     "type": "evento",
-    "whatsapp": "Vorrei iscrivermi al Summer Bike Camp"
+    "whatsapp": "Vorrei iscrivermi al Summer MTB Camp a partire dal 10 Giugno",
+    "email": "info@bibbonabike.com"
   }
 ]
+

@@ -14,18 +14,16 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="evento-tag evento-${ev.type}">${ev.type.toUpperCase()}</div>
             <img src="${ev.image}" alt="${ev.title}" />
             <div class="evento-info">
-            <h3>${ev.title}</h3>
-            <p><strong>Quando:</strong> ${ev.date} <br><strong>Orario:</strong> ${ev.time}</p>
-            <p>${ev.description}</p>
-            <div class="buttons">
+              <h3>${ev.title}</h3>
+              <p><strong>Quando:</strong> ${ev.date} <br><strong>Orario:</strong> ${ev.time}</p>
+              <p>${ev.description}</p>
+              <div class="buttons">
                 <a href="#noleggio" class="btn-primary scroll-btn tour-book" data-tour="${ev.title}">Prenota</a>
-                <a href="#noleggio">Info</a>
-            </div>
+                <a href="#" class="info-btn">Info</a>
+              </div>
             </div>
         </div>
         `;
-
-
 
         slider.appendChild(card);
         observer.observe(card);
@@ -38,7 +36,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const rect = card.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
-
             const centerX = rect.width / 2;
             const centerY = rect.height / 2;
 
@@ -46,19 +43,48 @@ document.addEventListener("DOMContentLoaded", () => {
             const rotateY = ((x - centerX) / centerX) * -10;
 
             inner.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-
             inner.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.15), transparent 80%)`;
           });
 
           card.addEventListener("mouseleave", () => {
-            const inner = card.querySelector(".evento-inner");
             inner.style.transform = "rotateX(0deg) rotateY(0deg)";
             inner.style.background = "none";
           });
         }
+
+        // ✅ Pannello laterale Info
+        const infoBtn = card.querySelector(".info-btn");
+        infoBtn.addEventListener("click", e => {
+          e.preventDefault();
+
+          const drawer = document.getElementById("eventoDrawer");
+          const evTitle = ev.title;
+
+          document.getElementById("drawerImage").src = ev.image;
+          document.getElementById("drawerTitle").textContent = ev.title;
+          document.getElementById("drawerDate").textContent = ev.date;
+          document.getElementById("drawerTime").textContent = ev.time;
+          document.getElementById("drawerPrice").textContent = ev.price || "–";
+          document.getElementById("drawerDescription").textContent = ev.descriptionFull || ev.description;
+
+          document.getElementById("drawerBook").href = "#noleggio";
+          document.getElementById("drawerWhatsApp").href = `https://wa.me/393313453207?text=${encodeURIComponent(ev.whatsapp)}`;
+          document.getElementById("drawerEmail").href = `mailto:${ev.email || "info@bibbonabike.com"}?subject=Info evento: ${encodeURIComponent(ev.title)}`;
+
+          drawer.classList.remove("hidden");
+          drawer.classList.add("visible");
+        });
+      });
+
+      // ✅ Chiusura drawer
+      const closeBtn = document.querySelector(".drawer-close");
+      const drawer = document.getElementById("eventoDrawer");
+
+      closeBtn.addEventListener("click", () => {
+        drawer.classList.remove("visible");
+        drawer.classList.add("hidden");
       });
     });
-
 
   // Observer per animazione su scroll
   const observer = new IntersectionObserver(entries => {
