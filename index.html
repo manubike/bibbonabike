@@ -198,73 +198,85 @@
       <div class="tour-overlay">
         <h2><i class="fas fa-route"></i> Tour Guidati</h2>
         <div class="tour-cards">
-          
-          <!-- CARD 1 -->
-          <div class="card-border-wrapper">
-            <div class="tour-card glow">
-              <div class="tour-thumb" style="background-image: url('img/tour1.jpg');"></div>
-              <h3>Tour Pineta & Costa</h3>
-              <p>Sentieri nella pineta e lungo la costa tra Bibbona e Marina.</p>
-              <ul class="tour-details">
-                <li><strong>Tipo:</strong> Tour Informativo</li>
-                <li><strong>Prezzo:</strong> 40 €</li>
-                <li><strong>Durata:</strong> 4h</li>
-                <li><strong>Distanza:</strong> 31 km</li>
-                <li><strong>Dislivello:</strong> 643 m</li>
-                <li><strong>Difficoltà:</strong> <span class="difficulty-dot" style="background-color: green;"></span> Facile</li>
-              </ul>
-              <div class="buttons">
-              <a href="#noleggio" class="btn-primary scroll-btn tour-book" data-tour-id="tour1" data-tour-name="Tour Pineta & Costa">Prenota</a>
-              <a href="#" class="info-btn"><i class="fas fa-info-circle"></i> Info</a>
-            </div>
-            </div>
-          </div>
-          
-          <!-- CARD 2 -->
-          <div class="card-border-wrapper">
-            <div class="tour-card glow">
-              <div class="tour-thumb" style="background-image: url('img/tour2.jpg');"></div>
-              <h3>Tour Collina & Vigneti</h3>
-              <p>Strade bianche tra le vigne di Bibbona e le colline toscane.</p>
-              <ul class="tour-details">
-                <li><strong>Tipo:</strong> Tour Informativo</li>
-                <li><strong>Prezzo:</strong> 40 €</li>
-                <li><strong>Durata:</strong> 4h</li>
-                <li><strong>Distanza:</strong> 31 km</li>
-                <li><strong>Dislivello:</strong> 643 m</li>
-                <li><strong>Difficoltà:</strong> <span class="difficulty-dot" style="background-color: green;"></span> Facile</li>
-              </ul>
-              <div class="buttons">
-                <a href="#noleggio" class="btn-primary scroll-btn tour-book" data-tour-id="tour2" data-tour-name="Tour Collina & Vigneti">Prenota</a>
-                <a href="#" class="info-btn"><i class="fas fa-info-circle"></i> Info</a>
-              </div>
-            </div>
-          </div>
-
-          <!-- CARD 3 -->
-          <div class="card-border-wrapper">
-          <div class="tour-card glow">
-            <div class="tour-thumb" style="background-image: url('img/tour3.jpg');"></div>
-            <h3>Tour Colline Toscane</h3>
-            <p>Panorami mozzafiato tra vigne, oliveti e borghi antichi.</p>
-            <ul class="tour-details">
-              <li><strong>Tipo:</strong> Tour Informativo</li>
-              <li><strong>Prezzo:</strong> 35 €</li>
-              <li><strong>Durata:</strong> 3h</li>
-              <li><strong>Distanza:</strong> 21 km</li>
-              <li><strong>Dislivello:</strong> 643 m</li>
-              <li><strong>Difficoltà:</strong> <span class="difficulty-dot" style="background-color: green;"></span> Facile</li>
-            </ul>
-            <div class="buttons">
-            <a href="#noleggio" class="btn-primary scroll-btn tour-book" data-tour-id="tour3" data-tour-name="Tour Colline Toscane">Prenota</a>
-            <a href="#" class="info-btn"><i class="fas fa-info-circle"></i> Info</a>
-          </div>
-          </div>
-          </div>
+          <!-- Le card verranno generate dinamicamente da JS -->
         </div>
+
       </div>
     </section>
-    
+    <!-- === TOUR DRAWER OVERLAY === -->
+    <div id="tourDrawerOverlay" class="drawer-overlay hidden"></div>
+
+    <!-- === TOUR DRAWER === -->
+    <div id="tourDrawer" class="drawer hidden">
+      <button class="drawer-close" id="tourDrawerClose">&times;</button>
+      <div class="drawer-content">
+        <img id="tourDrawerImage" src="img/placeholder.jpg" alt="Immagine tour" />
+        <h3 id="tourDrawerTitle">Titolo Tour</h3>
+        <div class="durata-wrapper">
+          <strong>Durata:</strong>
+          <span id="tourDrawerDuration">0h</span>
+          <div class="durata-bar">
+            <div id="durataBarFill" class="durata-fill"></div>
+          </div>
+        </div>
+        <div class="distanza-wrapper">
+          <strong>Distanza:</strong>
+          <span id="tourDrawerDistance">31 km</span>
+          <div class="map-icon-wrapper">
+            <!-- Sentiero con segnapunto animato -->
+            <svg class="sentiero-svg" viewBox="0 0 100 40" width="100" height="40">
+              <!-- Percorso -->
+              <path id="sentieroPath" d="M0 35 Q25 5, 50 25 T100 15" stroke="#888" fill="none" stroke-width="2" stroke-dasharray="4 2"/>
+              
+              <!-- Segnapunto -->
+              <circle r="3" fill="#ff5722">
+                <animateMotion dur="3s" repeatCount="indefinite">
+                  <mpath href="#sentieroPath" />
+                </animateMotion>
+              </circle>
+            </svg>
+          </div>
+        </div>
+
+
+        <div class="drawer-row">
+          <strong>Dislivello:</strong>
+          <span id="tourDrawerElevation">0 m</span>
+          <div class="mini-elevation">
+            <svg viewBox="0 0 100 30" preserveAspectRatio="none">
+              <polyline id="elevationPath"
+                points="0,30 10,25 20,10 30,20 40,8 50,18 60,6 70,15 80,5 90,12 100,6"
+                fill="none"
+                stroke="#4caf50"
+                stroke-width="2"
+              />
+            </svg>
+          </div>
+        </div>
+       <p><strong>Prezzo:</strong> <span id="tourDrawerPrice"></span></p>
+        <!-- ✅ Barra di difficoltà -->
+        <div class="drawer-difficulty">
+          <span><strong>Difficoltà:</strong> <span id="difficultyLabel">–</span></span>
+          <div class="difficulty-bar">
+            <div id="difficultyLevel" class="difficulty-fill"></div>
+          </div>
+        </div>
+
+        <p id="tourDrawerDescription">Descrizione dettagliata del tour...</p>
+
+        <div class="drawer-buttons">
+          <a href="#noleggio" class="btn-primary scroll-btn" id="tourDrawerBook">Prenota</a>
+          <a href="#" class="btn-primary" id="tourDrawerWhatsApp" target="_blank">
+            <i class="fab fa-whatsapp"></i> WhatsApp
+          </a>
+          <a href="#" class="btn-primary" id="tourDrawerEmail">
+            <i class="fas fa-envelope"></i> Email
+          </a>
+        </div>
+      </div>
+    </div>
+
+
     <!-- SEZIONE EVENTI / CORSI via json file event.json -->
     <section class="eventi-slider-section" id="eventi">
       <div class="container">
@@ -276,7 +288,7 @@
     <!-- Drawer per i dettagli dell'evento -->
     <div id="drawerOverlay" class="drawer-overlay hidden"></div>
     <div id="eventoDrawer" class="drawer hidden">
-      <button class="drawer-close">&times;</button>
+      <button id="eventoDrawerClose" class="drawer-close">×</button>
       <div class="drawer-content">
         <img id="drawerImage" src="" alt="Evento">
         <h3 id="drawerTitle"></h3>
@@ -285,10 +297,10 @@
         <p><strong>💶 Prezzo:</strong> <span id="drawerPrice"></span></p>
         <p id="drawerDescription"></p>
         <div class="drawer-buttons">
-          <a id="drawerBook" href="#noleggio" class="btn-primary">📩 Prenota</a>
+          <a id="drawerBook" href="#noleggio" class="btn-primary">Prenota</a>
           <a id="drawerWhatsApp" target="_blank" class="btn-primary"><i class="fab fa-whatsapp"></i> Chatta su WhatsApp</a>
           <a id="drawerCall" href="tel:+393313453207" class="btn-primary"><i class="fas fa-phone"></i> Chiama</a>
-          <a id="drawerEmail" class="btn-primary">📧 Email</a>
+          <a id="drawerEmail" class="btn-primary"><i class="fas fa-envelope"></i> Email</a>
         </div>
       </div>
     </div>
@@ -475,6 +487,7 @@
   <script src="js/main.js"></script>
   <script src="js/nav.js"></script>
   <script src="js/slogan.js"></script>
+  <script src="js/tour.js"></script>
   <script src="js/event.js"></script>
   <script src="js/booking.js"></script>
 

@@ -1,0 +1,47 @@
+[
+  {
+    "id": "tour1",
+    "title": "Tour Pineta & Costa",
+    "description": "Sentieri nella pineta e lungo la costa tra Bibbona e Marina.",
+    "descriptionFull": "Tour guidato immerso nella natura tra pineta e costa. Ideale per famiglie e principianti.",
+    "image": "img/tour1.jpg",
+    "type": "Tour Informativo",
+    "price": "40 €",
+    "duration": "4h",
+    "distance": "31 km",
+    "elevation": "643 m",
+    "difficulty": "Facile",
+    "whatsapp": "Vorrei prenotare il Tour Pineta & Costa",
+    "email": "vitiellomanuel1985@gmail.com"
+  },
+  {
+    "id": "tour2",
+    "title": "Tour Collina & Vigneti",
+    "description": "Strade bianche tra le vigne di Bibbona e le colline toscane.",
+    "descriptionFull": "Un'esperienza tra i profumi delle vigne e i panorami collinari, adatta a tutti.",
+    "image": "img/tour2.jpg",
+    "type": "Tour Informativo",
+    "price": "40 €",
+    "duration": "3h",
+    "distance": "31 km",
+    "elevation": "643 m",
+    "difficulty": "Facile",
+    "whatsapp": "Vorrei prenotare il Tour Collina & Vigneti",
+    "email": "vitiellomanuel1985@gmail.com"
+  },
+  {
+    "id": "tour3",
+    "title": "Tour Colline Toscane",
+    "description": "Panorami mozzafiato tra vigne, oliveti e borghi antichi.",
+    "descriptionFull": "Esplora le vere colline toscane con questo tour panoramico e rilassante.",
+    "image": "img/tour3.jpg",
+    "type": "Tour Informativo",
+    "price": "35 €",
+    "duration": "5h",
+    "distance": "21 km",
+    "elevation": "643 m",
+    "difficulty": "Medio",
+    "whatsapp": "Vorrei prenotare il Tour Colline Toscane",
+    "email": "vitiellomanuel1985@gmail.com"
+  }
+]

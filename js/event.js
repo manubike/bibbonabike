@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const slider = document.querySelector(".eventi-slider");
   const drawer = document.getElementById("eventoDrawer");
   const overlay = document.getElementById("drawerOverlay");
-  const closeBtn = document.querySelector(".drawer-close");
+  const closeBtn = document.getElementById("eventoDrawerClose");
 
   // Observer per animazione su scroll
   const observer = new IntersectionObserver(entries => {
