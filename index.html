@@ -114,7 +114,7 @@
         </div>
     </section>
   <!-- Sezione servizi -->  
-  <main class="container">
+  <main class="container-full">
     <section class="services">
       <h2 class="section-title">I nostri servizi</h2>
       <div class="grid">
@@ -279,7 +279,7 @@
 
     <!-- SEZIONE EVENTI / CORSI via json file event.json -->
     <section class="eventi-slider-section" id="eventi">
-      <div class="container">
+      <div class="container-full">
         <h2 class="section-title"><i class="fas fa-calendar-alt"></i> Corsi & Eventi</h2>
 
           <div class="eventi-slider"></div>
@@ -307,47 +307,46 @@
 
     <!-- FORM Noleggio / prenotazione -->
     <section class="form-section" id="noleggio"> 
-      <div class="container">
+      <div class="container-full">
         <h2 class="section-title"><i class="fas fa-calendar-check"></i> Prenota ora il tuo noleggio</h2>
-        
+
         <form id="noleggioForm" class="form-card">
           <div class="form-group icon-input">
-            <label for="name">Nome e Cognome</label>
+            <label for="name">Nome e Cognome *</label>
             <i class="fa fa-user"></i>
             <input type="text" id="name" name="name" autocomplete="name" required />
           </div>
 
           <div class="form-group icon-input">
-            <label for="email">Email</label>
+            <label for="email">Email *</label>
             <i class="fa fa-envelope"></i>
             <input type="email" id="email" name="email" autocomplete="email" required />
           </div>
 
           <div class="form-group icon-input">
-            <label for="bikeType">Tipo di bici</label>
+            <label for="bikeType">Tipo di bici *</label>
             <i class="fa fa-bicycle"></i>
             <select id="bikeType" name="bikeType" required>
-              <option value="">Seleziona</option>
-              <option value="MTB">MTB</option>
+              <option value="">Seleziona</option> <option value="MTB">MTB</option>
               <option value="FULL">FULL</option>
               <option value="FRONT">FRONT</option>
-            </select>
+              </select>
           </div>
 
           <div class="form-group icon-input">
-            <label for="quantity">Quantità</label>
+            <label for="quantity">Quantità *</label>
             <i class="fa fa-plus"></i>
             <input type="number" id="quantity" name="quantity" value="1" min="1" required />
           </div>
 
           <div class="form-group icon-input">
-            <label for="date">Data</label>
+            <label for="date">Data *</label>
             <i class="fa fa-calendar-alt"></i>
-            <input type="date" id="date" name="date" required="">
+            <input type="date" id="date" name="date" autocomplete="bday" required>
           </div>
 
           <div class="form-group icon-input">
-            <label for="duration">Durata</label>
+            <label for="duration">Durata *</label>
             <i class="fa fa-clock"></i>
             <select id="duration" name="duration" required>
               <option value="0.5">½ giornata</option>
@@ -361,17 +360,22 @@
             </select>
           </div>
 
-
-          <!-- 🔥 Campo tour dinamico, inizialmente nascosto -->
-        <div class="form-group" id="tourField" style="display: none;">
-          <label for="tourSelected">Tour selezionato</label>
-          <div class="tour-input-wrapper">
-            <i class="fa fa-map-marked-alt"></i>
-            <input type="text" id="tourSelected" name="tourSelected" readonly />
-            <!-- ✖ pulsante JS verrà inserito dallo script -->
+          <div class="form-group tour-field-container" id="tourField" style="display: none;">
+            <label for="tourSelected">Tour selezionato</label>
+            <div class="tour-input-wrapper">
+              <i class="fa fa-map-marked-alt"></i>
+              <input type="text" id="tourSelected" name="tourSelected" readonly />
+              </div>
           </div>
-        </div>
+          <div class="form-group icon-input" id="eventField" style="display: none;">
+              <label for="eventSelected">Evento Selezionato</label>
+              <i class="fas fa-calendar-check" aria-hidden="true"></i>
+              <input type="text" id="eventSelected" name="eventSelected" readonly />
+              <button type="button" id="removeEventBtn" title="Rimuovi Evento" style="margin-left: 10px; background: none; border: none; font-size: 1.3rem; cursor: pointer; color: #dc3545;">✖</button>
+          </div>
 
+          <input type="hidden" id="eventIdHidden" name="eventIdHidden" value="" />
+          
           <div class="form-group icon-input">
             <label for="notes">Note (altezza, attrezzature richieste)</label>
             <i class="fa fa-pen"></i>
@@ -484,7 +488,6 @@
     if (footer) observer.observe(footer);
   });
 </script>
-  <script src="js/main.js"></script>
   <script src="js/nav.js"></script>
   <script src="js/slogan.js"></script>
   <script src="js/tour.js"></script>

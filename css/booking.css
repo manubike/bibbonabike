@@ -146,7 +146,7 @@ textarea {
   background: none;
   border: none;
   font-size: 1.3rem;
-  color: #c62828;
+  color: #dc3545;
   cursor: pointer;
   padding: 0;
   margin-left: 5px;
@@ -178,3 +178,133 @@ textarea {
   }
 }
 
+  /* Esempio di CSS per evidenziare i campi mancanti */
+  .form-group.error input,
+  .form-group.error select,
+  .form-group.error textarea {
+      border-color: #d32f2f !important; /* Bordo rosso */
+      box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.2); /* Ombra rossa leggera */
+  }
+
+  .form-group.error label {
+      color: #d32f2f; /* Etichetta rossa */
+  }
+  /* ======= CAMPO EVENTO SELEZIONATO ======= */
+/* Etichetta */
+#eventField label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.4rem;
+  color: #2e7d32;
+}
+
+/* Wrapper per input + bottone */
+#eventField {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 8px;
+  background-color: #f9fff9;
+  border: 2px solid #4caf50;
+  padding: 10px 12px;
+  border-radius: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  flex-wrap: wrap;
+}
+
+/* Icona */
+#eventField i {
+  color: #2e7d32;
+  margin-right: 6px;
+  font-size: 1rem;
+}
+
+/* Input testo evento */
+#eventSelected {
+  flex: 1 1 auto;
+  border: none;
+  background: transparent;
+  font-weight: bold;
+  font-size: 1rem;
+  color: #2e7d32;
+  min-width: 0;
+  white-space: normal;
+  word-break: break-word;
+}
+.event-input-wrapper {
+  display: none; /* Per nasconderlo di default */
+  align-items: center;
+  gap: 8px;
+  background-color: #f9fff9;
+  border: 2px solid #4caf50;
+  padding: 10px 12px;
+  border-radius: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  flex-wrap: wrap;
+}
+
+.event-input-wrapper i {
+  color: #2e7d32;
+  margin-right: 6px;
+  font-size: 1rem;
+}
+
+.event-input-wrapper input {
+  flex: 1 1 auto;
+  border: none;
+  background: transparent;
+  font-weight: bold;
+  font-size: 1rem;
+  color: #2e7d32;
+  min-width: 0;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.event-input-wrapper input:focus {
+  outline: none;
+}
+
+#eventSelected:focus {
+  outline: none;
+}
+
+/* Pulsante rimozione */
+#removeEventBtn {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  color: #dc3545;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 5px;
+}
+
+#removeEventBtn:hover {
+  color: #e53935;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  #eventField {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
+
+  #eventField label {
+    display: none;
+  }
+
+  #eventSelected {
+    width: 100%;
+    font-size: 1rem;
+    text-align: left;
+  }
+
+  #removeEventBtn {
+    align-self: flex-end;
+  }
+}

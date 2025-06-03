@@ -33,6 +33,13 @@
     padding: 0 1rem;
   }
   
+  .container-full {
+  max-width: none;
+  width: 100%;
+  padding: 0 5vw;
+  margin: 0 auto;
+  }
+
   /* HEADER */
   .site-header {
     background: linear-gradient(to right, #2e7d32, #66bb6a);
