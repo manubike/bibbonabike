@@ -308,3 +308,7 @@ textarea {
     align-self: flex-end;
   }
 }
+#paypalPlaceholder {
+  display: none;
+  margin-top: 10px;
+}

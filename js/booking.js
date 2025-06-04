@@ -65,6 +65,7 @@ async function updateLivePrice() {
     const tourInputElement = document.getElementById("tourSelected");
     const eventInputElement = document.getElementById("eventSelected"); // Nuovo: Evento selezionato
     const eventIdHiddenElement = document.getElementById("eventIdHidden"); // Nuovo: ID evento nascosto
+    const paypalPlaceholder = document.getElementById("paypalPlaceholder"); // <- QUESTA RIGA È CORRETTA
 
     // Get values, provide defaults if elements are not found or values are empty
     const bikeType = bikeTypeElement ? bikeTypeElement.value : '';
@@ -78,7 +79,11 @@ async function updateLivePrice() {
         console.warn("⚠️ Invalid bike type, duration, or quantity for price calculation.");
         document.getElementById("totalAmount").textContent = "0.00";
         document.getElementById("totalHidden").value = "0.00";
-        document.getElementById("paypalPlaceholder").innerHTML = ""; // Clear PayPal button
+        if (paypalPlaceholder) { // <- QUESTA PARTE È CORRETTA
+            paypalPlaceholder.innerHTML = ""; // Clear PayPal button
+            paypalPlaceholder.style.display = "none"; // Hide placeholder
+        }
+        window.prezzoRisposta = null; // Clear stored price response
         return;
     }
 
@@ -111,16 +116,21 @@ async function updateLivePrice() {
         if (response.ok && result.status === "success") {
             document.getElementById("totalAmount").textContent = result.totale;
             document.getElementById("totalHidden").value = result.totale;
-          // ✅ Salva la risposta con PayPal ma NON mostrarla ancora
-            window.prezzoRisposta = result;
+            window.prezzoRisposta = result; // <- AGGIUNGI O RIPRISTINA QUESTA RIGA
 
             // ❌ Non mostrare subito il bottone PayPal
-            document.getElementById("paypalPlaceholder").innerHTML = "";
-        } else {
+            if (paypalPlaceholder) { // <- AGGIUNGI QUESTO CONTROLLO E LE DUE RIGHE SOTTO
+                paypalPlaceholder.innerHTML = "";
+                paypalPlaceholder.style.display = "none";
+            }
+          } else {
             showErrorMessage(`Error calculating price: ${result.message || 'Errore sconosciuto.'}`);
             document.getElementById("totalAmount").textContent = "0.00";
             document.getElementById("totalHidden").value = "0.00";
-            document.getElementById("paypalPlaceholder").innerHTML = "";
+            if (paypalPlaceholder) { // <- AGGIUNGI QUESTO CONTROLLO E LE DUE RIGHE SOTTO
+                paypalPlaceholder.innerHTML = "";
+                paypalPlaceholder.style.display = "none";
+            }
             window.prezzoRisposta = null;
 
         }
@@ -129,9 +139,8 @@ async function updateLivePrice() {
         showErrorMessage(`Could not calculate price: ${error.message}`);
         document.getElementById("totalAmount").textContent = "0.00";
         document.getElementById("totalHidden").value = "0.00";
-        document.getElementById("paypalPlaceholder").innerHTML = "";
+        document.getElementById("paypalPlaceholder").innerHTML = ""; // Non hai il controllo if qui!
         window.prezzoRisposta = null;
-
     }
 }
 
@@ -390,21 +399,37 @@ function initializeBookingForm() {
 
             const result = await response.json();
 
-          if (response.ok && result.status === "success") {
-              responseMessage.textContent = "✅ Prenotazione inviata con successo!";
-              responseMessage.style.color = "#28a745";
+            if (response.ok && result.status === "success") {
+                responseMessage.textContent = "✅ Prenotazione inviata con successo!";
+                responseMessage.style.color = "#28a745";
 
-              // ✅ Reset campi input manualmente (non tutto il form)
-              rentalForm.querySelectorAll("input, textarea, select").forEach(el => {
-                  if (["bikeType", "duration", "quantity", "notes", "name", "email", "date"].includes(el.id)) {
-                      el.value = "";
-                  }
-              });
+                // ✅ Reset campi input manualmente (non tutto il form)
+                rentalForm.querySelectorAll("input, textarea, select").forEach(el => {
+                    if (["bikeType", "duration", "quantity", "notes", "name", "email", "date"].includes(el.id)) {
+                        el.value = "";
+                    }
+                });
 
-              // ✅ Mostra il bottone PayPal solo alla fine
-              if (window.prezzoRisposta?.paypalHtml) {
-                  document.getElementById("paypalPlaceholder").innerHTML = window.prezzoRisposta.paypalHtml;
-              }
+                // Inizia la parte da modificare/controllare attentamente
+                // 👇 START MODIFICA
+                const paypalPlaceholder = document.getElementById("paypalPlaceholder"); // Ottieni il placeholder anche qui
+                if (window.prezzoRisposta?.paypalHtml) {
+                    if (paypalPlaceholder) { // Assicurati che l'elemento esista
+                        paypalPlaceholder.innerHTML = window.prezzoRisposta.paypalHtml;
+                        paypalPlaceholder.style.display = "block"; // Assicurati che il div sia visibile (se era nascosto con CSS)
+
+                        // Aggiungi un messaggio per l'utente, invitandolo a pagare
+                        const paymentInstruction = document.createElement("p");
+                        paymentInstruction.textContent = "Per completare la prenotazione, procedi al pagamento tramite PayPal:";
+                        paymentInstruction.style.marginTop = "15px";
+                        paymentInstruction.style.marginBottom = "10px";
+                        paymentInstruction.style.color = "#333";
+                        paymentInstruction.style.fontWeight = "bold";
+                        paymentInstruction.style.textAlign = "center";
+                        paypalPlaceholder.prepend(paymentInstruction); // Inserisci prima del bottone PayPal
+                    }
+                }
+                // 👆 END MODIFICA
 
               // Reset prezzo e campi tour/evento
               document.getElementById("totalAmount").textContent = "0.00";
@@ -424,7 +449,13 @@ function initializeBookingForm() {
                 responseMessage.textContent = `❌ Error: ${errorMessage}`;
                 responseMessage.style.color = "#dc3545";
                 showErrorMessage(`Submission error: ${errorMessage}`);
-            }
+                const paypalPlaceholder = document.getElementById("paypalPlaceholder"); // Ottieni il placeholder
+                  if (paypalPlaceholder) {
+                      paypalPlaceholder.innerHTML = "";
+                      paypalPlaceholder.style.display = "none"; // Nascondi in caso di errore
+                  }
+              }
+            
         } catch (error) {
             responseMessage.textContent = "❌ Network error or server response issue.";
             responseMessage.style.color = "#dc3545";
