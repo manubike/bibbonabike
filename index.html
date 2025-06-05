@@ -413,7 +413,7 @@
         <p id="drawerDescription"></p>
         <div class="drawer-buttons">
           <a id="drawerBook" href="#noleggio" class="btn-primary">Prenota</a>
-          <a id="drawerWhatsApp" target="_blank" class="btn-primary"><i class="fab fa-whatsapp"></i> Chatta su WhatsApp</a>
+          <a id="drawerWhatsApp" target="_blank" class="btn-primary"><i class="fab fa-whatsapp"></i> Chat su WhatsApp</a>
           <a id="drawerCall" href="tel:+393313453207" class="btn-primary"><i class="fas fa-phone"></i> Chiama</a>
           <a id="drawerEmail" class="btn-primary"><i class="fas fa-envelope"></i> Email</a>
         </div>
@@ -423,7 +423,7 @@
     <!-- FORM Noleggio / prenotazione -->
     <section class="form-section" id="noleggio"> 
       <div class="container-full">
-        <h2 class="section-title"><i class="fas fa-calendar-check"></i> Prenota ora il tuo noleggio</h2>
+        <h2 class="section-title"><i class="fas fa-calendar-check"></i> Prenota ora</h2>
 
         <form id="noleggioForm" class="form-card">
           <div class="form-group icon-input">
@@ -808,7 +808,7 @@ document.addEventListener("DOMContentLoaded", () => {
     waBtn.href = `https://wa.me/${phone.replace("+", "")}`;
     waBtn.target = "_blank";
     waBtn.className = "btn-primary";
-    waBtn.innerHTML = `<i class="fab fa-whatsapp"></i> Chatta su WhatsApp`;
+    waBtn.innerHTML = `<i class="fab fa-whatsapp"></i> Chat su WhatsApp`;
 
     document.getElementById("phoneLink").appendChild(callBtn);
     document.getElementById("whatsappLink").appendChild(waBtn);

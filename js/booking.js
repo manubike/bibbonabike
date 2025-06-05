@@ -1,8 +1,6 @@
 // js/booking.js
 
 // --- Helper Functions for User Feedback ---
-
-// Show success popup message
 function showSuccessMessage(message, duration = 3000) {
     const msg = document.createElement("div");
     msg.textContent = message;
@@ -29,7 +27,6 @@ function showSuccessMessage(message, duration = 3000) {
     }, duration);
 }
 
-// Show error popup message
 function showErrorMessage(message, duration = 4000) {
     const msg = document.createElement("div");
     msg.textContent = message;
@@ -63,23 +60,21 @@ async function updateLivePrice() {
     const durationElement = document.getElementById("duration");
     const quantityElement = document.getElementById("quantity");
     const tourInputElement = document.getElementById("tourSelected");
-    const eventInputElement = document.getElementById("eventSelected"); // Nuovo: Evento selezionato
-    const eventIdHiddenElement = document.getElementById("eventIdHidden"); // Nuovo: ID evento nascosto
-    const paypalPlaceholder = document.getElementById("paypalPlaceholder"); // <- QUESTA RIGA È CORRETTA
+    const eventInputElement = document.getElementById("eventSelected");
+    const eventIdHiddenElement = document.getElementById("eventIdHidden");
+    const paypalPlaceholder = document.getElementById("paypalPlaceholder");
 
-    // Get values, provide defaults if elements are not found or values are empty
     const bikeType = bikeTypeElement ? bikeTypeElement.value : '';
     const duration = durationElement ? parseFloat(durationElement.value) : 0;
     const quantity = quantityElement ? parseInt(quantityElement.value || '1') : 1;
-    const tour = tourInputElement ? tourInputElement.value.trim() : null; // null if empty string
-    const eventId = eventIdHiddenElement ? eventIdHiddenElement.value.trim() : null; // Nuovo: ID evento
+    const tour = tourInputElement ? tourInputElement.value.trim() : null;
+    const eventId = eventIdHiddenElement ? eventIdHiddenElement.value.trim() : null;
 
-    // Validate inputs for price calculation
     if (!bikeType || isNaN(duration) || duration <= 0 || isNaN(quantity) || quantity <= 0) {
         console.warn("⚠️ Invalid bike type, duration, or quantity for price calculation.");
         document.getElementById("totalAmount").textContent = "0.00";
         document.getElementById("totalHidden").value = "0.00";
-        if (paypalPlaceholder) { // <- QUESTA PARTE È CORRETTA
+        if (paypalPlaceholder) {
             paypalPlaceholder.innerHTML = ""; // Clear PayPal button
             paypalPlaceholder.style.display = "none"; // Hide placeholder
         }
@@ -87,22 +82,19 @@ async function updateLivePrice() {
         return;
     }
 
-    // Prepare data based on whether a tour or event is selected
     const data = {
         tipo: bikeType,
         giorni: duration,
         quantita: quantity,
-
     };
 
     if (tour) {
-        data.tour = tour; // Se c'è un tour, includilo
-        data.eventoId = null; // Assicurati che l'evento non sia incluso se c'è un tour
+        data.tour = tour;
+        data.eventoId = null;
     } else if (eventId) {
-        data.eventoId = eventId; // Se c'è un evento, includilo
-        data.tour = null; // Assicurati che il tour non sia incluso se c'è un evento
+        data.eventoId = eventId;
+        data.tour = null;
     }
-
 
     try {
         const response = await fetch("https://price-calculator.zonkeynet.workers.dev/calcola", {
@@ -116,42 +108,44 @@ async function updateLivePrice() {
         if (response.ok && result.status === "success") {
             document.getElementById("totalAmount").textContent = result.totale;
             document.getElementById("totalHidden").value = result.totale;
-            window.prezzoRisposta = result; // <- AGGIUNGI O RIPRISTINA QUESTA RIGA
+            window.prezzoRisposta = result; // Mantiene la risposta del worker
 
-            // ❌ Non mostrare subito il bottone PayPal
-            if (paypalPlaceholder) { // <- AGGIUNGI QUESTO CONTROLLO E LE DUE RIGHE SOTTO
-                paypalPlaceholder.innerHTML = "";
-                paypalPlaceholder.style.display = "none";
-            }
-          } else {
+            // ❌ Rimosso: Non nascondere il bottone PayPal qui in caso di successo
+            // Questo è stato spostato alla logica di invio del form
+            // if (paypalPlaceholder) {
+            //     paypalPlaceholder.innerHTML = "";
+            //     paypalPlaceholder.style.display = "none";
+            // }
+
+        } else {
             showErrorMessage(`Error calculating price: ${result.message || 'Errore sconosciuto.'}`);
             document.getElementById("totalAmount").textContent = "0.00";
             document.getElementById("totalHidden").value = "0.00";
-            if (paypalPlaceholder) { // <- AGGIUNGI QUESTO CONTROLLO E LE DUE RIGHE SOTTO
+            if (paypalPlaceholder) {
                 paypalPlaceholder.innerHTML = "";
-                paypalPlaceholder.style.display = "none";
+                paypalPlaceholder.style.display = "none"; // Nascondi in caso di errore nel calcolo
             }
             window.prezzoRisposta = null;
-
         }
     } catch (error) {
         console.error("❌ Error during price calculation:", error.message);
         showErrorMessage(`Could not calculate price: ${error.message}`);
         document.getElementById("totalAmount").textContent = "0.00";
         document.getElementById("totalHidden").value = "0.00";
-        document.getElementById("paypalPlaceholder").innerHTML = ""; // Non hai il controllo if qui!
+        // Aggiungi il controllo if anche qui per consistenza
+        if (paypalPlaceholder) {
+            paypalPlaceholder.innerHTML = "";
+            paypalPlaceholder.style.display = "none";
+        }
         window.prezzoRisposta = null;
     }
 }
 
-// --- Form Utility Functions ---
+// --- Form Utility Functions (rimaste invariate) ---
 
-// Robustly get input value, dispatching events to help with autofill sync
 function getInputValue(id) {
     const el = document.getElementById(id);
     if (el) {
-        // Dispatch 'input' and 'change' events to ensure browser's internal value
-        // is synced with the DOM element's .value property, especially useful for autofill.
         el.dispatchEvent(new Event('input', { bubbles: true }));
         el.dispatchEvent(new Event('change', { bubbles: true }));
         return el.value.trim();
@@ -159,7 +153,6 @@ function getInputValue(id) {
     return '';
 }
 
-// Visual validation for form fields (adds/removes 'error' class)
 function validateField(element) {
     if (!element) return;
     const formGroup = element.closest('.form-group');
@@ -177,39 +170,34 @@ function validateField(element) {
 // --- Main Initialization Function ---
 
 function initializeBookingForm() {
-    // Event listeners for live price calculation
     document.getElementById("bikeType")?.addEventListener("change", updateLivePrice);
     document.getElementById("duration")?.addEventListener("change", updateLivePrice);
     document.getElementById("quantity")?.addEventListener("input", updateLivePrice);
 
-    // Event listeners for real-time validation feedback on required fields
     document.getElementById("name")?.addEventListener("input", (e) => validateField(e.target));
     document.getElementById("email")?.addEventListener("input", (e) => validateField(e.target));
     document.getElementById("date")?.addEventListener("input", (e) => validateField(e.target));
 
-    // --- Tour Selection Logic ---
     document.body.addEventListener("click", (e) => {
         const btn = e.target.closest(".tour-book");
         if (!btn) return;
 
         e.preventDefault();
 
-        const tourId = btn.getAttribute("data-tour-id"); // Assicurati che tour.js passi anche l'ID
+        const tourId = btn.getAttribute("data-tour-id");
         const tourName = btn.getAttribute("data-tour-name");
 
         const tourInput = document.getElementById("tourSelected");
         const tourField = document.getElementById("tourField");
-        const eventInput = document.getElementById("eventSelected"); // Nuovo
-        const eventIdHidden = document.getElementById("eventIdHidden"); // Nuovo
-        const eventField = document.getElementById("eventField"); // Nuovo
-
+        const eventInput = document.getElementById("eventSelected");
+        const eventIdHidden = document.getElementById("eventIdHidden");
+        const eventField = document.getElementById("eventField");
 
         if (tourInput && tourField) {
             tourInput.value = tourName;
-            tourInput.setAttribute("data-tour-id", tourId); // Salva l'ID del tour
+            tourInput.setAttribute("data-tour-id", tourId);
             tourField.style.display = "flex";
 
-            // ✅ Clear and hide event fields if a tour is selected
             if (eventInput && eventField && eventIdHidden) {
                 eventInput.value = "";
                 eventIdHidden.value = "";
@@ -222,7 +210,6 @@ function initializeBookingForm() {
         }
     });
 
-    // Aggiungi il pulsante 'Rimuovi Tour' dinamicamente se non già presente
     const tourInputWrapper = document.querySelector(".tour-input-wrapper");
     if (tourInputWrapper && !document.getElementById("removeTourBtn")) {
         const removeBtn = document.createElement("button");
@@ -241,19 +228,15 @@ function initializeBookingForm() {
             if (input && field) {
                 input.value = "";
                 input.removeAttribute("data-tour-id");
-                field.style.display = "none"; // Hide the tour field
+                field.style.display = "none";
                 showSuccessMessage("❌ Tour rimosso!", 2500);
-                updateLivePrice(); // Recalculate price without tour
+                updateLivePrice();
             }
         });
         tourInputWrapper.appendChild(removeBtn);
     }
 
-    // --- Event Selection Logic (from event.js interaction) ---
-    // Listen for changes on the hidden eventIdHidden field
     document.getElementById("eventIdHidden")?.addEventListener("change", (e) => {
-        // This listener is primarily for when event.js updates eventIdHidden
-        // and needs booking.js to react (e.g., update price, clear tour).
         const eventId = e.target.value;
         const eventInput = document.getElementById("eventSelected");
         const eventField = document.getElementById("eventField");
@@ -261,48 +244,41 @@ function initializeBookingForm() {
         const tourField = document.getElementById("tourField");
 
         if (eventId) {
-            // An event has been selected
             if (eventInput && eventField) {
                 eventField.style.display = "flex";
             }
 
-            // ✅ Clear and hide tour fields if an event is selected
             if (tourInput && tourField) {
                 tourInput.value = "";
                 tourInput.removeAttribute("data-tour-id");
                 tourField.style.display = "none";
             }
-            updateLivePrice(); // Recalculate price with the selected event
+            updateLivePrice();
         } else {
-            // Event has been removed (or initially empty)
             if (eventInput && eventField) {
                 eventInput.value = "";
                 eventField.style.display = "none";
             }
-            updateLivePrice(); // Recalculate price without an event
+            updateLivePrice();
         }
     });
 
-
-    // Aggiungi il pulsante 'Rimuovi Evento' dinamicamente
-// Collega l'event listener al pulsante 'Rimuovi Evento' esistente nell'HTML
     const removeEventBtn = document.getElementById("removeEventBtn");
-    if (removeEventBtn) { // Controlla se il pulsante esiste
+    if (removeEventBtn) {
         removeEventBtn.addEventListener("click", () => {
             const input = document.getElementById("eventSelected");
             const idHidden = document.getElementById("eventIdHidden");
             const field = document.getElementById("eventField");
             if (input && idHidden && field) {
                 input.value = "";
-                idHidden.value = ""; // Pulisci anche l'ID nascosto
-                field.style.display = "none"; // Nascondi il campo dell'evento
+                idHidden.value = "";
+                field.style.display = "none";
                 showSuccessMessage("❌ Evento rimosso!", 2500);
-                updateLivePrice(); // Ricalcola il prezzo senza evento
+                updateLivePrice();
             }
         });
     }
 
-    // --- Bike Type Selection from Buttons ---
     document.querySelectorAll(".bike-select").forEach(btn => {
         btn.addEventListener("click", (e) => {
             e.preventDefault();
@@ -312,7 +288,6 @@ function initializeBookingForm() {
                 selectElement.value = bikeType;
                 updateLivePrice();
                 showSuccessMessage(`🚲 ${bikeType} selected!`, 2000);
-                // Scroll to the rental form section
                 document.getElementById("noleggio")?.scrollIntoView({ behavior: "smooth", block: "start" });
             }
         });
@@ -332,10 +307,8 @@ function initializeBookingForm() {
         responseMessage.textContent = "⏳ Invio richiesta in corso...";
         responseMessage.style.color = "#000";
 
-        // Remove previous error styling from all fields
         document.querySelectorAll('.form-group.error').forEach(el => el.classList.remove('error'));
 
-        // Retrieve field values using the robust helper function
         const name = getInputValue("name");
         const email = getInputValue("email");
         const bikeType = getInputValue("bikeType");
@@ -343,12 +316,11 @@ function initializeBookingForm() {
         const date = getInputValue("date");
         const duration = getInputValue("duration") || "1";
         const notes = getInputValue("notes");
-        const tourSelected = getInputValue("tourSelected"); // Nome del tour
-        const eventIdHidden = getInputValue("eventIdHidden"); // ID dell'evento
-        const eventSelected = getInputValue("eventSelected"); // Nome dell'evento (per info)
+        const tourSelected = getInputValue("tourSelected");
+        const eventIdHidden = getInputValue("eventIdHidden");
+        const eventSelected = getInputValue("eventSelected");
         const total = getInputValue("totalHidden") || "0.00";
 
-        // Client-side validation for mandatory fields
         let hasMissingFields = false;
         const requiredFields = [
             { id: "name", value: name, label: "Nome e Cognome" },
@@ -360,7 +332,7 @@ function initializeBookingForm() {
         let missingLabels = [];
         requiredFields.forEach(field => {
             if (!field.value) {
-                validateField(document.getElementById(field.id)); // Apply 'error' class
+                validateField(document.getElementById(field.id));
                 hasMissingFields = true;
                 missingLabels.push(field.label);
             }
@@ -370,13 +342,11 @@ function initializeBookingForm() {
             responseMessage.textContent = `❌ Error: Please fill in all highlighted mandatory fields. Missing: ${missingLabels.join(", ")}.`;
             responseMessage.style.color = "#dc3545";
             showErrorMessage("Please complete all required fields.");
-            // Focus on the first missing field for better UX
             const firstMissingField = document.getElementById(requiredFields.find(f => !f.value)?.id);
             if(firstMissingField) firstMissingField.focus();
             return;
         }
 
-        // Construct FormData for submission to the Worker
         const formData = new FormData();
         formData.set("name", name);
         formData.set("email", email);
@@ -386,10 +356,9 @@ function initializeBookingForm() {
         formData.set("duration", duration);
         formData.set("notes", notes);
         formData.set("tourSelected", tourSelected);
-        formData.set("eventSelected", eventSelected); // Nuovo
-        formData.set("eventIdHidden", eventIdHidden); // Nuovo
+        formData.set("eventSelected", eventSelected);
+        formData.set("eventIdHidden", eventIdHidden);
         formData.set("total", total);
-
 
         try {
             const response = await fetch("https://workers-bibbonabike.zonkeynet.workers.dev/submit", {
@@ -403,22 +372,20 @@ function initializeBookingForm() {
                 responseMessage.textContent = "✅ Prenotazione inviata con successo!";
                 responseMessage.style.color = "#28a745";
 
-                // ✅ Reset campi input manualmente (non tutto il form)
+                // Reset campi input manualmente (non tutto il form)
                 rentalForm.querySelectorAll("input, textarea, select").forEach(el => {
                     if (["bikeType", "duration", "quantity", "notes", "name", "email", "date"].includes(el.id)) {
                         el.value = "";
                     }
                 });
 
-                // Inizia la parte da modificare/controllare attentamente
-                // 👇 START MODIFICA
-                const paypalPlaceholder = document.getElementById("paypalPlaceholder"); // Ottieni il placeholder anche qui
+                // 👇 START MODIFICA: Ora questo blocco visualizza il pulsante PayPal
+                const paypalPlaceholder = document.getElementById("paypalPlaceholder");
                 if (window.prezzoRisposta?.paypalHtml) {
-                    if (paypalPlaceholder) { // Assicurati che l'elemento esista
+                    if (paypalPlaceholder) {
                         paypalPlaceholder.innerHTML = window.prezzoRisposta.paypalHtml;
-                        paypalPlaceholder.style.display = "block"; // Assicurati che il div sia visibile (se era nascosto con CSS)
+                        paypalPlaceholder.style.display = "block"; // Assicurati che il div sia visibile
 
-                        // Aggiungi un messaggio per l'utente, invitandolo a pagare
                         const paymentInstruction = document.createElement("p");
                         paymentInstruction.textContent = "Per completare la prenotazione, procedi al pagamento tramite PayPal:";
                         paymentInstruction.style.marginTop = "15px";
@@ -426,36 +393,35 @@ function initializeBookingForm() {
                         paymentInstruction.style.color = "#333";
                         paymentInstruction.style.fontWeight = "bold";
                         paymentInstruction.style.textAlign = "center";
-                        paypalPlaceholder.prepend(paymentInstruction); // Inserisci prima del bottone PayPal
+                        paypalPlaceholder.prepend(paymentInstruction);
                     }
                 }
                 // 👆 END MODIFICA
 
-              // Reset prezzo e campi tour/evento
-              document.getElementById("totalAmount").textContent = "0.00";
-              document.getElementById("totalHidden").value = "0.00";
-              document.getElementById("tourSelected").value = "";
-              document.getElementById("tourField").style.display = "none";
-              document.getElementById("eventSelected").value = "";
-              document.getElementById("eventIdHidden").value = "";
-              document.getElementById("eventField").style.display = "none";
+                // Reset prezzo e campi tour/evento (questi reset vanno bene)
+                document.getElementById("totalAmount").textContent = "0.00";
+                document.getElementById("totalHidden").value = "0.00";
+                document.getElementById("tourSelected").value = "";
+                document.getElementById("tourField").style.display = "none";
+                document.getElementById("eventSelected").value = "";
+                document.getElementById("eventIdHidden").value = "";
+                document.getElementById("eventField").style.display = "none";
 
-              showSuccessMessage("✅ Prenotazione completata!", 4000);
-              updateLivePrice(); // Ricalcola eventuali dati
-
+                showSuccessMessage("✅ Prenotazione completata!", 4000);
+                // ❌ Rimosso: Non chiamare updateLivePrice() qui, altrimenti nasconde di nuovo il pulsante PayPal
+                // updateLivePrice();
 
             } else {
                 const errorMessage = result.message || "Something went wrong on the server.";
                 responseMessage.textContent = `❌ Error: ${errorMessage}`;
                 responseMessage.style.color = "#dc3545";
                 showErrorMessage(`Submission error: ${errorMessage}`);
-                const paypalPlaceholder = document.getElementById("paypalPlaceholder"); // Ottieni il placeholder
-                  if (paypalPlaceholder) {
-                      paypalPlaceholder.innerHTML = "";
-                      paypalPlaceholder.style.display = "none"; // Nascondi in caso di errore
-                  }
-              }
-            
+                const paypalPlaceholder = document.getElementById("paypalPlaceholder");
+                if (paypalPlaceholder) {
+                    paypalPlaceholder.innerHTML = "";
+                    paypalPlaceholder.style.display = "none";
+                }
+            }
         } catch (error) {
             responseMessage.textContent = "❌ Network error or server response issue.";
             responseMessage.style.color = "#dc3545";
@@ -468,5 +434,4 @@ function initializeBookingForm() {
     updateLivePrice();
 }
 
-// Initialize all booking functionality when the DOM is fully loaded
 document.addEventListener("DOMContentLoaded", initializeBookingForm);
