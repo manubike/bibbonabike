@@ -435,6 +435,9 @@
   }
 
 
+#officina {
+  scroll-margin-top: 120px;/* o quanto basta per evitare sovrapposizione */
+}
 
   
 /* RESPONSIVE */
@@ -687,9 +690,9 @@
 }
 
 .msg.user {
-  background: linear-gradient(to right, #00c7b7, #009688);
-  color: white;
-  align-self: flex-end;
+    background: linear-gradient(to right, #012d53, #40a6ff);
+    color: white;
+    align-self: flex-end;
 }
 
 .msg.bot {
@@ -705,8 +708,8 @@
   resize: none;
   margin: 0 10px;
   height: 60px;
-  background: #2c2c2c;
-  color: white;
+  background: #ddf2ff;
+  color: rgb(0, 0, 0);
   border-radius: 8px;
 }
 
@@ -872,4 +875,77 @@
 }
 .hero-mountain-overlay path {
   filter: drop-shadow(0 -2px 5px rgba(0, 0, 0, 0.15));
+}
+
+.section-title-wrapper {
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 2rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: var(--green);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, transform 0.4s ease;
+  position: relative;
+  z-index: 1;
+}
+
+
+.slash-anim {
+  position: absolute;
+  top: 50%;
+  left: -50px;
+  width: 6px;
+  height: 80px;
+  background-color: #2d7f36;
+  transform: translateY(-50%) rotate(30deg);
+  opacity: 0;
+  z-index: 2;
+  transition: left 1.2s ease, opacity 0.8s ease;
+}
+.section-title .slash-anim {
+  position: absolute;
+  top: 50%;
+  left: -50px;
+  width: 6px;
+  height: 80px;
+  background-color: #2d7f36; /* verde standard */
+  transform: translateY(-50%) rotate(40deg);
+  opacity: 0;
+  z-index: 2;
+  transition: left 1.2s ease, opacity 0.8s ease;
+}
+
+/* Colore bianco solo per slash nella sezione Tour */
+.tour-title .slash-anim {
+  background-color: #fff !important;
+}
+
+.tour-title .slash-anim {
+  background-color: #fff !important;
+}
+.section-title.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.tour-overlay .section-title {
+  color: white;
+  text-shadow: 1px 1px 2px black; /* migliora leggibilità su sfondi scuri */
+}
+svg#arrow-next,
+svg#arrow-prev,
+svg[xmlns="http://www.w3.org/2000/svg"]:not(.visible) {
+  display: none;
 }

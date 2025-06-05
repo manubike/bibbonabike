@@ -46,7 +46,7 @@
           <nav>
             <ul>
               <li><a href="#"><i class="fas fa-home"></i> Home</a></li>
-              <li><a href="#Officina"><i class="fas fa-tools"></i> Assistenza 24h</a></li>
+              <li><a href="#officina"><i class="fas fa-tools"></i> Assistenza 24h</a></li>
               <li><a href="#noleggio"><i class="fas fa-bicycle"></i> Noleggio</a></li>
               <li><a href="#tour"><i class="fas fa-map-marked-alt"></i> Tour</a></li>
               <li><a href="#eventi"><i class="fas fa-calendar-alt"></i> Eventi</a></li>
@@ -241,31 +241,33 @@
       </section>
     <div>
     <!-- SVG per le frecce di navigazione -->
-    <svg xmlns="http://www.w3.org/2000/svg">
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
         <symbol viewBox="0 0 18 18" id="arrow-next">
-            <path id="arrow-next-arrow.svg" d="M12.6,9L4,17.3L4.7,18l8.5-8.3l0,0L14,9l0,0l-0.7-0.7l0,0L4.7,0L4,0.7L12.6,9z"/>
+            <path id="arrow-next-arrow.svg" d="M12.6,9L4,17.3L4.7,18l8.5-8.3l0,0L14,9l0,0l-0.7-0.7l0,0L4.7,0L4,0.7L12.6,9z"></path>
         </symbol>
         <symbol viewBox="0 0 18 18" id="arrow-prev">
-            <path id="arrow-prev-arrow.svg" d="M14,0.7L13.3,0L4.7,8.3l0,0L4,9l0,0l0.7,0.7l0,0l8.5,8.3l0.7-0.7L5.4,9L14,0.7z"/>
+            <path id="arrow-prev-arrow.svg" d="M14,0.7L13.3,0L4.7,8.3l0,0L4,9l0,0l0.7,0.7l0,0l8.5,8.3l0.7-0.7L5.4,9L14,0.7z"></path>
         </symbol>
     </svg>
 
-
     <!-- Sezione OFFICINA -->
-    <section class="officina-section">
-      <div id="Officina"></div>
+    <section class="officina-section" id="officina">
+      <div id="officina-title-anchor"></div> <!-- ⬅️ Punto di ancoraggio visibile al JS -->
+      <h2 class="section-title"><i class="fas fa-tools"></i> Officina</h2>
+
       <div class="officina-content">
-      <div class="feature" id="bikeFeature">
+        <div class="feature" id="bikeFeature">
           <img src="img/frame3@2x.png" alt="Telaio bici" class="feature__frame">
           <img src="img/wheel-hr4.png" alt="Ruota posteriore" class="feature__wheel feature__wheel--rear">
           <img src="img/wheel-hr4.png" alt="Ruota anteriore" class="feature__wheel feature__wheel--front">
         </div>
+
         <div class="officina-text">
-          <h2><i class="fas fa-tools"></i> Officina</h2>
           <p>
             <strong>Affidati ai nostri esperti meccanici</strong> per qualsiasi intervento: dalle riparazioni rapide alle revisioni complete.<br>
             Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre efficiente e sicura.<br><br>
           </p>
+
           <div class="officina-buttons" style="margin-top: 1.2rem; display: flex; gap: 1rem; align-content: space-between; flex-direction: row; align-items: center; flex-wrap: wrap; justify-content: center;">
             <span id="phoneLink"></span>
             <span id="whatsappLink"></span>
@@ -273,6 +275,9 @@
         </div>
       </div>
     </section>
+
+
+    <!-- Sezione Noleggio -->
     <section class="rental-section">
       <h2 class="section-title"><i class="fas fa-bicycle"></i> Noleggio Biciclette</h2>
       <div class="bike-grid">
@@ -311,7 +316,7 @@
         <div class="tour-slide" style="background-image: url('img/tour3.jpg');"></div>
       </div>
       <div class="tour-overlay">
-        <h2><i class="fas fa-route"></i> Tour Guidati</h2>
+        <h2 class="section-title tour-title"><i class="fas fa-route"></i> Tour Guidati</h2>
         <div class="tour-cards">
           <!-- Le card verranno generate dinamicamente da JS -->
         </div>
@@ -395,7 +400,10 @@
     <!-- SEZIONE EVENTI / CORSI via json file event.json -->
     <section class="eventi-slider-section" id="eventi">
       <div class="container-full">
-        <h2 class="section-title"><i class="fas fa-calendar-alt"></i> Corsi & Eventi</h2>
+      <div class="section-title-wrapper">
+        <h2 class="section-title"><i class="fas fa-calendar-alt"></i> Corsi / Eventi</h2>
+        <div class="slash-anim"></div>
+      </div>
 
           <div class="eventi-slider"></div>
       </div>
@@ -813,5 +821,56 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("phoneLink").appendChild(callBtn);
     document.getElementById("whatsappLink").appendChild(waBtn);
   </script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const h2List = document.querySelectorAll("h2.section-title");
+
+      h2List.forEach(h2 => {
+        // Avvolgi ogni h2 in un contenitore
+        const wrapper = document.createElement("div");
+        wrapper.classList.add("section-title-wrapper");
+        h2.parentNode.insertBefore(wrapper, h2);
+        wrapper.appendChild(h2);
+
+        // Aggiungi barra slash
+        const slash = document.createElement("div");
+        slash.classList.add("slash-anim");
+        if (h2.classList.contains("tour-title")) {
+          slash.style.backgroundColor = "#fff"; // Slash bianco per Tour
+        }
+        wrapper.appendChild(slash);
+      });
+
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const h2 = entry.target;
+            const wrapper = h2.parentElement;
+            const slash = wrapper.querySelector(".slash-anim");
+
+            // Attiva animazione
+            slash.style.left = "120%";
+            slash.style.opacity = "1";
+
+            setTimeout(() => {
+              h2.classList.add("visible");
+            }, 400);
+
+            setTimeout(() => {
+              slash.style.opacity = "0";
+            }, 800);
+
+            observer.unobserve(h2); // Anima una volta sola
+          }
+        });
+      }, { threshold: 0.5 });
+
+      document.querySelectorAll("h2.section-title").forEach(h2 => {
+        observer.observe(h2);
+      });
+    });
+    </script>
+
+
 </body>
 </html>

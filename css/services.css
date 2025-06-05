@@ -3,13 +3,6 @@
   text-align: center;
 }
 
-.section-title {
-  font-size: 2rem;
-  margin-bottom: 2rem;
-  color: #2e7d32;
-  font-weight: 600;
-}
-
 .grid {
   display: flex;
   flex-wrap: wrap;

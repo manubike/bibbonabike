@@ -3,13 +3,6 @@
   background-color: #fdfdfd;
 }
 
-.section-title {
-  text-align: center;
-  font-size: 2rem;
-  margin-bottom: 2rem;
-  color: #2e7d32;
-}
-
 .slider-wrapper {
   position: relative;
   overflow: hidden;
@@ -148,7 +141,11 @@
   flex-grow: 1;
   padding: 1rem;
   gap: 0.5rem;
+  background: linear-gradient(145deg, #e8f5e9 0%, #c8e6c9 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
+
 .evento-info h3 {
   margin: 0;
   font-size: 1.2rem;
@@ -203,8 +200,7 @@
   color: var(--_c);
   text-decoration: none;
   border: var(--b) solid var(--_c);
-  background: conic-gradient(at calc(100% - 1.3 * var(--b)) 0, var(--_c) 209deg, #0000 211deg) border-box;
-  clip-path: polygon(0 0, 100% 0, calc(100% - 0.577 * var(--h)) 100%, 0 100%);
+  background: conic-gradient(at calc(100% - 1.3 * var(--b)) 0, var(--_c) 209deg, #ffffffa8 211deg) border-box;  clip-path: polygon(0 0, 100% 0, calc(100% - 0.577 * var(--h)) 100%, 0 100%);
   padding: 0 calc(0.288 * var(--h)) 0 0;
   margin: 0 calc(-0.288 * var(--h)) 0 0;
   box-sizing: border-box;

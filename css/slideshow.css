@@ -83,6 +83,7 @@
   padding: 0;
   width: 100vw;
   }
+
   .slideshow__slide {
   visibility: hidden;
   transition: visibility 0s 1.7s;
@@ -114,7 +115,6 @@
       left: 0;
     }
   }
-}
 
 .slideshow__slide-background-load-wrap {
   transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
