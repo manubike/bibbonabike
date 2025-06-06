@@ -179,8 +179,11 @@
   .hero-content h1 {
     font-size: 2.8em;
     margin: 0;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
-  }
+    text-shadow:
+      0 0 5px #000,   /* ombra leggera nera */
+      0 0 10px #000,  /* glow più diffuso */
+      0 0 15px #000; /* glow più intenso */
+    }
   
   .hero-content p {
     font-size: 1.2em;
@@ -214,10 +217,16 @@
   max-width: 100%;
   box-sizing: border-box;
   transition: background 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+
 }
 
 .btn-primary:hover {
   background: linear-gradient(to right, #2e7d32, #66bb6a);
+}
+.btn-primary:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 3px rgba(0,0,0,0.3);
 }
 
   /* ICON*/

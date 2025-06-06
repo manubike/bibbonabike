@@ -75,7 +75,7 @@
 .slideshow {
   position: relative;
   color: #ffffff;
-  background-color: #1e1e22;
+  background-color: #ffffff00;
   overflow: hidden;
   height: 100vh;
   min-height: 400px;
@@ -285,13 +285,19 @@
 
 .slideshow__slide-caption-title {
   line-height: 1;
-  
-  @media (max-height: 500px) {
+  text-shadow:
+    0 0 5px #000,   /* ombra leggera nera */
+    0 0 10px #000,  /* glow più diffuso */
+    0 0 15px #000;  /* glow più ampio */
+      color: #fff;
+
+}
+
+@media (max-height: 500px) {
+  .slideshow__slide-caption-title {
     margin-bottom: 0 !important;
   }
 }
-
-
 
 @media (max-width: 699px) {
   .slideshow__slide-caption-title {

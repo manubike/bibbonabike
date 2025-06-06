@@ -280,7 +280,20 @@
   padding: 0;
   text-align: center;
 }
+.tour-details li {
+  display: flex;
+  align-items: center;
+  gap: 6px; /* distanza tra icona e testo */
+  margin: 4px 0;
+  line-height: 1.4;
+}
 
+.tour-details svg.icon-svg {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  fill: black;
+}
 /* ======= RESPONSIVE ======= */
 @media (max-width: 768px) {
   .tour-overlay h2 {
@@ -557,4 +570,19 @@ body.drawer-open {
   width: 0%;
   background: linear-gradient(90deg, #81d4fa, #0288d1);
   transition: width 2s ease;
+}
+
+.icon-duration::before {
+  content: '';
+  display: inline-block;
+  background-image: url('../img/time.svg');
+  background-size: 60%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: #2e7d32;      /* Colore del cerchio */
+  border-radius: 50%;             /* Crea il cerchio */
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+  vertical-align: middle;
 }

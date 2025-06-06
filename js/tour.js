@@ -50,10 +50,37 @@ document.addEventListener("DOMContentLoaded", () => {
           <ul class="tour-details">
             <li><strong>Tipo:</strong> ${tour.type}</li>
             <li><strong>Prezzo:</strong> ${tour.price}</li>
-            <li><strong>Durata:</strong> ${tour.duration}</li>
-            <li><strong>Distanza:</strong> ${tour.distance}</li>
-            <li><strong>Dislivello:</strong> ${tour.elevation}</li>
-            <li><strong>Difficoltà:</strong> <span class="difficulty-dot" style="background-color: green;"></span> ${tour.difficulty}</li>
+            <li>
+              <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="black" style="margin-right: 6px; vertical-align: middle;">
+                <path d="M12 20a8 8 0 1 1 8-8 8.009 8.009 0 0 1-8 8zm.5-13h-1v6l5.25 3.15.5-.84-4.75-2.81z"/>
+              </svg>
+              <strong>Durata:</strong> ${tour.duration}
+            </li>
+            <li>
+              <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 384 512" fill="black" style="margin-right: 6px; vertical-align: middle;">
+                <path d="M168 0C75.3 0 0 75.3 0 168c0 87.2 153.6 313.4 160 322.4 4.5 6.5 14.5 6.5 19 0C230.4 481.4 384 255.2 384 168 384 75.3 308.7 0 216 0c-26.7 0-52.2 6.9-74.2 19.1C119.7 6.9 94.2 0 68 0zM192 240c-39.8 0-72-32.2-72-72s32.2-72 72-72 72 32.2 72 72-32.2 72-72 72z"/>
+              </svg>
+              <strong>Distanza:</strong> ${tour.distance}
+            </li>
+            <li>
+              <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 640 512" fill="black" style="margin-right: 6px; vertical-align: middle;">
+                <path d="M0 480l160-320 160 320H0zm384 0l128-256 128 256H384z"/>
+              </svg>
+              <strong>Dislivello:</strong> ${tour.elevation}
+            </li>
+            <li>
+              <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="20" height="20" fill="black" style="margin-right: 6px; vertical-align: middle;">
+                <path d="M26.89 32.291h-7.592V4.525c0-3.366-5.215-3.366-5.215 0v27.766H6.49c-2.446 0-4.49 2.318-4.49 5.095c0 2.779 2.043 5.098 4.49 5.098h7.593v16.992c0 3.365 5.215 3.365 5.215 0V42.484h7.592c2.449 0 4.491-2.318 4.491-5.098c0-2.778-2.042-5.095-4.491-5.095" />
+                <path d="M49.739 55.861H37.372c-3.847 0-3.847 6.138 0 6.138h12.367c3.848 0 3.848-6.138 0-6.138" />
+                <path d="M51.614 45.089H37.372c-3.847 0-3.847 6.139 0 6.139h14.242c3.848 0 3.848-6.139 0-6.139" />
+                <path d="M53.489 34.317H37.372c-3.847 0-3.847 6.138 0 6.138h16.117c3.848 0 3.848-6.138 0-6.138" />
+                <path d="M55.364 23.545H37.372c-3.847 0-3.847 6.138 0 6.138h17.992c3.848 0 3.848-6.138 0-6.138m0 4.138H37.372c-.77 0-.885-.67-.885-1.068c0-.399.115-1.069.885-1.069h17.992c.771 0 .885.67.885 1.069c0 .398-.114 1.068-.885 1.068" />
+                <path d="M57.239 12.774H37.372c-3.847 0-3.847 6.138 0 6.138h19.867c3.848 0 3.848-6.138 0-6.138m0 4.138H37.372c-.77 0-.885-.67-.885-1.068c0-.399.115-1.069.885-1.069h19.867c.771 0 .885.67.885 1.069c0 .398-.114 1.068-.885 1.068" />
+                <path d="M59.114 2.001H37.372c-3.847 0-3.847 6.138 0 6.138h21.742c3.848 0 3.848-6.138 0-6.138m0 4.138H37.372c-.77 0-.885-.67-.885-1.069c0-.398.115-1.068.885-1.068h21.742c.771 0 .885.67.885 1.068c0 .399-.114 1.069-.885 1.069" />
+              </svg>
+              <strong>Difficoltà:</strong> ${tour.difficulty}
+            </li>          
+          </ul>
           </ul>
           <div class="buttons">
             <a href="#noleggio" class="btn-primary scroll-btn tour-book" data-tour-id="tour${i}" data-tour-name="${tour.title}">Prenota</a>
