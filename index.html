@@ -569,6 +569,7 @@
     <path d="M12 4l-8 8h5v8h6v-8h5z"/>
   </svg>
 </button>
+
 <!-- Widget Chat BibbonaBike -->
 <div id="chatWidget">
   <button id="chatToggle">
@@ -615,6 +616,11 @@
   <script src="js/event.js"></script>
   <script src="js/booking.js"></script>
   <script src="js/slideshow.js"></script>
+  <script src="js/typewrite.js"></script>
+  <script src="js/bike.js"></script>
+  <script src="js/chat.js"></script>
+  <script src="js/weather.js"></script>
+  <script src="js/contactButton.js"></script>
 
   
   <script>
@@ -662,81 +668,6 @@
   });
 </script>
 
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const feature = document.getElementById("bikeFeature");
-
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          feature.classList.add("animate-bike");
-          observer.disconnect(); // esegui solo una volta
-        }
-      });
-    }, {
-      threshold: 0.4
-    });
-
-    observer.observe(feature);
-  });
-</script>
-
-
-<script>
-  const toggle = document.getElementById("chatToggle");
-  const box = document.getElementById("chatBox");
-  const input = document.getElementById("chatInput");
-  const send = document.getElementById("chatSend");
-  const messages = document.getElementById("chatMessages");
-
-  toggle.addEventListener("click", () => box.classList.toggle("hidden"));
-
-  function appendMsg(text, type) {
-    const div = document.createElement("div");
-    div.className = "msg " + type;
-    div.textContent = text;
-    messages.appendChild(div);
-    messages.scrollTop = messages.scrollHeight;
-  }
-
-  function showTypingDots() {
-    const typing = document.createElement("div");
-    typing.className = "msg bot typing";
-    typing.innerHTML = `<span class="dot"></span><span class="dot"></span><span class="dot"></span>`;
-    messages.appendChild(typing);
-    messages.scrollTop = messages.scrollHeight;
-  }
-
-  function removeTypingDots() {
-    const typing = document.querySelector(".typing");
-    if (typing) typing.remove();
-  }
-
-  send.addEventListener("click", async () => {
-    const userMsg = input.value.trim();
-    if (!userMsg) return;
-
-    appendMsg(userMsg, "user");
-    input.value = "";
-
-    showTypingDots(); // Mostra i puntini prima della richiesta
-
-    try {
-      const res = await fetch("https://black-glade-5e5b.zonkeynet.workers.dev/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userMsg })
-      });
-
-      const text = await res.text();
-      removeTypingDots(); 
-      appendMsg(text, "bot"); 
-    } catch (err) {
-      removeTypingDots();
-      appendMsg("Errore nella risposta.", "bot");
-    }
-  });
-</script>
 
 <script>
   // Mostra il widget chat quando il footer è visibile
@@ -776,48 +707,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
-<script>
-    async function loadWeather() {
-      try {
-        // Chiama direttamente il tuo worker, senza query string
-        const res = await fetch("https://weather.zonkeynet.workers.dev/");
-        const data = await res.json();
-
-        if (!data.weather || !data.weather[0]) throw new Error("Dati meteo non validi");
-
-        const iconCode = data.weather[0].icon;
-        const temp = Math.round(data.main.temp);
-
-        document.getElementById("weatherIcon").src = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
-        document.getElementById("weatherTemp").textContent = `${temp}°C`;
-        document.getElementById("weatherWidget").classList.remove("hidden");
-
-      } catch (err) {
-        console.error("Errore meteo:", err);
-      }
-    }
-
-    document.addEventListener("DOMContentLoaded", loadWeather);
-  </script>
-
-    <!-- ✅ just a test against bot...) -->
-  <script>
-    const phone = "+393313453207";
-
-    const callBtn = document.createElement("a");
-    callBtn.href = `tel:${phone}`;
-    callBtn.className = "btn-primary";
-    callBtn.innerHTML = `<i class="fas fa-phone"></i> Chiama`;
-
-    const waBtn = document.createElement("a");
-    waBtn.href = `https://wa.me/${phone.replace("+", "")}`;
-    waBtn.target = "_blank";
-    waBtn.className = "btn-primary";
-    waBtn.innerHTML = `<i class="fab fa-whatsapp"></i> Chat su WhatsApp`;
-
-    document.getElementById("phoneLink").appendChild(callBtn);
-    document.getElementById("whatsappLink").appendChild(waBtn);
-  </script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const h2List = document.querySelectorAll("h2.section-title");
@@ -867,59 +756,5 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
     </script>
-
-    <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const textElement = document.getElementById("officinaText");
-
-      const boldText = "Affidati ai nostri esperti meccanici per qualsiasi intervento:";
-      const normalText = " dalle riparazioni rapide alle revisioni complete.\nLavoriamo con passione, precisione e attenzione per garantirti una bici sempre efficiente e sicura.";
-
-      let hasTyped = false;
-
-      const observer = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting && !hasTyped) {
-            hasTyped = true;
-            runTypewriter();
-            observer.disconnect(); // smetti di osservare dopo il primo trigger
-          }
-        });
-      }, {
-        threshold: 0.4
-      });
-
-      observer.observe(textElement);
-
-      function runTypewriter() {
-        const strongEl = document.createElement("strong");
-        textElement.appendChild(strongEl);
-
-        let i = 0;
-        let j = 0;
-
-        function typeBold() {
-          if (i < boldText.length) {
-            strongEl.textContent += boldText.charAt(i);
-            i++;
-            setTimeout(typeBold, 20);
-          } else {
-            typeNormal();
-          }
-        }
-
-        function typeNormal() {
-          if (j < normalText.length) {
-            textElement.append(normalText.charAt(j));
-            j++;
-            setTimeout(typeNormal, 20);
-          }
-        }
-
-        typeBold();
-      }
-    });
-    </script>
-
 </body>
 </html>
