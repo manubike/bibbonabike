@@ -281,15 +281,22 @@
         <div class="bike-card">
           <img src="img/bike-ebike.jpg" alt="E-Bike" />
           <div class="bike-info">
-            <h3>50,00€ <span>| giorno</span></h3>
+            <h3 class="animated-price">
+              <div class="price-show">50,00€</div>
+              <div class="price-slide"><span>| giorno</span></div>
+            </h3>
+
             <p class="bike-type">FULL</p>
             <a href="#prenota" class="btn-secondary bike-select" data-bike="FULL">SELEZIONA »</a>
           </div>
         </div>
         <div class="bike-card">
-          <img src="img/bike-ebike.jpg" alt="E-Bike" />
+          <img src="img/front_bike.jpg" alt="E-Bike" />
           <div class="bike-info">
-            <h3>35,00€ <span>| giorno</span></h3>
+          <h3 class="animated-price">
+            <div class="price-show">35,00€</div>
+            <div class="price-slide"><span>| giorno</span></div>
+          </h3>
             <p class="bike-type">FRONT</p>
             <a href="#prenota" class="btn-secondary bike-select" data-bike="FRONT">SELEZIONA »</a>
           </div>
@@ -297,7 +304,10 @@
         <div class="bike-card">
           <img src="img/bike-ebike.jpg" alt="Mountain Bike" />
           <div class="bike-info">
-            <h3>45,00€ <span>| giorno</span></h3>
+          <h3 class="animated-price">
+            <div class="price-show">45,00€</div>
+            <div class="price-slide"><span>| giorno</span></div>
+          </h3>
             <p class="bike-type">MTB</p>
             <a href="#prenota" class="btn-secondary bike-select" data-bike="MTB">SELEZIONA »</a>
           </div>
@@ -756,5 +766,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
     </script>
+
 </body>
 </html>

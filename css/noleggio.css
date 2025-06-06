@@ -81,3 +81,58 @@
     font-size: 1.8rem;
   }
 }
+
+.animated-price {
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  height: 1.5em;
+  position: relative;
+  white-space: nowrap;
+  font-weight: bold;
+  color: #2e7d32;
+}
+
+.animated-price > div {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.animated-price .price-show {
+  animation: showup 6s infinite;
+}
+
+.animated-price .price-slide {
+  width: 0px;
+  animation: reveal 6s infinite;
+}
+
+.animated-price .price-slide span {
+  margin-left: -80px; /* Può variare in base al testo */
+  animation: slidein 6s infinite;
+}
+
+@keyframes showup {
+  0% {opacity: 0;}
+  20% {opacity: 1;}
+  60% {opacity: 1;}
+  100% {opacity: 0;}
+}
+
+@keyframes slidein {
+  0% {margin-left: -80px;}
+  20% {margin-left: -80px;}
+  40% {margin-left: 0;}
+  100% {margin-left: 0;}
+}
+
+@keyframes reveal {
+  0% {opacity: 0; width: 0px;}
+  20% {opacity: 1; width: 0px;}
+  35% {width: 80px;}
+  80% {opacity: 1;}
+  100% {opacity: 0; width: 80px;}
+}
