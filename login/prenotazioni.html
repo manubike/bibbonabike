@@ -6,68 +6,79 @@
   <title>📋 Prenotazioni ricevute – BibbonaBike</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="login.css">
-
 </head>
 <body>
+
   <img src="icon.png" alt="BibbonaBike Logo" class="logo">
 
   <h1>📋 Prenotazioni ricevute</h1>
+
+  <!-- 🔓 Bottone Logout -->
+  <div style="text-align:center; margin-bottom: 1rem;">
+    <a href="/logout" style="color:white; background:#d32f2f; padding:10px 20px; border-radius:6px; text-decoration:none;">🚪 Logout</a>
+  </div>
+
+  <!-- 🎛 Azioni -->
   <div class="actions">
     <button class="csv-btn" onclick="downloadCSV()">📥 Esporta CSV</button>
     <button class="txt-btn" onclick="downloadTXT()">📄 Esporta TXT</button>
   </div>
+
   <div id="logs" class="loading">Caricamento in corso...</div>
 
   <script>
     let logsData = [];
 
-    fetch("https://workers-bibbonabike.zonkeynet.workers.dev/logs")
-      .then(res => res.json())
-      .then(data => {
-        const container = document.getElementById("logs");
-        if (!data.length) {
-          container.innerHTML = "<p>Nessuna prenotazione trovata.</p>";
-          return;
-        }
+    fetch("/logs", {
+      headers: {
+        "x-app-key": "BIBBONA_SECRET"
+      }
+    })
+    .then(res => res.json())
+    .then(data => {
+      const container = document.getElementById("logs");
+      container.classList.remove("loading");
 
-        logsData = data.map(log => {
-          const obj = JSON.parse(log.value);
-          return {
-            key: log.key,
-            timestamp: new Date(log.key.replace("log_", "")).toLocaleString('it-IT', { timeZone: 'Europe/Rome' }),
-            ...obj
-          };
-        });
+      if (!data.length) {
+        container.innerHTML = "<p>Nessuna prenotazione trovata.</p>";
+        return;
+      }
 
-        container.innerHTML = "";
-        logsData.reverse().forEach(row => {
-          const el = document.createElement("div");
-          el.className = "log-entry";
-          el.innerHTML = `
-            <strong>${row.timestamp}</strong><br>
-            👤 <strong>${row.name}</strong><br>
-            <i class="fa fa-envelope"></i> ${row.email}<br>
-            🚲 ${row.bikeType} (${row.quantity}) – 🕒 ${row.duration}h<br>
-            📅 ${row.date} – 💰 €${row.total || '0.00'}<br>
-            📝 ${row.notes || '—'}<br>
-            <button class="delete-btn" onclick="deleteRecord('${row.key}')">❌ Elimina</button>
-          `;
-
-          container.appendChild(el);
-        });
+      logsData = data.map(log => {
+        const obj = JSON.parse(log.value);
+        return {
+          key: log.key,
+          timestamp: new Date(log.key.replace("log_", "")).toLocaleString('it-IT', { timeZone: 'Europe/Rome' }),
+          ...obj
+        };
       });
+
+      container.innerHTML = "";
+      logsData.reverse().forEach(row => {
+        const el = document.createElement("div");
+        el.className = "log-entry";
+        el.innerHTML = `
+          <strong class="timestamp">${row.timestamp}</strong><br>
+          👤 <strong>${row.name}</strong><br>
+          <i class="fa fa-envelope"></i> ${row.email}<br>
+          🚲 ${row.bikeType} (${row.quantity}) – 🕒 ${row.duration}h<br>
+          📅 ${row.date} – 💰 €${row.total || '0.00'}<br>
+          📝 ${row.notes || '—'}<br>
+          <button class="delete-btn" onclick="deleteRecord('${row.key}')">❌ Elimina</button>
+        `;
+        container.appendChild(el);
+      });
+    });
 
     function deleteRecord(key) {
       if (!confirm("Vuoi davvero eliminare questa prenotazione?")) return;
-      fetch("https://workers-bibbonabike.zonkeynet.workers.dev/delete?key=" + encodeURIComponent(key), {
-        method: "DELETE"
+      fetch("/delete?key=" + encodeURIComponent(key), {
+        method: "DELETE",
+        headers: { "x-app-key": "BIBBONA_SECRET" }
       })
       .then(res => {
-        if (res.ok) {
-          location.reload();
-        } else {
-          alert("Errore durante l'eliminazione.");
-        }
+        if (res.ok) location.reload();
+        else alert("Errore durante l'eliminazione.");
       });
     }
 
@@ -80,7 +91,9 @@
     }
 
     function downloadTXT() {
-      const txt = logsData.map(row => `Prenotazione del ${row.timestamp}\nNome: ${row.name}\nEmail: ${row.email}\nBici: ${row.bikeType} (${row.quantity})\nData: ${row.date}\nDurata: ${row.duration}h\nTotale: €${row.total}\nNote: ${row.notes || '—'}\n\n`).join("\n");
+      const txt = logsData.map(row => 
+        `Prenotazione del ${row.timestamp}\nNome: ${row.name}\nEmail: ${row.email}\nBici: ${row.bikeType} (${row.quantity})\nData: ${row.date}\nDurata: ${row.duration}h\nTotale: €${row.total}\nNote: ${row.notes || '—'}\n`
+      ).join("\n\n");
       downloadFile(txt, "prenotazioni.txt", "text/plain");
     }
 
@@ -89,8 +102,12 @@
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
       a.download = filename;
+      a.style.display = "none";
+      document.body.appendChild(a);
       a.click();
+      a.remove();
     }
   </script>
+
 </body>
 </html>
