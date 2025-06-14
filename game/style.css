@@ -1,0 +1,14 @@
+@import url("https://fonts.googleapis.com/css?family=Impact");
+html, body {
+  margin: 0;
+  overflow: hidden;
+}
+#watermark {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  width: 80px;
+  opacity: 0.5;
+  z-index: 1000;
+  pointer-events: none;
+}
