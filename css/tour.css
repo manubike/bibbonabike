@@ -57,14 +57,41 @@
 
 .tour-cards {
   display: flex;
-  flex-direction: row;
+  flex-wrap: wrap; /* ✅ wrap attivo */
   justify-content: center;
   gap: 2rem;
-  flex-wrap: nowrap; 
   max-width: 1200px;
   margin: 0 auto;
 }
+.card-border-wrapper {
+  flex: 1 1 calc(33.333% - 2rem); /* ✅ 3 per riga */
+  max-width: calc(33.333% - 2rem);
+  box-sizing: border-box;
+}
+.card-border-wrapper {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
 
+.card-border-wrapper.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 1024px) {
+  .card-border-wrapper {
+    flex: 1 1 calc(50% - 2rem); /* ✅ 2 per riga su tablet */
+    max-width: calc(50% - 2rem);
+  }
+}
+
+@media (max-width: 600px) {
+  .card-border-wrapper {
+    flex: 1 1 100%; /* ✅ 1 per riga su mobile */
+    max-width: 100%;
+  }
+}
 .tour-title .slash-anim {
   background-color: #fff !important;
 }
@@ -585,4 +612,8 @@ body.drawer-open {
   height: 24px;
   margin-right: 8px;
   vertical-align: middle;
+}
+
+#showMoreTours {
+  margin-top: 2rem;
 }

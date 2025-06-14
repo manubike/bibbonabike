@@ -1,6 +1,7 @@
 // js/booking.js
 
 // --- Helper Functions for User Feedback ---
+// Queste funzioni forniscono messaggi a comparsa per successi ed errori.
 function showSuccessMessage(message, duration = 3000) {
     const msg = document.createElement("div");
     msg.textContent = message;
@@ -54,42 +55,47 @@ function showErrorMessage(message, duration = 4000) {
 }
 
 // --- Price Calculation Logic ---
-
+// Funzione asincrona per aggiornare il prezzo in tempo reale basato sulle selezioni del form.
+// Invia i dati a un worker di Cloudflare per il calcolo del prezzo.
 async function updateLivePrice() {
     const bikeTypeElement = document.getElementById("bikeType");
     const durationElement = document.getElementById("duration");
     const quantityElement = document.getElementById("quantity");
-    const tourInputElement = document.getElementById("tourSelected");
-    const eventInputElement = document.getElementById("eventSelected");
-    const eventIdHiddenElement = document.getElementById("eventIdHidden");
-    const paypalPlaceholder = document.getElementById("paypalPlaceholder");
+    const tourInputElement = document.getElementById("tourSelected"); // Input field for tour name
+    const eventIdHiddenElement = document.getElementById("eventIdHidden"); // Hidden input for event ID
+    const paypalPlaceholder = document.getElementById("paypalPlaceholder"); // Placeholder for PayPal button
 
-    const bikeType = bikeTypeElement ? bikeTypeElement.value : '';
+    // Recupera i valori dai campi, fornendo valori predefiniti in caso di assenza
+    const ownBike = document.getElementById("ownBikeCheckbox")?.checked;
+    const bikeType = ownBike ? "NESSUNA" : (bikeTypeElement ? bikeTypeElement.value : '');
     const duration = durationElement ? parseFloat(durationElement.value) : 0;
     const quantity = quantityElement ? parseInt(quantityElement.value || '1') : 1;
-    const tour = tourInputElement ? tourInputElement.value.trim() : null;
-    const eventId = eventIdHiddenElement ? eventIdHiddenElement.value.trim() : null;
+    const tour = tourInputElement ? tourInputElement.value.trim() : null; // Tour name
+    const eventId = eventIdHiddenElement ? eventIdHiddenElement.value.trim() : null; // Event ID
 
+    // Se mancano dati essenziali per il calcolo del prezzo, resetta e esci
     if (!bikeType || isNaN(duration) || duration <= 0 || isNaN(quantity) || quantity <= 0) {
-        console.warn("⚠️ Invalid bike type, duration, or quantity for price calculation.");
+        console.warn("⚠️ Tipo di bici, durata o quantità non validi per il calcolo del prezzo.");
         document.getElementById("totalAmount").textContent = "0.00";
         document.getElementById("totalHidden").value = "0.00";
         if (paypalPlaceholder) {
-            paypalPlaceholder.innerHTML = ""; // Clear PayPal button
-            paypalPlaceholder.style.display = "none"; // Hide placeholder
+            paypalPlaceholder.innerHTML = ""; // Pulisce il pulsante PayPal
+            paypalPlaceholder.style.display = "none"; // Nasconde il placeholder
         }
-        window.prezzoRisposta = null; // Clear stored price response
+        window.prezzoRisposta = null; // Pulisce la risposta del prezzo memorizzata
         return;
     }
 
+    // Prepara i dati da inviare al worker di calcolo prezzo
     const data = {
         tipo: bikeType,
         giorni: duration,
         quantita: quantity,
     };
 
+    // Aggiungi tourId o eventId ai dati, assicurandoti che solo uno sia presente
     if (tour) {
-        data.tour = tour;
+        data.tour = tour; // Seleziona il tour per nome, o potresti usare un tourId se disponibile
         data.eventoId = null;
     } else if (eventId) {
         data.eventoId = eventId;
@@ -97,6 +103,7 @@ async function updateLivePrice() {
     }
 
     try {
+        // Chiama il worker di Cloudflare per calcolare il prezzo
         const response = await fetch("https://price-calculator.zonkeynet.workers.dev/calcola", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -105,34 +112,29 @@ async function updateLivePrice() {
 
         const result = await response.json();
 
+        // Aggiorna il display del prezzo se il calcolo ha avuto successo
         if (response.ok && result.status === "success") {
             document.getElementById("totalAmount").textContent = result.totale;
             document.getElementById("totalHidden").value = result.totale;
-            window.prezzoRisposta = result; // Mantiene la risposta del worker
-
-            // ❌ Rimosso: Non nascondere il bottone PayPal qui in caso di successo
-            // Questo è stato spostato alla logica di invio del form
-            // if (paypalPlaceholder) {
-            //     paypalPlaceholder.innerHTML = "";
-            //     paypalPlaceholder.style.display = "none";
-            // }
+            window.prezzoRisposta = result; // Memorizza la risposta del worker per un uso successivo (es. PayPal HTML)
 
         } else {
-            showErrorMessage(`Error calculating price: ${result.message || 'Errore sconosciuto.'}`);
+            // Gestisce gli errori nel calcolo del prezzo dal worker
+            showErrorMessage(`Errore nel calcolo del prezzo: ${result.message || 'Errore sconosciuto.'}`);
             document.getElementById("totalAmount").textContent = "0.00";
             document.getElementById("totalHidden").value = "0.00";
             if (paypalPlaceholder) {
                 paypalPlaceholder.innerHTML = "";
-                paypalPlaceholder.style.display = "none"; // Nascondi in caso di errore nel calcolo
+                paypalPlaceholder.style.display = "none"; // Nasconde in caso di errore nel calcolo
             }
             window.prezzoRisposta = null;
         }
     } catch (error) {
-        console.error("❌ Error during price calculation:", error.message);
-        showErrorMessage(`Could not calculate price: ${error.message}`);
+        // Gestisce gli errori di rete o di risposta del server
+        console.error("❌ Errore durante il calcolo del prezzo:", error.message);
+        showErrorMessage(`Impossibile calcolare il prezzo: ${error.message}`);
         document.getElementById("totalAmount").textContent = "0.00";
         document.getElementById("totalHidden").value = "0.00";
-        // Aggiungi il controllo if anche qui per consistenza
         if (paypalPlaceholder) {
             paypalPlaceholder.innerHTML = "";
             paypalPlaceholder.style.display = "none";
@@ -141,11 +143,12 @@ async function updateLivePrice() {
     }
 }
 
-// --- Form Utility Functions (rimaste invariate) ---
-
+// --- Form Utility Functions ---
+// Funzione per ottenere il valore di un input e scatenare eventi di input/change
 function getInputValue(id) {
     const el = document.getElementById(id);
     if (el) {
+        // Forziamo il dispatch degli eventi per assicurare che altri listener reagiscano
         el.dispatchEvent(new Event('input', { bubbles: true }));
         el.dispatchEvent(new Event('change', { bubbles: true }));
         return el.value.trim();
@@ -153,6 +156,7 @@ function getInputValue(id) {
     return '';
 }
 
+// Funzione per validare un campo e mostrare/nascondere lo stato di errore
 function validateField(element) {
     if (!element) return;
     const formGroup = element.closest('.form-group');
@@ -168,19 +172,22 @@ function validateField(element) {
 }
 
 // --- Main Initialization Function ---
-
+// Inizializza tutti i listener e le logiche del form di prenotazione
 function initializeBookingForm() {
+    // Listener per i campi che influenzano il prezzo
     document.getElementById("bikeType")?.addEventListener("change", updateLivePrice);
     document.getElementById("duration")?.addEventListener("change", updateLivePrice);
     document.getElementById("quantity")?.addEventListener("input", updateLivePrice);
 
+    // Listener per la validazione dei campi obbligatori
     document.getElementById("name")?.addEventListener("input", (e) => validateField(e.target));
     document.getElementById("email")?.addEventListener("input", (e) => validateField(e.target));
     document.getElementById("date")?.addEventListener("input", (e) => validateField(e.target));
 
+    // Listener per i bottoni di selezione Tour
     document.body.addEventListener("click", (e) => {
         const btn = e.target.closest(".tour-book");
-        if (!btn) return;
+        if (!btn) return; // Non è un bottone tour-book
 
         e.preventDefault();
 
@@ -188,16 +195,17 @@ function initializeBookingForm() {
         const tourName = btn.getAttribute("data-tour-name");
 
         const tourInput = document.getElementById("tourSelected");
-        const tourField = document.getElementById("tourField");
+        const tourField = document.getElementById("tourField"); // Container visibile del campo tour
         const eventInput = document.getElementById("eventSelected");
         const eventIdHidden = document.getElementById("eventIdHidden");
-        const eventField = document.getElementById("eventField");
+        const eventField = document.getElementById("eventField"); // Container visibile del campo evento
 
         if (tourInput && tourField) {
             tourInput.value = tourName;
-            tourInput.setAttribute("data-tour-id", tourId);
-            tourField.style.display = "flex";
+            tourInput.setAttribute("data-tour-id", tourId); // Mantiene l'ID del tour
+            tourField.style.display = "flex"; // Mostra il campo tour
 
+            // Selezionando un tour, resetta e nascondi i campi dell'evento
             if (eventInput && eventField && eventIdHidden) {
                 eventInput.value = "";
                 eventIdHidden.value = "";
@@ -205,18 +213,19 @@ function initializeBookingForm() {
             }
 
             showSuccessMessage(`✅ Tour "${tourName}" aggiunto!`);
-            updateLivePrice();
+            updateLivePrice(); // Aggiorna il prezzo
             document.getElementById("noleggio")?.scrollIntoView({ behavior: "smooth", block: "start" });
         }
     });
 
+    // Aggiungi il bottone "rimuovi tour" se non esiste già
     const tourInputWrapper = document.querySelector(".tour-input-wrapper");
     if (tourInputWrapper && !document.getElementById("removeTourBtn")) {
         const removeBtn = document.createElement("button");
         removeBtn.type = "button";
         removeBtn.id = "removeTourBtn";
         removeBtn.innerHTML = "✖";
-        removeBtn.title = "Remove tour";
+        removeBtn.title = "Rimuovi tour selezionato";
         Object.assign(removeBtn.style, {
             marginLeft: "10px", background: "none", border: "none",
             fontSize: "1.3rem", cursor: "pointer", color: "#dc3545"
@@ -230,12 +239,13 @@ function initializeBookingForm() {
                 input.removeAttribute("data-tour-id");
                 field.style.display = "none";
                 showSuccessMessage("❌ Tour rimosso!", 2500);
-                updateLivePrice();
+                updateLivePrice(); // Aggiorna il prezzo dopo la rimozione
             }
         });
         tourInputWrapper.appendChild(removeBtn);
     }
 
+    // Listener per il cambio dell'ID dell'evento (impostato da event.js)
     document.getElementById("eventIdHidden")?.addEventListener("change", (e) => {
         const eventId = e.target.value;
         const eventInput = document.getElementById("eventSelected");
@@ -244,41 +254,59 @@ function initializeBookingForm() {
         const tourField = document.getElementById("tourField");
 
         if (eventId) {
+            // Se un evento è selezionato, mostra il campo evento
             if (eventInput && eventField) {
                 eventField.style.display = "flex";
+                // eventInput.value è popolato da event.js
             }
 
+            // E nasconde/resetta i campi del tour
             if (tourInput && tourField) {
                 tourInput.value = "";
                 tourInput.removeAttribute("data-tour-id");
                 tourField.style.display = "none";
             }
-            updateLivePrice();
+            updateLivePrice(); // Aggiorna il prezzo con l'evento selezionato
         } else {
+            // Se l'evento viene deselezionato, resetta e nascondi il campo evento
             if (eventInput && eventField) {
                 eventInput.value = "";
                 eventField.style.display = "none";
             }
-            updateLivePrice();
+            updateLivePrice(); // Aggiorna il prezzo
         }
     });
 
-    const removeEventBtn = document.getElementById("removeEventBtn");
-    if (removeEventBtn) {
-        removeEventBtn.addEventListener("click", () => {
+    // Aggiungi il bottone "rimuovi evento" se non esiste già
+    const eventInputWrapper = document.querySelector(".event-input-wrapper"); // Assicurati di avere questo wrapper nel tuo HTML
+    if (eventInputWrapper && !document.getElementById("removeEventBtn")) {
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.id = "removeEventBtn";
+        removeBtn.innerHTML = "✖";
+        removeBtn.title = "Rimuovi evento selezionato";
+        Object.assign(removeBtn.style, {
+            marginLeft: "10px", background: "none", border: "none",
+            fontSize: "1.3rem", cursor: "pointer", color: "#dc3545"
+        });
+
+        removeBtn.addEventListener("click", () => {
             const input = document.getElementById("eventSelected");
             const idHidden = document.getElementById("eventIdHidden");
             const field = document.getElementById("eventField");
             if (input && idHidden && field) {
                 input.value = "";
-                idHidden.value = "";
+                idHidden.value = ""; // Pulisce anche l'ID nascosto
                 field.style.display = "none";
                 showSuccessMessage("❌ Evento rimosso!", 2500);
-                updateLivePrice();
+                updateLivePrice(); // Aggiorna il prezzo dopo la rimozione
             }
         });
+        eventInputWrapper.appendChild(removeBtn);
     }
 
+
+    // Listener per i bottoni di selezione del tipo di bici
     document.querySelectorAll(".bike-select").forEach(btn => {
         btn.addEventListener("click", (e) => {
             e.preventDefault();
@@ -287,7 +315,7 @@ function initializeBookingForm() {
             if (selectElement) {
                 selectElement.value = bikeType;
                 updateLivePrice();
-                showSuccessMessage(`🚲 ${bikeType} selected!`, 2000);
+                showSuccessMessage(`🚲 ${bikeType} selezionata!`, 2000);
                 document.getElementById("noleggio")?.scrollIntoView({ behavior: "smooth", block: "start" });
             }
         });
@@ -296,7 +324,7 @@ function initializeBookingForm() {
     // --- Form Submission Logic ---
     const rentalForm = document.getElementById("noleggioForm");
     if (!rentalForm) {
-        console.error("❌ Form #noleggioForm not found!");
+        console.error("❌ Form #noleggioForm non trovato!");
         return;
     }
 
@@ -305,13 +333,16 @@ function initializeBookingForm() {
 
         const responseMessage = document.getElementById("responseMessage");
         responseMessage.textContent = "⏳ Invio richiesta in corso...";
-        responseMessage.style.color = "#000";
+        responseMessage.style.color = "#000"; // Colore neutro durante l'invio
 
+        // Rimuove eventuali stati di errore precedenti dai campi
         document.querySelectorAll('.form-group.error').forEach(el => el.classList.remove('error'));
 
+        // Recupera tutti i valori dei campi del form
         const name = getInputValue("name");
         const email = getInputValue("email");
-        const bikeType = getInputValue("bikeType");
+        const ownBike = document.getElementById("ownBikeCheckbox")?.checked;
+        const bikeType = ownBike ? "NESSUNA" : getInputValue("bikeType");
         const quantity = getInputValue("quantity") || "1";
         const date = getInputValue("date");
         const duration = getInputValue("duration") || "1";
@@ -321,11 +352,12 @@ function initializeBookingForm() {
         const eventSelected = getInputValue("eventSelected");
         const total = getInputValue("totalHidden") || "0.00";
 
+        // Validazione dei campi obbligatori
         let hasMissingFields = false;
         const requiredFields = [
             { id: "name", value: name, label: "Nome e Cognome" },
             { id: "email", value: email, label: "Email" },
-            { id: "bikeType", value: bikeType, label: "Tipo di bici" },
+            { id: "bikeType", value: ownBike ? "NESSUNA" : bikeType, label: "Tipo di bici" },
             { id: "date", value: date, label: "Data" }
         ];
 
@@ -338,15 +370,17 @@ function initializeBookingForm() {
             }
         });
 
+        // Se mancano campi obbligatori, mostra un errore e ferma l'invio
         if (hasMissingFields) {
-            responseMessage.textContent = `❌ Error: Please fill in all highlighted mandatory fields. Missing: ${missingLabels.join(", ")}.`;
+            responseMessage.textContent = `❌ Errore: Compila tutti i campi obbligatori evidenziati. Mancanti: ${missingLabels.join(", ")}.`;
             responseMessage.style.color = "#dc3545";
-            showErrorMessage("Please complete all required fields.");
+            showErrorMessage("Completa tutti i campi richiesti.");
             const firstMissingField = document.getElementById(requiredFields.find(f => !f.value)?.id);
-            if(firstMissingField) firstMissingField.focus();
+            if(firstMissingField) firstMissingField.focus(); // Porta il focus al primo campo mancante
             return;
         }
 
+        // Prepara i dati per l'invio (FormData è utile per i worker)
         const formData = new FormData();
         formData.set("name", name);
         formData.set("email", email);
@@ -356,11 +390,12 @@ function initializeBookingForm() {
         formData.set("duration", duration);
         formData.set("notes", notes);
         formData.set("tourSelected", tourSelected);
-        formData.set("eventSelected", eventSelected);
-        formData.set("eventIdHidden", eventIdHidden);
+        formData.set("eventSelected", eventSelected); // Invia il nome dell'evento visualizzato
+        formData.set("eventIdHidden", eventIdHidden); // Invia l'ID dell'evento
         formData.set("total", total);
 
         try {
+            // Invia i dati al worker di Cloudflare per la gestione della prenotazione
             const response = await fetch("https://workers-bibbonabike.zonkeynet.workers.dev/submit", {
                 method: "POST",
                 body: formData
@@ -372,50 +407,51 @@ function initializeBookingForm() {
                 responseMessage.textContent = "✅ Prenotazione inviata con successo!";
                 responseMessage.style.color = "#28a745";
 
-                // Reset campi input manualmente (non tutto il form)
+                // Resetta solo i campi di input rilevanti manualmente
                 rentalForm.querySelectorAll("input, textarea, select").forEach(el => {
+                    // Non resettare tutti i campi se alcuni devono mantenere un valore predefinito
                     if (["bikeType", "duration", "quantity", "notes", "name", "email", "date"].includes(el.id)) {
                         el.value = "";
                     }
                 });
 
-                // 👇 START MODIFICA: Ora questo blocco visualizza il pulsante PayPal
+                // Visualizza il pulsante PayPal se la risposta del worker lo include
                 const paypalPlaceholder = document.getElementById("paypalPlaceholder");
-                if (window.prezzoRisposta?.paypalHtml) {
+                if (window.prezzoRisposta?.paypalHtml) { // Controlla se il worker ha fornito l'HTML di PayPal
                     if (paypalPlaceholder) {
                         paypalPlaceholder.innerHTML = window.prezzoRisposta.paypalHtml;
                         paypalPlaceholder.style.display = "block"; // Assicurati che il div sia visibile
 
                         const paymentInstruction = document.createElement("p");
                         paymentInstruction.textContent = "Per completare la prenotazione, procedi al pagamento tramite PayPal:";
-                        paymentInstruction.style.marginTop = "15px";
-                        paymentInstruction.style.marginBottom = "10px";
-                        paymentInstruction.style.color = "#333";
-                        paymentInstruction.style.fontWeight = "bold";
-                        paymentInstruction.style.textAlign = "center";
-                        paypalPlaceholder.prepend(paymentInstruction);
+                        Object.assign(paymentInstruction.style, {
+                            marginTop: "15px",
+                            marginBottom: "10px",
+                            color: "#333",
+                            fontWeight: "bold",
+                            textAlign: "center"
+                        });
+                        paypalPlaceholder.prepend(paymentInstruction); // Aggiunge le istruzioni sopra il pulsante
                     }
                 }
-                // 👆 END MODIFICA
 
-                // Reset prezzo e campi tour/evento (questi reset vanno bene)
+                // Reset prezzo e campi tour/evento dopo l'invio della prenotazione
                 document.getElementById("totalAmount").textContent = "0.00";
                 document.getElementById("totalHidden").value = "0.00";
                 document.getElementById("tourSelected").value = "";
+                document.getElementById("tourSelected")?.removeAttribute("data-tour-id"); // Rimuovi l'attributo data-tour-id
                 document.getElementById("tourField").style.display = "none";
                 document.getElementById("eventSelected").value = "";
                 document.getElementById("eventIdHidden").value = "";
                 document.getElementById("eventField").style.display = "none";
 
                 showSuccessMessage("✅ Prenotazione completata!", 4000);
-                // ❌ Rimosso: Non chiamare updateLivePrice() qui, altrimenti nasconde di nuovo il pulsante PayPal
-                // updateLivePrice();
-
             } else {
-                const errorMessage = result.message || "Something went wrong on the server.";
-                responseMessage.textContent = `❌ Error: ${errorMessage}`;
+                // Gestisce gli errori nella sottomissione del form
+                const errorMessage = result.message || "Qualcosa è andato storto sul server.";
+                responseMessage.textContent = `❌ Errore: ${errorMessage}`;
                 responseMessage.style.color = "#dc3545";
-                showErrorMessage(`Submission error: ${errorMessage}`);
+                showErrorMessage(`Errore di invio: ${errorMessage}`);
                 const paypalPlaceholder = document.getElementById("paypalPlaceholder");
                 if (paypalPlaceholder) {
                     paypalPlaceholder.innerHTML = "";
@@ -423,15 +459,32 @@ function initializeBookingForm() {
                 }
             }
         } catch (error) {
-            responseMessage.textContent = "❌ Network error or server response issue.";
+            // Gestisce gli errori di rete durante l'invio del form
+            responseMessage.textContent = "❌ Errore di rete o problema di risposta del server.";
             responseMessage.style.color = "#dc3545";
-            console.error("❌ Form submission error (catch block):", error);
-            showErrorMessage("Connection error. Please check your network.");
+            console.error("❌ Errore di invio del form (blocco catch):", error);
+            showErrorMessage("Errore di connessione. Controlla la tua rete.");
         }
     });
 
-    // Initial price update on page load
+    // Aggiorna il prezzo iniziale al caricamento della pagina
     updateLivePrice();
 }
 
+// Avvia l'inizializzazione del form una volta che il DOM è completamente caricato
 document.addEventListener("DOMContentLoaded", initializeBookingForm);
+document.getElementById("ownBikeCheckbox")?.addEventListener("change", (e) => {
+  const isChecked = e.target.checked;
+  const bikeTypeSelect = document.getElementById("bikeType");
+  const quantityInput = document.getElementById("quantity");
+
+  if (isChecked) {
+    bikeTypeSelect.disabled = true;
+    quantityInput.disabled = true;
+  } else {
+    bikeTypeSelect.disabled = false;
+    quantityInput.disabled = false;
+  }
+
+  updateLivePrice(); // Ricalcola il prezzo
+});

@@ -15,7 +15,7 @@
   overflow-x: auto;
   scroll-behavior: smooth;
   padding: 1rem 0;
-  justify-content: center;
+ /* justify-content: center; */
 }
 
 /* === DRAWER OVERLAY === */

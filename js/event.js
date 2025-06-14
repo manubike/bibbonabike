@@ -39,9 +39,9 @@ document.addEventListener("DOMContentLoaded", () => {
   fetch("js/eventi.json")
     .then(res => res.json())
     .then(eventi => {
-      eventi.forEach(ev => { // Rimosso 'i' dall'iterazione dato che non viene usato nella card.className che ora è fissa "evento-card"
+      eventi.forEach(ev => {
         const card = document.createElement("div");
-        card.className = "evento-card"; // Usa classe fissa come da tuo ultimo snippet
+        card.className = "evento-card";
 
         card.innerHTML = `
           <div class="evento-inner">
@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Effetto tilt su desktop
         if (window.innerWidth > 768) {
-          const inner = card.querySelector(".evento-inner"); // Utilizza .evento-inner come nel tuo snippet
+          const inner = card.querySelector(".evento-inner");
           card.addEventListener("mousemove", e => {
             const rect = card.getBoundingClientRect();
             const x = e.clientX - rect.left;
@@ -82,10 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
           });
         }
         
-        // Listener per il pulsante "Prenota" direttamente sulla card (se presente e necessario)
-        // Se vuoi che il click su questo "Prenota" della card selezioni l'evento nel form,
-        // devi duplicare parte della logica del drawerBook qui, ma SENZA aprire il drawer.
-        // Ho aggiunto una classe specifica `event-card-book-btn` per questo.
+        // Listener per il pulsante "Prenota" direttamente sulla card
         const cardBookBtn = card.querySelector(".event-card-book-btn");
         if (cardBookBtn) {
             cardBookBtn.addEventListener("click", (clickEvent) => {
@@ -101,7 +98,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.getElementById("tourSelected").removeAttribute("data-tour-id");
                 document.getElementById("tourField").style.display = "none";
                 
-                showSuccessMessage(`✅ Evento "${ev.title}" selezionato!`);
+                // showSuccessMessage dovrebbe essere definita in booking.js
+                if (typeof showSuccessMessage === 'function') {
+                    showSuccessMessage(`✅ Evento "${ev.title}" selezionato!`);
+                }
                 
                 // Scrolla al form di noleggio
                 document.getElementById("noleggio")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -111,7 +111,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.getElementById("eventIdHidden").dispatchEvent(eventChangeEvent);
             });
         }
-
 
         // Mostra drawer
         const infoBtn = card.querySelector(".info-btn");
@@ -129,11 +128,9 @@ document.addEventListener("DOMContentLoaded", () => {
           drawerBook.href = "#noleggio";
 
           // ** FIX CHIAVE **: Rimuove e ricrea il pulsante per eliminare listener duplicati
-          // e assicura che un solo listener sia attivo per ogni apertura del drawer.
           const oldDrawerBook = drawerBook.cloneNode(true);
           drawerBook.parentNode.replaceChild(oldDrawerBook, drawerBook);
           const newDrawerBook = document.getElementById("drawerBook"); // Riferimento al nuovo elemento
-
 
           // Aggiungi un nuovo listener al pulsante "Prenota" del drawer
           newDrawerBook.addEventListener("click", (clickEvent) => {
@@ -151,7 +148,10 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("tourSelected").removeAttribute("data-tour-id"); // Rimuovi l'ID del tour
             document.getElementById("tourField").style.display = "none";
             
-            showSuccessMessage(`✅ Evento "${ev.title}" selezionato!`);
+            // showSuccessMessage dovrebbe essere definita in booking.js
+            if (typeof showSuccessMessage === 'function') {
+                showSuccessMessage(`✅ Evento "${ev.title}" selezionato!`);
+            }
             
             // Scrolla al form di noleggio
             document.getElementById("noleggio")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -160,7 +160,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const eventChangeEvent = new Event('change', { bubbles: true });
             document.getElementById("eventIdHidden").dispatchEvent(eventChangeEvent); // Questo triggererà updateLivePrice in booking.js
           });
-
 
           document.getElementById("drawerWhatsApp").href =
             `https://wa.me/393313453207?text=${encodeURIComponent(ev.whatsapp)}`;
@@ -178,30 +177,3 @@ document.addEventListener("DOMContentLoaded", () => {
       slider.appendChild(errorMessage);
     });
 });
-
-// Funzione helper per i messaggi di successo (se non è già presente in booking.js, ma è meglio averla qui per completezza)
-function showSuccessMessage(message, duration = 3000) {
-    const msg = document.createElement("div");
-    msg.textContent = message;
-    Object.assign(msg.style, {
-        position: "fixed",
-        bottom: "20px",
-        left: "50%",
-        transform: "translateX(-50%)",
-        background: "#28a745", // Green for success
-        color: "#fff",
-        padding: "12px 20px",
-        borderRadius: "8px",
-        fontWeight: "bold",
-        boxShadow: "0 2px 10px rgba(0,0,0,0.3)",
-        zIndex: "9999",
-        transition: "opacity 0.3s ease-in-out",
-        opacity: "1"
-    });
-    document.body.appendChild(msg);
-
-    setTimeout(() => {
-        msg.style.opacity = "0";
-        setTimeout(() => msg.remove(), 300);
-    }, duration);
-}

@@ -36,9 +36,13 @@ document.addEventListener("DOMContentLoaded", () => {
   fetch("js/tour.json")
     .then(res => res.json())
     .then(tours => {
+    const MAX_VISIBLE = 3;
+    let allWrappers = [];
+
       tours.forEach((tour, i) => {
         const wrapper = document.createElement("div");
         wrapper.className = "card-border-wrapper";
+        if (i >= MAX_VISIBLE) wrapper.style.display = "none"; // Nasconde inizialmente
 
         const card = document.createElement("div");
         card.className = "tour-card glow";
@@ -91,6 +95,8 @@ document.addEventListener("DOMContentLoaded", () => {
         wrapper.appendChild(card);
         container.appendChild(wrapper);
         observer.observe(wrapper);
+
+        allWrappers.push(wrapper);
 
         const infoBtn = card.querySelector(".info-btn");
         infoBtn.addEventListener("click", e => {
@@ -210,5 +216,25 @@ document.addEventListener("DOMContentLoaded", () => {
           openDrawer();
         });
       });
+
+const showMoreBtn = document.getElementById("showMoreTours");
+let isExpanded = false;
+
+if (showMoreBtn) {
+  showMoreBtn.addEventListener("click", () => {
+    isExpanded = !isExpanded;
+
+    allWrappers.forEach((w, i) => {
+      if (i >= MAX_VISIBLE) {
+        w.style.display = isExpanded ? "block" : "none";
+      }
+    });
+
+    showMoreBtn.textContent = isExpanded ? "Nascondi tour extra" : "Mostra altri tour";
+  });
+
+
+      }
+
     });
 });

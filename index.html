@@ -20,8 +20,13 @@
   <meta name="twitter:description" content="Noleggio bici, officina e ristoro a Bibbona. Scopri i tour guidati e i nostri servizi!" />
   <meta name="twitter:image" content="https://bibbonabike.com/img/Magona_Bike_preview.png" />
 
-
+  <!-- Grid‑Overflow (masonry / grid CSS) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/grid-overflow@1.2.6/src/GridOverflow3D.min.css">
+  <!-- Story Show Gallery (lightbox full‑screen) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/story-show-gallery@3/dist/ssg.min.css">
+  <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Custom CSS -->
   <link rel="stylesheet" href="css/footer.css" />
   <link rel="stylesheet" href="css/services.css" />
   <link rel="stylesheet" href="css/officina.css" />
@@ -30,6 +35,7 @@
   <link rel="stylesheet" href="css/tour.css">
   <link rel="stylesheet" href="css/event.css">
   <link rel="stylesheet" href="css/slideshow.css">
+  <link rel="stylesheet" href="css/slideshow_my.css">
 
 
 
@@ -314,7 +320,21 @@
         </div>
       </div>
     </section>
+    <!-- 2️⃣  SECTION: Galleria Foto ---------------------------------------------------- -->
+    <section class="photo-slideshow" id="galleria">
+      <h2 class="section-title"><i class="fas fa-images"></i> Galleria</h2>
+      <div id="photoGallery" class="gridOverflow go-zoomFx"></div>
+      <div class="slideshow-controls">
+        <button id="toggleLayout" class="btn-secondary layout-toggle" aria-pressed="false">
+          <i class="fas fa-th"></i>
+          <span class="label">Griglia</span>
+        </button>
+      </div>
 
+    </section>
+
+
+    <!-- =============================================================== -->
     <!-- TOUR SECTION -->
     <section class="tour-section" id="tour">
       <div class="tour-slideshow">
@@ -327,6 +347,7 @@
         <div class="tour-cards">
           <!-- Le card verranno generate dinamicamente da JS -->
         </div>
+        <button id="showMoreTours" class="btn-primary">Mostra altri tour</button>
 
       </div>
     </section>
@@ -462,7 +483,12 @@
               <option value="FRONT">FRONT</option>
               </select>
           </div>
-
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="ownBikeCheckbox" />
+              Ho la mia bici (non voglio noleggiarne una)
+            </label>
+          </div>
           <div class="form-group icon-input">
             <label for="quantity">Quantità *</label>
             <i class="fa fa-plus"></i>
@@ -498,10 +524,10 @@
               </div>
           </div>
           <div class="form-group icon-input" id="eventField" style="display: none;">
-              <label for="eventSelected">Evento Selezionato</label>
-              <i class="fas fa-calendar-check" aria-hidden="true"></i>
+            <label for="eventSelected">Evento Selezionato</label>
+            <div class="event-input-wrapper"> <i class="fas fa-calendar-check" aria-hidden="true"></i>
               <input type="text" id="eventSelected" name="eventSelected" readonly />
-              <button type="button" id="removeEventBtn" title="Rimuovi Evento" style="margin-left: 10px; background: none; border: none; font-size: 1.3rem; cursor: pointer; color: #dc3545;">✖</button>
+              </div>
           </div>
 
           <input type="hidden" id="eventIdHidden" name="eventIdHidden" value="" />
@@ -619,18 +645,25 @@
     if (footer) observer.observe(footer);
   });
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+
+  <!-- Story Show Gallery core -->
+  <script src="https://cdn.jsdelivr.net/npm/story-show-gallery@3.2.2/dist/ssg.min.js"></script>
+
   <script src="js/nav.js"></script>
   <script src="js/slogan.js"></script>
   <script src="js/tour.js"></script>
-  <script src="js/event.js"></script>
   <script src="js/booking.js"></script>
+  <script src="js/event.js"></script>
   <script src="js/slideshow.js"></script>
   <script src="js/typewrite.js"></script>
   <script src="js/bike.js"></script>
   <script src="js/chat.js"></script>
   <script src="js/weather.js"></script>
   <script src="js/contactButton.js"></script>
+  <script src="js/slideshow_my.js"></script>
 
   
   <script>

@@ -1,5 +1,6 @@
 [
   {
+    "id": "e001",
     "title": "Bibbona Bike & Kidz!",
     "date": "Sabato 15 Giugno",
     "time": "ore 10:00",
@@ -12,6 +13,7 @@
     "email": "vitiellomanuel1985@gmail.com"
   },
   {
+    "id": "e002",
     "title": "Corso Meccanica Base",
     "date": "Sabato 8 Giugno",
     "time": "ore 10:00",
@@ -24,6 +26,7 @@
     "email": "vitiellomanuel1985@gmail.com"
   },
   {
+    "id": "e003",
     "title": "Summer MTB Camp Bibbona",
     "date": "dal 10/06 ogni Lun, Mar, Gio",
     "time": "13:00 – 15:30",
