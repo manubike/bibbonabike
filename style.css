@@ -958,3 +958,10 @@ svg#arrow-prev,
 svg[xmlns="http://www.w3.org/2000/svg"]:not(.visible) {
   display: none;
 }
+#bikeLoader {
+  position: fixed;
+  inset: 0;
+  background: #b5c755;
+  z-index: 9999;
+  overflow: hidden;
+}
