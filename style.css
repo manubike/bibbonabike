@@ -965,3 +965,17 @@ svg[xmlns="http://www.w3.org/2000/svg"]:not(.visible) {
   z-index: 9999;
   overflow: hidden;
 }
+/* NAV scompare in scroll */
+#header {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  z-index: 999;
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+
+#header.nav-hidden {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}

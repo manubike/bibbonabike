@@ -53,3 +53,27 @@
       }
     });
   });
+// 🔽 NAV scompare quando si scrolla in basso, riappare in alto
+let lastScrollTop = 0;
+const headerBar = document.getElementById('header');
+let scrollTimeout;
+
+window.addEventListener('scroll', () => {
+  const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+
+  if (currentScroll > lastScrollTop && currentScroll > 80) {
+    // Scorri verso il basso → nascondi nav
+    headerBar.classList.add('nav-hidden');
+  } else {
+    // Scorri verso l’alto → mostra nav
+    headerBar.classList.remove('nav-hidden');
+  }
+
+  lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+
+  // Evita flickering su scroll molto veloce
+  clearTimeout(scrollTimeout);
+  scrollTimeout = setTimeout(() => {
+    headerBar.classList.remove('nav-hidden');
+  }, 1500);
+});
