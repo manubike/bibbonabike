@@ -26,12 +26,14 @@ document.addEventListener("DOMContentLoaded", () => {
     SSG.cfg.neverFullscreen = false;
     SSG.cfg.mobilePortraitFS = false;
     SSG.cfg.forceLandscapeMode = false;
-    SSG.cfg.crossCursor = true;
+    SSG.cfg.crossCursor = false;
     SSG.cfg.autorun = false;
     SSG.cfg.noautostart = true;
 
     // Watermark
     SSG.cfg.watermarkImage = 'img/icon_ai.png';
+    SSG.cfg.watermarkText =  "BibbonaBike" ;  //  watermark text, use <br> tag for word wrap
+    SSG.cfg.watermarkFontSize =  10 ; // font size in pixels  
     SSG.cfg.watermarkWidth = 100;
     SSG.cfg.watermarkOffsetX = 2;
     SSG.cfg.watermarkOffsetY = 2;

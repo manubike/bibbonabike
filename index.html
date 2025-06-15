@@ -36,6 +36,8 @@
   <link rel="stylesheet" href="css/event.css">
   <link rel="stylesheet" href="css/slideshow.css">
   <link rel="stylesheet" href="css/slideshow_my.css">
+  <link rel="stylesheet" href="css/ai-bot.css">
+
 
 
 
@@ -609,16 +611,23 @@
 </button>
 
 <!-- Widget Chat BibbonaBike -->
-<div id="chatWidget">
-  <button id="chatToggle">
-    <img src="img/icon_ai.png" alt="Chat" class="chat-icon" />
-  </button>
-  <div id="chatBox" class="hidden">
-    <div id="chatMessages"></div>
-    <textarea id="chatInput" placeholder="Scrivi una domanda..."></textarea>
-    <button id="chatSend">Invia</button>
-  </div>
-</div>
+        <div id="chatWidget">
+            <button id="chatToggle">
+                <div class="ai-bot">
+                    <div class="head">
+                        <div class="face">
+                            <div class="eyes"> </div>
+                            <div class="mouth"> </div>
+                        </div>
+                    </div>
+                </div>
+            </button>
+            <div id="chatBox" class="hidden">
+                <div id="chatMessages"></div>
+                <textarea id="chatInput" placeholder="Scrivi una domanda..."></textarea>
+                <button id="chatSend">Invia</button>
+            </div>
+        </div>
 
 <!-- ✅ JS Scroll to Top + Reveal Footer -->
 <script>
