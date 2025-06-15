@@ -116,3 +116,7 @@
 #photoGallery {
   transition: all 0.4s ease-in-out;
 }
+.ssglight #SSG_menu a.SSG_link {
+    color: #28a745 !important;
+    text-shadow: none;
+}

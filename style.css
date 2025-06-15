@@ -621,8 +621,7 @@
 }
 
 #chatToggle {
-  background: linear-gradient(135deg, #3c8ace, #00897b);
-  border: none;
+  background: linear-gradient(264deg, #3c8ace, #0c375c);  border: none;
   color: white;
   border-radius: 50%;
   width: 48px;
@@ -978,4 +977,11 @@ svg[xmlns="http://www.w3.org/2000/svg"]:not(.visible) {
   transform: translateY(-100%);
   opacity: 0;
   pointer-events: none;
+}
+.gridOverflow {
+  --itemRounding: 50%;
+  --gridGap: 12px;
+  --itemMinWidth: 120px;
+  --masonryItemHeight: 120px;
+  --linkActionIcon: "→";
 }

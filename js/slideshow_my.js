@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
     SSG.cfg.imageLink = "Link all'immagine selezionata:";
     SSG.cfg.copyButton = "⎘ Copia il link";
     SSG.cfg.linkPaste = "…puoi incollarlo ovunque con ctrl+v";
-    SSG.cfg.fileToLoad = null;
+    SSG.cfg.fileToLoad = "ssg-loaded.html";
   }
 
   // Avvio SSG solo su click
