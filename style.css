@@ -94,6 +94,7 @@
   /* HERO */
 .hero {
   position: relative;
+  z-index: 1; 
   width: 100%;
   height: 100vh;
   min-height: 600px;
@@ -807,37 +808,50 @@
 }
 
 .weather-widget {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  z-index: 20;
+  position: fixed;
+  top: 10px; /* fallback, sovrascritto via JS in base a header.offsetHeight */
+  right: 1.5rem;
+  z-index: 50;
+
   display: flex;
   align-items: center;
   gap: 10px;
 
-  /* background: rgba(0, 0, 0, 0.65);   aumentato opacità per visibilità */
-  color: #ffffff;                  /* testo bianco puro */
+  background: rgba(0, 0, 0, 0.6);
+  color: #ffffff;
   padding: 8px 14px;
   border-radius: 10px;
   font-size: 1.05rem;
   font-weight: 600;
-  /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); */
-  backdrop-filter: blur(6px);     /* effetto vetro */
-  border: 1px solid rgba(255,255,255,0.1);
-  transition: all 0.3s ease;
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+
+  transition: opacity 0.4s ease, top 0.3s ease;
+  opacity: 0;                 /* di default invisibile */
+  pointer-events: none;
+}
+
+.weather-widget:not(.hidden) {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .weather-widget img {
   width: 40px;
   height: 40px;
-  filter: drop-shadow(0 0 3px rgba(255,255,255,0.2));
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.2));
 }
+
 @media (max-width: 768px) {
   .weather-widget {
-    top: 10px;
+    flex-direction: column;
+    top: 10px; /* fallback mobile */
     right: 10px;
     font-size: 0.9rem;
     padding: 6px 10px;
+    gap: 8px;
   }
 
   .weather-widget img {
@@ -845,6 +859,7 @@
     height: 30px;
   }
 }
+
 
 .hidden {
     opacity: 0;

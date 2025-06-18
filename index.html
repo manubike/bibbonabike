@@ -37,6 +37,7 @@
   <link rel="stylesheet" href="css/slideshow.css">
   <link rel="stylesheet" href="css/slideshow_my.css">
   <link rel="stylesheet" href="css/ai-bot.css">
+  <link rel="stylesheet" href="css/legend.css">
 
 
 
@@ -78,7 +79,6 @@
           
         </div>
       </header>
-      
 
     <section class="hero">
       <!-- Video Background -->
@@ -87,13 +87,12 @@
         <source src="video/video.mp4" type="video/mp4">
         Il tuo browser non supporta i video HTML5.
       </video>
-
-        <div id="weatherWidget" class="weather-widget hidden">
-          <img id="weatherIcon" src="" alt="Meteo" />
-          <span id="weatherTemp"></span>
-        </div>
-
-
+      <!-- Meteo Widget -->
+      <div id="weatherWidget" class="weather-widget hidden">
+        <img id="weatherIcon" src="" alt="Meteo">
+        <span id="weatherTemp">--°C</span>
+      </div>
+ 
       <!-- Contenuto iniziale -->
       <div class="hero-content animated">
         <img src="img/fulllogo_transparent_nobuffer.png" alt="Magona Bike Garage" class="hero-logo" />
@@ -278,6 +277,7 @@
           <div class="officina-buttons" style="margin-top: 1.2rem; display: flex; gap: 1rem; align-content: space-between; flex-direction: row; align-items: center; flex-wrap: wrap; justify-content: center;">
             <span id="phoneLink"></span>
             <span id="whatsappLink"></span>
+            <span id="mapLink"></span>
           </div>
         </div>
       </div>
@@ -301,7 +301,7 @@
           </div>
         </div>
         <div class="bike-card">
-          <img src="img/front_bike.jpg" alt="E-Bike" />
+          <img src="img/front_bike.webp" alt="E-Bike" />
           <div class="bike-info">
           <h3 class="animated-price">
             <div class="price-show">35,00€</div>
@@ -459,6 +459,8 @@
         </div>
       </div>
     </div>
+    <!-- 🌌 SEZIONE STORIE & LEGGENDE -->
+
 
     <!-- FORM Noleggio / prenotazione -->
     <section class="form-section" id="noleggio"> 

@@ -1,0 +1,39 @@
+.storie-leggende-section {
+  position: relative;
+  color: #fff;
+  text-align: center;
+  padding: 100px 20px;
+  overflow: hidden;
+}
+
+.storie-background {
+  background-image: url("../img/storie_leggenda.png");
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.storie-overlay {
+  background: rgba(0, 0, 0, 0.6); /* oscuramento per testo leggibile */
+  padding: 80px 20px;
+}
+
+.storie-intro {
+  font-size: 1.2rem;
+  max-width: 800px;
+  margin: 0 auto 30px;
+}
+
+.storie-elenco {
+  list-style: none;
+  padding: 0;
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.storie-elenco li {
+  margin-bottom: 20px;
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
