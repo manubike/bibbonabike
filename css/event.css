@@ -59,9 +59,7 @@
 .drawer.hidden {
   display: none;
 }
-.drawer-content {
-  padding: 1.5rem;
-}
+
 .drawer img {
   width: 100%;
   border-radius: 8px;
@@ -71,6 +69,8 @@
   margin-top: 0;
   font-size: 1.5rem;
   color: #2e7d32;
+  padding-bottom: 1.5rem;  
+
 }
 
 
