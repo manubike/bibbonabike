@@ -5,12 +5,12 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!gallery) return;
 
   galleriaCorrente = [
-    { src: "img/land1.jpg", alt: "Sentiero vista panoramica verso il mare", caption: "Tour Etrusco – Livello facile" },
-    { src: "img/land2.jpg", alt: "Grotte etrusche", caption: "Grotte scavate nel tufo – Tour Etrusco" },
-    { src: "img/land3.jpg", alt: "Panorama dalla vetta", caption: "Vista mare tra boschi e vallate" },
-    { src: "img/land4.jpg", alt: "Cascata", caption: "Sosta alla cascata naturale – Bagno rinfrescante" },
-    { src: "img/land5.jpg", alt: "My legs are my brakes, My legs are my gears", caption: "My legs are my brakes, My legs are my gears" },
-    { src: "img/land6.png", alt: "Team BibbonaBike Garage", caption: "La nostra crew!" }
+    { src: "img/land1.webp", alt: "Sentiero vista panoramica verso il mare", caption: "Tour Etrusco – Livello facile" },
+    { src: "img/land2.webp", alt: "Grotte etrusche", caption: "Grotte scavate nel tufo – Tour Etrusco" },
+    { src: "img/land3.webp", alt: "Panorama dalla vetta", caption: "Vista mare tra boschi e vallate" },
+    { src: "img/land4.webp", alt: "Cascata", caption: "Sosta alla cascata naturale – Bagno rinfrescante" },
+    { src: "img/land5.webp", alt: "My legs are my brakes, My legs are my gears", caption: "My legs are my brakes, My legs are my gears" },
+    { src: "img/land6.webp", alt: "Team BibbonaBike Garage", caption: "La nostra crew!" }
   ];
 
   renderGallery(gallery, galleriaCorrente);
@@ -109,8 +109,8 @@ function renderGallery(container, photos) {
 // ✅ Esempio: carica nuova galleria
 function caricaGalleriaCollinare() {
   galleriaCorrente = [
-    { src: "img/tour2-1.jpg", alt: "Salita tra colline", caption: "Vista sulla Val di Cecina" },
-    { src: "img/tour2-2.jpg", alt: "Strade bianche", caption: "Tra vigneti e oliveti" }
+    { src: "img/tour2-1.webp", alt: "Salita tra colline", caption: "Vista sulla Val di Cecina" },
+    { src: "img/tour2-2.webp", alt: "Strade bianche", caption: "Tra vigneti e oliveti" }
   ];
   SSG.restart({ images: galleriaCorrente, startIndex: 0, fs: true });
 }
