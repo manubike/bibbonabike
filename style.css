@@ -1000,3 +1000,12 @@ svg[xmlns="http://www.w3.org/2000/svg"]:not(.visible) {
   --masonryItemHeight: 120px;
   --linkActionIcon: "→";
 }
+::selection {
+  background: rgba(0, 128, 255, 0.4); /* azzurro trasparente */
+  color: #fff;                        /* testo leggibile su azzurro */
+}
+
+::-moz-selection {
+  background: rgba(0, 128, 255, 0.4);
+  color: #fff;
+}
