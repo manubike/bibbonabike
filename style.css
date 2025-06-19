@@ -908,21 +908,40 @@
 }
 
 .section-title {
-  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  font-size: 2rem;
-  font-weight: 600;
+  gap: 0.75rem;
+
+  font-size: 2.2rem;
+  font-weight: 700;
   text-align: center;
-  margin-bottom: 2rem;
-  color: var(--green);
+
+  margin-bottom: 2.5rem;
+  color: #218c74; /* o usa var(--green) se definita bene */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+
   opacity: 0;
   transform: translateY(20px);
-  transition: opacity 0.3s ease, transform 0.4s ease;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+
   position: relative;
   z-index: 1;
+  letter-spacing: 0.5px;
 }
+.section-title::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, #4cd137, #0097e6);
+  margin: 0 auto;
+  margin-top: 12px;
+  border-radius: 4px;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.4s ease;
+}
+
 
 
 .slash-anim {
@@ -962,6 +981,11 @@
   opacity: 1;
   transform: translateY(0);
 }
+
+.section-title.visible::after {
+  transform: scaleX(1);
+}
+
 
 .tour-overlay .section-title {
   color: white;

@@ -363,6 +363,17 @@
   scroll-behavior: smooth;
   touch-action: auto;
 }
+
+#tourDrawerImage {
+  width: 100%;
+  height: auto;
+  max-height: 250px;
+  display: block;
+  object-fit: cover;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+}
+
 /* Evita che il body blocchi lo scroll del drawer */
 body.drawer-open {
   overflow: hidden;

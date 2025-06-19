@@ -1,20 +1,47 @@
 /* ======= SEZIONE FORM PRENOTAZIONE ======= */
 .form-section {
   padding: 4rem 1rem;
+ /*  background: #f9f9f9;*/
 }
 
 .form-card {
-  background-color: #fff;
-  max-width: 650px;
+  background: linear-gradient(179deg, #a8d8f0, #d0f0fb, #ffffff);  max-width: 680px;
   margin: 0 auto;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
 }
 
 .form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.8rem;
   position: relative;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 12px 14px 12px 42px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+  background: #fff;
+  transition: border-color 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #4caf50;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.15);
 }
 
 .icon-input i {

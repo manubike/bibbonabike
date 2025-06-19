@@ -86,6 +86,7 @@
       <video autoplay muted loop playsinline preload="auto" class="hero-video">
         <source src="video/video.webm" type="video/webm">
         <source src="video/video.mp4" type="video/mp4">
+        <track kind="captions" src="" label="Sottotitoli non disponibili" srclang="it">
         Il tuo browser non supporta i video HTML5.
       </video>
       <!-- Meteo Widget -->
@@ -183,7 +184,7 @@
               <div class="slideshow__slide-background-wrap background-absolute">
                 <div class="slideshow__slide-background background-absolute">
                   <div class="slideshow__slide-image-wrap background-absolute">
-                  <div class="slideshow__slide-image background-absolute" style="background-image: url('img/slogan3.webp');"></div>
+                  <div class="slideshow__slide-image background-absolute" style="background-image: url('img/slogan3.jpg');"></div>
                   </div>
                 </div>
               </div>
@@ -232,12 +233,16 @@
         <div class="o-container">
           <div class="c-header-home_controls -nomobile o-button-group">
             <div class="js-parallax is-inview" data-speed="1" data-position="top" data-target="#js-header">
-              <button class="o-button -white -square -left js-slider-home-button js-slider-home-prev" type="button">
+            <button class="o-button -white -square -left js-slider-home-button js-slider-home-prev" type="button"
+                    aria-label="Slide precedente" title="Slide precedente">
+
                 <span class="o-button_label">
                   <svg class="o-button_icon" role="img"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#arrow-prev"></use></svg>
                 </span>
               </button>
-              <button class="o-button -white -square js-slider-home-button js-slider-home-next" type="button">
+              <button class="o-button -white -square js-slider-home-button js-slider-home-next" type="button"
+                      aria-label="Slide successiva" title="Slide successiva">
+
                 <span class="o-button_label">
                   <svg class="o-button_icon" role="img"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#arrow-next"></use></svg>
                 </span>
@@ -330,7 +335,7 @@
       <h2 class="section-title"><i class="fas fa-images"></i> Galleria</h2>
       <div id="photoGallery" class="gridOverflow go-zoomFx"></div>
       <div class="slideshow-controls">
-        <button id="toggleLayout" class="btn-secondary layout-toggle" aria-pressed="false">
+        <button id="toggleLayout" class="btn-secondary layout-toggle" aria-pressed="false" aria-label="Cambia layout a griglia" title="Griglia">
           <i class="fas fa-th"></i>
           <span class="label">Griglia</span>
         </button>
@@ -363,7 +368,8 @@
     <div id="tourDrawer" class="drawer hidden">
       <button class="drawer-close" id="tourDrawerClose">&times;</button>
       <div class="drawer-content">
-        <img id="tourDrawerImage" src="img/placeholder.jpg" alt="Immagine tour" />
+      <img id="tourDrawerImage" src="" alt="Anteprima del tour" />
+
         <h3 id="tourDrawerTitle">Titolo Tour</h3>
         <div class="durata-wrapper">
           <strong>Durata:</strong>
@@ -615,7 +621,7 @@
 
 <!-- Widget Chat BibbonaBike -->
         <div id="chatWidget">
-            <button id="chatToggle">
+            <button id="chatToggle" aria-label="Apri o chiudi la chat" title="Chat AI">
                 <div class="ai-bot">
                     <div class="head">
                         <div class="face">
@@ -666,11 +672,11 @@
   <!-- Story Show Gallery core -->
   <script src="https://cdn.jsdelivr.net/npm/story-show-gallery@3.2.2/dist/ssg.min.js"></script>
 
-  <script src="js/nav.js"></script>
+  <script src="js/nav_min.js"></script>
   <script src="js/slogan.js"></script>
-  <script src="js/tour.js"></script>
-  <script src="js/booking.js"></script>
-  <script src="js/event.js"></script>
+  <script src="js/tour_min.js"></script>
+  <script src="js/booking_min.js"></script>
+  <script src="js/event_min.js"></script>
   <script src="js/slideshow.js"></script>
   <script src="js/typewrite.js"></script>
   <script src="js/bike.js"></script>

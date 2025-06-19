@@ -102,7 +102,22 @@ document.addEventListener("DOMContentLoaded", () => {
         infoBtn.addEventListener("click", e => {
           e.preventDefault();
 
-          document.getElementById("tourDrawerImage").src = tour.image;
+        // All'interno dell'event listener...
+        const tourImage = document.getElementById("tourDrawerImage");
+        if (tour.image) {
+          tourImage.src = tour.image;
+          tourImage.style.display = "block";
+          tourImage.classList.remove("visible");
+          tourImage.onerror = () => {
+            console.error("Errore caricamento immagine:", tour.image);
+            tourImage.style.display = "none";
+          };
+          // trigger fade-in
+          setTimeout(() => tourImage.classList.add("visible"), 50);
+        } else {
+          tourImage.style.display = "none";
+        }
+
           document.getElementById("tourDrawerTitle").textContent = tour.title;
 
           const durationTarget = document.getElementById("tourDrawerDuration");
