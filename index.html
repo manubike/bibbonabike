@@ -2,9 +2,22 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
+
+  <!-- 📱 Mobile Responsive -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <!-- 🌐 SEO Meta Tags -->
+  <meta name="description" content="Magona Bike Garage Bibbona – Noleggio bici, tour guidati, officina specializzata e punto ristoro. Scopri la Toscana in sella a una bici!">
+  <meta name="keywords" content="noleggio bici Bibbona, tour guidati Toscana, MTB, officina biciclette, bike garage Bibbona">
+  <meta name="author" content="BibbonaBike">
+  <meta name="robots" content="index, follow">
+
   <title>Magona Bike Garage – BibbonaBike</title>
+
+  <!-- 🔗 Precaricamento risorse -->
   <link rel="preload" as="image" href="img/text.webp" type="image/webp">
+  <link rel="preload" as="image" href="img/fulllogo_transparent_nobuffer.webp" type="image/webp">
+
   <!-- 🔗 Preconnessione ai domini Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,12 +39,15 @@
   <meta property="og:image" content="https://bibbonabike.com/img/Magona_Bike_preview.png" />
   <meta property="og:url" content="https://bibbonabike.com" />
   <meta property="og:type" content="website" />
+  <meta property="og:locale" content="it_IT">
+  <meta property="og:site_name" content="BibbonaBike">
 
   <!-- ✅ Twitter Card (per X/Twitter) -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Magona Bike Garage – BibbonaBike" />
   <meta name="twitter:description" content="Noleggio bici, officina e ristoro a Bibbona. Scopri i tour guidati e i nostri servizi!" />
   <meta name="twitter:image" content="https://bibbonabike.com/img/Magona_Bike_preview.png" />
+  <meta name="twitter:site" content="@bibbonabike">
 
   <!-- Grid‑Overflow (masonry / grid CSS) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/grid-overflow@1.2.6/src/GridOverflow3D.min.css">
@@ -51,13 +67,12 @@
   <link rel="stylesheet" href="css/slideshow_my.css">
   <link rel="stylesheet" href="css/ai-bot.css">
   <link rel="stylesheet" href="css/legend.css">
-
-
-
-
   <link rel="stylesheet" href="style.css" />
+ 
+  <!-- 🖼️ Favicon -->
   <link rel="icon" href="img/icononly.png" type="image/png" />
 </head>
+
 <body>
     <header class="site-header" id="header">
         <div class="container">
@@ -109,7 +124,7 @@
  
       <!-- Contenuto iniziale -->
       <div class="hero-content animated">
-        <img src="img/fulllogo_transparent_nobuffer.webp" alt="Magona Bike Garage" class="hero-logo" />
+        <img src="img/fulllogo_transparent_nobuffer.webp" loading="eager" decoding="async" alt="Magona Bike Garage" class="hero-logo" />
         <div class="hero-text">
           <h1 id="slideshow-title" class="fade-text">Pedala la libertà tra i sentieri toscani</h1>
           <p>Noleggio bici, officina e ristoro a Bibbona. Tutto in un solo punto.</p>

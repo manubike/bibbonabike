@@ -9,8 +9,9 @@ document.addEventListener("DOMContentLoaded", () => {
     { src: "img/land2.webp", alt: "Grotte etrusche", caption: "Grotte scavate nel tufo – Tour Etrusco" },
     { src: "img/land3.webp", alt: "Panorama dalla vetta", caption: "Vista mare tra boschi e vallate" },
     { src: "img/land4.webp", alt: "Cascata", caption: "Sosta alla cascata naturale – Bagno rinfrescante" },
-    { src: "img/land5.webp", alt: "My legs are my brakes, My legs are my gears", caption: "My legs are my brakes, My legs are my gears" },
-    { src: "img/land6.webp", alt: "Team BibbonaBike Garage", caption: "La nostra crew!" }
+    { src: "img/land5.webp", alt: "Street Art", caption: "My legs are my brakes, My legs are my gears" },
+    { src: "img/land6.webp", alt: "Panoramica", caption: "Lorenzana on Bikes" },
+    { src: "img/land7.webp", alt: "Team BibbonaBike Garage", caption: "La nostra crew!" }
   ];
 
   renderGallery(gallery, galleriaCorrente);
