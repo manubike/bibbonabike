@@ -57,19 +57,25 @@
     font-weight: bolder;
   }
   
-  .btn-secondary {
-    background-color: var(--light-green);
-    color: white;
-    padding: 10px 16px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: bold;
-    transition: background 0.3s ease;
-  }
-  
-  .btn-secondary:hover {
-    background-color: #5cb2c1;
-  }
+.btn-secondary {
+  background-color: var(--light-green); 
+  color: #ffffff; 
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: bold;
+  text-decoration: none;
+  border: none;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: inline-block;
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus {
+  background-color: #369ba8; /* Tonalità più scura per hover */
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(86, 180, 198, 0.3); /* Anello visivo di focus */
+}
 
 /* ======= RESPONSIVE ======= */
 @media (max-width: 768px) {
