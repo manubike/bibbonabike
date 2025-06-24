@@ -374,8 +374,10 @@ function initializeBookingForm() {
 
     rentalForm.addEventListener("submit", async (e) => {
         e.preventDefault();
+
         const responseMessage = document.getElementById("responseMessage");
         const captchaToken = hcaptcha.getResponse();
+
         if (!captchaToken) {
             showErrorMessage("⚠️ Devi completare il captcha.");
             responseMessage.textContent = "❌ Verifica il captcha prima di inviare.";
@@ -384,8 +386,7 @@ function initializeBookingForm() {
         }
 
         responseMessage.textContent = "⏳ Invio richiesta in corso...";
-        responseMessage.style.color = "#000"; // Colore neutro durante l'invio
-
+        responseMessage.style.color = "#000";
         // Rimuove eventuali stati di errore precedenti dai campi
         document.querySelectorAll('.form-group.error').forEach(el => el.classList.remove('error'));
 
@@ -446,7 +447,7 @@ function initializeBookingForm() {
         formData.set("total", total);
         const selectedAccessories = Array.from(document.querySelectorAll("input[name='accessories']:checked")).map(el => el.value);
         formData.set("accessories", selectedAccessories.join(", "));
-
+        formData.set("hcaptchaToken", captchaToken); 
 
         try {
             // Invia i dati al worker di Cloudflare per la gestione della prenotazione
