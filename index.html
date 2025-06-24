@@ -71,6 +71,8 @@
  
   <!-- 🖼️ Favicon -->
   <link rel="icon" href="img/icononly.png" type="image/png" />
+  <script src="https://hcaptcha.com/1/api.js" async defer></script>
+
 </head>
 
 <body>
@@ -626,6 +628,11 @@
             <strong>Totale:</strong> €<span id="totalAmount">0.00</span>
             <input type="hidden" name="total" id="totalHidden" value="0.00">
           </p>
+          <div class="form-group">
+            <div class="h-captcha" data-sitekey="ccc4c746-e570-44b8-9aaa-287629b21dc0"></div>
+          </div>
+
+          <div id="captchaError" style="display:none; color:red; font-weight:bold; margin-top:10px;"></div>
 
           <button type="submit" class="btn-primary">📩 Invia richiesta</button>
           <p id="responseMessage"></p>

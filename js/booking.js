@@ -96,7 +96,7 @@ async function updateLivePrice() {
     const selectedAccessories = Array.from(document.querySelectorAll("input[name='accessories']:checked"))
     .map(el => el.value);
     if (selectedAccessories.length > 0) {
-    data.accessori = selectedAccessories;
+        data.accessories = selectedAccessories;
     }
 
     // Aggiungi tourId o eventId ai dati, assicurandoti che solo uno sia presente
@@ -184,6 +184,11 @@ function initializeBookingForm() {
     document.getElementById("bikeType")?.addEventListener("change", updateLivePrice);
     document.getElementById("duration")?.addEventListener("change", updateLivePrice);
     document.getElementById("quantity")?.addEventListener("input", updateLivePrice);
+    // ✅ Listener per il cambio accessori
+    const selectedAccessories = Array.from(document.querySelectorAll("input[name='accessories']:checked"))
+    .map(el => el.value);
+    console.log("📦 Accessori selezionati:", selectedAccessories); // ✅ qui va bene
+
 
     // Listener per la validazione dei campi obbligatori
     document.getElementById("name")?.addEventListener("input", (e) => validateField(e.target));
@@ -432,6 +437,9 @@ function initializeBookingForm() {
         formData.set("eventSelected", eventSelected); // Invia il nome dell'evento visualizzato
         formData.set("eventIdHidden", eventIdHidden); // Invia l'ID dell'evento
         formData.set("total", total);
+        const selectedAccessories = Array.from(document.querySelectorAll("input[name='accessories']:checked")).map(el => el.value);
+        formData.set("accessories", selectedAccessories.join(", "));
+
 
         try {
             // Invia i dati al worker di Cloudflare per la gestione della prenotazione
