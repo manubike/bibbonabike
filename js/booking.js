@@ -374,8 +374,15 @@ function initializeBookingForm() {
 
     rentalForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-
         const responseMessage = document.getElementById("responseMessage");
+        const captchaToken = hcaptcha.getResponse();
+        if (!captchaToken) {
+            showErrorMessage("⚠️ Devi completare il captcha.");
+            responseMessage.textContent = "❌ Verifica il captcha prima di inviare.";
+            responseMessage.style.color = "#dc3545";
+            return;
+        }
+
         responseMessage.textContent = "⏳ Invio richiesta in corso...";
         responseMessage.style.color = "#000"; // Colore neutro durante l'invio
 
