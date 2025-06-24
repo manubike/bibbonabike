@@ -92,6 +92,12 @@ async function updateLivePrice() {
         giorni: duration,
         quantita: quantity,
     };
+    // Aggiunta accessori selezionati
+    const selectedAccessories = Array.from(document.querySelectorAll("input[name='accessories']:checked"))
+    .map(el => el.value);
+    if (selectedAccessories.length > 0) {
+    data.accessori = selectedAccessories;
+    }
 
     // Aggiungi tourId o eventId ai dati, assicurandoti che solo uno sia presente
     if (tour) {
@@ -183,6 +189,39 @@ function initializeBookingForm() {
     document.getElementById("name")?.addEventListener("input", (e) => validateField(e.target));
     document.getElementById("email")?.addEventListener("input", (e) => validateField(e.target));
     document.getElementById("date")?.addEventListener("input", (e) => validateField(e.target));
+    // Mostra accessori se clicco su SELEZIONA
+    document.querySelectorAll(".bike-select").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const bikeType = btn.getAttribute("data-bike");
+        const selectElement = document.getElementById("bikeType");
+        if (selectElement) {
+        selectElement.value = bikeType;
+        showSuccessMessage(`🚲 ${bikeType} selezionata!`, 2000);
+        }
+
+        // Mostra gli accessori
+        document.getElementById("accessoriesGroup").style.display = "block";
+        updateLivePrice();
+        document.getElementById("noleggio")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    });
+
+    // Aggiorna il prezzo se cambio accessorio
+    document.querySelectorAll("input[name='accessories']").forEach(cb => {
+    cb.addEventListener("change", updateLivePrice);
+    });
+    // Mostra accessori quando selezioni una bici dal menu a tendina
+    document.getElementById("bikeType")?.addEventListener("change", (e) => {
+    const value = e.target.value;
+    const accessoriesGroup = document.getElementById("accessoriesGroup");
+    if (value && value !== "NESSUNA") {
+        accessoriesGroup.style.display = "block";
+    } else {
+        accessoriesGroup.style.display = "none";
+    }
+    updateLivePrice();
+    });
 
     // Listener per i bottoni di selezione Tour
     document.body.addEventListener("click", (e) => {
