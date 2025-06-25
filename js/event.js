@@ -47,6 +47,9 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="evento-inner">
             <div class="evento-tag evento-${ev.type}">${ev.type.toUpperCase()}</div>
             <img src="${ev.image}" alt="${ev.title}" />
+            <svg class="card-curve" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
+              <path fill="currentColor" d="M0,256L48,256C96,256,192,256,288,245.3C384,235,480,213,576,181.3C672,149,768,107,864,112C960,117,1056,171,1152,186.7C1248,203,1344,181,1392,170.7L1440,160L1440,320L0,320Z"></path>
+            </svg>
             <div class="evento-info">
               <h3>${ev.title}</h3>
               <p><strong>Quando:</strong> ${ev.date} <br><strong>Orario:</strong> ${ev.time}</p>

@@ -21,7 +21,7 @@
     margin: 0;
     padding: 0;
     font-family: 'Inter', sans-serif;
-  /*  background: var(--gray);  */
+    background: var(--gray);
     color: #333;
     overflow-x: hidden;
   }
@@ -872,6 +872,7 @@
   line-height: 0;
   margin-top: -2px; /* elimina gap */
   z-index: 2;
+
 }
 
 .hero-mountain-divider svg {
@@ -889,6 +890,8 @@
   z-index: 2;
   line-height: 0;
   pointer-events: none;
+  color: var(--gray); /* o qualsiasi colore vuoi per il monte */
+
 }
 
 .hero-mountain-overlay svg {

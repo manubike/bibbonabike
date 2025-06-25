@@ -1,7 +1,7 @@
 /* ======= SEZIONE NOLEGGIO ======= */
 /* SECTION BIKE */
 .rental-section {
-    background: white;
+    background:  var(--gray);
     padding: 60px 20px;
     text-align: center;
   }
