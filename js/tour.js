@@ -36,8 +36,8 @@ document.addEventListener("DOMContentLoaded", () => {
   fetch("js/tour.json")
     .then(res => res.json())
     .then(tours => {
-    const MAX_VISIBLE = 3;
-    let allWrappers = [];
+      const MAX_VISIBLE = 3;
+      let allWrappers = [];
 
       tours.forEach((tour, i) => {
         const wrapper = document.createElement("div");
@@ -83,8 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <path d="M59.114 2.001H37.372c-3.847 0-3.847 6.138 0 6.138h21.742c3.848 0 3.848-6.138 0-6.138m0 4.138H37.372c-.77 0-.885-.67-.885-1.069c0-.398.115-1.068.885-1.068h21.742c.771 0 .885.67.885 1.068c0 .399-.114 1.069-.885 1.069" />
               </svg>
               <strong>Difficoltà:</strong> ${tour.difficulty}
-            </li>          
-          </ul>
+            </li>
           </ul>
           <div class="buttons">
             <a href="#noleggio" class="btn-primary scroll-btn tour-book" data-tour-id="tour${i}" data-tour-name="${tour.title}">Prenota</a>
@@ -98,25 +97,51 @@ document.addEventListener("DOMContentLoaded", () => {
 
         allWrappers.push(wrapper);
 
+        // Listener for the "Prenota" button directly on the card
+        const cardBookBtn = card.querySelector(".tour-book");
+        if (cardBookBtn) {
+          cardBookBtn.addEventListener("click", (clickEvent) => {
+            clickEvent.preventDefault();
+
+            // Populate the rental form fields with tour details
+            document.getElementById("tourSelected").value = tour.title;
+            document.getElementById("tourSelected").setAttribute("data-tour-id", tour.id); // Assuming `tour.id` exists
+            document.getElementById("tourField").style.display = "flex";
+
+            // ✅ IMPORTANT: Hide and clear event fields
+            document.getElementById("eventSelected").value = "";
+            document.getElementById("eventIdHidden").value = "";
+            document.getElementById("eventField").style.display = "none";
+
+            if (typeof showSuccessMessage === 'function') {
+              showSuccessMessage(`✅ Tour "${tour.title}" selezionato!`);
+            }
+
+            document.getElementById("noleggio")?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+            // Trigger change event for price update in booking.js
+            const tourChangeEvent = new Event('change', { bubbles: true });
+            document.getElementById("tourSelected").dispatchEvent(tourChangeEvent);
+          });
+        }
+
         const infoBtn = card.querySelector(".info-btn");
         infoBtn.addEventListener("click", e => {
           e.preventDefault();
 
-        // All'interno dell'event listener...
-        const tourImage = document.getElementById("tourDrawerImage");
-        if (tour.image) {
-          tourImage.src = tour.image;
-          tourImage.style.display = "block";
-          tourImage.classList.remove("visible");
-          tourImage.onerror = () => {
-            console.error("Errore caricamento immagine:", tour.image);
+          const tourImage = document.getElementById("tourDrawerImage");
+          if (tour.image) {
+            tourImage.src = tour.image;
+            tourImage.style.display = "block";
+            tourImage.classList.remove("visible");
+            tourImage.onerror = () => {
+              console.error("Errore caricamento immagine:", tour.image);
+              tourImage.style.display = "none";
+            };
+            setTimeout(() => tourImage.classList.add("visible"), 50);
+          } else {
             tourImage.style.display = "none";
-          };
-          // trigger fade-in
-          setTimeout(() => tourImage.classList.add("visible"), 50);
-        } else {
-          tourImage.style.display = "none";
-        }
+          }
 
           document.getElementById("tourDrawerTitle").textContent = tour.title;
 
@@ -219,9 +244,43 @@ document.addEventListener("DOMContentLoaded", () => {
             }
           }, 50);
 
-          const tourDrawerBook = document.getElementById("tourDrawerBook");
+          let tourDrawerBook = document.getElementById("tourDrawerBook");
           tourDrawerBook.href = "#noleggio";
-          tourDrawerBook.addEventListener("click", closeDrawer);
+
+          // ** FIX CHIAVE **: Rimuove e ricrea il pulsante per eliminare listener duplicati
+          const oldTourDrawerBook = tourDrawerBook.cloneNode(true);
+          tourDrawerBook.parentNode.replaceChild(oldTourDrawerBook, tourDrawerBook);
+          const newTourDrawerBook = document.getElementById("tourDrawerBook"); // Riferimento al nuovo elemento
+
+          // Aggiungi un nuovo listener al pulsante "Prenota" del drawer
+          newTourDrawerBook.addEventListener("click", (clickEvent) => {
+            clickEvent.preventDefault(); // Previene il comportamento predefinito del link
+
+            closeDrawer(); // Chiudi il drawer
+
+            // Popola i campi del tour nel form di noleggio
+            document.getElementById("tourSelected").value = tour.title; // Nome tour visibile
+            document.getElementById("tourSelected").setAttribute("data-tour-id", tour.id); // ID tour nascosto per il Worker
+            document.getElementById("tourField").style.display = "flex"; // Mostra il campo tour
+
+            // ✅ IMPORTANTE: Nascondi e svuota il campo dell'evento
+            document.getElementById("eventSelected").value = "";
+            document.getElementById("eventIdHidden").value = "";
+            document.getElementById("eventField").style.display = "none";
+
+            // showSuccessMessage dovrebbe essere definita in booking.js
+            if (typeof showSuccessMessage === 'function') {
+              showSuccessMessage(`✅ Tour "${tour.title}" selezionato!`);
+            }
+
+            // Scrolla al form di noleggio
+            document.getElementById("noleggio")?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+            // Attiva l'aggiornamento del prezzo in booking.js
+            const tourChangeEvent = new Event('change', { bubbles: true });
+            document.getElementById("tourSelected").dispatchEvent(tourChangeEvent); // Questo triggererà updateLivePrice in booking.js
+          });
+
 
           document.getElementById("tourDrawerWhatsApp").href =
             `https://wa.me/393313453207?text=${encodeURIComponent(tour.whatsapp || "Ciao, vorrei info sul tour: " + tour.title)}`;
@@ -232,24 +291,21 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       });
 
-const showMoreBtn = document.getElementById("showMoreTours");
-let isExpanded = false;
+      const showMoreBtn = document.getElementById("showMoreTours");
+      let isExpanded = false;
 
-if (showMoreBtn) {
-  showMoreBtn.addEventListener("click", () => {
-    isExpanded = !isExpanded;
+      if (showMoreBtn) {
+        showMoreBtn.addEventListener("click", () => {
+          isExpanded = !isExpanded;
 
-    allWrappers.forEach((w, i) => {
-      if (i >= MAX_VISIBLE) {
-        w.style.display = isExpanded ? "block" : "none";
+          allWrappers.forEach((w, i) => {
+            if (i >= MAX_VISIBLE) {
+              w.style.display = isExpanded ? "block" : "none";
+            }
+          });
+
+          showMoreBtn.textContent = isExpanded ? "Nascondi tour extra" : "Mostra altri tour";
+        });
       }
-    });
-
-    showMoreBtn.textContent = isExpanded ? "Nascondi tour extra" : "Mostra altri tour";
-  });
-
-
-      }
-
     });
 });
