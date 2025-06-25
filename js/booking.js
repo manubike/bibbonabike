@@ -75,6 +75,7 @@ async function updateLivePrice() {
 
     // Se mancano dati essenziali per il calcolo del prezzo, resetta e esci
     if (!bikeType || isNaN(duration) || duration <= 0 || isNaN(quantity) || quantity <= 0) {
+        console.warn("⚠️ Tipo di bici, durata o quantità non validi per il calcolo del prezzo.");
         document.getElementById("totalAmount").textContent = "0.00";
         document.getElementById("totalHidden").value = "0.00";
         if (paypalPlaceholder) {
@@ -93,12 +94,12 @@ async function updateLivePrice() {
     };
     // Aggiunta accessori selezionati
     const selectedAccessories = Array.from(document.querySelectorAll("input[name='accessories']:checked"))
-    .map(el => el.value);
+        .map(el => el.value);
     if (selectedAccessories.length > 0) {
         data.accessories = selectedAccessories;
     }
 
-    // Aggiungi tourId o eventId ai dati, assicurandoti che solo uno sia presente
+    // Aggiungi tourId o eventId ai dati, assicurandosi che solo uno sia presente
     if (tour) {
         data.tour = tour; // Seleziona il tour per nome, o potresti usare un tourId se disponibile
         data.eventoId = null;
@@ -183,47 +184,44 @@ function initializeBookingForm() {
     document.getElementById("bikeType")?.addEventListener("change", updateLivePrice);
     document.getElementById("duration")?.addEventListener("change", updateLivePrice);
     document.getElementById("quantity")?.addEventListener("input", updateLivePrice);
-    // ✅ Listener per il cambio accessori
-    const selectedAccessories = Array.from(document.querySelectorAll("input[name='accessories']:checked"))
-    .map(el => el.value);
-
+    // Listener per il cambio accessori
+    document.querySelectorAll("input[name='accessories']").forEach(cb => {
+        cb.addEventListener("change", updateLivePrice);
+    });
 
     // Listener per la validazione dei campi obbligatori
     document.getElementById("name")?.addEventListener("input", (e) => validateField(e.target));
     document.getElementById("email")?.addEventListener("input", (e) => validateField(e.target));
     document.getElementById("date")?.addEventListener("input", (e) => validateField(e.target));
+
     // Mostra accessori se clicco su SELEZIONA
     document.querySelectorAll(".bike-select").forEach(btn => {
-    btn.addEventListener("click", (e) => {
-        e.preventDefault();
-        const bikeType = btn.getAttribute("data-bike");
-        const selectElement = document.getElementById("bikeType");
-        if (selectElement) {
-        selectElement.value = bikeType;
-        showSuccessMessage(`🚲 ${bikeType} selezionata!`, 2000);
-        }
+        btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            const bikeType = btn.getAttribute("data-bike");
+            const selectElement = document.getElementById("bikeType");
+            if (selectElement) {
+                selectElement.value = bikeType;
+                showSuccessMessage(`🚲 ${bikeType} selezionata!`, 2000);
+            }
 
-        // Mostra gli accessori
-        document.getElementById("accessoriesGroup").style.display = "block";
-        updateLivePrice();
-        document.getElementById("noleggio")?.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
+            // Mostra gli accessori
+            document.getElementById("accessoriesGroup").style.display = "block";
+            updateLivePrice();
+            document.getElementById("noleggio")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
     });
 
-    // Aggiorna il prezzo se cambio accessorio
-    document.querySelectorAll("input[name='accessories']").forEach(cb => {
-    cb.addEventListener("change", updateLivePrice);
-    });
     // Mostra accessori quando selezioni una bici dal menu a tendina
     document.getElementById("bikeType")?.addEventListener("change", (e) => {
-    const value = e.target.value;
-    const accessoriesGroup = document.getElementById("accessoriesGroup");
-    if (value && value !== "NESSUNA") {
-        accessoriesGroup.style.display = "block";
-    } else {
-        accessoriesGroup.style.display = "none";
-    }
-    updateLivePrice();
+        const value = e.target.value;
+        const accessoriesGroup = document.getElementById("accessoriesGroup");
+        if (value && value !== "NESSUNA") {
+            accessoriesGroup.style.display = "block";
+        } else {
+            accessoriesGroup.style.display = "none";
+        }
+        updateLivePrice();
     });
 
     // Listener per i bottoni di selezione Tour
@@ -362,8 +360,7 @@ function initializeBookingForm() {
             }
         });
     });
-
-    // --- Form Submission Logic ---
+    // Listener per il checkbox della bici personale
     const rentalForm = document.getElementById("noleggioForm");
     if (!rentalForm) {
         console.error("❌ Form #noleggioForm non trovato!");
@@ -374,7 +371,18 @@ function initializeBookingForm() {
         e.preventDefault();
 
         const responseMessage = document.getElementById("responseMessage");
-        const captchaToken = hcaptcha.getResponse();
+        let captchaToken = ''; // Inizializza il token come stringa vuota
+
+        // ✅ MODIFICA: Aggiunto controllo per la disponibilità di hcaptcha
+        if (typeof hcaptcha !== 'undefined' && hcaptcha.getResponse) {
+            captchaToken = hcaptcha.getResponse();
+        } else {
+            console.error("hCaptcha object not found or getResponse method is missing.");
+            showErrorMessage("Errore di caricamento del Captcha. Riprova a ricaricare la pagina.");
+            responseMessage.textContent = "❌ Errore: Captcha non disponibile.";
+            responseMessage.style.color = "#dc3545";
+            return; // Blocca l'invio se hCaptcha non è pronto
+        }
 
         if (!captchaToken) {
             showErrorMessage("⚠️ Devi completare il captcha.");
@@ -445,11 +453,12 @@ function initializeBookingForm() {
         formData.set("total", total);
         const selectedAccessories = Array.from(document.querySelectorAll("input[name='accessories']:checked")).map(el => el.value);
         formData.set("accessories", selectedAccessories.join(", "));
-        formData.set("hcaptchaToken", captchaToken); 
+        formData.set("hcaptchaToken", captchaToken); // ✅ ORA È NEL PUNTO GIUSTO
+
 
         try {
             // Invia i dati al worker di Cloudflare per la gestione della prenotazione
-            const response = await fetch("https://workers-bibbonabike.zonkeynet.workers.dev/submit", {
+            const response = await fetch("[https://workers-bibbonabike.zonkeynet.workers.dev/submit](https://workers-bibbonabike.zonkeynet.workers.dev/submit)", {
                 method: "POST",
                 body: formData
             });
@@ -517,6 +526,11 @@ function initializeBookingForm() {
             responseMessage.style.color = "#dc3545";
             console.error("❌ Errore di invio del form (blocco catch):", error);
             showErrorMessage("Errore di connessione. Controlla la tua rete.");
+        } finally {
+            // ✅ MODIFICA: Reset del captcha, solo se hcaptcha è definito
+            if (typeof hcaptcha !== 'undefined' && hcaptcha.reset) {
+                hcaptcha.reset(); 
+            }
         }
     });
 
@@ -527,17 +541,17 @@ function initializeBookingForm() {
 // Avvia l'inizializzazione del form una volta che il DOM è completamente caricato
 document.addEventListener("DOMContentLoaded", initializeBookingForm);
 document.getElementById("ownBikeCheckbox")?.addEventListener("change", (e) => {
-  const isChecked = e.target.checked;
-  const bikeTypeSelect = document.getElementById("bikeType");
-  const quantityInput = document.getElementById("quantity");
+    const isChecked = e.target.checked;
+    const bikeTypeSelect = document.getElementById("bikeType");
+    const quantityInput = document.getElementById("quantity");
 
-  if (isChecked) {
-    bikeTypeSelect.disabled = true;
-    quantityInput.disabled = true;
-  } else {
-    bikeTypeSelect.disabled = false;
-    quantityInput.disabled = false;
-  }
+    if (isChecked) {
+        bikeTypeSelect.disabled = true;
+        quantityInput.disabled = true;
+    } else {
+        bikeTypeSelect.disabled = false;
+        quantityInput.disabled = false;
+    }
 
-  updateLivePrice(); // Ricalcola il prezzo
+    updateLivePrice(); // Ricalcola il prezzo
 });
