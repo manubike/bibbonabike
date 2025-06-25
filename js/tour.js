@@ -291,20 +291,46 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       });
 
-      const showMoreBtn = document.getElementById("showMoreTours");
-      let isExpanded = false;
 
-      if (showMoreBtn) {
-        showMoreBtn.addEventListener("click", () => {
-          isExpanded = !isExpanded;
+     const showMoreBtn = document.getElementById("showMoreTours");
+     let isExpanded = false;
 
-          allWrappers.forEach((w, i) => {
-            if (i >= MAX_VISIBLE) {
-              w.style.display = isExpanded ? "block" : "none";
+     if (showMoreBtn) {
+       // Aggiungi queste due righe per trovare l'icona e il nodo di testo all'inizio
+       const icon = showMoreBtn.querySelector(".rotate-icon");
+       const textNode = icon ? icon.nextSibling : showMoreBtn.firstChild; // Trova il nodo di testo dopo l'icona
+
+       // Imposta lo stato iniziale del testo (opzionale, ma buona pratica)
+       if (textNode) {
+         textNode.textContent = " Mostra altri tour"; // Aggiungi uno spazio iniziale per separare dall'icona
+       }
+
+       showMoreBtn.addEventListener("click", () => {
+         isExpanded = !isExpanded;
+
+         allWrappers.forEach((w, i) => {
+           if (i >= MAX_VISIBLE) {
+             w.style.display = isExpanded ? "block" : "none";
+           }
+         });
+
+          if (icon) {
+            // Rimuovi tutte le classi Font Awesome e di rotazione esistenti
+            icon.classList.remove("fa-chevron-up", "fa-chevron-down", "rotate-up", "rotate-down");
+
+            if (isExpanded) {
+              // Aggiungi le classi per la freccia verso l'alto e la rotazione in su
+              icon.classList.add("fa-chevron-up", "rotate-up");
+              if (textNode) textNode.textContent = " Nascondi tour extra";
+            } else {
+              // Aggiungi le classi per la freccia verso il basso e la rotazione in giù
+              icon.classList.add("fa-chevron-down", "rotate-down");
+              if (textNode) textNode.textContent = " Mostra altri tour";
             }
-          });
+          }
 
-          showMoreBtn.textContent = isExpanded ? "Nascondi tour extra" : "Mostra altri tour";
+          showMoreBtn.classList.toggle("showing-extra", isExpanded);
+          showMoreBtn.setAttribute("aria-expanded", isExpanded);
         });
       }
     });

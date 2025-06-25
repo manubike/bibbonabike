@@ -328,3 +328,37 @@ textarea {
   margin-right: 8px;
   transform: scale(1.1);
 }
+
+/* ======= ACCESSORI SELEZIONATI ======= */
+.accessory-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+  white-space: nowrap;
+  flex-wrap: nowrap;
+}
+
+.accessory-option label {
+  display: flex;
+  align-items: center;
+}
+
+.accessory-image {
+  width: 80px;
+  height: auto;
+  border-radius: 6px;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+@media (max-width: 600px) {
+  .accessory-option {
+    font-size: 0.9rem;
+    gap: 6px;
+  }
+
+  .accessory-image {
+    width: 60px;
+  }
+}

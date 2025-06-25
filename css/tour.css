@@ -618,3 +618,15 @@ body.drawer-open {
 #showMoreTours {
   margin-top: 2rem;
 }
+
+/* Stile base per l'icona rotante */
+.rotate-icon {
+  transition: transform 0.3s ease-in-out; 
+  display: inline-block; 
+  margin-right: 8px; 
+}
+
+.show-more-btn.showing-extra {
+  background-color: #f0f0f0;
+  border-color: #ccc;
+}

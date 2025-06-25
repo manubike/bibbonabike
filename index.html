@@ -385,8 +385,9 @@
         <div class="tour-cards">
           <!-- Le card verranno generate dinamicamente da JS -->
         </div>
-        <button id="showMoreTours" class="btn-primary">Mostra altri tour</button>
-
+        <button id="showMoreTours" class="btn-primary" aria-expanded="false">
+          <i class="fas fa-chevron-down rotate-icon rotate-down"></i> Mostra altri tour
+        </button>
       </div>
     </section>
     <!-- === TOUR DRAWER OVERLAY === -->
@@ -560,7 +561,7 @@
             <div class="form-group accessory-option">
               <label>
                 <input type="checkbox" name="accessories" value="carrello" />
-                <img src="img/carrello_bambini.png" alt="Carrello bambini" style="width: 80px; height: auto; border-radius: 6px; margin-right: 10px; vertical-align: middle;">
+                <img src="img/carrello_bambini.png" alt="Carrello bambini" class="accessory-image">
                 Carrello bambini (+7€)
               </label>
             </div>
@@ -568,11 +569,12 @@
             <div class="form-group accessory-option">
               <label>
                 <input type="checkbox" name="accessories" value="shotgun" />
-                <img src="img/kids_shotgun.webp" alt="Seggiolino Shotgun" style="width: 80px; height: auto; border-radius: 6px; margin-right: 10px; vertical-align: middle;">
+                <img src="img/kids_shotgun.webp" alt="Seggiolino Shotgun" class="accessory-image">
                 Seggiolino Shotgun (+5€)
               </label>
             </div>
           </div>
+
 
           <div class="form-group icon-input">
             <label for="quantity">Quantità *</label>
