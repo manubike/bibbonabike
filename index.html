@@ -17,6 +17,7 @@
   <!-- 🔗 Precaricamento risorse -->
   <link rel="preload" as="image" href="img/text.webp" type="image/webp">
   <link rel="preload" as="image" href="img/fulllogo_transparent_nobuffer.webp" type="image/webp">
+  
 
   <!-- 🔗 Preconnessione ai domini Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -49,12 +50,11 @@
   <meta name="twitter:image" content="https://bibbonabike.com/img/Magona_Bike_preview.png" />
   <meta name="twitter:site" content="@bibbonabike">
 
-  <!-- Grid‑Overflow (masonry / grid CSS) -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/grid-overflow@1.2.6/src/GridOverflow3D.min.css">
-  <!-- Story Show Gallery (lightbox full‑screen) -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/story-show-gallery@3/dist/ssg.min.css" media="print" onload="this.media='all'">
+
   <!-- Font Awesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
+
   <!-- Custom CSS -->
   <link rel="stylesheet" href="css/footer.css" />
   <link rel="stylesheet" href="css/services.css" />
@@ -67,6 +67,9 @@
   <link rel="stylesheet" href="css/slideshow_my.css">
   <link rel="stylesheet" href="css/ai-bot.css">
   <link rel="stylesheet" href="css/legend.css">
+  <link rel="stylesheet" href="css/GridOverflow3D.min.css" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="css/ssg.min.css" media="print" onload="this.media='all'">
+
   <link rel="stylesheet" href="style.css" />
  
   <!-- 🖼️ Favicon -->
@@ -125,7 +128,7 @@
  
       <!-- Contenuto iniziale -->
       <div class="hero-content animated">
-        <img src="img/fulllogo_transparent_nobuffer.webp" loading="eager" decoding="async" alt="Magona Bike Garage" class="hero-logo" />
+        <img src="img/fulllogo_transparent_nobuffer.webp" loading="eager" alt="Magona Bike Garage" class="hero-logo" />
         <div class="hero-text">
           <h1 id="slideshow-title" class="fade-text">Pedala la libertà tra i sentieri toscani</h1>
           <p>Noleggio bici, officina e ristoro a Bibbona. Tutto in un solo punto.</p>
@@ -760,9 +763,30 @@
   <script src="js/weather.js"></script>
   <script src="js/contactButton.js"></script>
   <script src="js/slideshow_my.js"></script>
-  <script src="https://hcaptcha.com/1/api.js" async defer></script>
 
-  
+
+  <script>
+  // Lazy load hCaptcha script :D
+  const hcaptchaContainer = document.getElementById("hcaptcha");
+
+  if ("IntersectionObserver" in window && hcaptchaContainer) {
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !document.getElementById("hcaptcha-script")) {
+          const script = document.createElement("script");
+          script.src = "https://js.hcaptcha.com/1/api.js";
+          script.async = true;
+          script.defer = true;
+          script.id = "hcaptcha-script";
+          document.head.appendChild(script);
+          observer.unobserve(hcaptchaContainer);
+        }
+      });
+    });
+    observer.observe(hcaptchaContainer);
+  }
+</script>
+
   <script>
     // Animazione apparizione del form
     const observer = new IntersectionObserver(entries => {
