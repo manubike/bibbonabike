@@ -75,7 +75,6 @@ async function updateLivePrice() {
 
     // Se mancano dati essenziali per il calcolo del prezzo, resetta e esci
     if (!bikeType || isNaN(duration) || duration <= 0 || isNaN(quantity) || quantity <= 0) {
-        console.warn("⚠️ Tipo di bici, durata o quantità non validi per il calcolo del prezzo.");
         document.getElementById("totalAmount").textContent = "0.00";
         document.getElementById("totalHidden").value = "0.00";
         if (paypalPlaceholder) {
@@ -187,7 +186,6 @@ function initializeBookingForm() {
     // ✅ Listener per il cambio accessori
     const selectedAccessories = Array.from(document.querySelectorAll("input[name='accessories']:checked"))
     .map(el => el.value);
-    console.log("📦 Accessori selezionati:", selectedAccessories); // ✅ qui va bene
 
 
     // Listener per la validazione dei campi obbligatori
