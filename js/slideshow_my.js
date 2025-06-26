@@ -310,7 +310,7 @@ document.addEventListener("DOMContentLoaded", () => {
             watermarkImage: 'img/icon_ai.png', // Assicurati che questo percorso sia corretto
             watermarkText: "BibbonaBike",
             watermarkFontSize: 10,
-            watermarkWidth: 100,
+            watermarkWidth: 60,
             watermarkOffsetX: 2,
             watermarkOffsetY: 2,
             watermarkOpacity: 0.45,
