@@ -1,9 +1,11 @@
 // slideshow_my.js
+/*!  GALLERY Gallery
+ *  Version: 1.0.0 by aken
+*/
 
-// ============================================================================
-// DEFINIZIONI DI GALLERIE E DATI (DEVONO ESSERE GLOBALI)
-// **IMPORTANTE**: Assicurati che i percorsi delle immagini siano corretti.
-// ============================================================================
+// ==============================================================================================================
+// **IMPORTANTE**: Assicurati che i percorsi delle immagini siano corretti e le virgole nell'array siano corrette.
+// ==============================================================================================================
 
 const galleriaPrincipaleImmagini = [
     { href: "https://bibbonabike.com/img/land1.webp", alt: "Tour Etrusco – Livello facile: Sentiero vista panoramica verso il mare" },
@@ -51,34 +53,14 @@ const allGalleriesData = {
 // Dichiarazione delle variabili DOM e di stato (DEVONO ESSERE GLOBALI)
 let galleriaCorrente = []; // Variabile per tracciare il set di immagini attualmente caricato
 let galleryElement; // Elemento DOM per la griglia delle miniature
-let backToMainGalleryBtn; // Bottone "Torna alla Galleria Principale"
+
+// Variabili per il cambio tema
+const themes = ['light', 'dark', 'dim', 'black'];
+let currentThemeIndex = 0; // Inizia dal tema 'light' (indice 0)
 
 // ============================================================================
 // FUNZIONI HELPER E DI LOGICA
 // ============================================================================
-
-/**
- * Funzione helper per aggiornare la visibilità del bottone "Torna alla Galleria Principale".
- */
-function updateBackButtonVisibility() {
-    console.log("updateBackButtonVisibility: Avvio.");
-    if (!backToMainGalleryBtn) {
-        console.warn("updateBackButtonVisibility: Elemento backToMainGalleryBtn non trovato.");
-        return;
-    }
-
-    // Confronta se l'array corrente è lo stesso dell'array principale
-    const isMainGallery = galleriaCorrente === galleriaPrincipaleImmagini;
-    console.log("updateBackButtonVisibility: È la galleria principale?", isMainGallery);
-
-    if (!isMainGallery) {
-        backToMainGalleryBtn.style.display = 'inline-block';
-        console.log("updateBackButtonVisibility: Bottone 'Torna alla Galleria Principale' mostrato.");
-    } else {
-        backToMainGalleryBtn.style.display = 'none';
-        console.log("updateBackButtonVisibility: Bottone 'Torna alla Galleria Principale' nascosto.");
-    }
-}
 
 /**
  * Funzione generica per popolare la griglia delle miniature.
@@ -87,19 +69,16 @@ function updateBackButtonVisibility() {
  * @param {Array<Object>} photos - L'array di oggetti immagine.
  */
 function renderGallery(container, photos) {
-    console.log("renderGallery: Avvio. Numero di foto:", photos.length);
     if (!container) {
         console.error("renderGallery: Container per la galleria non trovato.");
         return;
     }
-    // Utilizza p.href per src dell'immagine e p.alt per il testo alternativo e la didascalia
     container.innerHTML = photos.map((p, i) =>
         `<a href="${p.href}" class="go_gridItem" data-index="${i}">
             <img src="${p.href}" alt="${p.alt}" loading="lazy" width="300" height="200">
             <span class="go_caption go_caption-full">${p.alt}</span>
         </a>`
     ).join("");
-    console.log("renderGallery: Miniature caricate nel DOM.");
 }
 
 /**
@@ -109,10 +88,33 @@ function renderGallery(container, photos) {
  */
 function isSsgLightboxOpen() {
     const ssgOpenClass = 'ssg-active';
-    const isOpen = document.body.classList.contains(ssgOpenClass);
-    console.log(`isSsgLightboxOpen: Verificando se <body> contiene la classe '${ssgOpenClass}'. Risultato: ${isOpen}`);
-    return isOpen;
+    return document.body.classList.contains(ssgOpenClass);
 }
+
+/**
+ * Funzione per cambiare il tema della lightbox SSG.
+ * Cicla tra i temi disponibili (light, dark, dim, black).
+ */
+function changeLightboxTheme() {
+    if (!window.SSG || !SSG.cfg) {
+        console.warn("SSG non è disponibile o non è stato configurato per cambiare il tema.");
+        return;
+    }
+
+    currentThemeIndex = (currentThemeIndex + 1) % themes.length;
+    const newTheme = themes[currentThemeIndex];
+
+    SSG.cfg.theme = newTheme;
+
+    if (isSsgLightboxOpen() && typeof SSG.close === 'function') {
+        SSG.close();
+        setTimeout(() => {
+            // Se necessario, riaprire la lightbox qui con il nuovo tema.
+            // Per questo caso, ci affidiamo che il tema verrà applicato al prossimo avvio.
+        }, 300);
+    }
+}
+
 
 // ============================================================================
 // FUNZIONI DI CARICAMENTO GALLERIA
@@ -128,174 +130,76 @@ function isSsgLightboxOpen() {
  * @param {boolean} [shouldRunSsgImmediately=false] - Indica se avviare SSG immediatamente dopo il caricamento.
  */
 function caricaGalleria(galleryData, galleryName, shouldRunSsgImmediately = false) {
-    console.log(`caricaGalleria: Avvio per la galleria: ${galleryName}. Avvio SSG immediato: ${shouldRunSsgImmediately}`);
-
     const lightboxWasOpen = isSsgLightboxOpen();
 
     const proceedWithGalleryLoad = () => {
-        // 1. Aggiorna lo stato della galleria corrente
-        galleriaCorrente = galleryData; // Assegna direttamente l'array di riferimento
-        console.log("caricaGalleria: galleriaCorrente aggiornata. Prima immagine:", galleriaCorrente.length > 0 ? galleriaCorrente[0].alt : "Nessuna immagine");
-
-        // 2. Aggiorna la visualizzazione delle miniature sulla home page.
+        galleriaCorrente = galleryData;
         renderGallery(galleryElement, galleriaCorrente);
-        updateBackButtonVisibility();
-
-        // 3. Salva il nome della galleria nel localStorage
         localStorage.setItem('lastSelectedGallery', galleryName);
-        console.log(`caricaGalleria: Salvato in localStorage: lastSelectedGallery = ${galleryName}`);
 
-        // 4. Forza SSG a scansionare nuovamente le immagini dal DOM DOPO che è stato aggiornato da renderGallery.
-        // Questo è CRUCIALE per SSG quando si cambiano dinamicamente le miniature.
         if (window.SSG && SSG.beforeRun) {
-            SSG.beforeRun(); // Re-inizializza SSG.jQueryImgCollection dal DOM corrente
-            console.log("caricaGalleria: SSG.beforeRun() chiamato per forzare la scansione delle nuove miniature.");
-        } else if (window.SSG) {
-             console.warn("caricaGalleria: SSG.beforeRun non è una funzione o SSG non è completamente inizializzato.");
+            SSG.beforeRun();
         }
 
-        // 5. Se SSG è disponibile e richiesto, avvia la lightbox con la nuova galleria.
         if (window.SSG && shouldRunSsgImmediately) {
-            console.log("caricaGalleria: SSG è disponibile. Avvio SSG con la nuova galleria.");
-            // Piccolo ritardo per assicurarsi che il DOM sia stabile e SSG abbia scansionato correttamente.
             setTimeout(() => {
                 SSG.run({
-                    imgs: galleriaCorrente, // Passa il nuovo set di immagini esplicitamente
-                    startIndex: 0          // Inizia dalla prima immagine della nuova galleria
+                    imgs: galleriaCorrente,
+                    startIndex: 0
                 });
-                console.log("caricaGalleria: SSG.run() chiamato con successo per la nuova galleria dopo un ritardo.");
-            }, 100); // Un breve ritardo è spesso necessario dopo manipolazioni DOM e re-scansioni
+            }, 100);
         } else if (!window.SSG) {
             console.warn("caricaGalleria: Story Show Gallery (SSG) non è disponibile.");
         }
     };
 
     if (lightboxWasOpen) {
-        console.log("caricaGalleria: SSG lightbox è attualmente aperto, provo a chiuderlo prima di caricare la nuova galleria.");
         if (typeof SSG.close === 'function') {
             SSG.close();
-            console.log("caricaGalleria: SSG.close() chiamato.");
-            // Attendere che SSG si chiuda completamente prima di procedere.
             setTimeout(() => {
-                if (isSsgLightboxOpen()) {
-                    console.warn("caricaGalleria: SSG lightbox non si è chiuso completamente dopo SSG.close(). Procedo comunque.");
-                } else {
-                    console.log("caricaGalleria: SSG lightbox chiuso con successo.");
-                }
                 proceedWithGalleryLoad();
-            }, 300); // Tempo sufficiente per la chiusura di SSG
+            }, 300);
         } else {
             console.error("caricaGalleria: SSG.close non è una funzione. Procedo senza chiudere SSG.");
-            proceedWithGalleryLoad(); // Procedi senza chiudere se close non è una funzione
+            proceedWithGalleryLoad();
         }
     } else {
-        console.log("caricaGalleria: SSG lightbox non era aperto, procedo direttamente.");
         proceedWithGalleryLoad();
     }
 }
 
 // Funzioni wrapper per chiamare caricaGalleria con il nome corretto
-// Se vuoi che la lightbox si avvii immediatamente, il terzo parametro deve essere 'true'
 function caricaGalleriaPrincipale() {
-    console.log("caricaGalleriaPrincipale: Chiamata.");
-    caricaGalleria(galleriaPrincipaleImmagini, 'principale', true); // Avvia la lightbox immediatamente
+    caricaGalleria(galleriaPrincipaleImmagini, 'principale', true);
 }
 function caricaGalleriaCollinare() {
-    console.log("caricaGalleriaCollinare: Chiamata.");
-    caricaGalleria(galleriaCollinareImmagini, 'collinare', true); // Avvia la lightbox immediatamente
+    caricaGalleria(galleriaCollinareImmagini, 'collinare', true);
 }
 function caricaGalleriaPineta() {
-    console.log("caricaGalleriaPineta: Chiamata.");
-    caricaGalleria(galleriaPinetaImmagini, 'pineta', true); // Avvia la lightbox immediatamente
+    caricaGalleria(galleriaPinetaImmagini, 'pineta', true);
 }
 function caricaGalleriaSunset() {
-    console.log("caricaGalleriaSunset: Chiamata.");
-    caricaGalleria(galleriaSunsetImmagini, 'sunset', true); // Avvia la lightbox immediatamente
+    caricaGalleria(galleriaSunsetImmagini, 'sunset', true);
 }
 function caricaGalleriaRelax() {
-    console.log("caricaGalleriaRelax: Chiamata.");
-    caricaGalleria(galleriaRelaxImmagini, 'relax', true); // Avvia la lightbox immediatamente
+    caricaGalleria(galleriaRelaxImmagini, 'relax', true);
 }
-
-/**
- * Funzione per tornare alla galleria principale.
- * Chiude la lightbox SSG se aperta e imposta la galleria principale come corrente.
- * Non avvia automaticamente SSG; l'utente dovrà cliccare sulle miniature per riaprire.
- */
-function tornaAllaGalleriaPrincipale() {
-    console.log("tornaAllaGalleriaPrincipale: Avvio.");
-
-    const proceedToMainGallery = () => {
-        caricaGalleria(galleriaPrincipaleImmagini, 'principale', false); // False = non avvia SSG automaticamente
-        localStorage.removeItem('lastSelectedGallery');
-        console.log("tornaAllaGalleriaPrincipale: Galleria principale caricata e localStorage pulito.");
-    };
-
-    const wasSsgOpen = isSsgLightboxOpen();
-    console.log("tornaAllaGalleriaPrincipale: Stato lightbox prima della chiusura (DOM check):", wasSsgOpen ? 'Aperta' : 'Chiusa');
-
-    if (window.SSG && wasSsgOpen) {
-        if (typeof SSG.close === 'function') {
-            SSG.close();
-            console.log("tornaAllaGalleriaPrincipale: SSG.close() chiamato.");
-            // Aggiungi un ritardo per permettere a SSG di chiudersi completamente
-            setTimeout(() => {
-                if (isSsgLightboxOpen()) {
-                    console.warn("tornaAllaGalleriaPrincipale: SSG lightbox non si è chiuso completamente dopo SSG.close(). Carico comunque la galleria principale.");
-                } else {
-                    console.log("tornaAllaGalleriaPrincipale: SSG lightbox chiuso con successo.");
-                }
-                proceedToMainGallery();
-            }, 300); // Ritardo sufficiente per SSG
-        } else {
-            console.error("tornaAllaGalleriaPrincipale: SSG.close non è una funzione. Carico comunque la galleria principale.");
-            proceedToMainGallery();
-        }
-    } else {
-        console.log("tornaAllaGalleriaPrincipale: SSG non era aperto o non disponibile, caricata direttamente la galleria principale.");
-        proceedToMainGallery();
-    }
-}
-
 
 // ============================================================================
 // CODICE ESEGUITO QUANDO IL DOM È COMPLETAMENTE CARICATO
 // ============================================================================
 
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("DOMContentLoaded: Evento DOMContentLoaded scattato.");
-
-    // Inizializza le variabili DOM qui
-    // ASSICURATI CHE GLI ID NEL TUO HTML SIANO ESATTAMENTE 'photoGallery' E 'backToMainGalleryBtn'
     galleryElement = document.getElementById("photoGallery");
-    backToMainGalleryBtn = document.getElementById("backToMainGalleryBtn");
 
     if (!galleryElement) {
         console.error("DOMContentLoaded: Elemento #photoGallery non trovato. La galleria non sarà inizializzata.");
         return;
     }
-    console.log("DOMContentLoaded: Elemento #photoGallery trovato.");
 
-    if (backToMainGalleryBtn) {
-        backToMainGalleryBtn.addEventListener("click", () => {
-            console.log("DOMContentLoaded: Click su 'Torna alla Galleria Principale'.");
-            tornaAllaGalleriaPrincipale();
-        });
-        console.log("DOMContentLoaded: Event listener per backToMainGalleryBtn aggiunto.");
-    } else {
-        console.warn("DOMContentLoaded: Elemento #backToMainGalleryBtn non trovato.");
-    }
-
-    // Carica la galleria principale come default all'avvio
     galleriaCorrente = galleriaPrincipaleImmagini;
     renderGallery(galleryElement, galleriaCorrente);
-    updateBackButtonVisibility();
-    console.log("DOMContentLoaded: Pagina inizializzata con galleria di default (Principale).");
 
-
-    // Configura SSG
-    // Questo blocco di configurazione deve essere eseguito dopo che SSG è stato caricato.
-    // L'ideal è che il tag <script src="ssg.js"></script> sia prima di questo script.
     if (window.SSG) {
         Object.assign(SSG.cfg, {
             theme: 'light',
@@ -305,9 +209,9 @@ document.addEventListener("DOMContentLoaded", () => {
             mobilePortraitFS: false,
             forceLandscapeMode: false,
             crossCursor: false,
-            autorun: false, // Importante: non avviare SSG automaticamente al caricamento della pagina
-            noautostart: true, // Importante: non avviare SSG automaticamente al caricamento della pagina
-            watermarkImage: 'img/icon_ai.png', // Assicurati che questo percorso sia corretto
+            autorun: false,
+            noautostart: true,
+            watermarkImage: 'img/icon_ai.png',
             watermarkText: "BibbonaBike",
             watermarkFontSize: 10,
             watermarkWidth: 60,
@@ -336,92 +240,88 @@ document.addEventListener("DOMContentLoaded", () => {
             copyButton: "⎘ Copia il link",
             linkPaste: "…puoi incollarlo ovunque con ctrl+v",
             fileToLoad: "ssg-loaded.html",
-            // L'exitLink punta alla funzione globale `tornaAllaGalleriaPrincipale` nel parent (index.html)
-            exitLink: "Esci dalla galleria <a onclick='parent.tornaAllaGalleriaPrincipale();' style='cursor:pointer; color:#71a7b7;'>Torna alla galleria principale</a>",
-            observeDOM: true, // Lascialo a true per permettere a SSG di rilevare cambiamenti DOM
+            exitLink: "Esci dalla galleria.",
+            observeDOM: true,
             onImgLoad: function(data) {
                 // Funzione onImgLoad lasciata vuota, rimuovendo riferimenti esterni non più necessari.
             }
         });
-        console.log("DOMContentLoaded: Configurazione SSG completata.");
     } else {
         console.error("DOMContentLoaded: Story Show Gallery (SSG) non è disponibile. Assicurati che ssg.js sia caricato correttamente.");
     }
 
-    // Gestione del click sulla galleria per avviare SSG
     galleryElement.addEventListener("click", e => {
-        console.log("EventListener (gallery click): Click rilevato sulla galleria.");
         const anchor = e.target.closest("a");
-        // Verifica che il click sia su un link che contiene un'immagine e che sia all'interno di galleryElement
         if (!anchor || !galleryElement.contains(anchor) || !anchor.querySelector('img')) {
-            console.log("EventListener (gallery click): Click non su un link valido della galleria, ignorato.");
             return;
         }
-        e.preventDefault(); // Impedisce il comportamento predefinito del link (es. navigazione)
-        console.log("EventListener (gallery click): Prevenuta l'azione di default del link.");
+        e.preventDefault();
 
         const index = Number(anchor.dataset.index);
         if (!isNaN(index)) {
-            console.log(`EventListener (gallery click): Indice miniatura cliccata: ${index}.`);
-            console.log("EventListener (gallery click): Chiamata SSG.run() con galleriaCorrente. Prima immagine:", galleriaCorrente.length > 0 ? galleriaCorrente[0].alt : "Nessuna immagine");
-
-            // Prima di avviare SSG, assicuriamoci che sia stato correttamente ri-scansionato il DOM
             if (window.SSG && SSG.beforeRun) {
                 SSG.beforeRun();
-                console.log("EventListener (gallery click): SSG.beforeRun() chiamato prima di SSG.run().");
             }
             
-            // Avvia SSG con l'array corrente e l'indice cliccato
             SSG.run({
-                imgs: galleriaCorrente, // Utilizza l'array galleriaCorrente attuale
+                imgs: galleriaCorrente,
                 startIndex: index
             });
-            console.log("EventListener (gallery click): SSG avviato. Verifico lo stato lightbox dopo un breve ritardo.");
-            setTimeout(() => {
-                console.log("EventListener (gallery click): Stato lightbox dopo SSG.run():", isSsgLightboxOpen() ? 'Aperta' : 'Chiusa');
-            }, 100);
         } else {
             console.warn("EventListener (gallery click): Indice miniatura non valido (NaN).");
         }
     });
-    console.log("DOMContentLoaded: Event listener per la galleria aggiunto.");
 
     // Toggle layout della griglia
     const toggleBtn = document.getElementById("toggleLayout");
     if (toggleBtn) {
+        // Imposta lo stato iniziale del pulsante per riflettere che la galleria inizia in modalità libera (go-masonry)
+        const isInitiallyMasonry = galleryElement.classList.contains("go-masonry");
+        toggleBtn.classList.toggle("active", isInitiallyMasonry);
+        toggleBtn.setAttribute("aria-pressed", isInitiallyMasonry);
+
+        const label = toggleBtn.querySelector(".label");
+        // Se la galleria è inizialmente in modalità libera, il pulsante deve offrire l'opzione "Griglia"
+        if (label) label.textContent = isInitiallyMasonry ? "Griglia" : "Libero";
+
+        const icon = toggleBtn.querySelector("i");
+        // Se la galleria è inizialmente in modalità libera, il pulsante deve mostrare l'icona della griglia
+        if (icon) icon.className = isInitiallyMasonry ? "fas fa-th" : "fas fa-border-all";
+
+
         toggleBtn.addEventListener("click", () => {
-            console.log("EventListener (toggleLayout): Click su bottone toggle layout.");
+            // isActive sarà true se go-masonry è ora presente (modalità libera)
             const isActive = galleryElement.classList.toggle("go-masonry");
+
             toggleBtn.classList.toggle("active", isActive);
             toggleBtn.setAttribute("aria-pressed", isActive);
 
-            const label = toggleBtn.querySelector(".label");
-            if (label) label.textContent = isActive ? "Libero" : "Griglia";
+            // Se la galleria è ora in modalità libera (isActive è true), il pulsante deve offrire "Griglia"
+            if (label) label.textContent = isActive ? "Griglia" : "Libero";
 
-            const icon = toggleBtn.querySelector("i");
-            if (icon) icon.className = isActive ? "fas fa-border-all" : "fas fa-th";
-            console.log("EventListener (toggleLayout): Layout della galleria cambiato a:", isActive ? "Masonry" : "Griglia standard");
+            // Se la galleria è ora in modalità libera (isActive è true), il pulsante deve mostrare l'icona della griglia
+            if (icon) icon.className = isActive ? "fas fa-th" : "fas fa-border-all";
         });
-        console.log("DOMContentLoaded: Event listener per toggleLayout aggiunto.");
     } else {
         console.warn("DOMContentLoaded: Elemento #toggleLayout non trovato.");
     }
 
-    // Fix warning: key "" per eventi keydown (non correlato al warning jQuery/SSG)
+    const changeThemeBtn = document.getElementById("changeThemeButton");
+    if (changeThemeBtn) {
+        changeThemeBtn.addEventListener("click", changeLightboxTheme);
+    } else {
+        console.warn("DOMContentLoaded: Elemento #changeThemeButton non trovato. Il pulsante di cambio tema non funzionerà.");
+    }
+
     document.addEventListener("keydown", e => {
         if (!e.key || e.key === "") {
             e.preventDefault();
-            console.log("EventListener (keydown): Prevenuto keydown con chiave vuota.");
         }
     });
-    console.log("DOMContentLoaded: Event listener per keydown aggiunto.");
 });
 
-// Aggiungi queste funzioni al contesto globale se sono chiamate da HTML (es. onclick)
-// Questo è necessario se i tuoi bottoni HTML hanno `onclick="caricaGalleriaPineta()"`
 window.caricaGalleriaPrincipale = caricaGalleriaPrincipale;
 window.caricaGalleriaCollinare = caricaGalleriaCollinare;
 window.caricaGalleriaPineta = caricaGalleriaPineta;
 window.caricaGalleriaSunset = caricaGalleriaSunset;
 window.caricaGalleriaRelax = caricaGalleriaRelax;
-window.tornaAllaGalleriaPrincipale = tornaAllaGalleriaPrincipale;
