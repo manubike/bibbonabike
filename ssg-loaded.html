@@ -1,218 +1,198 @@
-<style type='text/css' media='all'>
-    /* Questo blocco STYLE è consentito qui secondo la documentazione ufficiale SSG */
-    #SSG_lastone #SSG_loadInto {
-        margin-top: 3em;
-        text-align: center;
-        margin-bottom: 10vh; /* Se vuoi mantenere questo margine */
-    }
-
-    #SSG_lastone .SSG_signpostH1 {
-        font-size: 200%;
-        color: #ababab;
-        margin: 0em;
-        font-weight: lighter;
-    }
-
-    #SSG_lastone p.SSG_signpostText {
-        background: none;
-        line-height: 1.6em;
-        color: #888888;
-        margin-bottom: 0 !important;
-        padding: 0;
-        text-shadow: none;
-        font-size: 20px;
-    }
-
-    #SSG_lastone #opening {
-        margin-bottom: 0.8em;
-    }
-
-    #SSG_lastone .SSG_icell .SSG_icapt {
-        transform: rotate(7deg);
-        display: block;
-        margin: 0.3vh 10px 0 0;
-        color: #bfbfbf;
-        font-weight: lighter;
-    }
-
-    #SSG_lastone .SSG_icell .link-outside::before {
-        content: "⧉ ";
-        color: #71a7b7;
-    }
-
-    #SSG_lastone .SSG_icell .gallery-link::before {
-        content: "▣ ";
-        color: #71a7b7;
-    }
-
-    #SSG_lastone .SSG_icell .hash-link::before {
-        content: "# ";
-        color: #71a7b7;
-        font-size: 113%;
-    }
-
-    #SSG_lastone .SSG_icell .info-link::before {
-        content: "ⓘ ";
-        color: #71a7b7;
-    }
-
-    #SSG_lastone a {
-        text-decoration: none;
-    }
-
-    #SSG_lastone .SSG_icell:hover > a {
-        text-decoration: underline;
-        text-decoration-color: #ff706c;
-    }
-
-    #SSG_lastone .SSG_icell {
-        margin-bottom: 3vh;
-        max-height: 250px;
-        margin-left: 1.5vw;
-        margin-right: 1.5vw;
-        margin-top: 2vh;
-        width: 20vw;
-        background: none;
-        display: inline-block;
-        text-align: center;
-        vertical-align: text-top;
-    }
-
-    #SSG_lastone .SSG_icell img {
-        width: 11vw;
-        max-width: 200px !important;
-        border: none;
-        opacity: 1;
-        margin: 0;
-        border-radius: 100px;
-        transition: 0.3s;
-    }
-
-    #SSG_lastone .SSG_icell:hover img {
-        border-radius: 11px;
-        transform: rotate(7deg);
-    }
-
-    .ssglight #SSG_lastone .SSG_icell .SSG_icapt,
-    .ssglight #SSG_lastone .SSG_signpostH1,
-    .ssglight #SSG_lastone p.SSG_signpostText {
-        color: #333333;
-    }
-
-    #SSG_lastone .SSG_icell span::before {
-        color: #008cb5 !important;
-    }
-
-    @media (max-width: 860px) and (orientation: landscape), (max-width: 750px) and (orientation: portrait) {
-        @media (orientation: landscape) {
-            #SSG_lastone #SSG_loadInto {
-                margin-top: 2em;
-            }
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Esplora Altre Gallerie</title>
+    <style type='text/css' media='all'>
+        #SSG_lastone #SSG_loadInto {
+            margin-top: 3em;
+            text-align: center;
+            margin-bottom: 10vh;
         }
         #SSG_lastone .SSG_signpostH1 {
-            font-size: 180%;
-        }
-        #SSG_lastone .SSG_icell img {
-            width: 16vw;
-        }
-    }
-
-    @media (orientation: portrait) and (max-width: 600px) {
-        #SSG_lastone .SSG_icell {
-            margin-left: 4vw;
-            margin-right: 4vw;
-            width: 39vw;
-        }
-        #SSG_lastone .SSG_icell img {
-            width: 16vh;
-        }
-        #SSG_lastone .SSG_icell .SSG_icapt {
-            margin: 0px 10px 0 0;
-        }
-    }
-
-    @media (orientation: portrait) and (min-width: 601px) {
-        #SSG_lastone .SSG_icell {
-            margin-bottom: 0;
-            margin-left: 2vh;
-            margin-right: 2vh;
-            width: 18vh;
-        }
-        #SSG_lastone .SSG_icell img {
-            width: 14vh;
-        }
-        @media (max-aspect-ratio: 11/16) {
-            #SSG_lastone .SSG_icell {
-                width: 13.3vh;
-            }
-        }
-    }
-
-    @media (min-width: 1400px) {
-        #SSG_lastone .SSG_icell {
-            width: 15vw;
-        }
-    }
-
-    @media (min-height: 888px) {
-        #SSG_lastone #opening {
-            margin-bottom: 1.5em;
-        }
-        #SSG_lastone .SSG_icell {
-            height: 29vh;
-        }
-        #SSG_lastone .SSG_icell img {
-            margin: 0.1em 0 0.5em 0;
-        }
-        #SSG_lastone #SSG_loadInto {
-            margin-top: 4.4em;
-        }
-    }
-
-    @media (min-height: 1068px) {
-        #SSG_lastone #opening {
-            margin-bottom: 2em;
+            font-size: 200%;
+            color: #ababab;
+            margin: 0em;
+            font-weight: lighter;
         }
         #SSG_lastone p.SSG_signpostText {
-            padding-top: 0.5em;
+            background: none;
+            line-height: 1.6em;
+            color: #888888;
+            margin-bottom: 0 !important;
+            padding: 0;
+            text-shadow: none;
+            font-size: 20px;
         }
-        #SSG_lastone #SSG_loadInto {
-            margin-top: 6em;
+        #SSG_lastone #opening {
+            margin-bottom: 0.8em;
         }
-    }
-</style>
-
-<div id="SSG_lastone">
-  <div id="SSG_loadInto">
-    <h1 class="SSG_signpostH1">Esplora altri tour BibbonaBike</h1>
-    <p class="SSG_signpostText">Scopri nuove avventure tra natura, storia e panorami mozzafiato.</p>
-
-    <div class="SSG_icell">
-      <a href="javascript: caricaGalleriaPineta();"> 
+        #SSG_lastone .SSG_icell .SSG_icapt {
+            transform: rotate(7deg);
+            display: block;
+            margin: 0.3vh 10px 0 0;
+            color: #bfbfbf;
+            font-weight: lighter;
+        }
+        #SSG_lastone .SSG_icell .link-outside::before {
+            content: "⧉ ";
+            color: #71a7b7;
+        }
+        #SSG_lastone .SSG_icell .gallery-link::before {
+            content: "▣ ";
+            color: #71a7b7;
+        }
+        #SSG_lastone .SSG_icell .hash-link::before {
+            content: "# ";
+            color: #71a7b7;
+            font-size: 113%;
+        }
+        #SSG_lastone .SSG_icell .info-link::before {
+            content: "ⓘ ";
+            color: #71a7b7;
+        }
+        #SSG_lastone a {
+            text-decoration: none;
+        }
+        #SSG_lastone .SSG_icell:hover > a {
+            text-decoration: underline;
+            text-decoration-color: #ff706c;
+        }
+        #SSG_lastone .SSG_icell {
+            margin-bottom: 3vh;
+            max-height: 250px;
+            margin-left: 1.5vw;
+            margin-right: 1.5vw;
+            margin-top: 2vh;
+            width: 20vw;
+            background: none;
+            display: inline-block;
+            text-align: center;
+            vertical-align: text-top;
+        }
+        #SSG_lastone .SSG_icell img {
+            width: 11vw;
+            max-width: 200px !important;
+            border: none;
+            opacity: 1;
+            margin: 0;
+            border-radius: 100px;
+            transition: 0.3s;
+        }
+        #SSG_lastone .SSG_icell:hover img {
+            border-radius: 11px;
+            transform: rotate(7deg);
+        }
+        .ssglight #SSG_lastone .SSG_icell .SSG_icapt,
+        .ssglight #SSG_lastone .SSG_signpostH1,
+        .ssglight #SSG_lastone p.SSG_signpostText {
+            color: #333333;
+        }
+        #SSG_lastone .SSG_icell span::before {
+            color: #008cb5 !important;
+        }
+        @media (max-width: 860px) and (orientation: landscape), (max-width: 750px) and (orientation: portrait) {
+            @media (orientation: landscape) {
+                #SSG_lastone #SSG_loadInto {
+                    margin-top: 2em;
+                }
+            }
+            #SSG_lastone .SSG_signpostH1 {
+                font-size: 180%;
+            }
+            #SSG_lastone .SSG_icell img {
+                width: 16vw;
+            }
+        }
+        @media (orientation: portrait) and (max-width: 600px) {
+            #SSG_lastone .SSG_icell {
+                margin-left: 4vw;
+                margin-right: 4vw;
+                width: 39vw;
+            }
+            #SSG_lastone .SSG_icell img {
+                width: 16vh;
+            }
+            #SSG_lastone .SSG_icell .SSG_icapt {
+                margin: 0px 10px 0 0;
+            }
+        }
+        @media (orientation: portrait) and (min-width: 601px) {
+            #SSG_lastone .SSG_icell {
+                margin-bottom: 0;
+                margin-left: 2vh;
+                margin-right: 2vh;
+                width: 18vh;
+            }
+            #SSG_lastone .SSG_icell img {
+                width: 14vh;
+            }
+            @media (max-aspect-ratio: 11/16) {
+                #SSG_lastone .SSG_icell {
+                    width: 13.3vh;
+                }
+            }
+        }
+        @media (min-width: 1400px) {
+            #SSG_lastone .SSG_icell {
+                width: 15vw;
+            }
+        }
+        @media (min-height: 888px) {
+            #SSG_lastone #opening {
+                margin-bottom: 1.5em;
+            }
+            #SSG_lastone .SSG_icell {
+                height: 29vh;
+            }
+            #SSG_lastone .SSG_icell img {
+                margin: 0.1em 0 0.5em 0;
+            }
+            #SSG_lastone #SSG_loadInto {
+                margin-top: 4.4em;
+            }
+        }
+        @media (min-height: 1068px) {
+            #SSG_lastone #opening {
+                margin-bottom: 2em;
+            }
+            #SSG_lastone p.SSG_signpostText {
+                padding-top: 0.5em;
+            }
+            #SSG_lastone #SSG_loadInto {
+                margin-top: 6em;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="SSG_icell">
+    <a href="javascript: SSG.restart({ imgs: galleriaPinetaImmagini, initImgID: 0, fs: true });">
         <img src="img/tour1.webp" alt="Tour Pineta e Costa" />
         <span class="SSG_icapt SSG_text gallery-link">Tour Pineta &amp; Costa</span>
-      </a>
-    </div>
+    </a>
+</div>
 
-    <div class="SSG_icell">
-      <a href="javascript: caricaGalleriaCollinare();"> 
+<div class="SSG_icell">
+    <a href="javascript: SSG.restart({ imgs: galleriaCollinareImmagini, initImgID: 0, fs: true });">
         <img src="img/tour2.webp" alt="Avventura Collinare" />
         <span class="SSG_icapt SSG_text gallery-link">Avventura Collinare</span>
-      </a>
-    </div>
+    </a>
+</div>
 
-    <div class="SSG_icell">
-      <a href="javascript: caricaGalleriaSunset();"> 
+<div class="SSG_icell">
+    <a href="javascript: SSG.restart({ imgs: galleriaSunsetImmagini, initImgID: 0, fs: true });">
         <img src="img/tour3.webp" alt="Sunset e Aperitivo" />
         <span class="SSG_icapt SSG_text gallery-link">Sunset &amp; Aperitivo</span>
-      </a>
-    </div>
+    </a>
+</div>
 
-    <div class="SSG_icell">
-      <a href="javascript: caricaGalleriaRelax();"> 
+<div class="SSG_icell">
+    <a href="javascript: SSG.restart({ imgs: galleriaRelaxImmagini, initImgID: 0, fs: true });">
         <img src="img/tour4.webp" alt="Relax Day - Caselli" />
         <span class="SSG_icapt SSG_text gallery-link">Relax Day - Caselli</span>
-      </a>
-    </div>
-  </div>
+    </a>
 </div>
+</body>
+</html>
