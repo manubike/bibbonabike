@@ -252,7 +252,7 @@ function initializeBookingForm() {
                 eventField.style.display = "none";
             }
 
-            showSuccessMessage(`✅ Tour "${tourName}" aggiunto!`);
+            // showSuccessMessage(`✅ Tour "${tourName}" aggiunto!`);
             updateLivePrice(); // Aggiorna il prezzo
             document.getElementById("noleggio")?.scrollIntoView({ behavior: "smooth", block: "start" });
         }
