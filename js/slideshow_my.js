@@ -1,11 +1,9 @@
 // slideshow_my.js
-/*!  GALLERY Gallery
- *  Version: 1.0.0 by aken
-*/
 
-// ==============================================================================================================
-// **IMPORTANTE**: Assicurati che i percorsi delle immagini siano corretti e le virgole nell'array siano corrette.
-// ==============================================================================================================
+// ============================================================================
+// DEFINIZIONI DI GALLERIE E DATI (DEVONO ESSERE GLOBALI)
+// **IMPORTANTE**: Assicurati che i percorsi delle immagini siano corretti.
+// ============================================================================
 
 const galleriaPrincipaleImmagini = [
     { href: "https://bibbonabike.com/img/land1.webp", alt: "Tour Etrusco – Livello facile: Sentiero vista panoramica verso il mare" },
@@ -58,6 +56,14 @@ let galleryElement; // Elemento DOM per la griglia delle miniature
 const themes = ['light', 'dark', 'dim', 'black'];
 let currentThemeIndex = 0; // Inizia dal tema 'light' (indice 0)
 
+// Mappa per i colori dei pulsanti del tema
+const themeButtonColors = {
+    'light': { bgColor: '#e0e0e0', textColor: '#333333' }, // Grigio chiaro per sfondo, testo scuro
+    'dark': { bgColor: '#333333', textColor: '#ffffff' }, // Grigio scuro per sfondo, testo chiaro
+    'dim': { bgColor: '#606060', textColor: '#ffffff' },  // Grigio medio scuro, testo chiaro
+    'black': { bgColor: '#000000', textColor: '#ffffff' }  // Nero, testo chiaro
+};
+
 // ============================================================================
 // FUNZIONI HELPER E DI LOGICA
 // ============================================================================
@@ -92,6 +98,23 @@ function isSsgLightboxOpen() {
 }
 
 /**
+ * Funzione per aggiornare il colore del pulsante del tema in base al tema corrente.
+ */
+function updateThemeButtonColor(themeName) {
+    const changeThemeBtn = document.getElementById("changeThemeButton");
+    if (changeThemeBtn) {
+        const colors = themeButtonColors[themeName];
+        if (colors) {
+            changeThemeBtn.style.backgroundColor = colors.bgColor;
+            const label = changeThemeBtn.querySelector(".label");
+            const icon = changeThemeBtn.querySelector("i");
+            if (label) label.style.color = colors.textColor;
+            if (icon) icon.style.color = colors.textColor;
+        }
+    }
+}
+
+/**
  * Funzione per cambiare il tema della lightbox SSG.
  * Cicla tra i temi disponibili (light, dark, dim, black).
  */
@@ -105,6 +128,7 @@ function changeLightboxTheme() {
     const newTheme = themes[currentThemeIndex];
 
     SSG.cfg.theme = newTheme;
+    updateThemeButtonColor(newTheme); // Aggiorna il colore del pulsante
 
     if (isSsgLightboxOpen() && typeof SSG.close === 'function') {
         SSG.close();
@@ -246,6 +270,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 // Funzione onImgLoad lasciata vuota, rimuovendo riferimenti esterni non più necessari.
             }
         });
+        // Imposta il colore iniziale del pulsante tema in base al tema di default di SSG
+        updateThemeButtonColor(SSG.cfg.theme);
     } else {
         console.error("DOMContentLoaded: Story Show Gallery (SSG) non è disponibile. Assicurati che ssg.js sia caricato correttamente.");
     }
