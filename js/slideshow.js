@@ -50,16 +50,6 @@ class Slideshow {
     if (this.autoplay) {
       this.startAutoplay(); // Avvia autoplay
     }
-
-    if (this.showPagination) {
-      let pagination = '<div class="pagination"><div class="container">';
-      for (let i = 0; i < this.maxSlide; i++) {
-        let item = `<span class="pagination__item js-pagination-item ${i === 0 ? 'is-current' : ''}" data-slide="${i + 1}">${i + 1}</span>`;
-        pagination += item;
-      }
-      pagination += '</div></div>';
-      this.$el.append(pagination);
-    }
   }
 
   // Blocca temporaneamente i click per evitare spam durante l'animazione
@@ -168,4 +158,5 @@ class Slideshow {
   }, maxLoad);
 
   addLoadClass();
-})();
+})
+();
