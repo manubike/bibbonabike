@@ -9,7 +9,7 @@
   /* ===== Sezione Slideshow ===== */
   .photo-slideshow{
     color: var(--textLight);
-    padding: clamp(3rem,5vw,6rem) 0;
+   /*  padding: clamp(3rem,5vw,6rem) 0; */
   }
   .photo-slideshow .section-title{
     font-size: clamp(1.6rem,3vw,2.4rem);
