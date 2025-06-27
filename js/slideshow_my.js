@@ -2,7 +2,7 @@
 
 // ============================================================================
 // DEFINIZIONI DI GALLERIE E DATI (DEVONO ESSERE GLOBALI)
-// **IMPORTANTE**: Assicurati che i percorsi delle immagini siano corretti.
+// **IMPORTANTE**: Assicurati che i percorsi delle immagini siano corretti e ricorda le virgole per le stringhe.
 // ============================================================================
 
 const galleriaPrincipaleImmagini = [

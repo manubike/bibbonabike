@@ -1,10 +1,9 @@
   /* Colori principali (puoi sovrascriverli nel tuo CSS globale) */
 
   body.ssg-open {
-  overflow: hidden;
-  touch-action: none;
-}
-
+    overflow: hidden;
+    touch-action: none;
+  }
 
   /* ===== Sezione Slideshow ===== */
   .photo-slideshow{
