@@ -358,3 +358,97 @@ textarea {
     margin-bottom: 6px;
   }
 }
+/* 📱 Adattamenti per dispositivi mobili stretti come iPhone 14 Pro Max */
+@media screen and (max-width: 460px) {
+  .form-card {
+    padding: 1.5rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.6rem;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    font-size: 16px; /* evita zoom Safari */
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .icon-input i {
+    font-size: 1rem;
+    left: 10px;
+  }
+
+  .icon-input input,
+  .icon-input select,
+  .icon-input textarea {
+    padding-left: 2.2rem;
+  }
+
+  /* Accessori verticali */
+  .accessory-option {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .accessory-option label {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .accessory-image {
+    width: 60px;
+    height: auto;
+    margin: 0 0 6px 0;
+  }
+
+  /* Tour & Eventi */
+  .tour-input-wrapper,
+  .event-input-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
+
+  #tourField label,
+  #eventField label {
+    display: none;
+  }
+
+  .event-input-wrapper i {
+    position: static;
+    margin-right: 6px;
+    left: auto;
+    transform: none;
+    align-self: flex-start;
+  }
+
+  #eventSelected,
+  #tourSelected {
+    width: 100%;
+    padding-left: 12px;
+    text-align: left;
+  }
+
+  #removeEventBtn,
+  #removeTourBtn {
+    position: static;
+    align-self: flex-end;
+    margin-left: auto;
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
+  }
+
+  .h-captcha {
+    transform: scale(0.85);
+    transform-origin: 0 0;
+  }
+}
