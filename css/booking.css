@@ -52,24 +52,31 @@
 }
 
 /* ==== INPUT CON ICONE ==== */
+.icon-input {
+  position: relative;
+}
+
 .icon-input i {
   position: absolute;
   top: 50%;
-  left: 12px;
+  left: 10px;
   transform: translateY(-50%);
   color: #2e7d32;
   pointer-events: none;
+  font-size: 1rem;
+  z-index: 1;
   max-width: 20px;
 }
 
 .icon-input input,
 .icon-input select,
 .icon-input textarea {
-  padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+  padding-left: 2.5rem;
   border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 16px;
-  outline: none;
+  position: relative;
+  z-index: 2;
   transition: border-color 0.3s ease;
 }
 
@@ -265,13 +272,14 @@ textarea {
 .accessory-option label {
   display: flex;
   align-items: center;
+  gap: 10px;
 }
 
 .accessory-image {
   width: 80px;
   height: auto;
   border-radius: 6px;
-  margin-right: 10px;
+  margin: 0;
   vertical-align: middle;
 }
 
@@ -287,81 +295,10 @@ textarea {
   color: #d32f2f;
 }
 
-/* ==== MEDIA QUERY PER MOBILE/IPHONE ==== */
-@media (max-width: 600px) {
-  .form-card {
-    padding: 1.5rem;
-  }
-
-  .form-group input,
-  .form-group select,
-  .form-group textarea {
-    font-size: 16px;
-  }
-
-  .icon-input i {
-    left: 10px;
-    font-size: 1rem;
-  }
-
-  .icon-input input,
-  .icon-input select,
-  .icon-input textarea {
-    padding-left: 2.2rem;
-  }
-
-  .tour-input-wrapper,
-  .event-input-wrapper {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 6px;
-  }
-
-  #tourField label,
-  #eventField label {
-    display: none;
-  }
-
-  #eventSelected {
-    width: 100%;
-    padding-left: 12px;
-    padding-right: 12px;
-    text-align: left;
-  }
-
-  .event-input-wrapper i {
-    position: static;
-    margin-right: 6px;
-    left: auto;
-    transform: none;
-    align-self: flex-start;
-  }
-
-  #removeTourBtn,
-  #removeEventBtn {
-    position: static;
-    margin-left: auto;
-    align-self: flex-end;
-    right: auto;
-  }
-
-  .accessory-option {
-    flex-direction: column;
-    align-items: flex-start;
-    font-size: 0.9rem;
-    gap: 6px;
-  }
-
-  .accessory-image {
-    width: 60px;
-    height: auto;
-    margin-bottom: 6px;
-  }
-}
-/* 📱 Adattamenti per dispositivi mobili stretti come iPhone 14 Pro Max */
+/* ==== MEDIA QUERY PER MOBILE E IPHONE ==== */
 @media screen and (max-width: 460px) {
   .form-card {
-    padding: 1.5rem;
+    padding: 1.2rem;
   }
 
   .form-group {
@@ -371,24 +308,23 @@ textarea {
   .form-group input,
   .form-group select,
   .form-group textarea {
-    font-size: 16px; /* evita zoom Safari */
+    font-size: 16px;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
   }
 
-  .icon-input i {
-    font-size: 1rem;
-    left: 10px;
-  }
-
   .icon-input input,
   .icon-input select,
   .icon-input textarea {
-    padding-left: 2.2rem;
+    padding-left: 2.6rem;
   }
 
-  /* Accessori verticali */
+  .icon-input i {
+    left: 8px;
+    font-size: 1rem;
+  }
+
   .accessory-option {
     flex-direction: column;
     align-items: flex-start;
@@ -396,17 +332,17 @@ textarea {
   }
 
   .accessory-option label {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
   }
 
   .accessory-image {
     width: 60px;
     height: auto;
-    margin: 0 0 6px 0;
+    margin: 0;
   }
 
-  /* Tour & Eventi */
   .tour-input-wrapper,
   .event-input-wrapper {
     flex-direction: column;
@@ -419,14 +355,6 @@ textarea {
     display: none;
   }
 
-  .event-input-wrapper i {
-    position: static;
-    margin-right: 6px;
-    left: auto;
-    transform: none;
-    align-self: flex-start;
-  }
-
   #eventSelected,
   #tourSelected {
     width: 100%;
@@ -434,8 +362,8 @@ textarea {
     text-align: left;
   }
 
-  #removeEventBtn,
-  #removeTourBtn {
+  #removeTourBtn,
+  #removeEventBtn {
     position: static;
     align-self: flex-end;
     margin-left: auto;
