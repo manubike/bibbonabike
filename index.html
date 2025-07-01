@@ -307,8 +307,8 @@
       <div class="officina-content">
         <div class="feature" id="bikeFeature">
           <img src="img/frame3@2x.webp" alt="Telaio bici" class="feature__frame">
-          <img src="img/wheel-hr4.png" alt="Ruota posteriore" class="feature__wheel feature__wheel--rear">
-          <img src="img/wheel-hr4.png" alt="Ruota anteriore" class="feature__wheel feature__wheel--front">
+          <img src="img/wheel-magona.png" alt="Ruota posteriore" class="feature__wheel feature__wheel--rear">
+          <img src="img/wheel-magona.png" alt="Ruota anteriore" class="feature__wheel feature__wheel--front">
         </div>
 
         <div class="officina-text">
@@ -329,15 +329,15 @@
       <h2 class="section-title"><i class="fas fa-bicycle"></i> Noleggio Biciclette</h2>
       <div class="bike-grid">
         <div class="bike-card">
-          <img src="img/full_bike.webp" alt="FULL Bike" />
+          <img src="img/ebikeHD.png" alt="FULL Bike" />
           <div class="bike-info">
             <h3 class="animated-price">
               <div class="price-show">50,00€</div>
               <div class="price-slide"><span>| giorno</span></div>
             </h3>
 
-            <p class="bike-type">FULL</p>
-            <a href="#prenota" class="btn-secondary bike-select" data-bike="FULL" aria-label="Seleziona bici FULL">SELEZIONA »</a>
+            <p class="bike-type">E-BIKE</p>
+            <a href="#prenota" class="btn-secondary bike-select" data-bike="E-BIKE" aria-label="Seleziona bici E-BIKE">SELEZIONA »</a>
           </div>
         </div>
     </section>
@@ -350,7 +350,7 @@
         <div class="tour-slide" style="background-image: url('img/tour3.webp');"></div>
       </div>
       <div class="tour-overlay">
-        <h2 class="section-title tour-title"><i class="fas fa-route"></i> Tour con guide certificate</h2>
+        <h2 class="section-title tour-title"><i class="fas fa-route"></i> Tour Con Guide Certificate</h2>
         <div class="tour-cards">
           <!-- Le card verranno generate dinamicamente da JS -->
         </div>
@@ -524,7 +524,10 @@
               
               </select>
           </div>
+
           <div id="accessoriesGroup" style="display: none; margin-top: 1rem;">
+            <h4 style="margin-bottom: 0.8rem; color: #333; font-weight: bold;">Accessori disponibili:</h4>
+
             <div class="form-group accessory-option">
               <label>
                 <input type="checkbox" name="accessories" value="carrello" />
@@ -590,6 +593,11 @@
             <label for="notes">Note (altezza, attrezzature richieste)</label>
             <i class="fa fa-pen"></i>
             <textarea id="notes" name="notes"></textarea>
+          </div>
+          <div class="form-group icon-input">
+            <label for="codiceSconto">Codice Sconto</label>
+            <i class="fas fa-tag"></i>
+            <input type="text" id="codiceSconto" name="codiceSconto"/>
           </div>
 
           <p class="price-summary">
@@ -738,7 +746,7 @@
   <script src="js/nav_min.js"></script>
   <script src="js/slogan.js"></script>
   <script src="js/tour.js"></script>
-  <script src="js/booking_min.js"></script>
+  <script src="js/booking.js"></script>
   <script src="js/event.js"></script>
   <script src="js/slideshow.js"></script>
   <script src="js/typewrite.js"></script>

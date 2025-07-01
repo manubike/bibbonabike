@@ -1,1 +1,325 @@
-.form-section{padding:4rem 1rem}.form-card{background:linear-gradient(179deg, #a8d8f0, #d0f0fb, #ffffff);max-width:680px;margin:0 auto;padding:2.5rem;border-radius:16px;box-shadow:0 8px 30px rgba(0, 0, 0, 0.08);transition:all 0.3s ease}.form-group{margin-bottom:1.8rem;position:relative}.form-group label{display:block;margin-bottom:6px;font-weight:600;color:#333}.form-group input,.form-group select,.form-group textarea{padding:12px 14px 12px 42px;border-radius:8px;border:1px solid #ddd;font-size:1rem;background:#fff;transition:border-color 0.2s ease}.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#4caf50;box-shadow:0 0 0 2px rgba(76, 175, 80, 0.15)}.icon-input i{position:absolute;top:50%;left:12px;transform:translateY(-50%);color:#2e7d32}.icon-input input,.icon-input select,.icon-input textarea{width:100%;padding:0.75rem 0.75rem 0.75rem 2.5rem;border:1px solid #ccc;border-radius:8px;font-size:1rem;outline:none;transition:border-color 0.3s ease}.icon-input input:focus,.icon-input select:focus,.icon-input textarea:focus{border-color:#2e7d32;box-shadow:0 0 0 2px rgba(46, 125, 50, 0.15)}textarea{resize:vertical}.price-summary{font-size:1.1rem;color:#444;margin-bottom:1rem}.btn-primary{background-color:#2e7d32;color:#fff;padding:0.7rem 1.4rem;border:none;border-radius:8px;font-size:1rem;cursor:pointer;transition:background-color 0.3s ease, transform 0.2s ease}.btn-primary:hover{background-color:#388e3c;transform:scale(1.05)}#responseMessage{margin-top:1rem;font-size:0.95rem;color:#2e7d32;text-align:center}.paypal-form{margin-top:2rem;text-align:center}#tourField label{font-weight:600;display:block;margin-bottom:0.4rem;color:#2e7d32}.tour-input-wrapper{display:flex;align-items:center;gap:8px;background-color:#f9fff9;border:2px solid #4caf50;padding:10px 12px;border-radius:8px;width:100%;box-sizing:border-box;flex-wrap:wrap}.tour-input-wrapper i{color:#2e7d32;margin-right:6px;font-size:1rem}.tour-input-wrapper input{flex:1 1 auto;border:none;background:transparent;font-weight:bold;font-size:1rem;color:#2e7d32;min-width:0;white-space:normal;word-break:break-word}.tour-input-wrapper input:focus{outline:none}#removeTourBtn{background:none;border:none;font-size:1.3rem;color:#dc3545;cursor:pointer;padding:0;margin-left:5px}#removeTourBtn:hover{color:#e53935}@media (max-width: 600px){.tour-input-wrapper{flex-direction:column;align-items:stretch;gap:6px}#tourField label{display:none}.tour-input-wrapper input{width:100%;font-size:1rem;text-align:left}#removeTourBtn{align-self:flex-end}}.form-group.error input,.form-group.error select,.form-group.error textarea{border-color:#d32f2f !important;box-shadow:0 0 0 2px rgba(211, 47, 47, 0.2)}.form-group.error label{color:#d32f2f}#eventField label{font-weight:600;display:block;margin-bottom:0.4rem;color:#2e7d32}.event-input-wrapper{display:flex;align-items:center;gap:8px;background-color:#f9fff9;border:2px solid #4caf50;padding:10px 12px;border-radius:8px;width:100%;box-sizing:border-box;position:relative;flex-wrap:wrap}.event-input-wrapper i{position:absolute;left:12px;color:#2e7d32;font-size:1.2rem;z-index:1}#eventSelected{flex-grow:1;border:none;background:transparent;font-weight:bold;font-size:1rem;color:#2e7d32;min-width:0;white-space:normal;word-break:break-word;padding-left:30px;padding-right:30px}#eventSelected:focus{outline:none}#removeEventBtn{position:absolute;right:10px;background:none;border:none;font-size:1.3rem;color:#dc3545;cursor:pointer;padding:0;transition:transform 0.2s ease;z-index:2}#removeEventBtn:hover{color:#e53935;transform:scale(1.1)}@media (max-width: 600px){#eventField label{display:none}.event-input-wrapper{flex-direction:column;align-items:stretch;gap:6px}.event-input-wrapper i{position:static;margin-right:6px;left:auto;transform:none;align-self:flex-start}#eventSelected{width:100%;text-align:left;padding-left:12px;padding-right:12px}#removeEventBtn{position:static;margin-left:auto;right:auto;align-self:flex-end}}#paypalPlaceholder{display:none;margin-top:10px}#ownBikeCheckbox{margin-right:8px;transform:scale(1.1)}.accessory-option{display:flex;align-items:center;gap:10px;font-size:1rem;white-space:nowrap;flex-wrap:nowrap}.accessory-option label{display:flex;align-items:center}.accessory-image{width:80px;height:auto;border-radius:6px;margin-right:10px;vertical-align:middle}@media (max-width: 600px){.accessory-option{font-size:0.9rem;gap:6px}.accessory-image{width:60px}}
+.form-section {
+    padding: 4rem 1rem;
+}
+.form-card {
+    background: linear-gradient(179deg,  #a8d8f0,  #d0f0fb,  #ffffff);
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0,  0,  0,  0.08);
+    transition: all 0.3s ease;
+}
+.form-group {
+    margin-bottom: 1.8rem;
+    position: relative;
+}
+.form-group label {
+    display: block; /* La label occupa l'intera larghezza disponibile */
+    margin-bottom: .5rem; /* Spazio tra la label e il gruppo input/pulsante */
+    font-weight: bold; /* Rende la label più evidente */
+    color: #333; /* Colore del testo standard */
+}
+.form-group input, .form-group select, .form-group textarea {
+    padding: 12px 14px 12px 42px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 1rem;
+    background: #fff;
+    transition: border-color 0.2s ease;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    outline: none;
+    border-color: #4caf50;
+    box-shadow: 0 0 0 2px rgba(76,  175,  80,  0.15);
+}
+.icon-input i {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    transform: translateY(-50%);
+    color: #2e7d32;
+}
+.icon-input input, .icon-input select, .icon-input textarea {
+    width: 100%;
+    padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+.icon-input input:focus, .icon-input select:focus, .icon-input textarea:focus {
+    border-color: #2e7d32;
+    box-shadow: 0 0 0 2px rgba(46,  125,  50,  0.15);
+}
+textarea {
+    resize: vertical;
+}
+.price-summary {
+    font-size: 1.1rem;
+    color: #444;
+    margin-bottom: 1rem;
+}
+.btn-primary {
+    background-color: #2e7d32;
+    color: #fff;
+    padding: 0.7rem 1.4rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease,  transform 0.2s ease;
+}
+.btn-primary:hover {
+    background-color: #388e3c;
+    transform: scale(1.05);
+}
+#responseMessage {
+    margin-top: 1rem;
+    font-size: 0.95rem;
+    color: #2e7d32;
+    text-align: center;
+}
+.paypal-form {
+    margin-top: 2rem;
+    text-align: center;
+}
+#tourField label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.4rem;
+    color: #2e7d32;
+}
+.tour-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #f9fff9;
+    border: 2px solid #4caf50;
+    padding: 10px 12px;
+    border-radius: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    flex-wrap: wrap;
+}
+.tour-input-wrapper i {
+    color: #2e7d32;
+    margin-right: 6px;
+    font-size: 1rem;
+}
+.tour-input-wrapper input {
+    flex: 1 1 auto;
+    border: none;
+    background: transparent;
+    font-weight: bold;
+    font-size: 1rem;
+    color: #2e7d32;
+    min-width: 0;
+    white-space: normal;
+    word-break: break-word;
+}
+.tour-input-wrapper input:focus {
+    outline: none;
+}
+#removeTourBtn {
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    color: #dc3545;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 5px;
+}
+#removeTourBtn:hover {
+    color: #e53935;
+}
+@media (max-width: 600px) {
+    .tour-input-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+}
+#tourField label {
+    display: none;
+}
+.tour-input-wrapper input {
+    width: 100%;
+    font-size: 1rem;
+    text-align: left;
+}
+#removeTourBtn {
+    align-self: flex-end;
+}
+}.form-group.error input, .form-group.error select, .form-group.error textarea {
+    border-color: #d32f2f !important;
+    box-shadow: 0 0 0 2px rgba(211,  47,  47,  0.2);
+}
+.form-group.error label {
+    color: #d32f2f;
+}
+#eventField label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.4rem;
+    color: #2e7d32;
+}
+.event-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #f9fff9;
+    border: 2px solid #4caf50;
+    padding: 10px 12px;
+    border-radius: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+    flex-wrap: wrap;
+}
+.event-input-wrapper i {
+    position: absolute;
+    left: 12px;
+    color: #2e7d32;
+    font-size: 1.2rem;
+    z-index: 1;
+}
+#eventSelected {
+    flex-grow: 1;
+    border: none;
+    background: transparent;
+    font-weight: bold;
+    font-size: 1rem;
+    color: #2e7d32;
+    min-width: 0;
+    white-space: normal;
+    word-break: break-word;
+    padding-left: 30px;
+    padding-right: 30px;
+}
+#eventSelected:focus {
+    outline: none;
+}
+#removeEventBtn {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    color: #dc3545;
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.2s ease;
+    z-index: 2;
+}
+#removeEventBtn:hover {
+    color: #e53935;
+    transform: scale(1.1);
+}
+@media (max-width: 600px) {
+    #eventField label {
+    display: none;
+}
+.event-input-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+}
+.event-input-wrapper i {
+    position: static;
+    margin-right: 6px;
+    left: auto;
+    transform: none;
+    align-self: flex-start;
+}
+#eventSelected {
+    width: 100%;
+    text-align: left;
+    padding-left: 12px;
+    padding-right: 12px;
+}
+#removeEventBtn {
+    position: static;
+    margin-left: auto;
+    right: auto;
+    align-self: flex-end;
+}
+}#paypalPlaceholder {
+    display: none;
+    margin-top: 10px;
+}
+#ownBikeCheckbox {
+    margin-right: 8px;
+    transform: scale(1.1);
+}
+.accessory-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1rem;
+    white-space: nowrap;
+    flex-wrap: nowrap;
+}
+.accessory-option label {
+    display: flex;
+    align-items: center;
+}
+.accessory-image {
+    width: 80px;
+    height: auto;
+    border-radius: 6px;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+@media (max-width: 600px) {
+    .accessory-option {
+    font-size: 0.9rem;
+    gap: 6px;
+}
+.accessory-image {
+    width: 60px;
+}
+}
+/* Il nuovo wrapper che contiene icona, input e pulsante */
+.codice-sconto-input-wrapper {
+    display: flex; /* Utilizza Flexbox per allineare gli elementi orizzontalmente */
+    align-items: center; /* Allinea verticalmente gli elementi al centro */
+    gap: 10px; /* Spazio tra l'icona, l'input e il pulsante */
+    width: 100%; /* Occupa l'intera larghezza disponibile all'interno del suo genitore (.form-group) */
+    box-sizing: border-box; /* Include padding e border nel calcolo della larghezza/altezza */
+}
+
+/* Stile per l'icona */
+.codice-sconto-input-wrapper .fas {
+    color: #6c757d; /* Un colore grigio tenue per l'icona */
+    font-size: 1.2em; /* Dimensione dell'icona leggermente più grande */
+    flex-shrink: 0; /* Impedisce all'icona di rimpicciolirsi */
+}
+
+/* Stile per il campo input del codice sconto */
+.codice-sconto-input-wrapper input[type="text"]#codiceSconto {
+    flex-grow: 1; /* Permette all'input di occupare lo spazio disponibile */
+    border: 1px solid #ced4da; /* Bordo standard */
+    border-radius: 5px; /* Angoli arrotondati */
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.075); /* Ombra interna sottile */
+    font-size: 1rem; /* Dimensione del font leggibile */
+    line-height: 1.5; /* Altezza della linea per il testo */
+    color: #495057; /* Colore del testo standard */
+}
+
+/* Stile per il pulsante "Applica Sconto" */
+#validateDiscountBtn {
+    padding: 8px 15px;
+    background-color: #007bff; /* Blu per l'azione principale */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    flex-shrink: 0; /* Impedisce al pulsante di rimpicciolirsi */
+    transition: background-color 0.2s ease; /* Transizione fluida al passaggio del mouse */
+}
+
+#validateDiscountBtn:hover {
+    background-color: #0056b3; /* Blu più scuro al passaggio del mouse */
+}

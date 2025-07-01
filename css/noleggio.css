@@ -31,10 +31,27 @@
     transform: translateY(-5px);
   }
   
+.bike-card img {
+  width: 100%;
+  height: auto;
+  max-height: 500px; /* Limita l'altezza per uniformità sulle card desktop */
+  object-fit: contain; /* Evita distorsioni mantenendo proporzioni */
+  display: block;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
   .bike-card img {
-    max-width: 100%;
-    height: auto;
+    max-height: 500px; /* Più compatto su mobile */
   }
+}
+
+@media (max-width: 480px) {
+  .bike-card img {
+    max-height: 400px;
+  }
+}
+
   
   .bike-info {
     margin-top: 15px;

@@ -1,16 +1,13 @@
-// js/booking.js
-
-// --- Helper Functions for User Feedback ---
-// Queste funzioni forniscono messaggi a comparsa per successi ed errori.
+// Funzioni per la visualizzazione di messaggi di successo o errore (rimangono invariate)
 function showSuccessMessage(message, duration = 3000) {
-    const msg = document.createElement("div");
-    msg.textContent = message;
-    Object.assign(msg.style, {
+    let messageDiv = document.createElement("div");
+    messageDiv.textContent = message;
+    Object.assign(messageDiv.style, {
         position: "fixed",
         bottom: "20px",
         left: "50%",
         transform: "translateX(-50%)",
-        background: "#28a745", // Green for success
+        background: "#28a745",
         color: "#fff",
         padding: "12px 20px",
         borderRadius: "8px",
@@ -20,23 +17,22 @@ function showSuccessMessage(message, duration = 3000) {
         transition: "opacity 0.3s ease-in-out",
         opacity: "1"
     });
-    document.body.appendChild(msg);
-
+    document.body.appendChild(messageDiv);
     setTimeout(() => {
-        msg.style.opacity = "0";
-        setTimeout(() => msg.remove(), 300);
+        messageDiv.style.opacity = "0";
+        setTimeout(() => messageDiv.remove(), 300);
     }, duration);
 }
 
 function showErrorMessage(message, duration = 4000) {
-    const msg = document.createElement("div");
-    msg.textContent = message;
-    Object.assign(msg.style, {
+    let messageDiv = document.createElement("div");
+    messageDiv.textContent = message;
+    Object.assign(messageDiv.style, {
         position: "fixed",
         bottom: "20px",
         left: "50%",
         transform: "translateX(-50%)",
-        background: "#dc3545", // Red for error
+        background: "#dc3545",
         color: "#fff",
         padding: "12px 20px",
         borderRadius: "8px",
@@ -46,97 +42,141 @@ function showErrorMessage(message, duration = 4000) {
         transition: "opacity 0.3s ease-in-out",
         opacity: "1"
     });
-    document.body.appendChild(msg);
-
+    document.body.appendChild(messageDiv);
     setTimeout(() => {
-        msg.style.opacity = "0";
-        setTimeout(() => msg.remove(), 300);
+        messageDiv.style.opacity = "0";
+        setTimeout(() => messageDiv.remove(), 300);
     }, duration);
 }
 
-// --- Price Calculation Logic ---
-// Funzione asincrona per aggiornare il prezzo in tempo reale basato sulle selezioni del form.
-// Invia i dati a un worker di Cloudflare per il calcolo del prezzo.
-async function updateLivePrice() {
-    const bikeTypeElement = document.getElementById("bikeType");
-    const durationElement = document.getElementById("duration");
-    const quantityElement = document.getElementById("quantity");
-    const tourInputElement = document.getElementById("tourSelected"); // Input field for tour name
-    const eventIdHiddenElement = document.getElementById("eventIdHidden"); // Hidden input for event ID
-    const paypalPlaceholder = document.getElementById("paypalPlaceholder"); // Placeholder for PayPal button
+// *** NUOVA VARIABILE GLOBALE ***
+// Questa variabile memorizzerà il codice sconto applicato con successo.
+let appliedDiscountCode = '';
 
-    // Recupera i valori dai campi, fornendo valori predefiniti in caso di assenza
-    const ownBike = document.getElementById("ownBikeCheckbox")?.checked;
-    const bikeType = ownBike ? "NESSUNA" : (bikeTypeElement ? bikeTypeElement.value : '');
-    const duration = durationElement ? parseFloat(durationElement.value) : 0;
-    const quantity = quantityElement ? parseInt(quantityElement.value || '1') : 1;
-    const tour = tourInputElement ? tourInputElement.value.trim() : null; // Tour name
-    const eventId = eventIdHiddenElement ? eventIdHiddenElement.value.trim() : null; // Event ID
+// Funzione principale per l'aggiornamento del prezzo in tempo reale
+// Aggiunto 'triggerSource' per distinguere le chiamate (es. 'discountButton' o 'auto')
+async function updateLivePrice(triggerSource = 'auto') {
+    let bikeTypeSelect = document.getElementById("bikeType"),
+        durationInput = document.getElementById("duration"),
+        quantityInput = document.getElementById("quantity"),
+        tourSelectedInput = document.getElementById("tourSelected"),
+        eventIdHiddenInput = document.getElementById("eventIdHidden"),
+        paypalPlaceholder = document.getElementById("paypalPlaceholder"),
+        ownBikeCheckbox = document.getElementById("ownBikeCheckbox")?.checked;
 
-    // Se mancano dati essenziali per il calcolo del prezzo, resetta e esci
+    // Ottieni il valore attuale dall'input del codice sconto (per il tentativo di applicazione)
+    let currentInputCodiceScontoValue = document.getElementById("codiceSconto") ? document.getElementById("codiceSconto").value.trim().toUpperCase() : '';
+
+    let bikeType = ownBikeCheckbox ? "NESSUNA" : bikeTypeSelect ? bikeTypeSelect.value : "";
+    let duration = durationInput ? parseFloat(durationInput.value) : 0;
+    let quantity = quantityInput ? parseInt(quantityInput.value || "1") : 1;
+    let tourName = tourSelectedInput ? tourSelectedInput.value.trim() : null;
+    let eventId = eventIdHiddenInput ? eventIdHiddenInput.value.trim() : null;
+
+    // Validazione iniziale dei campi obbligatori per il calcolo
     if (!bikeType || isNaN(duration) || duration <= 0 || isNaN(quantity) || quantity <= 0) {
-        console.warn("⚠️ Tipo di bici, durata o quantità non validi per il calcolo del prezzo.");
         document.getElementById("totalAmount").textContent = "0.00";
         document.getElementById("totalHidden").value = "0.00";
         if (paypalPlaceholder) {
-            paypalPlaceholder.innerHTML = ""; // Pulisce il pulsante PayPal
-            paypalPlaceholder.style.display = "none"; // Nasconde il placeholder
+            paypalPlaceholder.innerHTML = "";
+            paypalPlaceholder.style.display = "none";
         }
-        window.prezzoRisposta = null; // Pulisce la risposta del prezzo memorizzata
+        window.prezzoRisposta = null;
+        // Se i parametri non sono validi, resettiamo lo stato del codice sconto
+        appliedDiscountCode = ''; 
+        updateDiscountButtonState(); // Aggiorna lo stato del pulsante
         return;
     }
 
-    // Prepara i dati da inviare al worker di calcolo prezzo
-    const data = {
+    // Payload per la richiesta al Cloudflare Worker
+    let payload = {
         tipo: bikeType,
         giorni: duration,
-        quantita: quantity,
+        quantita: quantity
     };
-    // Aggiunta accessori selezionati
-    const selectedAccessories = Array.from(document.querySelectorAll("input[name='accessories']:checked"))
-        .map(el => el.value);
-    if (selectedAccessories.length > 0) {
-        data.accessories = selectedAccessories;
+
+    // Inviamo il codice sconto al Worker in base a chi ha scatenato l'aggiornamento:
+    if (triggerSource === 'discountButton') {
+        // Se la chiamata viene dal pulsante, proviamo ad applicare il codice attualmente digitato
+        payload.codiceSconto = currentInputCodiceScontoValue;
+    } else {
+        // Per gli aggiornamenti automatici, inviamo il codice sconto che è già stato applicato con successo
+        payload.codiceSconto = appliedDiscountCode;
     }
 
-    // Aggiungi tourId o eventId ai dati, assicurandosi che solo uno sia presente
-    if (tour) {
-        data.tour = tour; // Seleziona il tour per nome, o potresti usare un tourId se disponibile
-        data.eventoId = null;
+    // Gestione degli accessori selezionati
+    let accessories = Array.from(document.querySelectorAll("input[name='accessories']:checked")).map(checkbox => checkbox.value);
+    if (accessories.length > 0) {
+        payload.accessories = accessories;
+    }
+
+    // Gestione di tour o eventi
+    if (tourName) {
+        payload.tour = tourName;
+        payload.eventoId = null; 
     } else if (eventId) {
-        data.eventoId = eventId;
-        data.tour = null;
+        payload.eventoId = eventId;
+        payload.tour = null; 
+    }
+
+    // Messaggio di caricamento sul totale
+    document.getElementById("totalAmount").textContent = "Calcolo...";
+    if (paypalPlaceholder) {
+        paypalPlaceholder.innerHTML = "";
+        paypalPlaceholder.style.display = "none";
     }
 
     try {
-        // Chiama il worker di Cloudflare per calcolare il prezzo
-        const response = await fetch("https://price-calculator.zonkeynet.workers.dev/calcola", {
+        // Invia la richiesta al Cloudflare Worker per il calcolo del prezzo
+        let response = await fetch("https://price-calculator.zonkeynet.workers.dev/calcola", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
         });
 
-        const result = await response.json();
+        let data = await response.json();
 
-        // Aggiorna il display del prezzo se il calcolo ha avuto successo
-        if (response.ok && result.status === "success") {
-            document.getElementById("totalAmount").textContent = result.totale;
-            document.getElementById("totalHidden").value = result.totale;
-            window.prezzoRisposta = result; // Memorizza la risposta del worker per un uso successivo (es. PayPal HTML)
+        if (response.ok && data.status === "success") {
+            document.getElementById("totalAmount").textContent = parseFloat(data.totale).toFixed(2);
+            document.getElementById("totalHidden").value = parseFloat(data.totale).toFixed(2);
+            window.prezzoRisposta = data; 
 
+            // *** LOGICA MESSAGGI SCONTO CONDIZIONALE ***
+            if (triggerSource === 'discountButton') {
+                if (data.scontoApplicato) {
+                    appliedDiscountCode = currentInputCodiceScontoValue; // Memorizza il codice applicato con successo
+                    showSuccessMessage(`Codice sconto '${currentInputCodiceScontoValue}' applicato con successo!`, 2500);
+                } else {
+                    // Se lo sconto non è stato applicato (e il pulsante è stato cliccato)
+                    showErrorMessage(`Codice sconto '${currentInputCodiceScontoValue}' non valido o non applicabile.`, 3000);
+                    appliedDiscountCode = ''; // Resetta il codice applicato se il nuovo tentativo fallisce
+                }
+            } else {
+                // Per gli aggiornamenti automatici: se c'era un codice applicato ma ora non lo è più
+                if (appliedDiscountCode && !data.scontoApplicato) {
+                    showErrorMessage(`Il codice sconto '${appliedDiscountCode}' non è più valido per la selezione attuale.`, 3000);
+                    appliedDiscountCode = ''; // Resetta lo stato del codice applicato
+                }
+                // Se lo sconto è ancora valido, non mostriamo messaggi continui.
+            }
+            updateDiscountButtonState(); // Aggiorna lo stato del pulsante dopo ogni calcolo
         } else {
-            // Gestisce gli errori nel calcolo del prezzo dal worker
-            showErrorMessage(`Errore nel calcolo del prezzo: ${result.message || 'Errore sconosciuto.'}`);
+            // Gestione degli errori di calcolo dal Worker
+            showErrorMessage(`Errore nel calcolo del prezzo: ${data.message || "Errore sconosciuto."}`);
             document.getElementById("totalAmount").textContent = "0.00";
             document.getElementById("totalHidden").value = "0.00";
             if (paypalPlaceholder) {
                 paypalPlaceholder.innerHTML = "";
-                paypalPlaceholder.style.display = "none"; // Nasconde in caso di errore nel calcolo
+                paypalPlaceholder.style.display = "none";
             }
             window.prezzoRisposta = null;
+            appliedDiscountCode = ''; // Resetta il codice sconto applicato in caso di errore
+            updateDiscountButtonState(); // Aggiorna lo stato del pulsante
         }
     } catch (error) {
-        // Gestisce gli errori di rete o di risposta del server
+        // Gestione degli errori di rete o della richiesta
         console.error("❌ Errore durante il calcolo del prezzo:", error.message);
         showErrorMessage(`Impossibile calcolare il prezzo: ${error.message}`);
         document.getElementById("totalAmount").textContent = "0.00";
@@ -146,245 +186,319 @@ async function updateLivePrice() {
             paypalPlaceholder.style.display = "none";
         }
         window.prezzoRisposta = null;
+        appliedDiscountCode = ''; // Resetta il codice sconto applicato in caso di errore di rete
+        updateDiscountButtonState(); // Aggiorna lo stato del pulsante
     }
 }
 
-// --- Form Utility Functions ---
-// Funzione per ottenere il valore di un input e scatenare eventi di input/change
+// *** NUOVA FUNZIONE ***
+// Gestisce lo stato del campo input e del pulsante del codice sconto
+function updateDiscountButtonState() {
+    const codiceScontoInput = document.getElementById("codiceSconto");
+    const validateDiscountButton = document.getElementById("validateDiscountBtn");
+
+    if (!codiceScontoInput || !validateDiscountButton) return;
+
+    if (appliedDiscountCode) {
+        // Se un codice sconto è attualmente applicato
+        codiceScontoInput.value = appliedDiscountCode; // Assicura che l'input mostri il codice applicato
+        codiceScontoInput.disabled = true; // Disabilita il campo
+        validateDiscountButton.disabled = true; // Disabilita il pulsante
+        validateDiscountButton.textContent = "Applicato ✅"; // Cambia testo
+        validateDiscountButton.style.backgroundColor = "#28a745"; // Colore verde per indicare applicato
+        validateDiscountButton.style.cursor = "not-allowed"; // Cambia cursore
+    } else {
+        // Se nessun codice sconto è applicato o è stato rimosso/invalidato
+        codiceScontoInput.disabled = false; // Abilita il campo
+        validateDiscountButton.disabled = false; // Abilita il pulsante
+        validateDiscountButton.textContent = "Applica Sconto"; // Ripristina testo
+        validateDiscountButton.style.backgroundColor = "#007bff"; // Ripristina colore originale
+        validateDiscountButton.style.cursor = "pointer"; // Ripristina cursore
+        // Non puliamo l'input qui, se l'utente ha digitato un codice non valido, lo vede ancora.
+    }
+}
+
+
+// Funzioni di utilità per i valori degli input e la validazione (rimangono invariate)
 function getInputValue(id) {
-    const el = document.getElementById(id);
-    if (el) {
-        // Forziamo il dispatch degli eventi per assicurare che altri listener reagiscano
-        el.dispatchEvent(new Event('input', { bubbles: true }));
-        el.dispatchEvent(new Event('change', { bubbles: true }));
-        return el.value.trim();
-    }
-    return '';
+    let element = document.getElementById(id);
+    return element ? (element.dispatchEvent(new Event("input", { bubbles: true })), element.dispatchEvent(new Event("change", { bubbles: true })), element.value.trim()) : "";
 }
 
-// Funzione per validare un campo e mostrare/nascondere lo stato di errore
 function validateField(element) {
     if (!element) return;
-    const formGroup = element.closest('.form-group');
-    if (!formGroup) return;
-
-    if (element.value.trim() === '') {
-        formGroup.classList.add('error');
-        return false;
-    } else {
-        formGroup.classList.remove('error');
-        return true;
+    let formGroup = element.closest(".form-group");
+    if (formGroup) {
+        return "" === element.value.trim() ? (formGroup.classList.add("error"), false) : (formGroup.classList.remove("error"), true);
     }
 }
 
-// --- Main Initialization Function ---
-// Inizializza tutti i listener e le logiche del form di prenotazione
+// Funzione di inizializzazione del form di prenotazione
 function initializeBookingForm() {
-    // Listener per i campi che influenzano il prezzo
-    document.getElementById("bikeType")?.addEventListener("change", updateLivePrice);
-    document.getElementById("duration")?.addEventListener("change", updateLivePrice);
-    document.getElementById("quantity")?.addEventListener("input", updateLivePrice);
-    // Listener per il cambio accessori
-    document.querySelectorAll("input[name='accessories']").forEach(cb => {
-        cb.addEventListener("change", updateLivePrice);
-    });
+    // Event listeners per l'aggiornamento del prezzo in tempo reale
+    // Passiamo 'auto' come triggerSource per le modifiche non dirette allo sconto
+    document.getElementById("bikeType")?.addEventListener("change", () => updateLivePrice('auto'));
+    document.getElementById("duration")?.addEventListener("change", () => updateLivePrice('auto'));
+    document.getElementById("quantity")?.addEventListener("input", () => updateLivePrice('auto'));
 
-    // Listener per la validazione dei campi obbligatori
-    document.getElementById("name")?.addEventListener("input", (e) => validateField(e.target));
-    document.getElementById("email")?.addEventListener("input", (e) => validateField(e.target));
-    document.getElementById("date")?.addEventListener("input", (e) => validateField(e.target));
+    // Aggiungi il pulsante "Applica Sconto" e il suo listener, con la struttura HTML modificata
+    const codiceScontoInput = document.getElementById("codiceSconto");
+    if (codiceScontoInput) {
+        const parentFormGroup = codiceScontoInput.closest(".form-group.icon-input"); 
+        
+        if (parentFormGroup) {
+            const iconElement = parentFormGroup.querySelector(".fas.fa-tag");
 
-    // Mostra accessori se clicco su SELEZIONA
-    document.querySelectorAll(".bike-select").forEach(btn => {
-        btn.addEventListener("click", (e) => {
-            e.preventDefault();
-            const bikeType = btn.getAttribute("data-bike");
-            const selectElement = document.getElementById("bikeType");
-            if (selectElement) {
-                selectElement.value = bikeType;
-                showSuccessMessage(`🚲 ${bikeType} selezionata!`, 2000);
+            const inputAndButtonWrapper = document.createElement("div");
+            inputAndButtonWrapper.classList.add("codice-sconto-input-wrapper");
+
+            if (iconElement) {
+                inputAndButtonWrapper.appendChild(iconElement);
+            }
+            inputAndButtonWrapper.appendChild(codiceScontoInput);
+
+            const validateDiscountButton = document.createElement("button");
+            validateDiscountButton.type = "button";
+            validateDiscountButton.id = "validateDiscountBtn";
+            validateDiscountButton.textContent = "Applica Sconto";
+            Object.assign(validateDiscountButton.style, {
+                padding: "8px 15px",
+                backgroundColor: "#007bff",
+                color: "white",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
+                fontSize: "0.9rem",
+                flexShrink: "0"
+            });
+            inputAndButtonWrapper.appendChild(validateDiscountButton);
+
+            const labelElement = parentFormGroup.querySelector("label[for='codiceSconto']");
+
+            if (iconElement && iconElement.parentNode === parentFormGroup) {
+                parentFormGroup.removeChild(iconElement);
+            }
+            if (codiceScontoInput.parentNode === parentFormGroup) {
+                parentFormGroup.removeChild(codiceScontoInput);
             }
 
-            // Mostra gli accessori
+            if (labelElement) {
+                labelElement.after(inputAndButtonWrapper);
+            } else {
+                parentFormGroup.appendChild(inputAndButtonWrapper);
+            }
+
+            // *** Listener per il click del pulsante "Applica Sconto" ***
+            validateDiscountButton.addEventListener("click", () => {
+                // Quando il pulsante viene cliccato, chiamiamo updateLivePrice con 'discountButton'
+                updateLivePrice('discountButton');
+            });
+            
+            // *** Listener per l'input del codice sconto ***
+            // Se l'utente svuota il campo o inizia a digitare un nuovo codice,
+            // riabilitiamo il pulsante e l'input.
+            codiceScontoInput.addEventListener('input', () => {
+                const currentInputValue = codiceScontoInput.value.trim().toUpperCase();
+                if (currentInputValue === '') {
+                    // Se l'input è vuoto, nessun codice sconto è applicato
+                    appliedDiscountCode = ''; 
+                    updateDiscountButtonState(); // Riabilita campo e pulsante
+                    updateLivePrice('auto'); // Ricalcola il prezzo senza sconto
+                } else if (currentInputValue !== appliedDiscountCode) {
+                    // Se l'utente sta digitando un codice diverso da quello applicato,
+                    // riabilitiamo il pulsante per permettere un nuovo tentativo.
+                    const validateDiscountButton = document.getElementById("validateDiscountBtn");
+                    if (validateDiscountButton) {
+                        validateDiscountButton.disabled = false;
+                        validateDiscountButton.textContent = "Applica Sconto";
+                        validateDiscountButton.style.backgroundColor = "#007bff";
+                        validateDiscountButton.style.cursor = "pointer";
+                    }
+                    if (codiceScontoInput) {
+                        codiceScontoInput.disabled = false;
+                    }
+                }
+                // Se currentInputValue è uguale a appliedDiscountCode, non facciamo nulla.
+            });
+        }
+    }
+
+    Array.from(document.querySelectorAll("input[name='accessories']:checked")).map(e => e.value);
+    document.getElementById("name")?.addEventListener("input", e => validateField(e.target));
+    document.getElementById("email")?.addEventListener("input", e => validateField(e.target));
+    document.getElementById("date")?.addEventListener("input", e => validateField(e.target));
+
+    document.querySelectorAll(".bike-select").forEach(button => {
+        button.addEventListener("click", event => {
+            event.preventDefault();
+            let bikeType = button.getAttribute("data-bike");
+            let bikeTypeSelect = document.getElementById("bikeType");
+            if (bikeTypeSelect) {
+                bikeTypeSelect.value = bikeType;
+                showSuccessMessage(`🚲 ${bikeType} selezionata!`, 2000);
+            }
             document.getElementById("accessoriesGroup").style.display = "block";
-            updateLivePrice();
+            updateLivePrice('auto'); // Passa 'auto'
             document.getElementById("noleggio")?.scrollIntoView({ behavior: "smooth", block: "start" });
         });
     });
 
-    // Mostra accessori quando selezioni una bici dal menu a tendina
-    document.getElementById("bikeType")?.addEventListener("change", (e) => {
-        const value = e.target.value;
-        const accessoriesGroup = document.getElementById("accessoriesGroup");
-        if (value && value !== "NESSUNA") {
+    document.querySelectorAll("input[name='accessories']").forEach(checkbox => {
+        checkbox.addEventListener("change", () => updateLivePrice('auto')); // Passa 'auto'
+    });
+
+    document.getElementById("bikeType")?.addEventListener("change", event => {
+        let selectedBikeType = event.target.value;
+        let accessoriesGroup = document.getElementById("accessoriesGroup");
+        if (selectedBikeType && selectedBikeType !== "NESSUNA") {
             accessoriesGroup.style.display = "block";
         } else {
             accessoriesGroup.style.display = "none";
         }
-        updateLivePrice();
+        updateLivePrice('auto'); // Passa 'auto'
     });
 
-    // Listener per i bottoni di selezione Tour
-    document.body.addEventListener("click", (e) => {
-        const btn = e.target.closest(".tour-book");
-        if (!btn) return; // Non è un bottone tour-book
+    document.body.addEventListener("click", event => {
+        let tourBookButton = event.target.closest(".tour-book");
+        if (!tourBookButton) return;
+        event.preventDefault();
+        let tourId = tourBookButton.getAttribute("data-tour-id");
+        let tourName = tourBookButton.getAttribute("data-tour-name");
+        let tourSelectedInput = document.getElementById("tourSelected");
+        let tourFieldDiv = document.getElementById("tourField");
+        let eventSelectedInput = document.getElementById("eventSelected");
+        let eventIdHiddenInput = document.getElementById("eventIdHidden");
+        let eventFieldDiv = document.getElementById("eventField");
 
-        e.preventDefault();
-
-        const tourId = btn.getAttribute("data-tour-id");
-        const tourName = btn.getAttribute("data-tour-name");
-
-        const tourInput = document.getElementById("tourSelected");
-        const tourField = document.getElementById("tourField"); // Container visibile del campo tour
-        const eventInput = document.getElementById("eventSelected");
-        const eventIdHidden = document.getElementById("eventIdHidden");
-        const eventField = document.getElementById("eventField"); // Container visibile del campo evento
-
-        if (tourInput && tourField) {
-            tourInput.value = tourName;
-            tourInput.setAttribute("data-tour-id", tourId); // Mantiene l'ID del tour
-            tourField.style.display = "flex"; // Mostra il campo tour
-
-            // Selezionando un tour, resetta e nascondi i campi dell'evento
-            if (eventInput && eventField && eventIdHidden) {
-                eventInput.value = "";
-                eventIdHidden.value = "";
-                eventField.style.display = "none";
+        if (tourSelectedInput && tourFieldDiv) {
+            tourSelectedInput.value = tourName;
+            tourSelectedInput.setAttribute("data-tour-id", tourId);
+            tourFieldDiv.style.display = "flex";
+            if (eventSelectedInput && eventFieldDiv && eventIdHiddenInput) {
+                eventSelectedInput.value = "";
+                eventIdHiddenInput.value = "";
+                eventFieldDiv.style.display = "none";
             }
-
-            // showSuccessMessage(`✅ Tour "${tourName}" aggiunto!`);
-            updateLivePrice(); // Aggiorna il prezzo
+            updateLivePrice('auto'); // Passa 'auto'
             document.getElementById("noleggio")?.scrollIntoView({ behavior: "smooth", block: "start" });
         }
     });
 
-    // Aggiungi il bottone "rimuovi tour" se non esiste già
-    const tourInputWrapper = document.querySelector(".tour-input-wrapper");
+    // Logica per il pulsante "Rimuovi tour selezionato"
+    let tourInputWrapper = document.querySelector(".tour-input-wrapper");
     if (tourInputWrapper && !document.getElementById("removeTourBtn")) {
-        const removeBtn = document.createElement("button");
-        removeBtn.type = "button";
-        removeBtn.id = "removeTourBtn";
-        removeBtn.innerHTML = "✖";
-        removeBtn.title = "Rimuovi tour selezionato";
-        Object.assign(removeBtn.style, {
-            marginLeft: "10px", background: "none", border: "none",
-            fontSize: "1.3rem", cursor: "pointer", color: "#dc3545"
+        let removeTourButton = document.createElement("button");
+        removeTourButton.type = "button";
+        removeTourButton.id = "removeTourBtn";
+        removeTourButton.innerHTML = "✖";
+        removeTourButton.title = "Rimuovi tour selezionato";
+        Object.assign(removeTourButton.style, {
+            marginLeft: "10px",
+            background: "none",
+            border: "none",
+            fontSize: "1.3rem",
+            cursor: "pointer",
+            color: "#dc3545"
         });
-
-        removeBtn.addEventListener("click", () => {
-            const input = document.getElementById("tourSelected");
-            const field = document.getElementById("tourField");
-            if (input && field) {
-                input.value = "";
-                input.removeAttribute("data-tour-id");
-                field.style.display = "none";
+        removeTourButton.addEventListener("click", () => {
+            let tourSelectedInput = document.getElementById("tourSelected");
+            let tourFieldDiv = document.getElementById("tourField");
+            if (tourSelectedInput && tourFieldDiv) {
+                tourSelectedInput.value = "";
+                tourSelectedInput.removeAttribute("data-tour-id");
+                tourFieldDiv.style.display = "none";
                 showSuccessMessage("❌ Tour rimosso!", 2500);
-                updateLivePrice(); // Aggiorna il prezzo dopo la rimozione
+                updateLivePrice('auto'); // Passa 'auto'
             }
         });
-        tourInputWrapper.appendChild(removeBtn);
+        tourInputWrapper.appendChild(removeTourButton);
     }
 
-    // Listener per il cambio dell'ID dell'evento (impostato da event.js)
-    document.getElementById("eventIdHidden")?.addEventListener("change", (e) => {
-        const eventId = e.target.value;
-        const eventInput = document.getElementById("eventSelected");
-        const eventField = document.getElementById("eventField");
-        const tourInput = document.getElementById("tourSelected");
-        const tourField = document.getElementById("tourField");
+    // Gestione del cambio di evento
+    document.getElementById("eventIdHidden")?.addEventListener("change", event => {
+        let currentEventId = event.target.value;
+        let eventSelectedInput = document.getElementById("eventSelected");
+        let eventFieldDiv = document.getElementById("eventField");
+        let tourSelectedInput = document.getElementById("tourSelected");
+        let tourFieldDiv = document.getElementById("tourField");
 
-        if (eventId) {
-            // Se un evento è selezionato, mostra il campo evento
-            if (eventInput && eventField) {
-                eventField.style.display = "flex";
-                // eventInput.value è popolato da event.js
+        if (currentEventId) {
+            if (eventSelectedInput && eventFieldDiv) {
+                eventFieldDiv.style.display = "flex";
             }
-
-            // E nasconde/resetta i campi del tour
-            if (tourInput && tourField) {
-                tourInput.value = "";
-                tourInput.removeAttribute("data-tour-id");
-                tourField.style.display = "none";
+            if (tourSelectedInput && tourFieldDiv) {
+                tourSelectedInput.value = "";
+                tourSelectedInput.removeAttribute("data-tour-id");
+                tourFieldDiv.style.display = "none";
             }
-            updateLivePrice(); // Aggiorna il prezzo con l'evento selezionato
+            updateLivePrice('auto'); // Passa 'auto'
         } else {
-            // Se l'evento viene deselezionato, resetta e nascondi il campo evento
-            if (eventInput && eventField) {
-                eventInput.value = "";
-                eventField.style.display = "none";
+            if (eventSelectedInput && eventFieldDiv) {
+                eventSelectedInput.value = "";
+                eventFieldDiv.style.display = "none";
             }
-            updateLivePrice(); // Aggiorna il prezzo
+            updateLivePrice('auto'); // Passa 'auto'
         }
     });
 
-    // Aggiungi il bottone "rimuovi evento" se non esiste già
-    const eventInputWrapper = document.querySelector(".event-input-wrapper"); // Assicurati di avere questo wrapper nel tuo HTML
+    // Logica per il pulsante "Rimuovi evento selezionato"
+    let eventInputWrapper = document.querySelector(".event-input-wrapper");
     if (eventInputWrapper && !document.getElementById("removeEventBtn")) {
-        const removeBtn = document.createElement("button");
-        removeBtn.type = "button";
-        removeBtn.id = "removeEventBtn";
-        removeBtn.innerHTML = "✖";
-        removeBtn.title = "Rimuovi evento selezionato";
-        Object.assign(removeBtn.style, {
-            marginLeft: "10px", background: "none", border: "none",
-            fontSize: "1.3rem", cursor: "pointer", color: "#dc3545"
+        let removeEventButton = document.createElement("button");
+        removeEventButton.type = "button";
+        removeEventButton.id = "removeEventBtn";
+        removeEventButton.innerHTML = "✖";
+        removeEventButton.title = "Rimuovi evento selezionato";
+        Object.assign(removeEventButton.style, {
+            marginLeft: "10px",
+            background: "none",
+            border: "none",
+            fontSize: "1.3rem",
+            cursor: "pointer",
+            color: "#dc3545"
         });
-
-        removeBtn.addEventListener("click", () => {
-            const input = document.getElementById("eventSelected");
-            const idHidden = document.getElementById("eventIdHidden");
-            const field = document.getElementById("eventField");
-            if (input && idHidden && field) {
-                input.value = "";
-                idHidden.value = ""; // Pulisce anche l'ID nascosto
-                field.style.display = "none";
+        removeEventButton.addEventListener("click", () => {
+            let eventSelectedInput = document.getElementById("eventSelected");
+            let eventIdHiddenInput = document.getElementById("eventIdHidden");
+            let eventFieldDiv = document.getElementById("eventField");
+            if (eventSelectedInput && eventIdHiddenInput && eventFieldDiv) {
+                eventSelectedInput.value = "";
+                eventIdHiddenInput.value = "";
+                eventFieldDiv.style.display = "none";
                 showSuccessMessage("❌ Evento rimosso!", 2500);
-                updateLivePrice(); // Aggiorna il prezzo dopo la rimozione
+                updateLivePrice('auto'); // Passa 'auto'
             }
         });
-        eventInputWrapper.appendChild(removeBtn);
+        eventInputWrapper.appendChild(removeEventButton);
     }
 
-
-    // Listener per i bottoni di selezione del tipo di bici
-    document.querySelectorAll(".bike-select").forEach(btn => {
-        btn.addEventListener("click", (e) => {
-            e.preventDefault();
-            const bikeType = btn.getAttribute("data-bike");
-            const selectElement = document.getElementById("bikeType");
-            if (selectElement) {
-                selectElement.value = bikeType;
-                updateLivePrice();
+    // Nuova gestione per i pulsanti di selezione bici
+    document.querySelectorAll(".bike-select").forEach(button => {
+        button.addEventListener("click", event => {
+            event.preventDefault();
+            let bikeType = button.getAttribute("data-bike");
+            let bikeTypeSelect = document.getElementById("bikeType");
+            if (bikeTypeSelect) {
+                bikeTypeSelect.value = bikeType;
+                updateLivePrice('auto'); // Passa 'auto'
                 showSuccessMessage(`🚲 ${bikeType} selezionata!`, 2000);
                 document.getElementById("noleggio")?.scrollIntoView({ behavior: "smooth", block: "start" });
             }
         });
     });
-    // Listener per il checkbox della bici personale
-    const rentalForm = document.getElementById("noleggioForm");
-    if (!rentalForm) {
+
+    // Gestione del submit del form
+    let noleggioForm = document.getElementById("noleggioForm");
+    if (!noleggioForm) {
         console.error("❌ Form #noleggioForm non trovato!");
         return;
     }
+    noleggioForm.addEventListener("submit", async event => {
+        event.preventDefault();
+        let responseMessage = document.getElementById("responseMessage");
+        let hcaptchaToken = hcaptcha.getResponse();
 
-    rentalForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        const responseMessage = document.getElementById("responseMessage");
-        let captchaToken = ''; // Inizializza il token come stringa vuota
-
-        // ✅ MODIFICA: Aggiunto controllo per la disponibilità di hcaptcha
-        if (typeof hcaptcha !== 'undefined' && hcaptcha.getResponse) {
-            captchaToken = hcaptcha.getResponse();
-        } else {
-            console.error("hCaptcha object not found or getResponse method is missing.");
-            showErrorMessage("Errore di caricamento del Captcha. Riprova a ricaricare la pagina.");
-            responseMessage.textContent = "❌ Errore: Captcha non disponibile.";
-            responseMessage.style.color = "#dc3545";
-            return; // Blocca l'invio se hCaptcha non è pronto
-        }
-
-        if (!captchaToken) {
+        if (!hcaptchaToken) {
             showErrorMessage("⚠️ Devi completare il captcha.");
             responseMessage.textContent = "❌ Verifica il captcha prima di inviare.";
             responseMessage.style.color = "#dc3545";
@@ -393,53 +507,48 @@ function initializeBookingForm() {
 
         responseMessage.textContent = "⏳ Invio richiesta in corso...";
         responseMessage.style.color = "#000";
-        // Rimuove eventuali stati di errore precedenti dai campi
-        document.querySelectorAll('.form-group.error').forEach(el => el.classList.remove('error'));
+        document.querySelectorAll(".form-group.error").forEach(element => element.classList.remove("error"));
 
-        // Recupera tutti i valori dei campi del form
-        const name = getInputValue("name");
-        const email = getInputValue("email");
-        const ownBike = document.getElementById("ownBikeCheckbox")?.checked;
-        const bikeType = ownBike ? "NESSUNA" : getInputValue("bikeType");
-        const quantity = getInputValue("quantity") || "1";
-        const date = getInputValue("date");
-        const duration = getInputValue("duration") || "1";
-        const notes = getInputValue("notes");
-        const tourSelected = getInputValue("tourSelected");
-        const eventIdHidden = getInputValue("eventIdHidden");
-        const eventSelected = getInputValue("eventSelected");
-        const total = getInputValue("totalHidden") || "0.00";
+        let name = getInputValue("name");
+        let email = getInputValue("email");
+        let ownBikeSelected = document.getElementById("ownBikeCheckbox")?.checked;
+        let bikeType = ownBikeSelected ? "NESSUNA" : getInputValue("bikeType");
+        let quantity = getInputValue("quantity") || "1";
+        let date = getInputValue("date");
+        let duration = getInputValue("duration") || "1";
+        let notes = getInputValue("notes");
+        let tourSelected = getInputValue("tourSelected");
+        let eventIdHidden = getInputValue("eventIdHidden");
+        let eventSelected = getInputValue("eventSelected");
+        let total = getInputValue("totalHidden") || "0.00";
 
-        // Validazione dei campi obbligatori
-        let hasMissingFields = false;
-        const requiredFields = [
+        let validationFailed = false;
+        let missingFields = [];
+        let fieldsToValidate = [
             { id: "name", value: name, label: "Nome e Cognome" },
             { id: "email", value: email, label: "Email" },
-            { id: "bikeType", value: ownBike ? "NESSUNA" : bikeType, label: "Tipo di bici" },
+            { id: "bikeType", value: ownBikeSelected ? "NESSUNA" : bikeType, label: "Tipo di bici" },
             { id: "date", value: date, label: "Data" }
         ];
 
-        let missingLabels = [];
-        requiredFields.forEach(field => {
+        fieldsToValidate.forEach(field => {
             if (!field.value) {
                 validateField(document.getElementById(field.id));
-                hasMissingFields = true;
-                missingLabels.push(field.label);
+                validationFailed = true;
+                missingFields.push(field.label);
             }
         });
 
-        // Se mancano campi obbligatori, mostra un errore e ferma l'invio
-        if (hasMissingFields) {
-            responseMessage.textContent = `❌ Errore: Compila tutti i campi obbligatori evidenziati. Mancanti: ${missingLabels.join(", ")}.`;
+        if (validationFailed) {
+            responseMessage.textContent = `❌ Errore: Compila tutti i campi obbligatori evidenziati. Mancanti: ${missingFields.join(", ")}.`;
             responseMessage.style.color = "#dc3545";
             showErrorMessage("Completa tutti i campi richiesti.");
-            const firstMissingField = document.getElementById(requiredFields.find(f => !f.value)?.id);
-            if(firstMissingField) firstMissingField.focus(); // Porta il focus al primo campo mancante
+            let firstMissingElement = document.getElementById(fieldsToValidate.find(field => !field.value)?.id);
+            if (firstMissingElement) firstMissingElement.focus();
             return;
         }
 
-        // Prepara i dati per l'invio (FormData è utile per i worker)
-        const formData = new FormData();
+        let formData = new FormData();
         formData.set("name", name);
         formData.set("email", email);
         formData.set("bikeType", bikeType);
@@ -448,102 +557,102 @@ function initializeBookingForm() {
         formData.set("duration", duration);
         formData.set("notes", notes);
         formData.set("tourSelected", tourSelected);
-        formData.set("eventSelected", eventSelected); // Invia il nome dell'evento visualizzato
-        formData.set("eventIdHidden", eventIdHidden); // Invia l'ID dell'evento
+        formData.set("eventSelected", eventSelected);
+        formData.set("eventIdHidden", eventIdHidden);
         formData.set("total", total);
-        const selectedAccessories = Array.from(document.querySelectorAll("input[name='accessories']:checked")).map(el => el.value);
-        formData.set("accessories", selectedAccessories.join(", "));
-        formData.set("hcaptchaToken", captchaToken); // ✅ ORA È NEL PUNTO GIUSTO
 
+        // Includi il codice sconto applicato al momento del submit
+        formData.set("codiceScontoApplicato", appliedDiscountCode);
+
+
+        let accessoriesChecked = Array.from(document.querySelectorAll("input[name='accessories']:checked")).map(checkbox => checkbox.value);
+        formData.set("accessories", accessoriesChecked.join(", "));
+        formData.set("hcaptchaToken", hcaptchaToken);
 
         try {
-            // Invia i dati al worker di Cloudflare per la gestione della prenotazione
-            const response = await fetch("[https://workers-bibbonabike.zonkeynet.workers.dev/submit](https://workers-bibbonabike.zonkeynet.workers.dev/submit)", {
+            let submitResponse = await fetch("https://workers-bibbonabike.zonkeynet.workers.dev/submit", {
                 method: "POST",
                 body: formData
             });
 
-            const result = await response.json();
+            let submitData = await submitResponse.json();
 
-            if (response.ok && result.status === "success") {
+            if (submitResponse.ok && submitData.status === "success") {
                 responseMessage.textContent = "✅ Prenotazione inviata con successo!";
                 responseMessage.style.color = "#28a745";
-
-                // Resetta solo i campi di input rilevanti manualmente
-                rentalForm.querySelectorAll("input, textarea, select").forEach(el => {
-                    // Non resettare tutti i campi se alcuni devono mantenere un valore predefinito
-                    if (["bikeType", "duration", "quantity", "notes", "name", "email", "date"].includes(el.id)) {
-                        el.value = "";
+                // Resetta i campi del form dopo l'invio
+                noleggioForm.querySelectorAll("input, textarea, select").forEach(element => {
+                    if (["bikeType", "duration", "quantity", "notes", "name", "email", "date"].includes(element.id)) {
+                        element.value = "";
                     }
                 });
 
-                // Visualizza il pulsante PayPal se la risposta del worker lo include
-                const paypalPlaceholder = document.getElementById("paypalPlaceholder");
-                if (window.prezzoRisposta?.paypalHtml) { // Controlla se il worker ha fornito l'HTML di PayPal
-                    if (paypalPlaceholder) {
-                        paypalPlaceholder.innerHTML = window.prezzoRisposta.paypalHtml;
-                        paypalPlaceholder.style.display = "block"; // Assicurati che il div sia visibile
-
-                        const paymentInstruction = document.createElement("p");
-                        paymentInstruction.textContent = "Per completare la prenotazione, procedi al pagamento tramite PayPal:";
-                        Object.assign(paymentInstruction.style, {
-                            marginTop: "15px",
-                            marginBottom: "10px",
-                            color: "#333",
-                            fontWeight: "bold",
-                            textAlign: "center"
-                        });
-                        paypalPlaceholder.prepend(paymentInstruction); // Aggiunge le istruzioni sopra il pulsante
-                    }
+                let paypalContainer = document.getElementById("paypalPlaceholder");
+                // Qui è dove il pulsante PayPal viene finalmente mostrato
+                if (window.prezzoRisposta?.paypalHtml && paypalContainer) {
+                    paypalContainer.innerHTML = window.prezzoRisposta.paypalHtml;
+                    paypalContainer.style.display = "block";
+                    let paypalInstructions = document.createElement("p");
+                    paypalInstructions.textContent = "Per completare la prenotazione, procedi al pagamento tramite PayPal:";
+                    Object.assign(paypalInstructions.style, {
+                        marginTop: "15px",
+                        marginBottom: "10px",
+                        color: "#333",
+                        fontWeight: "bold",
+                        textAlign: "center"
+                    });
+                    paypalContainer.prepend(paypalInstructions);
                 }
 
-                // Reset prezzo e campi tour/evento dopo l'invio della prenotazione
+                // Resetta visualizzazioni aggiuntive
                 document.getElementById("totalAmount").textContent = "0.00";
                 document.getElementById("totalHidden").value = "0.00";
                 document.getElementById("tourSelected").value = "";
-                document.getElementById("tourSelected")?.removeAttribute("data-tour-id"); // Rimuovi l'attributo data-tour-id
+                document.getElementById("tourSelected")?.removeAttribute("data-tour-id");
                 document.getElementById("tourField").style.display = "none";
                 document.getElementById("eventSelected").value = "";
                 document.getElementById("eventIdHidden").value = "";
                 document.getElementById("eventField").style.display = "none";
+                
+                // Resetta anche lo stato del codice sconto dopo il submit
+                appliedDiscountCode = '';
+                updateDiscountButtonState();
+
 
                 showSuccessMessage("✅ Prenotazione completata!", 4000);
             } else {
-                // Gestisce gli errori nella sottomissione del form
-                const errorMessage = result.message || "Qualcosa è andato storto sul server.";
+                let errorMessage = submitData.message || "Qualcosa è andato storto sul server.";
                 responseMessage.textContent = `❌ Errore: ${errorMessage}`;
                 responseMessage.style.color = "#dc3545";
                 showErrorMessage(`Errore di invio: ${errorMessage}`);
-                const paypalPlaceholder = document.getElementById("paypalPlaceholder");
-                if (paypalPlaceholder) {
-                    paypalPlaceholder.innerHTML = "";
-                    paypalPlaceholder.style.display = "none";
+                let paypalContainer = document.getElementById("paypalPlaceholder");
+                if (paypalContainer) {
+                    paypalContainer.innerHTML = "";
+                    paypalContainer.style.display = "none";
                 }
             }
         } catch (error) {
-            // Gestisce gli errori di rete durante l'invio del form
             responseMessage.textContent = "❌ Errore di rete o problema di risposta del server.";
             responseMessage.style.color = "#dc3545";
             console.error("❌ Errore di invio del form (blocco catch):", error);
             showErrorMessage("Errore di connessione. Controlla la tua rete.");
-        } finally {
-            // ✅ MODIFICA: Reset del captcha, solo se hcaptcha è definito
-            if (typeof hcaptcha !== 'undefined' && hcaptcha.reset) {
-                hcaptcha.reset(); 
-            }
         }
     });
 
-    // Aggiorna il prezzo iniziale al caricamento della pagina
-    updateLivePrice();
+    // Esegui un calcolo iniziale al caricamento della pagina
+    updateLivePrice('auto');
+    // Chiamata iniziale per impostare lo stato corretto del pulsante
+    updateDiscountButtonState(); 
 }
 
-// Avvia l'inizializzazione del form una volta che il DOM è completamente caricato
+// Inizializza il form quando il DOM è completamente caricato
 document.addEventListener("DOMContentLoaded", initializeBookingForm);
-document.getElementById("ownBikeCheckbox")?.addEventListener("change", (e) => {
-    const isChecked = e.target.checked;
-    const bikeTypeSelect = document.getElementById("bikeType");
-    const quantityInput = document.getElementById("quantity");
+
+// Gestione della checkbox "Ho la mia bici" (rimane invariata)
+document.getElementById("ownBikeCheckbox")?.addEventListener("change", event => {
+    let isChecked = event.target.checked;
+    let bikeTypeSelect = document.getElementById("bikeType");
+    let quantityInput = document.getElementById("quantity");
 
     if (isChecked) {
         bikeTypeSelect.disabled = true;
@@ -552,6 +661,5 @@ document.getElementById("ownBikeCheckbox")?.addEventListener("change", (e) => {
         bikeTypeSelect.disabled = false;
         quantityInput.disabled = false;
     }
-
-    updateLivePrice(); // Ricalcola il prezzo
+    updateLivePrice('auto'); // Ricalcola il prezzo se lo stato della checkbox cambia
 });
