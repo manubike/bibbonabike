@@ -1,6 +1,19 @@
 [
   {
     "id": "e001",
+    "title": "BBQ Bike Party",
+    "date": "Ogni Martedì",
+    "time": "17:30 – 22:00",
+    "description": "Giro nella macchia e, a seguire, BBQ con salsicce e costine per tutti!",
+    "descriptionFull": "Il BBQ Bike Party è l’appuntamento settimanale firmato Magona Bike Garage! 🚴🔥\n\nSi parte con un giro in bici nella macchia, immersi nella natura di Bibbona. Al rientro, grigliata conviviale con salsicce e costine per tutti i partecipanti.\n\n📍 Ritrovo: Magona Bike Garage, Via del Mandorlo 1, Bibbona (LI)\n🕠 Orario: dalle 17:30 alle 22:00\n🍖 Dopo il tour: BBQ party con carne alla griglia\nℹ️ Prenotazione obbligatoria",
+    "price": "Su prenotazione",
+    "image": "img/bbqparty.webp",
+    "type": "evento",
+    "whatsapp": "Vorrei prenotare per il BBQ Bike Party di martedì",
+    "email": "vitiellomanuel1985@gmail.com"
+  },
+  {
+    "id": "e002",
     "title": "Bibbona Bike & Kidz!",
     "date": "Sabato 15 Giugno",
     "time": "ore 10:00",
@@ -11,9 +24,9 @@
     "type": "corso",
     "whatsapp": "Vorrei iscrivere mio/a figlio/a all'evento Bibbona Bike & Kidz del 15 Giugno",
     "email": "vitiellomanuel1985@gmail.com"
-  },
+  },  
   {
-    "id": "e002",
+    "id": "e003",
     "title": "Corso Meccanica Base",
     "date": "Sabato 8 Giugno",
     "time": "ore 10:00",
@@ -26,7 +39,7 @@
     "email": "vitiellomanuel1985@gmail.com"
   },
   {
-    "id": "e003",
+    "id": "e004",
     "title": "Summer MTB Camp Bibbona",
     "date": "dal 10/06 ogni Lun, Mar, Gio",
     "time": "13:00 – 15:30",
