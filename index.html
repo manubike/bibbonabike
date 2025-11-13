@@ -1,6 +1,70 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const banner = document.getElementById('cookie-banner-bb');
+        const accettaBtn = document.getElementById('accetta-tutto-bb');
+        const rifiutaBtn = document.getElementById('rifiuta-bb');
+        const personalizzaBtn = document.getElementById('personalizza-bb');
+        
+        const cookieName = 'bb_cookie_consent'; // Nome del cookie per la preferenza
+
+        // Funzione per impostare un cookie
+        function setCookie(name, value, days) {
+            let expires = "";
+            if (days) {
+                let date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+        }
+
+        // Funzione per ottenere un cookie
+        function getCookie(name) {
+            let nameEQ = name + "=";
+            let ca = document.cookie.split(';');
+            for(let i=0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0)==' ') c = c.substring(1,c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+            }
+            return null;
+        }
+
+        // 1. Controlla se l'utente ha già dato il consenso
+        if (!getCookie(cookieName)) {
+            // Se non c'è il cookie di consenso, mostra il banner
+            banner.classList.add('cookie-banner-mostra');
+        }
+
+        // 2. Gestione del click su "Accetta tutto"
+        accettaBtn.addEventListener('click', function() {
+            // A questo punto, il tuo codice dovrebbe attivare TUTTI i cookie non essenziali
+            setCookie(cookieName, 'accettato_tutto', 365); // Consenso valido per 1 anno
+            banner.classList.remove('cookie-banner-mostra');
+        });
+
+        // 3. Gestione del click su "Rifiuta"
+        rifiutaBtn.addEventListener('click', function() {
+            // A questo punto, il tuo codice dovrebbe mantenere bloccati TUTTI i cookie non essenziali
+            setCookie(cookieName, 'rifiutato', 365);
+            banner.classList.remove('cookie-banner-mostra');
+        });
+
+        // 4. Gestione del click su "Personalizza"
+        personalizzaBtn.addEventListener('click', function() {
+            // ************ AZIONE CRITICA GDPR ************
+            // QUI DEVI APRIRE UNA FINESTRA MODALE che permetta all'utente
+            // di scegliere tra le varie categorie di cookie (Funzionali, Marketing, Statistiche)
+            alert('Attenzione: Qui si dovrebbe aprire la finestra per la scelta granulare delle preferenze sui cookie. Devi implementare la logica per questa modale.');
+            // Per questo esempio, nascondiamo solo il banner, ma NON è legale
+            banner.classList.remove('cookie-banner-mostra');
+        });
+
+    });
+</script>
   <meta charset="UTF-8" />
 
   <!-- 📱 Mobile Responsive -->
@@ -900,6 +964,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
