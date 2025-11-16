@@ -73,8 +73,7 @@
 
 .logo-carousel-track {
     display: inline-block;
-    /* Durata aumentata a 60s per molti loghi */
-    animation: scroll-left 60s linear infinite; 
+    animation: scroll-left 30s linear infinite; /* PIÙ VELOCE */
 }
 
 .logo-slide {
@@ -88,7 +87,7 @@
     height: 100%;
     width: auto;
     object-fit: contain;
-    filter: grayscale(100%);
+    filter: grayscale(0%);
     opacity: 0.6;
     transition: filter 0.5s, opacity 0.5s;
 }
