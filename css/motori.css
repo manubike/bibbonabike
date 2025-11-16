@@ -73,7 +73,7 @@
 
 .logo-carousel-track {
     display: inline-block;
-    animation: scroll-left 30s linear infinite; /* PIÙ VELOCE */
+    animation: scroll-left 60s linear infinite; /* PIÙ VELOCE */
 }
 
 .logo-slide {
