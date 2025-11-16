@@ -1,0 +1,75 @@
+/* Container principale */
+.logo-carousel-section {
+    padding: 40px 0;
+    text-align: center;
+    background-color: #f4f4f4; /* Sfondo leggero per evidenziare */
+}
+
+.logo-carousel-section h2 {
+    margin-bottom: 30px;
+    color: #333;
+    font-size: 1.8em;
+}
+
+/* Nasconde ciò che esce dal contenitore */
+.logo-carousel-container {
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+    padding: 10px 0;
+}
+
+/* La TRACCIA: contiene tutti i loghi e viene mossa dall'animazione */
+.logo-carousel-track {
+    display: inline-block;
+    /* Ho aumentato la durata a 60s per gestire la maggiore quantità di loghi */
+    animation: scroll-left 60s linear infinite; 
+}
+
+/* Ogni singolo logo */
+.logo-slide {
+    display: inline-block;
+    margin: 0 40px; /* Spazio tra i loghi */
+    height: 80px; /* Altezza fissa per coerenza */
+    vertical-align: middle;
+}
+
+/* Stile per le immagini all'interno */
+.logo-slide img {
+    height: 100%;
+    width: auto;
+    object-fit: contain;
+    /* Effetto scala di grigi */
+    filter: grayscale(100%);
+    opacity: 0.6;
+    transition: filter 0.5s, opacity 0.5s;
+}
+
+.logo-slide img:hover {
+    filter: grayscale(0%);
+    opacity: 1;
+}
+
+/*
+* Definizione dell'ANIMAZIONE (Keyframes)
+*/
+@keyframes scroll-left {
+    0% {
+        transform: translateX(0); /* Inizia a posizione 0 */
+    }
+    100% {
+        /* Sposta l'intera traccia del 33.333% verso sinistra (perché i loghi sono triplicati) */
+        transform: translateX(-33.333%);
+    }
+}
+
+/* Media Query: Rallenta lo scorrimento sui dispositivi mobili */
+@media (max-width: 600px) {
+    .logo-carousel-track {
+        animation-duration: 80s; /* Rallentato ulteriormente */
+    }
+    .logo-slide {
+        margin: 0 20px;
+        height: 50px;
+    }
+}
