@@ -1085,21 +1085,101 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     </style>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Banner GDPR per Noleggio e Prenotazioni</title>
+    <style>
+        /*
+        * 1. Stile CSS per il Banner GDPR
+        */
+        #gdpr-banner {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            /* Tonalità più calda per richiamare il marchio */
+            background-color: #34495e; 
+            color: white;
+            padding: 15px 20px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none;
+            font-family: Arial, sans-serif;
+            line-height: 1.4;
+        }
+
+        #gdpr-banner .content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        #gdpr-banner p {
+            margin: 0;
+            padding-right: 20px;
+            flex-grow: 1;
+        }
+
+        #gdpr-banner a {
+            color: #f1c40f; /* Giallo/Arancione per i link */
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        #gdpr-banner a:hover {
+            text-decoration: underline;
+        }
+
+        #gdpr-accept-btn {
+            background-color: #e67e22; /* Arancione (per l'azione principale) */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            /* Per evitare che il bottone si sovrapponga su schermi piccoli */
+            min-width: 100px; 
+            text-align: center;
+            margin-top: 5px; 
+        }
+
+        #gdpr-accept-btn:hover {
+            background-color: #d35400;
+        }
+
+        /* Regole per schermi più piccoli */
+        @media (max-width: 768px) {
+            #gdpr-banner .content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            #gdpr-banner p {
+                padding-right: 0;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
 
-    <h1>Benvenuto sul mio sito</h1>
-    <p>Questo è un contenuto di esempio per mostrare il banner in azione.</p>
+    <h1>Noleggio E-Bike Veloce e Semplice</h1>
+    <p>Qui sarà la tua interfaccia di prenotazione e noleggio.</p>
     <div id="gdpr-banner">
         <div class="content">
             <p>
-                Utilizziamo i cookie per migliorare l'esperienza di navigazione, analizzare il traffico del sito e personalizzare i contenuti. Cliccando su **"Accetta"**, acconsenti all'uso dei cookie. Puoi cliccare su **"Rifiuta"** per disattivarli o consultare la nostra 
-                <a href="/privacy-policy" target="_blank">Informativa sulla Privacy</a>.
+                Per poter procedere con la **prenotazione e il noleggio delle nostre e-bike** e per garantirti un servizio efficiente (es. invio della conferma, gestione del pagamento, ecc.), dobbiamo trattare alcuni dati personali. 
+                **Senza il tuo consenso non sarà possibile prestare i servizi di noleggio e prenotazione richiesti.** Cliccando su "Accetto", acconsenti al trattamento dei dati necessari per l'erogazione dei servizi.
+                <a href="/privacy-policy" target="_blank">Leggi l'informativa completa.</a>
             </p>
-            <div class="gdpr-actions">
-                <button id="gdpr-reject-btn" class="gdpr-btn">Rifiuta</button>
-                <button id="gdpr-accept-btn" class="gdpr-btn">Accetta</button>
-            </div>
+            <button id="gdpr-accept-btn">Accetto e Procedo</button>
         </div>
     </div>
 
@@ -1107,78 +1187,57 @@ document.addEventListener("DOMContentLoaded", () => {
         document.addEventListener('DOMContentLoaded', (event) => {
             const banner = document.getElementById('gdpr-banner');
             const acceptBtn = document.getElementById('gdpr-accept-btn');
-            const rejectBtn = document.getElementById('gdpr-reject-btn'); // Nuovo pulsante
-            const cookieName = 'gdpr_consent'; // Nome del cookie per tracciare lo stato del consenso
+            const cookieName = 'gdpr_accepted_service'; 
 
             /**
-             * Legge lo stato del consenso dal cookie.
-             * @returns {string|null} 'accepted', 'rejected', o null se non impostato.
+             * Controlla se il cookie di consenso esiste.
+             * @returns {boolean}
              */
-            function getGdprConsent() {
-                const name = cookieName + "=";
-                const decodedCookie = decodeURIComponent(document.cookie);
-                const ca = decodedCookie.split(';');
-                for(let i = 0; i <ca.length; i++) {
-                    let c = ca[i];
-                    while (c.charAt(0) === ' ') {
-                        c = c.substring(1);
-                    }
-                    if (c.indexOf(name) === 0) {
-                        return c.substring(name.length, c.length);
-                    }
-                }
-                return null;
+            function hasGdprCookie() {
+                // Semplice controllo: cerca la stringa 'gdpr_accepted_service=true' nei cookie
+                return document.cookie.includes(cookieName + '=true');
             }
 
             /**
-             * Imposta lo stato del consenso nel cookie e nasconde il banner.
-             * @param {string} consentState - 'accepted' o 'rejected'.
+             * Imposta il cookie di consenso e nasconde il banner.
              */
-            function setGdprConsent(consentState) {
+            function setGdprCookie() {
                 // Imposta un cookie che scade dopo 365 giorni
                 const date = new Date();
                 date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000));
                 const expires = "; expires=" + date.toUTCString();
-                document.cookie = cookieName + "=" + consentState + expires + "; path=/; SameSite=Lax";
+                document.cookie = cookieName + "=true" + expires + "; path=/; SameSite=Lax";
                 
+                // Nasconde il banner
                 banner.style.display = 'none';
 
-                if (consentState === 'accepted') {
-                    // AZIONE DI ACCETTAZIONE: Carica qui gli script di tracciamento
-                    console.log("Consenso GDPR ACCETTATO. Carico gli script traccianti.");
-                } else if (consentState === 'rejected') {
-                    // AZIONE DI RIFIUTO: Assicurati che NESSUN script tracciante sia caricato
-                    console.log("Consenso GDPR RIFIUTATO. Gli script traccianti NON vengono caricati.");
-                }
+                // DA FARE QUI: Dopo l'accettazione, abilita le funzionalità del carrello, la pagina di checkout, 
+                // e carica eventuali script necessari al funzionamento del booking engine.
+                console.log("Consenso ACCETTATO per l'erogazione dei servizi. Abilito la funzione di prenotazione.");
+                
+                // ESEMPIO: Se hai una funzione per abilitare il form di prenotazione:
+                // enableBookingForm();
             }
 
-            // 1. Controlla lo stato del consenso
-            const consent = getGdprConsent();
-            
-            if (consent === 'accepted') {
-                console.log("Consenso già ACCETTATO. Carico gli script traccianti.");
-                // Esegui qui il codice di tracciamento o di terze parti
-            } else if (consent === 'rejected') {
-                console.log("Consenso già RIFIUTATO. Nessuna azione di tracciamento.");
-            } else {
-                // Se non c'è consenso (è null), mostra il banner
+            // 1. Controlla se l'utente ha già accettato
+            if (!hasGdprCookie()) {
+                // Se non ha accettato, mostra il banner
                 banner.style.display = 'block';
+            } else {
+                 console.log("Consenso già presente. Funzionalità di prenotazione abilitata.");
+                 // DA FARE QUI: Assicurati che le funzionalità di prenotazione siano attive
+                 // enableBookingForm();
             }
 
-            // 2. Aggiungi gli event listener ai pulsanti
-            acceptBtn.addEventListener('click', () => {
-                setGdprConsent('accepted');
-            });
-
-            rejectBtn.addEventListener('click', () => {
-                setGdprConsent('rejected');
-            });
+            // 2. Aggiungi l'event listener al pulsante
+            acceptBtn.addEventListener('click', setGdprCookie);
         });
     </script>
 
 </body>
 </html>
 </html>
+
 
 
 
