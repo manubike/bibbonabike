@@ -1,6 +1,273 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
+    <meta charset="UTF-8">
+    <title>BibbonaBike.com - Gestione Cookie</title>
+    <style>
+        /*
+        * 1. Stile CSS per il Banner di Gestione Cookie
+        */
+        #cookie-banner-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); /* Sfondo scuro che blocca la pagina */
+            display: none; /* Inizialmente nascosto */
+            justify-content: center;
+            align-items: center;
+            z-index: 9999; 
+            font-family: Arial, sans-serif;
+        }
+
+        #cookie-consent-modal {
+            background-color: white;
+            color: #333;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh; /* Limita l'altezza per schermi piccoli */
+            overflow-y: auto;
+        }
+
+        #cookie-consent-modal h2 {
+            color: #e67e22; /* Colore tema (es. Arancione Bike) */
+            margin-top: 0;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .cookie-category {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+
+        .cookie-category label {
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .cookie-category input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        .cookie-category .description {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+            padding-left: 30px;
+        }
+        
+        /* Input disabilitato per i cookie Necessari */
+        .cookie-category input:disabled + span {
+            color: #aaa;
+        }
+
+        /* Pulsanti di azione */
+        .cookie-actions {
+            display: flex;
+            justify-content: flex-end; /* Allinea a destra */
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .cookie-actions button {
+            padding: 10px 20px;
+            border: 1px solid #34495e;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        #accept-all-btn {
+            background-color: #e67e22; /* Accetta Tutto (Arancione) */
+            color: white;
+            border-color: #e67e22;
+        }
+
+        #accept-all-btn:hover {
+            background-color: #d35400;
+        }
+
+        #reject-all-btn, #save-prefs-btn {
+            background-color: #ecf0f1; /* Rifiuta/Salva (Grigio chiaro) */
+            color: #34495e;
+        }
+
+        #reject-all-btn:hover, #save-prefs-btn:hover {
+            background-color: #bdc3c7;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="cookie-banner-overlay">
+        <div id="cookie-consent-modal">
+            <h2>Gestione Cookie per BibbonaBike.com</h2>
+            <p>
+                Utilizziamo i cookie per garantirti la migliore esperienza di noleggio e prenotazione. Puoi scegliere quali categorie accettare:
+            </p>
+
+            <div class="cookie-category">
+                <label>
+                    <input type="checkbox" id="cookie-necessary" checked disabled>
+                    <span>Cookie Tecnici e Necessari</span>
+                </label>
+                <div class="description">
+                    Essenziali per il funzionamento del sito (es. carrello, login, sicurezza, gestione della prenotazione). Non possono essere disattivati.
+                </div>
+            </div>
+
+            <div class="cookie-category">
+                <label for="cookie-analytics">
+                    <input type="checkbox" id="cookie-analytics" data-cookie-type="analytics">
+                    <span>Cookie Statistici e Analitici</span>
+                </label>
+                <div class="description">
+                    Ci aiutano a capire come i visitatori interagiscono con il sito e a migliorarlo (es. Google Analytics).
+                </div>
+            </div>
+
+            <div class="cookie-category">
+                <label for="cookie-marketing">
+                    <input type="checkbox" id="cookie-marketing" data-cookie-type="marketing">
+                    <span>Cookie di Marketing e Profilazione</span>
+                </label>
+                <div class="description">
+                    Utilizzati per mostrarti annunci pertinenti sui social media o altri siti web.
+                </div>
+            </div>
+
+            <p style="margin-top: 20px;">
+                Per maggiori dettagli, consulta la nostra <a href="/privacy-policy" target="_blank" style="color: #e67e22;">Privacy e Cookie Policy</a>.
+            </p>
+
+            <div class="cookie-actions">
+                <button id="reject-all-btn">Rifiuta Tutto</button>
+                <button id="save-prefs-btn">Salva Preferenze</button>
+                <button id="accept-all-btn">Accetta Tutto</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const overlay = document.getElementById('cookie-banner-overlay');
+            const acceptAllBtn = document.getElementById('accept-all-btn');
+            const rejectAllBtn = document.getElementById('reject-all-btn');
+            const savePrefsBtn = document.getElementById('save-prefs-btn');
+            
+            // Selettori per le checkbox
+            const analyticsCheckbox = document.getElementById('cookie-analytics');
+            const marketingCheckbox = document.getElementById('cookie-marketing');
+
+            const STORAGE_KEY = 'bibbonabike_cookie_consent';
+
+            /**
+             * Controlla e restituisce le preferenze salvate.
+             * @returns {object|null}
+             */
+            function getConsent() {
+                const consent = localStorage.getItem(STORAGE_KEY);
+                return consent ? JSON.parse(consent) : null;
+            }
+
+            /**
+             * Salva le preferenze nel localStorage.
+             * @param {object} prefs - Oggetto con le categorie e il loro stato (true/false).
+             */
+            function saveConsent(prefs) {
+                // Includi i necessari come sempre accettati per default (funzionalità base)
+                prefs.necessary = true;
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
+                overlay.style.display = 'none';
+                applyConsent(prefs);
+            }
+
+            /**
+             * Applica le preferenze (carica/blocca script).
+             * @param {object} prefs 
+             */
+            function applyConsent(prefs) {
+                console.log("Stato Consenso Applica:", prefs);
+                
+                // --- Logica di Caricamento Script ---
+
+                if (prefs.analytics) {
+                    console.log("ANALISI: Il consenso per gli analytics è stato dato. Carica qui il codice di Google Analytics.");
+                    // Esempio: loadGoogleAnalyticsScript();
+                } else {
+                    console.log("ANALISI: Il consenso per gli analytics è stato negato.");
+                }
+
+                if (prefs.marketing) {
+                    console.log("MARKETING: Il consenso per il marketing è stato dato. Carica qui i Pixel di Facebook/Ads.");
+                    // Esempio: loadFacebookPixel();
+                } else {
+                    console.log("MARKETING: Il consenso per il marketing è stato negato.");
+                }
+
+                // La parte Necessaria (prenotazione) è sempre attiva per il funzionamento di base.
+                console.log("NECESSARI: Le funzionalità di booking (necessarie) sono sempre attive.");
+            }
+
+            // --- Logica Iniziale ---
+            const existingConsent = getConsent();
+
+            if (existingConsent) {
+                // Se il consenso esiste, applica le regole immediatamente senza mostrare il banner.
+                applyConsent(existingConsent);
+            } else {
+                // Se il consenso non esiste, mostra il banner bloccando l'interazione.
+                overlay.style.display = 'flex';
+            }
+
+            // --- Event Listeners ---
+
+            // 1. ACCETTA TUTTO
+            acceptAllBtn.addEventListener('click', () => {
+                const prefs = {
+                    analytics: true,
+                    marketing: true
+                };
+                saveConsent(prefs);
+            });
+
+            // 2. RIFIUTA TUTTO
+            rejectAllBtn.addEventListener('click', () => {
+                const prefs = {
+                    analytics: false,
+                    marketing: false
+                };
+                saveConsent(prefs);
+            });
+
+            // 3. SALVA PREFERENZE (Granulare)
+            savePrefsBtn.addEventListener('click', () => {
+                const prefs = {
+                    analytics: analyticsCheckbox.checked,
+                    marketing: marketingCheckbox.checked
+                };
+                saveConsent(prefs);
+            });
+        });
+    </script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="it">
+<head>
   <meta charset="UTF-8" />
 
   <!-- 📱 Mobile Responsive -->
@@ -1237,6 +1504,7 @@ document.addEventListener("DOMContentLoaded", () => {
 </body>
 </html>
 </html>
+
 
 
 
