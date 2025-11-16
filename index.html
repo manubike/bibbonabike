@@ -904,7 +904,146 @@ document.addEventListener("DOMContentLoaded", () => {
     </script>
 
 </body>
+      <!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Esempio di Banner GDPR</title>
+    <style>
+        /*
+        * 1. Stile CSS per il Banner GDPR
+        */
+        #gdpr-banner {
+            position: fixed; /* Lo fissa in una posizione */
+            bottom: 0; /* Lo posiziona in basso */
+            left: 0;
+            width: 100%;
+            background-color: #2c3e50; /* Sfondo scuro */
+            color: white; /* Testo bianco */
+            padding: 15px 20px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000; /* Assicura che sia sopra gli altri elementi */
+            display: none; /* Inizialmente nascosto, verrà mostrato dal JavaScript */
+            font-family: Arial, sans-serif;
+            line-height: 1.4;
+        }
+
+        #gdpr-banner .content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap; /* Permette il wrap su schermi piccoli */
+        }
+
+        #gdpr-banner p {
+            margin: 0;
+            padding-right: 20px; /* Spazio tra testo e pulsante */
+            flex-grow: 1;
+        }
+
+        #gdpr-banner a {
+            color: #3498db; /* Colore per i link (es. privacy policy) */
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        #gdpr-banner a:hover {
+            text-decoration: underline;
+        }
+
+        #gdpr-accept-btn {
+            background-color: #2ecc71; /* Sfondo del pulsante verde */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            margin-top: 5px; /* Spazio verticale su mobile */
+        }
+
+        #gdpr-accept-btn:hover {
+            background-color: #27ae60;
+        }
+
+        /* Regole per schermi più piccoli */
+        @media (max-width: 768px) {
+            #gdpr-banner .content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            #gdpr-banner p {
+                padding-right: 0;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Benvenuto sul mio sito</h1>
+    <p>Questo è un contenuto di esempio per mostrare il banner in azione.</p>
+    <div id="gdpr-banner">
+        <div class="content">
+            <p>
+                Utilizziamo i cookie per migliorare l'esperienza di navigazione, analizzare il traffico del sito e personalizzare i contenuti. Cliccando su "Accetta", acconsenti all'uso dei cookie. Puoi consultare la nostra 
+                <a href="/privacy-policy" target="_blank">Informativa sulla Privacy</a> per maggiori dettagli.
+            </p>
+            <button id="gdpr-accept-btn">Accetta</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const banner = document.getElementById('gdpr-banner');
+            const acceptBtn = document.getElementById('gdpr-accept-btn');
+            const cookieName = 'gdpr_accepted'; // Nome del cookie per tracciare il consenso
+
+            /**
+             * Controlla se il cookie di consenso esiste già.
+             * @returns {boolean}
+             */
+            function hasGdprCookie() {
+                // Semplice controllo: cerca la stringa 'gdpr_accepted=true' nei cookie
+                return document.cookie.includes(cookieName + '=true');
+            }
+
+            /**
+             * Imposta il cookie di consenso e nasconde il banner.
+             */
+            function setGdprCookie() {
+                // Imposta un cookie che scade dopo 365 giorni (valore comune per il GDPR)
+                const date = new Date();
+                date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000));
+                const expires = "; expires=" + date.toUTCString();
+                document.cookie = cookieName + "=true" + expires + "; path=/; SameSite=Lax";
+                
+                // Nasconde il banner dopo l'accettazione
+                banner.style.display = 'none';
+
+                // QUI è dove dovresti caricare script esterni di tracciamento (es. Google Analytics)
+                console.log("Consenso GDPR accettato! Ora puoi caricare i tuoi script di tracciamento.");
+            }
+
+            // 1. Controlla se l'utente ha già accettato
+            if (!hasGdprCookie()) {
+                // Se non ha accettato, mostra il banner
+                banner.style.display = 'block';
+            }
+
+            // 2. Aggiungi l'event listener al pulsante
+            acceptBtn.addEventListener('click', setGdprCookie);
+        });
+    </script>
+
+</body>
 </html>
+</html>
+
 
 
 
