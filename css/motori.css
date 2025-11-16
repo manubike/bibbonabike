@@ -1,8 +1,61 @@
-/* Container principale */
+/* Stili per il Banner Cookie (dal codice precedente) */
+
+#cookie-banner-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); 
+    display: none; 
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; 
+    font-family: Arial, sans-serif;
+}
+
+#cookie-consent-modal {
+    background-color: white;
+    color: #333;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh; 
+    overflow-y: auto;
+}
+
+/* ... (Incolla qui tutti gli stili del banner cookie, inclusi h2, .cookie-category, .cookie-actions, ecc.) ... */
+#cookie-consent-modal h2 {
+    color: #e67e22; 
+    margin-top: 0;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+}
+/* [Ometto gli stili intermedi per brevità, ma INCOLLALI TUTTI QUI] */
+.cookie-actions button {
+    padding: 10px 20px;
+    border: 1px solid #34495e;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+#accept-all-btn { /* Stile per "Accetta Tutto" */
+    background-color: #e67e22; 
+    color: white;
+    border-color: #e67e22;
+}
+
+/* ---------------------------------------------------------------- */
+
+/* Stili per il Carosello Loghi (dal codice precedente) */
+
 .logo-carousel-section {
     padding: 40px 0;
     text-align: center;
-    background-color: #f4f4f4; /* Sfondo leggero per evidenziare */
+    background-color: #f4f4f4;
 }
 
 .logo-carousel-section h2 {
@@ -11,7 +64,6 @@
     font-size: 1.8em;
 }
 
-/* Nasconde ciò che esce dal contenitore */
 .logo-carousel-container {
     overflow: hidden;
     white-space: nowrap;
@@ -19,27 +71,23 @@
     padding: 10px 0;
 }
 
-/* La TRACCIA: contiene tutti i loghi e viene mossa dall'animazione */
 .logo-carousel-track {
     display: inline-block;
-    /* Ho aumentato la durata a 60s per gestire la maggiore quantità di loghi */
+    /* Durata aumentata a 60s per molti loghi */
     animation: scroll-left 60s linear infinite; 
 }
 
-/* Ogni singolo logo */
 .logo-slide {
     display: inline-block;
-    margin: 0 40px; /* Spazio tra i loghi */
-    height: 80px; /* Altezza fissa per coerenza */
+    margin: 0 40px; 
+    height: 80px; 
     vertical-align: middle;
 }
 
-/* Stile per le immagini all'interno */
 .logo-slide img {
     height: 100%;
     width: auto;
     object-fit: contain;
-    /* Effetto scala di grigi */
     filter: grayscale(100%);
     opacity: 0.6;
     transition: filter 0.5s, opacity 0.5s;
@@ -50,12 +98,10 @@
     opacity: 1;
 }
 
-/*
-* Definizione dell'ANIMAZIONE (Keyframes)
-*/
+/* KEYFRAMES ESSENZIALI PER L'ANIMAZIONE */
 @keyframes scroll-left {
     0% {
-        transform: translateX(0); /* Inizia a posizione 0 */
+        transform: translateX(0); 
     }
     100% {
         /* Sposta l'intera traccia del 33.333% verso sinistra (perché i loghi sono triplicati) */
@@ -63,10 +109,10 @@
     }
 }
 
-/* Media Query: Rallenta lo scorrimento sui dispositivi mobili */
+/* Media Query (opzionale) */
 @media (max-width: 600px) {
     .logo-carousel-track {
-        animation-duration: 80s; /* Rallentato ulteriormente */
+        animation-duration: 80s; 
     }
     .logo-slide {
         margin: 0 20px;
