@@ -1,44 +1,19 @@
-/* --- STILI SEZIONE MACCHIA DELLA MAGONA --- */
-
-/* Stile per il titolo della sezione */
-.magona-section .section-title {
-    text-align: center; /* Centra il testo del titolo */
-    color: #333; /* Colore scuro per il testo */
-    margin: 40px 0 20px; /* Spazio sopra e sotto il titolo */
-    font-size: 2.2em; /* Dimensione del testo più grande */
-    font-weight: 700;
-}
-
-/* Stile per il contenitore di centraggio (del testo e dell'immagine) */
 .centrato {
-    /* Centra il testo e gli elementi "inline" all'interno */
+    /* CRUCIALE: Assicura che il div occupi tutta la larghezza */
+    width: 100%; 
     text-align: center; 
-    /* Aggiunge un po' di spazio verticale sopra e sotto il blocco */
     margin: 20px auto; 
     padding: 10px;
 }
 
-/* Stili cruciali per l'immagine */
 .centrato img {
-    /* 1. Responsività: l'immagine non sfora lo schermo */
-    max-width: 100%; 
-    height: auto; 
-    
-    /* 2. CRUCIALE per centrare l'immagine a blocco */
+    /* CRUCIALE 1: Rende l'immagine un elemento a blocco */
     display: block; 
+    /* CRUCIALE 2: Centra l'elemento a blocco all'interno del contenitore */
     margin: 0 auto; 
     
-    /* Stili estetici */
-    border-radius: 8px; /* Angoli arrotondati */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Ombra per farla risaltare */
-    transition: transform 0.3s ease; /* Piccolo effetto al passaggio del mouse */
-}
-
-/* Stile per il paragrafo descrittivo */
-.centrato p.text {
-    margin-top: 15px; 
-    font-size: 1.1em;
-    color: #555; 
-    font-style: italic;
-    padding: 0 15px; /* Evita che il testo tocchi i bordi su mobile */
+    max-width: 100%; 
+    height: auto; 
+    border-radius: 8px; 
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); 
 }
