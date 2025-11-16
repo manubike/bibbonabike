@@ -88,13 +88,11 @@
     width: auto;
     object-fit: contain;
     filter: grayscale(0%);
-    opacity: 0.6;
     transition: filter 0.5s, opacity 0.5s;
 }
 
 .logo-slide img:hover {
     filter: grayscale(0%);
-    opacity: 1;
 }
 
 /* KEYFRAMES ESSENZIALI PER L'ANIMAZIONE */
