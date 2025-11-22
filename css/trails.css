@@ -1,0 +1,19 @@
+<style>
+.elenco-sentieri-centrato ul {
+    /* Imposta una larghezza massima (ad esempio, 500px) in modo che la lista non occupi tutta la larghezza */
+    max-width: 500px; 
+    
+    /* Questo è il comando chiave per centrare i blocchi orizzontalmente */
+    margin-left: auto;
+    margin-right: auto;
+    
+    /* Assicurati che il testo all'interno rimanga allineato a sinistra per una buona leggibilità */
+    text-align: left; 
+    list-style-type: disc; 
+    padding-left: 20px;
+}
+
+.elenco-sentieri-centrato li {
+    margin-bottom: 8px;
+}
+</style>
