@@ -16,4 +16,14 @@
 .elenco-sentieri-centrato li {
     margin-bottom: 8px;
 }
+
+ul a {
+    color: #333; /* Rende il testo del link grigio scuro */
+    text-decoration: none; /* Rimuove la sottolineatura */
+}
+
+ul a:hover {
+    color: #007bff; /* Cambia colore quando il mouse passa sopra */
+    text-decoration: underline; /* Aggiunge la sottolineatura solo al passaggio del mouse */
+}
 </style>
