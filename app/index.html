@@ -677,6 +677,7 @@
     };
 
     let returnToBaseLayer = null;
+    let poiRouteLayer = null;
     const NAV_ZOOM_LEVEL = 17;
     const OFFLINE_CACHE_NAME = "magona-offline-v1";
     const ROUTES_STORAGE_KEY = "magona_offline_routes_v3";
@@ -840,7 +841,8 @@
         toastWakeOff: "Schermo sempre acceso disattivato",
         toastWakeUnsupported: "Browser non compatibile con Wake Lock: imposta blocco schermo su 'Mai' dal telefono",
         toastWakeError: "Impossibile mantenere lo schermo acceso (controlla risparmio batteria o HTTPS)",
-        toastPoiGuided: "Navigazione interna verso:"
+        toastPoiGuided: "Percorso MTB/sentieri calcolato verso:",
+        toastPoiCalc: "Calcolo percorso su sentieri e sterrati verso:"
       },
       en: {
         permTitle: "GPS & Web Network Permissions",
@@ -995,7 +997,8 @@
         toastWakeOff: "Keep screen on disabled",
         toastWakeUnsupported: "Browser does not support Wake Lock: set screen timeout to 'Never' in phone settings",
         toastWakeError: "Unable to keep screen awake (check battery saver or HTTPS)",
-        toastPoiGuided: "Internal navigation to:"
+        toastPoiGuided: "MTB/trail route calculated to:",
+        toastPoiCalc: "Calculating trail & dirt route to:"
       },
       de: {
         permTitle: "GPS- & Web-Berechtigungen",
@@ -1150,7 +1153,8 @@
         toastWakeOff: "Bildschirm dauerhaft aktiv ausgeschaltet",
         toastWakeUnsupported: "Browser unterstützt kein Wake Lock: Bildschirmsperre im Telefon auf 'Nie' stellen",
         toastWakeError: "Bildschirm konnte nicht aktiv gehalten werden (Energiesparmodus oder HTTPS prüfen)",
-        toastPoiGuided: "Interne Navigation zu:"
+        toastPoiGuided: "MTB-/Trail-Route berechnet nach:",
+        toastPoiCalc: "Berechne Trail- & Schotterroute nach:"
       },
       nl: {
         permTitle: "GPS- & Webtoestemmingen",
@@ -1305,7 +1309,8 @@
         toastWakeOff: "Scherm altijd aan uitgeschakeld",
         toastWakeUnsupported: "Browser ondersteunt geen Wake Lock: zet schermtime-out op 'Nooit' in telefooninstellingen",
         toastWakeError: "Kan scherm niet actief houden (controleer batterijbesparing of HTTPS)",
-        toastPoiGuided: "Interne navigatie naar:"
+        toastPoiGuided: "MTB-/padroute berekend naar:",
+        toastPoiCalc: "Pad- & gravelroute berekenen naar:"
       }
     };
 
@@ -2656,9 +2661,11 @@
       return bestId;
     }
 
-    function computeShortestSafeBasePath(startPt) {
+    function computeShortestSafePathBetweenNodes(startPt, endPt) {
       const nodes = SAFE_RETURN_GRAPH.nodes;
       const startNodeId = findNearestSafeNodeId(startPt);
+      const endNodeId = findNearestSafeNodeId(endPt);
+
       const adj = {};
       Object.keys(nodes).forEach((k) => { adj[k] = []; });
 
@@ -2684,7 +2691,7 @@
             curr = k;
           }
         }
-        if (curr === null || curr === "base") break;
+        if (curr === null || curr === endNodeId) break;
         visited.add(curr);
 
         for (const edge of adj[curr]) {
@@ -2698,7 +2705,7 @@
       }
 
       const nodePathIds = [];
-      let step = "base";
+      let step = endNodeId;
       const guard = new Set();
       while (step && !guard.has(step)) {
         guard.add(step);
@@ -2716,9 +2723,9 @@
         coords.push(c);
       });
       const lastPt = coords[coords.length - 1];
-      if (!lastPt || lastPt[0] !== BASE_COORDS[0] || lastPt[1] !== BASE_COORDS[1]) {
-        if (lastPt) totalMeters += haversineMeters(lastPt, BASE_COORDS);
-        coords.push([...BASE_COORDS]);
+      if (!lastPt || lastPt[0] !== endPt[0] || lastPt[1] !== endPt[1]) {
+        if (lastPt) totalMeters += haversineMeters(lastPt, endPt);
+        coords.push([...endPt]);
       }
 
       return {
@@ -2727,27 +2734,120 @@
       };
     }
 
-    async function fetchSafeRoadReturnIfOnline(startPt) {
+    function computeShortestSafeBasePath(startPt) {
+      return computeShortestSafePathBetweenNodes(startPt, BASE_COORDS);
+    }
+
+    async function fetchOpenMtbTrailRoute(startPt, endPt) {
       if (!navigator.onLine) return null;
+
+      // 1. BRouter OpenStreetMap / OpenMTBMap routing (supporta sentieri, singletrack, sterrati e carrarecce)
       try {
-        const url = `https://router.project-osrm.org/route/v1/bicycle/${startPt[1]},${startPt[0]};${BASE_COORDS[1]},${BASE_COORDS[0]}?overview=full&geometries=geojson`;
+        const brouterUrl = `https://brouter.de/brouter?lonlats=${startPt[1]},${startPt[0]}|${endPt[1]},${endPt[0]}&profile=mtb&alternativeidx=0&format=geojson`;
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 4500);
+        const resp = await fetch(brouterUrl, { signal: ctrl.signal });
+        clearTimeout(timer);
+        if (resp.ok) {
+          const data = await resp.json();
+          const feature = data?.features?.[0];
+          const rawCoords = feature?.geometry?.coordinates;
+          if (Array.isArray(rawCoords) && rawCoords.length > 1) {
+            const latLngs = rawCoords.map(([lon, lat]) => [lat, lon]);
+            latLngs.push([...endPt]);
+            let totalMeters = 0;
+            for (let i = 1; i < latLngs.length; i++) {
+              totalMeters += haversineMeters(latLngs[i - 1], latLngs[i]);
+            }
+            return {
+              coords: latLngs,
+              distanceKm: +(totalMeters / 1000).toFixed(1),
+              source: "OpenMTBMap / OSM"
+            };
+          }
+        }
+      } catch (e) {}
+
+      // 2. Fallback online su OSRM bicycle routing
+      try {
+        const osrmUrl = `https://router.project-osrm.org/route/v1/bicycle/${startPt[1]},${startPt[0]};${endPt[1]},${endPt[0]}?overview=full&geometries=geojson`;
         const ctrl = new AbortController();
         const timer = setTimeout(() => ctrl.abort(), 3500);
-        const resp = await fetch(url, { signal: ctrl.signal });
+        const resp = await fetch(osrmUrl, { signal: ctrl.signal });
         clearTimeout(timer);
-        if (!resp.ok) return null;
-        const data = await resp.json();
-        const route = data?.routes?.[0];
-        if (!route?.geometry?.coordinates?.length) return null;
-        const latLngs = route.geometry.coordinates.map(([lon, lat]) => [lat, lon]);
-        latLngs.push([...BASE_COORDS]);
-        return {
-          coords: latLngs,
-          distanceKm: +(route.distance / 1000).toFixed(1)
-        };
-      } catch (e) {
-        return null;
+        if (resp.ok) {
+          const data = await resp.json();
+          const route = data?.routes?.[0];
+          if (route?.geometry?.coordinates?.length > 1) {
+            const latLngs = route.geometry.coordinates.map(([lon, lat]) => [lat, lon]);
+            latLngs.push([...endPt]);
+            return {
+              coords: latLngs,
+              distanceKm: +(route.distance / 1000).toFixed(1),
+              source: "OSM Bicycle"
+            };
+          }
+        }
+      } catch (e) {}
+
+      return null;
+    }
+
+    function computeOfflineTrailFallbackPath(startPt, endPt) {
+      const activeRoute = getRouteById(activeRouteId);
+      const rCoords = activeRoute?.coords;
+
+      // Se c'è una traccia attiva con punti vicino a partenza/arrivo, segue il sentiero della traccia invece della linea retta
+      if (Array.isArray(rCoords) && rCoords.length > 2) {
+        let bestStartIdx = 0;
+        let bestStartDist = Infinity;
+        let bestEndIdx = 0;
+        let bestEndDist = Infinity;
+
+        for (let i = 0; i < rCoords.length; i++) {
+          const ds = haversineMeters(startPt, rCoords[i]);
+          if (ds < bestStartDist) {
+            bestStartDist = ds;
+            bestStartIdx = i;
+          }
+          const de = haversineMeters(endPt, rCoords[i]);
+          if (de < bestEndDist) {
+            bestEndDist = de;
+            bestEndIdx = i;
+          }
+        }
+
+        if (bestStartDist < 1200 && bestEndDist < 1200 && bestStartIdx !== bestEndIdx) {
+          const segment = [startPt];
+          if (bestStartIdx < bestEndIdx) {
+            for (let i = bestStartIdx; i <= bestEndIdx; i++) segment.push(rCoords[i]);
+          } else {
+            for (let i = bestStartIdx; i >= bestEndIdx; i--) segment.push(rCoords[i]);
+          }
+          segment.push(endPt);
+
+          let meters = 0;
+          for (let i = 1; i < segment.length; i++) {
+            meters += haversineMeters(segment[i - 1], segment[i]);
+          }
+          return {
+            coords: segment,
+            distanceKm: +(meters / 1000).toFixed(1),
+            source: "Offline Trail"
+          };
+        }
       }
+
+      const graphPath = computeShortestSafePathBetweenNodes(startPt, endPt);
+      return {
+        coords: graphPath.coords,
+        distanceKm: graphPath.distanceKm,
+        source: "Offline Safe Network"
+      };
+    }
+
+    async function fetchSafeRoadReturnIfOnline(startPt) {
+      return await fetchOpenMtbTrailRoute(startPt, BASE_COORDS);
     }
 
     async function navigateToBase() {
@@ -3366,18 +3466,45 @@
       }).join("");
     }
 
-    function focusPoiOnMap(lat, lng, label) {
+    async function focusPoiOnMap(lat, lng, label) {
       const t = I18N[currentLang] || I18N.it;
       switchTab("map");
       if (!map) initMap();
+
       const startPt = userCoords || BASE_COORDS;
-      L.polyline([startPt, [lat, lng]], {
+      const destPt = [lat, lng];
+      showToast(`${t.toastPoiCalc} ${label}`);
+
+      let routed = await fetchOpenMtbTrailRoute(startPt, destPt);
+      if (!routed || !routed.coords || routed.coords.length < 2) {
+        routed = computeOfflineTrailFallbackPath(startPt, destPt);
+      }
+
+      if (poiRouteLayer) {
+        map.removeLayer(poiRouteLayer);
+      }
+      poiRouteLayer = L.polyline(routed.coords, {
         color: "#0284c7",
-        weight: 4,
-        dashArray: "6, 8"
+        weight: 5,
+        opacity: 0.95
       }).addTo(map);
-      map.setView([lat, lng], 16, { animate: false });
-      showToast(`${t.toastPoiGuided} ${label}`);
+      poiRouteLayer.bindPopup(`<strong>${label}</strong> · ${routed.distanceKm} km (${routed.source})`);
+
+      const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=bicycling`;
+      const banner = document.getElementById("nav-status-banner");
+      const statusText = document.getElementById("nav-status-text");
+      if (banner && statusText) {
+        banner.classList.remove("hidden");
+        statusText.innerHTML = `${t.toastPoiGuided} <strong>${label}</strong> (${routed.distanceKm} km · ${routed.source}) · <a href="${gmapsUrl}" target="_blank" rel="noopener" class="underline font-bold text-sky-300">${t.openGmaps}</a>`;
+      }
+
+      if (liveNavActive && userCoords) {
+        followUserCenter = true;
+        map.setView(userCoords, NAV_ZOOM_LEVEL, { animate: false });
+      } else {
+        map.fitBounds(poiRouteLayer.getBounds(), { padding: [30, 30] });
+      }
+      showToast(`${t.toastPoiGuided} ${label} (${routed.distanceKm} km)`);
     }
 
     /* ================= SUPPORT & WHATSAPP ================= */
