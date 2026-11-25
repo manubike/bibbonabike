@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Magona Bike Garage — Tour & Assistenza</title>
+  <title>Magona Bike Garage — Trail & Assistenza</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -613,13 +613,13 @@
 
   <script>
     const OWNER_PASSWORD = "MAGONA2026";
-    const BASE_COORDS = [43.2749, 10.5978]; // Via del Mandorlo 1, Bibbona
+    const BASE_COORDS = [43.2742, 10.6018]; // Via del Mandorlo 1, Bibbona
     const BASE_ADDRESS_LABEL = "Via del Mandorlo 1, Bibbona";
 
     // Nodi di viabilità facile / strade principali attorno a Bibbona e Macchia della Magona (easyScore: 1.0 = strada asfaltata/facile, >1.5 = tratto più ripido/sterrato)
     const EASY_RETURN_GRAPH = {
       nodes: {
-        base: { coords: [43.2749, 10.5978], name: "Via del Mandorlo 1, Bibbona" },
+        base: { coords: [43.2742, 10.6018], name: "Via del Mandorlo 1, Bibbona" },
         bibbona_centro: { coords: [43.2725, 10.5965], name: "Centro Bibbona" },
         via_bolgherese: { coords: [43.2710, 10.5840], name: "Via Bolgherese" },
         campo_di_sasso: { coords: [43.2610, 10.6360], name: "Campo di Sasso" },
@@ -1592,9 +1592,10 @@
         totalMeters += haversineMeters(last, c);
         coords.push(c);
       });
-      if (coords[coords.length - 1] !== BASE_COORDS) {
-        totalMeters += haversineMeters(coords[coords.length - 1], BASE_COORDS);
-        coords.push(BASE_COORDS);
+      const lastPt = coords[coords.length - 1];
+      if (!lastPt || lastPt[0] !== BASE_COORDS[0] || lastPt[1] !== BASE_COORDS[1]) {
+        if (lastPt) totalMeters += haversineMeters(lastPt, BASE_COORDS);
+        coords.push([...BASE_COORDS]);
       }
 
       return {
@@ -1617,6 +1618,7 @@
         const route = data?.routes?.[0];
         if (!route?.geometry?.coordinates?.length) return null;
         const latLngs = route.geometry.coordinates.map(([lon, lat]) => [lat, lon]);
+        latLngs.push([...BASE_COORDS]);
         return {
           coords: latLngs,
           distanceKm: +(route.distance / 1000).toFixed(1)
