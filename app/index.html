@@ -906,6 +906,7 @@
         genCodeBtn: "Genera Nuovo Codice",
         preCacheBtn: "Pre-Scarica Mappa Magona Offline",
         goToursBtn: "Vai a Gestione Tour",
+        noToursOption: "-- Nessun tour disponibile --",
         toastNoFilterMatch: "Nessun percorso con questi filtri",
         toastGpsAcquiring: "Aggancio GPS in corso: centrato sul punto di partenza",
         toastOfflineSaved: "Mappa e tour salvati offline sul telefono",
@@ -1065,6 +1066,7 @@
         genCodeBtn: "Generate New Code",
         preCacheBtn: "Pre-Download Magona Map Offline",
         goToursBtn: "Go to Tour Manager",
+        noToursOption: "-- No tours available --",
         toastNoFilterMatch: "No routes match these filters",
         toastGpsAcquiring: "Acquiring GPS: centered on starting point",
         toastOfflineSaved: "Map and tours saved offline on your phone",
@@ -1224,6 +1226,7 @@
         genCodeBtn: "Neuen Code erzeugen",
         preCacheBtn: "Magona-Karte offline vorladen",
         goToursBtn: "Zur Tourenverwaltung",
+        noToursOption: "-- Keine Touren verfügbar --",
         toastNoFilterMatch: "Keine Touren für diese Filter gefunden",
         toastGpsAcquiring: "GPS wird gesucht: auf Startpunkt zentriert",
         toastOfflineSaved: "Karte und Touren offline auf dem Smartphone gespeichert",
@@ -1383,6 +1386,7 @@
         genCodeBtn: "Nieuwe Code Genereren",
         preCacheBtn: "Magona-kaart offline voorladen",
         goToursBtn: "Naar RouteBeheer",
+        noToursOption: "-- Geen routes beschikbaar --",
         toastNoFilterMatch: "Geen routes gevonden met deze filters",
         toastGpsAcquiring: "GPS zoeken: gecentreerd op startpunt",
         toastOfflineSaved: "Kaart en routes offline opgeslagen op je telefoon",
@@ -2362,18 +2366,37 @@
       await unlockApplication();
     }
 
-    /* ================= APP SHELL & NAVIGATION ================= */
+    /* ================= APP SHELL, FILTERS & NAVIGATION ================= */
 
-    function rebuildRouteSelector() {
+    function getFilteredRoutesList() {
+      const cat = document.getElementById("category-filter")?.value || "all";
+      const diff = document.getElementById("difficulty-filter")?.value || "all";
+      return ROUTES_LIST.filter((r) =>
+        (cat === "all" || r.category === cat) &&
+        (diff === "all" || r.difficulty === diff)
+      );
+    }
+
+    function rebuildRouteSelector(customList = null) {
       const sel = document.getElementById("route-select");
       if (!sel) return;
-      sel.innerHTML = ROUTES_LIST.map((r, idx) => {
+      const t = I18N[currentLang] || I18N.it;
+      const list = Array.isArray(customList) ? customList : getFilteredRoutesList();
+
+      if (list.length === 0) {
+        sel.innerHTML = `<option value="">${t.noToursOption}</option>`;
+        sel.value = "";
+        return;
+      }
+
+      sel.innerHTML = list.map((r, idx) => {
         const tag = r.category === "gravel" ? "Gravel" : "MTB";
         const localizedName = getLocalizedRouteField(r, "name");
         return `<option value="${r.id}">#${idx + 1} · ${localizedName} (${tag})</option>`;
       }).join("");
-      if (!ROUTES_LIST.some((r) => r.id === activeRouteId) && ROUTES_LIST.length > 0) {
-        activeRouteId = ROUTES_LIST[0].id;
+
+      if (!list.some((r) => r.id === activeRouteId)) {
+        activeRouteId = list[0].id;
       }
       sel.value = activeRouteId;
     }
@@ -2525,11 +2548,16 @@
     }
 
     function selectRoute(routeId) {
-      const route = getRouteById(routeId);
+      const matches = getFilteredRoutesList();
+      if (matches.length === 0) {
+        rebuildRouteSelector([]);
+        return;
+      }
+
+      const route = matches.find((r) => r.id === routeId) || matches[0];
       if (!route) return;
       activeRouteId = route.id;
-      const sel = document.getElementById("route-select");
-      if (sel) sel.value = activeRouteId;
+      rebuildRouteSelector(matches);
 
       updateRouteInfoCard(route);
 
@@ -2552,14 +2580,12 @@
 
     function applyRouteFilters() {
       const t = I18N[currentLang] || I18N.it;
-      const cat = document.getElementById("category-filter").value;
-      const diff = document.getElementById("difficulty-filter").value;
-      const matches = ROUTES_LIST.filter((r) =>
-        (cat === "all" || r.category === cat) &&
-        (diff === "all" || r.difficulty === diff)
-      );
+      const matches = getFilteredRoutesList();
+      rebuildRouteSelector(matches);
+
       if (matches.length > 0) {
-        selectRoute(matches[0].id);
+        const nextId = matches.some((r) => r.id === activeRouteId) ? activeRouteId : matches[0].id;
+        selectRoute(nextId);
       } else {
         showToast(t.toastNoFilterMatch);
       }
