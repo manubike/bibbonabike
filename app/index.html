@@ -52,6 +52,18 @@
       width: 100%;
       z-index: 1;
       border-radius: 14px;
+      transition: transform 0.25s linear;
+      transform-origin: center center;
+    }
+    .map-wrapper {
+      overflow: hidden;
+      border-radius: 14px;
+    }
+    #map-container.heading-up-active {
+      transform: scale(1.55) rotate(var(--map-rot, 0deg));
+    }
+    #map-container.heading-up-active .cyclist-gps-marker {
+      transform: rotate(calc(var(--map-rot, 0deg) * -1));
     }
     .map-stage.is-fullscreen {
       position: fixed !important;
@@ -88,20 +100,6 @@
       padding: 12px 14px;
       box-shadow: 0 -8px 28px rgba(0,0,0,0.3);
       flex-shrink: 0;
-    }
-    .map-wrapper {
-      overflow: hidden;
-      border-radius: 14px;
-    }
-    #map-container {
-      transition: transform 0.25s linear;
-      transform-origin: center center;
-    }
-    #map-container.heading-up-active {
-      transform: scale(1.42) rotate(var(--map-rot, 0deg));
-    }
-    #map-container.heading-up-active .cyclist-gps-marker {
-      transform: rotate(calc(var(--map-rot, 0deg) * -1));
     }
 
     /* Dark Mode */
@@ -1603,6 +1601,15 @@
     let screenWakeLock = null;
     let keepScreenAwakeEnabled = localStorage.getItem("magona_keep_screen_awake") === "1";
 
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
     /* ================= THEME MODE ================= */
 
     function resolveIsDarkMode(mode) {
@@ -1729,7 +1736,12 @@
 
     function sanitizePoisArray(list) {
       if (!Array.isArray(list)) return [];
-      return list.filter((p) => p && typeof p.name === "string" && Array.isArray(p.coords) && p.coords.length >= 2);
+      return list.filter((p) => {
+        if (!p || typeof p.name !== "string" || !Array.isArray(p.coords) || p.coords.length < 2) return false;
+        const lat = Number(p.coords[0]);
+        const lng = Number(p.coords[1]);
+        return !Number.isNaN(lat) && !Number.isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+      });
     }
 
     function loadStoredRoutesSync() {
@@ -2064,6 +2076,15 @@
       }
     });
 
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") {
+        const stage = document.getElementById("map-stage");
+        if (stage && stage.classList.contains("is-fullscreen")) {
+          toggleMapFullscreen();
+        }
+      }
+    });
+
     function showToast(msg) {
       const el = document.getElementById("toast-msg");
       if (!el) return;
@@ -2119,13 +2140,18 @@
 
     function updateNetworkStatusUI() {
       const el = document.getElementById("perm-net-status");
-      if (!el) return;
-      const t = I18N[currentLang] || I18N.it;
       const online = navigator.onLine;
-      el.textContent = online ? t.netOnline : t.netOffline;
-      el.className = online
-        ? "text-xs font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800"
-        : "text-xs font-semibold px-2 py-0.5 rounded bg-amber-100 text-amber-800";
+      if (el) {
+        const t = I18N[currentLang] || I18N.it;
+        el.textContent = online ? t.netOnline : t.netOffline;
+        el.className = online
+          ? "text-xs font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800"
+          : "text-xs font-semibold px-2 py-0.5 rounded bg-amber-100 text-amber-800";
+      }
+      const badge = document.getElementById("offline-cache-badge");
+      if (badge && localStorage.getItem("magona_offline_ready") === "1") {
+        badge.classList.remove("hidden");
+      }
     }
 
     function openStartupPermissionsModal() {
@@ -2259,8 +2285,9 @@
       }
 
       listEl.innerHTML = pool.map((item) => {
-        const uses = item.uses || 0;
-        const maxUses = item.maxUses || MAX_USES_PER_CODE;
+        const safeCode = escapeHtml(String(item.code).toUpperCase());
+        const uses = Number(item.uses) || 0;
+        const maxUses = Number(item.maxUses) || MAX_USES_PER_CODE;
         const exhausted = uses >= maxUses;
         const badgeClass = exhausted
           ? "bg-red-100 text-red-800"
@@ -2272,16 +2299,16 @@
         return `
           <div class="flex flex-wrap items-center justify-between gap-2 bg-white px-3 py-2 rounded-xl border border-stone-200/80 text-xs">
             <div class="flex items-center gap-2">
-              <span class="font-extrabold text-stone-900 tracking-wide">${item.code}</span>
+              <span class="font-extrabold text-stone-900 tracking-wide">${safeCode}</span>
               <span class="px-2 py-0.5 rounded font-bold text-[11px] ${badgeClass}">${statusLabel}</span>
             </div>
             <div class="flex items-center gap-1.5">
               ${exhausted ? `
-                <button onclick="resetClientCodeUses('${item.code}')" class="px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 font-semibold cursor-pointer">
+                <button onclick="resetClientCodeUses('${safeCode}')" class="px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 font-semibold cursor-pointer">
                   Ripristina 0/3
                 </button>
               ` : ""}
-              <button onclick="revokeClientCode('${item.code}')" class="px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 font-semibold cursor-pointer">
+              <button onclick="revokeClientCode('${safeCode}')" class="px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 font-semibold cursor-pointer">
                 Revoca
               </button>
             </div>
@@ -2331,7 +2358,7 @@
         return;
       }
 
-      if (val === OWNER_PASSWORD) {
+      if (val === OWNER_PASSWORD.toUpperCase()) {
         isOwner = true;
         errEl.classList.add("hidden");
         await syncClientCodesFromCloud(false);
@@ -2340,7 +2367,7 @@
       }
 
       const pool = await syncClientCodesFromCloud(false);
-      const matchIdx = pool.findIndex((item) => item.code.toUpperCase() === val);
+      const matchIdx = pool.findIndex((item) => String(item.code).toUpperCase() === val);
 
       if (matchIdx === -1) {
         errEl.textContent = (I18N[currentLang] || I18N.it).invalidPass;
@@ -2349,11 +2376,11 @@
       }
 
       const target = pool[matchIdx];
-      const currentUses = target.uses || 0;
-      const maxUses = target.maxUses || MAX_USES_PER_CODE;
+      const currentUses = Number(target.uses) || 0;
+      const maxUses = Number(target.maxUses) || MAX_USES_PER_CODE;
 
       if (currentUses >= maxUses) {
-        errEl.textContent = `Codice ${target.code}: limite massimo di ${maxUses} accessi raggiunto.`;
+        errEl.textContent = `Codice ${escapeHtml(target.code)}: limite massimo di ${maxUses} accessi raggiunto.`;
         errEl.classList.remove("hidden");
         return;
       }
@@ -2384,15 +2411,15 @@
       const list = Array.isArray(customList) ? customList : getFilteredRoutesList();
 
       if (list.length === 0) {
-        sel.innerHTML = `<option value="">${t.noToursOption}</option>`;
+        sel.innerHTML = `<option value="">${escapeHtml(t.noToursOption)}</option>`;
         sel.value = "";
         return;
       }
 
       sel.innerHTML = list.map((r, idx) => {
         const tag = r.category === "gravel" ? "Gravel" : "MTB";
-        const localizedName = getLocalizedRouteField(r, "name");
-        return `<option value="${r.id}">#${idx + 1} · ${localizedName} (${tag})</option>`;
+        const localizedName = escapeHtml(getLocalizedRouteField(r, "name"));
+        return `<option value="${escapeHtml(r.id)}">#${idx + 1} · ${localizedName} (${tag})</option>`;
       }).join("");
 
       if (!list.some((r) => r.id === activeRouteId)) {
@@ -2418,10 +2445,7 @@
       document.getElementById("nav-manager-tab").classList.toggle("hidden", !isOwner);
       document.getElementById("nav-tours-tab").classList.toggle("hidden", !isOwner);
       renderClientCodesPoolUI();
-
-      if (localStorage.getItem("magona_offline_ready") === "1") {
-        document.getElementById("offline-cache-badge").classList.remove("hidden");
-      }
+      updateNetworkStatusUI();
 
       if (ROUTES_LIST.length > 0 && !ROUTES_LIST.some((r) => r.id === activeRouteId)) {
         activeRouteId = ROUTES_LIST[0].id;
@@ -2522,12 +2546,18 @@
         attribution: "&copy; OpenStreetMap"
       }).addTo(map);
 
+      map.on("dragstart", () => {
+        if (liveNavActive) {
+          followUserCenter = false;
+        }
+      });
+
       L.circleMarker(BASE_COORDS, {
         radius: 8,
         color: "#141413",
         fillColor: "#141413",
         fillOpacity: 0.9
-      }).addTo(map).bindPopup("Magona Bike Garage · Via del Mandorlo 1 / Piazza delle Querce 5, 57020 Bibbona");
+      }).addTo(map).bindPopup(escapeHtml(`Magona Bike Garage · ${BASE_ADDRESS_LABEL}`));
 
       renderPoiMarkersOnMap();
     }
@@ -2632,7 +2662,7 @@
 
       const totalKm = Number(route.distanceKm) || 0;
       const doneKm = +(totalKm * ratio).toFixed(1);
-      const remKm = +(totalKm - doneKm).toFixed(1);
+      const remKm = Math.max(0, +(totalKm - doneKm).toFixed(1));
 
       const totalElev = Number(route.elevationGainM) || 0;
       const doneElev = Math.round(totalElev * ratio);
@@ -2659,7 +2689,7 @@
       const t = I18N[currentLang] || I18N.it;
       return L.divIcon({
         className: "",
-        html: `<div class="cyclist-gps-marker" title="${t.yourGpsPopup}">
+        html: `<div class="cyclist-gps-marker" title="${escapeHtml(t.yourGpsPopup)}">
           <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="7" cy="20" r="4.2" stroke="#10b981" stroke-width="2.1"/>
             <circle cx="21" cy="20" r="4.2" stroke="#10b981" stroke-width="2.1"/>
@@ -2682,7 +2712,7 @@
         userMarker = L.marker(coords, {
           icon: createMiniCyclistIcon(),
           zIndexOffset: 900
-        }).addTo(map).bindPopup(t.yourGpsPopup);
+        }).addTo(map).bindPopup(escapeHtml(t.yourGpsPopup));
       } else {
         userMarker.setLatLng(coords);
       }
@@ -2729,8 +2759,7 @@
           userCoords = newCoords;
           renderUserPositionMarker(userCoords, pos.coords.accuracy);
           updateRouteProgressMetrics();
-          if (liveNavActive) {
-            followUserCenter = true;
+          if (liveNavActive && followUserCenter && map) {
             map.setView(userCoords, NAV_ZOOM_LEVEL, { animate: false });
           }
         },
@@ -3057,14 +3086,14 @@
         opacity: 0.95,
         dashArray: "10, 6"
       }).addTo(map);
-      returnToBaseLayer.bindPopup(`${t.returnBasePrefix} · ${BASE_ADDRESS_LABEL} (${chosenPath.distanceKm} km)`);
+      returnToBaseLayer.bindPopup(escapeHtml(`${t.returnBasePrefix} · ${BASE_ADDRESS_LABEL} (${chosenPath.distanceKm} km)`));
 
       const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(BASE_ADDRESS_LABEL)}&travelmode=bicycling`;
       const banner = document.getElementById("nav-status-banner");
       const statusText = document.getElementById("nav-status-text");
       if (banner && statusText) {
         banner.classList.remove("hidden");
-        statusText.innerHTML = `${t.returnBasePrefix} <strong>${BASE_ADDRESS_LABEL}</strong> (${chosenPath.distanceKm} km) · <a href="${gmapsUrl}" target="_blank" rel="noopener" class="underline font-bold text-emerald-300">${t.openGmaps}</a>`;
+        statusText.innerHTML = `${escapeHtml(t.returnBasePrefix)} <strong>${escapeHtml(BASE_ADDRESS_LABEL)}</strong> (${chosenPath.distanceKm} km) · <a href="${gmapsUrl}" target="_blank" rel="noopener" class="underline font-bold text-emerald-300">${escapeHtml(t.openGmaps)}</a>`;
       }
 
       if (userCoords) {
@@ -3137,7 +3166,7 @@
       }
 
       localStorage.setItem("magona_offline_ready", "1");
-      document.getElementById("offline-cache-badge").classList.remove("hidden");
+      updateNetworkStatusUI();
       labelEl.textContent = t.offlineSaved;
       showToast(t.toastOfflineSaved);
     }
@@ -3160,6 +3189,9 @@
     function parseGpxText(xmlText) {
       const parser = new DOMParser();
       const doc = parser.parseFromString(xmlText, "application/xml");
+      if (doc.querySelector("parsererror")) {
+        return { coords: [], originalCount: 0, distanceKm: 0, elevationGainM: 0, invalidXml: true };
+      }
       const trkpts = Array.from(doc.querySelectorAll("trkpt, rtept"));
       const rawCoords = [];
       let totalMeters = 0;
@@ -3169,7 +3201,7 @@
       trkpts.forEach((pt) => {
         const lat = parseFloat(pt.getAttribute("lat"));
         const lon = parseFloat(pt.getAttribute("lon"));
-        if (!Number.isNaN(lat) && !Number.isNaN(lon)) {
+        if (!Number.isNaN(lat) && !Number.isNaN(lon) && lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180) {
           const cur = [lat, lon];
           if (rawCoords.length > 0) {
             totalMeters += haversineMeters(rawCoords[rawCoords.length - 1], cur);
@@ -3229,10 +3261,12 @@
         } else {
           pendingFormCoords = null;
           document.getElementById("gpx-parse-feedback").textContent = "GPX error";
+          showToast("File GPX non valido o senza punti traccia");
         }
       } catch (err) {
         pendingFormCoords = null;
         document.getElementById("gpx-parse-feedback").textContent = "GPX error";
+        showToast("Errore lettura file GPX");
       }
     }
 
@@ -3279,7 +3313,10 @@
       if (!isOwner) return;
       const editId = document.getElementById("edit-tour-id").value.trim();
       const name = document.getElementById("tour-name-input").value.trim();
-      if (!name) return;
+      if (!name) {
+        showToast("Inserisci il nome del tour");
+        return;
+      }
 
       const fileInput = document.getElementById("tour-gpx-file");
       if (!pendingFormCoords && fileInput && fileInput.files && fileInput.files[0]) {
@@ -3426,14 +3463,15 @@
 
       container.innerHTML = ROUTES_LIST.map((r, idx) => {
         const meta = getDifficultyMeta(r.difficulty);
-        const locName = getLocalizedRouteField(r, "name");
-        const locSurface = getLocalizedRouteField(r, "surface");
-        const locDesc = getLocalizedRouteField(r, "description");
+        const locName = escapeHtml(getLocalizedRouteField(r, "name"));
+        const locSurface = escapeHtml(getLocalizedRouteField(r, "surface"));
+        const locDesc = escapeHtml(getLocalizedRouteField(r, "description"));
+        const safeId = escapeHtml(r.id);
         return `
           <div class="p-3.5 rounded-xl border border-stone-200 bg-stone-50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div class="flex items-start gap-3">
               <div class="flex flex-col items-center gap-1">
-                <label class="text-[10px] font-bold uppercase text-stone-400">${t.rankPosLabel}</label>
+                <label class="text-[10px] font-bold uppercase text-stone-400">${escapeHtml(t.rankPosLabel)}</label>
                 <input type="number" min="1" max="${ROUTES_LIST.length}" value="${idx + 1}"
                   onchange="setTourRankExact(${idx}, this.value)"
                   class="w-12 text-center font-extrabold text-sm border border-stone-300 rounded-lg py-1 bg-white" />
@@ -3441,7 +3479,7 @@
               <div class="space-y-1">
                 <div class="flex flex-wrap items-center gap-1.5">
                   <span class="text-sm font-extrabold text-stone-900">${locName}</span>
-                  <span class="px-2 py-0.5 rounded text-[10px] font-bold ${meta.badgeClass}">${meta.label}</span>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold ${meta.badgeClass}">${escapeHtml(meta.label)}</span>
                   <select onchange="updateTourCategoryInline(${idx}, this.value)"
                     class="px-2 py-0.5 rounded text-[11px] font-bold border border-stone-300 bg-white text-stone-900 cursor-pointer">
                     <option value="mtb" ${r.category !== "gravel" ? "selected" : ""}>MTB</option>
@@ -3449,7 +3487,7 @@
                   </select>
                 </div>
                 <div class="text-xs text-stone-600 font-medium">
-                  ${Number(r.distanceKm).toFixed(1)} km · +${r.elevationGainM} m ${r.duration ? "· ⏱ " + r.duration : ""} ${locSurface ? "· " + locSurface : ""}
+                  ${Number(r.distanceKm).toFixed(1)} km · +${Number(r.elevationGainM) || 0} m ${r.duration ? "· ⏱ " + escapeHtml(r.duration) : ""} ${locSurface ? "· " + locSurface : ""}
                 </div>
                 ${locDesc ? `<p class="text-xs text-stone-500">${locDesc}</p>` : ""}
               </div>
@@ -3458,19 +3496,19 @@
             <div class="flex flex-wrap items-center gap-1.5 self-end sm:self-center">
               <button onclick="moveTourRank(${idx}, -1)" ${idx === 0 ? "disabled" : ""}
                 class="px-2.5 py-1.5 rounded-lg border border-stone-300 bg-white hover:bg-stone-100 disabled:opacity-35 text-xs font-bold cursor-pointer">
-                ${t.rankUpBtn}
+                ${escapeHtml(t.rankUpBtn)}
               </button>
               <button onclick="moveTourRank(${idx}, 1)" ${idx === ROUTES_LIST.length - 1 ? "disabled" : ""}
                 class="px-2.5 py-1.5 rounded-lg border border-stone-300 bg-white hover:bg-stone-100 disabled:opacity-35 text-xs font-bold cursor-pointer">
-                ${t.rankDownBtn}
+                ${escapeHtml(t.rankDownBtn)}
               </button>
-              <button onclick="editTourInForm('${r.id}')"
+              <button onclick="editTourInForm('${safeId}')"
                 class="px-3 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold cursor-pointer">
-                ${t.editBtn}
+                ${escapeHtml(t.editBtn)}
               </button>
-              <button onclick="deleteTourById('${r.id}')"
+              <button onclick="deleteTourById('${safeId}')"
                 class="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-semibold cursor-pointer">
-                ${t.deleteBtn}
+                ${escapeHtml(t.deleteBtn)}
               </button>
             </div>
           </div>
@@ -3501,9 +3539,9 @@
       POIS.forEach((poi) => {
         if (!Array.isArray(poi.coords) || poi.coords.length < 2) return;
         const meta = getPoiTypeMeta(poi.type);
-        const locName = getLocalizedPoiField(poi, "name");
-        const locNote = getLocalizedPoiField(poi, "note");
-        const popupLabel = `${meta.badge} · ${locName}${locNote ? "<br><small>" + locNote + "</small>" : ""}`;
+        const locName = escapeHtml(getLocalizedPoiField(poi, "name"));
+        const locNote = escapeHtml(getLocalizedPoiField(poi, "note"));
+        const popupLabel = `${escapeHtml(meta.badge)} · ${locName}${locNote ? "<br><small>" + locNote + "</small>" : ""}`;
         L.circleMarker(poi.coords, {
           radius: 7,
           color: meta.color,
@@ -3559,6 +3597,7 @@
       const note = document.getElementById("poi-note-input").value.trim();
 
       if (!name || Number.isNaN(lat) || Number.isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+        showToast("Controlla nome e coordinate (Lat/Lng)");
         return;
       }
 
@@ -3624,41 +3663,42 @@
         const locName = getLocalizedPoiField(poi, "name");
         const locNote = getLocalizedPoiField(poi, "note");
         const safeName = encodeURIComponent(locName);
-        const coordsText = Array.isArray(poi.coords)
-          ? `${Number(poi.coords[0]).toFixed(5)}, ${Number(poi.coords[1]).toFixed(5)}`
-          : "";
+        const safeId = escapeHtml(poi.id);
+        const lat = Number(poi.coords[0]);
+        const lng = Number(poi.coords[1]);
+        const coordsText = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
         return `
           <div class="p-3 rounded-xl border border-stone-200 bg-stone-50 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
             <div class="space-y-0.5">
               <div class="flex flex-wrap items-center gap-2">
                 <span class="text-[11px] font-extrabold text-stone-400">#${idx + 1}</span>
-                <span class="text-xs font-bold text-stone-600">${meta.badge}</span>
-                ${coordsText ? `<span class="text-[11px] text-stone-400">${coordsText}</span>` : ""}
+                <span class="text-xs font-bold text-stone-600">${escapeHtml(meta.badge)}</span>
+                <span class="text-[11px] text-stone-400">${coordsText}</span>
               </div>
-              <div class="text-sm font-bold text-stone-900">${locName}</div>
-              ${locNote ? `<div class="text-xs text-stone-600">${locNote}</div>` : ""}
+              <div class="text-sm font-bold text-stone-900">${escapeHtml(locName)}</div>
+              ${locNote ? `<div class="text-xs text-stone-600">${escapeHtml(locNote)}</div>` : ""}
             </div>
             <div class="flex flex-wrap items-center gap-1.5 self-end sm:self-center">
-              <button onclick="focusPoiOnMap(${poi.coords[0]}, ${poi.coords[1]}, decodeURIComponent('${safeName}'))"
+              <button onclick="focusPoiOnMap(${lat}, ${lng}, decodeURIComponent('${safeName}'))"
                 class="px-3 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold cursor-pointer">
-                ${t.guideOnMap}
+                ${escapeHtml(t.guideOnMap)}
               </button>
               ${isOwner ? `
                 <button onclick="movePoiRank(${idx}, -1)" ${idx === 0 ? "disabled" : ""}
                   class="px-2.5 py-1.5 rounded-lg border border-stone-300 bg-white hover:bg-stone-100 disabled:opacity-35 text-xs font-bold cursor-pointer">
-                  ${t.rankUpBtn}
+                  ${escapeHtml(t.rankUpBtn)}
                 </button>
                 <button onclick="movePoiRank(${idx}, 1)" ${idx === POIS.length - 1 ? "disabled" : ""}
                   class="px-2.5 py-1.5 rounded-lg border border-stone-300 bg-white hover:bg-stone-100 disabled:opacity-35 text-xs font-bold cursor-pointer">
-                  ${t.rankDownBtn}
+                  ${escapeHtml(t.rankDownBtn)}
                 </button>
-                <button onclick="editPoiInForm('${poi.id}')"
+                <button onclick="editPoiInForm('${safeId}')"
                   class="px-3 py-1.5 rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-900 text-xs font-semibold cursor-pointer">
-                  ${t.editBtn}
+                  ${escapeHtml(t.editBtn)}
                 </button>
-                <button onclick="deletePoiById('${poi.id}')"
+                <button onclick="deletePoiById('${safeId}')"
                   class="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-semibold cursor-pointer">
-                  ${t.deleteBtn}
+                  ${escapeHtml(t.deleteBtn)}
                 </button>
               ` : ""}
             </div>
@@ -3689,14 +3729,14 @@
         weight: 5,
         opacity: 0.95
       }).addTo(map);
-      poiRouteLayer.bindPopup(`<strong>${label}</strong> · ${routed.distanceKm} km (${routed.source})`);
+      poiRouteLayer.bindPopup(escapeHtml(`${label} · ${routed.distanceKm} km (${routed.source})`));
 
       const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=bicycling`;
       const banner = document.getElementById("nav-status-banner");
       const statusText = document.getElementById("nav-status-text");
       if (banner && statusText) {
         banner.classList.remove("hidden");
-        statusText.innerHTML = `${t.toastPoiGuided} <strong>${label}</strong> (${routed.distanceKm} km · ${routed.source}) · <a href="${gmapsUrl}" target="_blank" rel="noopener" class="underline font-bold text-sky-300">${t.openGmaps}</a>`;
+        statusText.innerHTML = `${escapeHtml(t.toastPoiGuided)} <strong>${escapeHtml(label)}</strong> (${routed.distanceKm} km · ${escapeHtml(routed.source)}) · <a href="${gmapsUrl}" target="_blank" rel="noopener" class="underline font-bold text-sky-300">${escapeHtml(t.openGmaps)}</a>`;
       }
 
       if (liveNavActive && userCoords) {
@@ -3714,7 +3754,7 @@
       const t = I18N[currentLang] || I18N.it;
       const items = Array.isArray(t.troubleItems) ? t.troubleItems : I18N.it.troubleItems;
       document.getElementById("troubleshooting-list").innerHTML = items
-        .map((txt) => `<div class="p-2.5 rounded-xl bg-stone-50 border border-stone-200/70">${txt}</div>`)
+        .map((txt) => `<div class="p-2.5 rounded-xl bg-stone-50 border border-stone-200/70">${escapeHtml(txt)}</div>`)
         .join("");
     }
 
