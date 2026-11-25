@@ -88,6 +88,20 @@
       box-shadow: 0 -8px 28px rgba(0,0,0,0.3);
       flex-shrink: 0;
     }
+    .map-wrapper {
+      overflow: hidden;
+      border-radius: 14px;
+    }
+    #map-container {
+      transition: transform 0.25s linear;
+      transform-origin: center center;
+    }
+    #map-container.heading-up-active {
+      transform: scale(1.42) rotate(var(--map-rot, 0deg));
+    }
+    #map-container.heading-up-active .cyclist-gps-marker {
+      transform: rotate(calc(var(--map-rot, 0deg) * -1));
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -1489,6 +1503,8 @@
     let followUserCenter = true;
     let hasInitialNavZoomed = false;
     let userCoords = null;
+    let prevGpsCoords = null;
+    let currentHeadingDeg = 0;
     let simulatedProgressRatio = 0;
     let pendingFormCoords = null;
     let poiMarkersLayer = null;
@@ -2255,6 +2271,7 @@
     function lockApplication() {
       liveNavActive = false;
       hasInitialNavZoomed = false;
+      applyMapHeadingRotation(0, false);
       if (watchId !== null && "geolocation" in navigator) {
         navigator.geolocation.clearWatch(watchId);
         watchId = null;
@@ -2285,6 +2302,30 @@
       }
     }
 
+    function computeBearingDegrees(fromCoords, toCoords) {
+      const toRad = (d) => (d * Math.PI) / 180;
+      const toDeg = (r) => (r * 180) / Math.PI;
+      const lat1 = toRad(fromCoords[0]);
+      const lat2 = toRad(toCoords[0]);
+      const dLon = toRad(toCoords[1] - fromCoords[1]);
+      const y = Math.sin(dLon) * Math.cos(lat2);
+      const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+      return (toDeg(Math.atan2(y, x)) + 360) % 360;
+    }
+
+    function applyMapHeadingRotation(headingDeg, enabled) {
+      const mapEl = document.getElementById("map-container");
+      if (!mapEl) return;
+      if (!enabled || typeof headingDeg !== "number" || Number.isNaN(headingDeg)) {
+        mapEl.classList.remove("heading-up-active");
+        mapEl.style.removeProperty("--map-rot");
+        return;
+      }
+      currentHeadingDeg = headingDeg;
+      mapEl.classList.add("heading-up-active");
+      mapEl.style.setProperty("--map-rot", `${(-headingDeg).toFixed(1)}deg`);
+    }
+
     function initMap() {
       if (map) {
         renderPoiMarkersOnMap();
@@ -2296,12 +2337,6 @@
         maxZoom: 19,
         attribution: "&copy; OpenStreetMap"
       }).addTo(map);
-
-      map.on("dragstart", () => {
-        if (liveNavActive) {
-          followUserCenter = false;
-        }
-      });
 
       L.circleMarker(BASE_COORDS, {
         radius: 8,
@@ -2481,21 +2516,35 @@
       }
     }
 
+    function updateHeadingFromPosition(pos, newCoords) {
+      const sensorHeading = pos?.coords?.heading;
+      const speed = pos?.coords?.speed;
+
+      if (typeof sensorHeading === "number" && !Number.isNaN(sensorHeading) && (speed === null || speed > 0.8)) {
+        currentHeadingDeg = sensorHeading;
+      } else if (prevGpsCoords && haversineMeters(prevGpsCoords, newCoords) >= 3) {
+        currentHeadingDeg = computeBearingDegrees(prevGpsCoords, newCoords);
+      }
+      prevGpsCoords = [...newCoords];
+
+      if (liveNavActive && followUserCenter) {
+        applyMapHeadingRotation(currentHeadingDeg, true);
+      }
+    }
+
     function startWatchingUserLocation() {
       if (!("geolocation" in navigator)) return;
 
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          userCoords = [pos.coords.latitude, pos.coords.longitude];
+          const newCoords = [pos.coords.latitude, pos.coords.longitude];
+          updateHeadingFromPosition(pos, newCoords);
+          userCoords = newCoords;
           renderUserPositionMarker(userCoords, pos.coords.accuracy);
           updateRouteProgressMetrics();
-          if (liveNavActive && followUserCenter) {
-            if (!hasInitialNavZoomed) {
-              map.setView(userCoords, NAV_ZOOM_LEVEL, { animate: true });
-              hasInitialNavZoomed = true;
-            } else {
-              map.panTo(userCoords, { animate: true });
-            }
+          if (liveNavActive) {
+            followUserCenter = true;
+            map.setView(userCoords, NAV_ZOOM_LEVEL, { animate: false });
           }
         },
         () => {},
@@ -2505,17 +2554,14 @@
       if (watchId !== null) return;
       watchId = navigator.geolocation.watchPosition(
         (pos) => {
-          userCoords = [pos.coords.latitude, pos.coords.longitude];
+          const newCoords = [pos.coords.latitude, pos.coords.longitude];
+          updateHeadingFromPosition(pos, newCoords);
+          userCoords = newCoords;
           renderUserPositionMarker(userCoords, pos.coords.accuracy);
           updateRouteProgressMetrics();
 
           if (liveNavActive && followUserCenter && map) {
-            if (!hasInitialNavZoomed) {
-              map.setView(userCoords, NAV_ZOOM_LEVEL, { animate: true });
-              hasInitialNavZoomed = true;
-            } else {
-              map.panTo(userCoords, { animate: true });
-            }
+            map.panTo(userCoords, { animate: false });
           }
         },
         () => {},
@@ -2547,14 +2593,16 @@
         const routeStart = activeRoute?.coords?.[0] || BASE_COORDS;
         const targetStart = userCoords || routeStart;
         if (map) {
-          map.setView(targetStart, NAV_ZOOM_LEVEL, { animate: true });
+          map.setView(targetStart, NAV_ZOOM_LEVEL, { animate: false });
           if (userCoords) {
             hasInitialNavZoomed = true;
           }
         }
+        applyMapHeadingRotation(currentHeadingDeg, true);
         startWatchingUserLocation();
         updateRouteProgressMetrics();
       } else {
+        applyMapHeadingRotation(0, false);
         banner.classList.add("hidden");
         btn.textContent = t.navStart;
         btn.className = "px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer";
@@ -2565,16 +2613,15 @@
       }
     }
 
-    function recenterNavigator(forceZoom = true) {
+    function recenterNavigator() {
       const t = I18N[currentLang] || I18N.it;
       if (!map) return;
       followUserCenter = true;
       const routeStart = getRouteById(activeRouteId)?.coords?.[0] || BASE_COORDS;
       const target = userCoords || routeStart;
-      if (forceZoom) {
-        map.setView(target, NAV_ZOOM_LEVEL, { animate: true });
-      } else {
-        map.panTo(target, { animate: true });
+      map.setView(target, NAV_ZOOM_LEVEL, { animate: false });
+      if (liveNavActive) {
+        applyMapHeadingRotation(currentHeadingDeg, true);
       }
       if (!userCoords) {
         startWatchingUserLocation();
@@ -2589,7 +2636,8 @@
         if (map) {
           map.invalidateSize();
           if (liveNavActive && followUserCenter && userCoords) {
-            map.setView(userCoords, NAV_ZOOM_LEVEL);
+            map.setView(userCoords, NAV_ZOOM_LEVEL, { animate: false });
+            applyMapHeadingRotation(currentHeadingDeg, true);
           }
         }
       }, 150);
@@ -2742,7 +2790,7 @@
 
       if (userCoords) {
         followUserCenter = true;
-        map.setView(userCoords, NAV_ZOOM_LEVEL, { animate: true });
+        map.setView(userCoords, NAV_ZOOM_LEVEL, { animate: false });
       } else {
         map.fitBounds(returnToBaseLayer.getBounds(), { padding: [30, 30] });
       }
@@ -3328,7 +3376,7 @@
         weight: 4,
         dashArray: "6, 8"
       }).addTo(map);
-      map.setView([lat, lng], 16);
+      map.setView([lat, lng], 16, { animate: false });
       showToast(`${t.toastPoiGuided} ${label}`);
     }
 
