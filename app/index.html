@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+html_code = """<!DOCTYPE html>
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
@@ -107,18 +107,18 @@
       </div>
 
       <p id="auth-subtitle" class="text-sm text-stone-600 mb-4">
-        Inserisci il codice noleggio giornaliero oppure la password gestore per aprire la mappa sentieri.
+        Inserisci il codice fornito in officina per aprire la mappa sentieri.
       </p>
 
-      <label for="access-password-input" class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">
+      <label for="access-password-input" id="access-label" class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">
         Codice Accesso / Password
       </label>
-      <input id="access-password-input" type="text" placeholder="Es. RIDE-4829 oppure MAGONA2026"
+      <input id="access-password-input" type="password" autocomplete="off" placeholder="Inserisci codice di accesso"
         class="w-full border border-stone-300 rounded-xl px-3.5 py-2.5 text-sm mb-3 focus:outline-none focus:border-stone-900" />
 
       <div id="auth-error" class="hidden text-xs text-red-600 font-medium mb-3"></div>
 
-      <button onclick="submitAccessPassword()" class="w-full py-3 px-4 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-semibold text-sm transition cursor-pointer">
+      <button id="btn-login" onclick="submitAccessPassword()" class="w-full py-3 px-4 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-semibold text-sm transition cursor-pointer">
         Accedi alla Mappa
       </button>
 
@@ -136,6 +136,7 @@
       <div class="flex items-center gap-2.5">
         <span class="font-extrabold text-base tracking-tight text-stone-900">Magona Bike Garage</span>
         <span id="role-badge" class="hidden text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-stone-900 text-white">GESTORE</span>
+        <span id="offline-cache-badge" class="hidden text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">OFFLINE PRONTO</span>
       </div>
       <div class="flex items-center gap-2">
         <select id="app-lang-select" onchange="changeLanguage(this.value)" class="border border-stone-300 rounded-lg px-2 py-1 text-xs font-semibold bg-stone-50">
@@ -186,12 +187,29 @@
             <button id="btn-live-nav" onclick="toggleLiveNavigation()" class="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
               Naviga Ora
             </button>
+            <button id="btn-user-offline-save" onclick="saveOfflineForUser()" class="px-3.5 py-2 rounded-xl bg-sky-700 hover:bg-sky-800 text-white text-xs font-bold cursor-pointer">
+              Salva Offline (Mappa + Tour)
+            </button>
             <button onclick="navigateToBase()" class="px-3.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
               Rientra alla Base
             </button>
             <button onclick="toggleMapFullscreen()" class="px-3.5 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold cursor-pointer">
               Schermo Intero
             </button>
+          </div>
+        </div>
+
+        <!-- Barra avanzamento download offline per l'utente -->
+        <div id="offline-download-box" class="hidden bg-sky-50 border border-sky-200 rounded-xl p-3 space-y-1.5">
+          <div class="flex items-center justify-between text-xs">
+            <span id="offline-download-label" class="font-bold text-sky-950">Salvataggio mappa e percorsi offline...</span>
+            <span id="offline-download-pct" class="font-extrabold text-sky-800">0%</span>
+          </div>
+          <div class="w-full h-2 bg-sky-200/70 rounded-full overflow-hidden">
+            <div id="offline-download-bar" class="h-full bg-sky-700 transition-all duration-150" style="width: 0%"></div>
+          </div>
+          <div id="offline-download-sub" class="text-[11px] text-sky-800">
+            I percorsi e i tasselli mappa restano consultabili nell'app anche senza campo nel bosco (file GPX protetti).
           </div>
         </div>
 
@@ -217,7 +235,7 @@
 
         <div id="nav-status-banner" class="hidden bg-stone-900 text-white rounded-xl px-3.5 py-2.5 text-xs flex flex-wrap items-center justify-between gap-2">
           <span id="nav-status-text" class="font-semibold">Navigazione GPS live attiva</span>
-          <button onclick="centerMapOnUser()" class="underline font-bold cursor-pointer">Centra GPS</button>
+          <button onclick="recenterNavigator()" class="underline font-bold cursor-pointer">Ricentra Navigatore</button>
         </div>
       </div>
 
@@ -225,6 +243,10 @@
       <div id="map-stage" class="map-stage relative">
         <div class="map-wrapper relative w-full h-full">
           <div id="map-container"></div>
+          <button onclick="recenterNavigator()" title="Centra su GPS"
+            class="absolute bottom-4 right-3 z-[450] bg-white/95 hover:bg-white text-stone-900 border border-stone-300 rounded-xl px-3 py-2 text-xs font-bold shadow cursor-pointer">
+            ◎ Centra GPS
+          </button>
           <button onclick="toggleMapFullscreen()" title="Schermo Intero"
             class="absolute top-3 right-3 z-[450] bg-white/95 hover:bg-white text-stone-900 border border-stone-300 rounded-xl px-3 py-1.5 text-xs font-bold shadow cursor-pointer">
             ⤢ Schermo Intero
@@ -240,10 +262,10 @@
               <span class="text-xs text-stone-500">· <strong id="fs-progress-pct" class="text-stone-900">0%</strong></span>
             </div>
             <div class="flex flex-wrap items-center gap-1.5">
-              <button onclick="centerMapOnUser()" class="px-2.5 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold cursor-pointer">
+              <button onclick="recenterNavigator()" class="px-2.5 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold cursor-pointer">
                 Centra GPS
               </button>
-              <button onclick="toggleLiveNavigation()" class="px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
+              <button id="fs-btn-live-nav" onclick="toggleLiveNavigation()" class="px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
                 GPS Live
               </button>
               <button onclick="toggleMapFullscreen()" class="px-3 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold cursor-pointer">
@@ -324,7 +346,7 @@
           </button>
         </div>
         <div class="flex flex-wrap gap-2">
-          <button onclick="precacheMagonaMap()" class="px-4 py-2 rounded-xl bg-stone-900 text-white text-xs font-semibold cursor-pointer">
+          <button onclick="saveOfflineForUser()" class="px-4 py-2 rounded-xl bg-stone-900 text-white text-xs font-semibold cursor-pointer">
             Pre-Scarica Mappa Magona Offline
           </button>
         </div>
@@ -342,6 +364,8 @@
   <script>
     const OWNER_PASSWORD = "MAGONA2026";
     const BASE_COORDS = [43.2742, 10.6018]; // Via del Mandorlo 1, Bibbona
+    const NAV_ZOOM_LEVEL = 17;
+    const OFFLINE_CACHE_NAME = "magona-offline-v1";
 
     const I18N = {
       it: {
@@ -352,7 +376,12 @@
         gpsDenied: "Non disponibile qui",
         authBtn: "Autorizza GPS e Rete Web",
         skipBtn: "Continua senza GPS per ora",
-        invalidPass: "Codice o password non validi."
+        authSub: "Inserisci il codice fornito in officina per aprire la mappa sentieri.",
+        accessLabel: "Codice Accesso / Password",
+        accessPlaceholder: "Inserisci codice di accesso",
+        loginBtn: "Accedi alla Mappa",
+        invalidPass: "Codice o password non validi.",
+        saveOfflineBtn: "Salva Offline (Mappa + Tour)"
       },
       en: {
         permTitle: "GPS & Web Network Permissions",
@@ -362,7 +391,12 @@
         gpsDenied: "Unavailable here",
         authBtn: "Authorize GPS & Web",
         skipBtn: "Continue without GPS for now",
-        invalidPass: "Invalid access code or password."
+        authSub: "Enter the access code provided at the shop to open the trail map.",
+        accessLabel: "Access Code / Password",
+        accessPlaceholder: "Enter access code",
+        loginBtn: "Open Trail Map",
+        invalidPass: "Invalid access code or password.",
+        saveOfflineBtn: "Save Offline (Map + Tours)"
       },
       de: {
         permTitle: "GPS- & Web-Berechtigungen",
@@ -372,7 +406,12 @@
         gpsDenied: "Hier nicht verfügbar",
         authBtn: "GPS & Web freigeben",
         skipBtn: "Vorerst ohne GPS fortfahren",
-        invalidPass: "Ungültiger Zugangscode oder Passwort."
+        authSub: "Geben Sie den im Verleih erhaltenen Zugangscode ein, um die Karte zu öffnen.",
+        accessLabel: "Zugangscode / Passwort",
+        accessPlaceholder: "Zugangscode eingeben",
+        loginBtn: "Karte öffnen",
+        invalidPass: "Ungültiger Zugangscode oder Passwort.",
+        saveOfflineBtn: "Offline speichern (Karte + Touren)"
       },
       nl: {
         permTitle: "GPS- & Webtoestemmingen",
@@ -382,11 +421,16 @@
         gpsDenied: "Hier niet beschikbaar",
         authBtn: "GPS & Web toestaan",
         skipBtn: "Voorlopig zonder GPS verder",
-        invalidPass: "Ongeldige toegangscode of wachtwoord."
+        authSub: "Voer de toegangscode in die je in de winkel hebt ontvangen.",
+        accessLabel: "Toegangscode / Wachtwoord",
+        accessPlaceholder: "Voer toegangscode in",
+        loginBtn: "Kaart openen",
+        invalidPass: "Ongeldige toegangscode of wachtwoord.",
+        saveOfflineBtn: "Offline opslaan (Kaart + Routes)"
       }
     };
 
-    const ROUTES = {
+    const DEFAULT_ROUTES = {
       "magona-loop": {
         name: "Anello Macchia della Magona",
         category: "mtb",
@@ -432,6 +476,21 @@
       }
     };
 
+    function loadStoredRoutes() {
+      try {
+        const raw = localStorage.getItem("magona_offline_routes_v1");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === "object" && Object.keys(parsed).length > 0) {
+            return { ...DEFAULT_ROUTES, ...parsed };
+          }
+        }
+      } catch (e) {}
+      return { ...DEFAULT_ROUTES };
+    }
+
+    let ROUTES = loadStoredRoutes();
+
     const POIS = [
       { id: "f1", type: "water", name: "Fontana Campo di Sasso", coords: [43.2610, 10.6360] },
       { id: "v1", type: "view", name: "Passo delle Golazze Aperte", coords: [43.2565, 10.6410] },
@@ -443,8 +502,11 @@
     let map = null;
     let routePolyline = null;
     let userMarker = null;
+    let userAccuracyCircle = null;
     let watchId = null;
     let liveNavActive = false;
+    let followUserCenter = true;
+    let hasInitialNavZoomed = false;
     let userCoords = null;
     let activeRouteId = "magona-loop";
     let simulatedProgressRatio = 0;
@@ -455,7 +517,7 @@
       el.textContent = msg;
       el.classList.remove("hidden");
       clearTimeout(window.__toastTimer);
-      window.__toastTimer = setTimeout(() => el.classList.add("hidden"), 2800);
+      window.__toastTimer = setTimeout(() => el.classList.add("hidden"), 3000);
     }
 
     function changeLanguage(lang) {
@@ -470,6 +532,12 @@
       document.getElementById("perm-desc").textContent = t.permDesc;
       document.getElementById("btn-authorize-all").textContent = t.authBtn;
       document.getElementById("btn-skip-perm").textContent = t.skipBtn;
+      document.getElementById("auth-subtitle").textContent = t.authSub;
+      document.getElementById("access-label").textContent = t.accessLabel;
+      document.getElementById("access-password-input").placeholder = t.accessPlaceholder;
+      document.getElementById("btn-login").textContent = t.loginBtn;
+      const offlineBtn = document.getElementById("btn-user-offline-save");
+      if (offlineBtn) offlineBtn.textContent = t.saveOfflineBtn;
     }
 
     function updateNetworkStatusUI() {
@@ -563,6 +631,18 @@
       }
     }
 
+    function rebuildRouteSelector() {
+      const sel = document.getElementById("route-select");
+      if (!sel) return;
+      sel.innerHTML = Object.entries(ROUTES).map(([id, r]) => {
+        const tag = r.category === "gravel" ? "Gravel" : "MTB";
+        return `<option value="${id}">${r.name} (${tag})</option>`;
+      }).join("");
+      if (ROUTES[activeRouteId]) {
+        sel.value = activeRouteId;
+      }
+    }
+
     function unlockApplication() {
       document.getElementById("auth-screen").classList.add("hidden");
       document.getElementById("app-shell").classList.remove("hidden");
@@ -570,6 +650,11 @@
       document.getElementById("nav-manager-tab").classList.toggle("hidden", !isOwner);
       document.getElementById("active-client-password").textContent = getActiveClientPassword();
 
+      if (localStorage.getItem("magona_offline_ready") === "1") {
+        document.getElementById("offline-cache-badge").classList.remove("hidden");
+      }
+
+      rebuildRouteSelector();
       initMap();
       selectRoute(activeRouteId);
       renderPoiList();
@@ -581,6 +666,7 @@
 
     function lockApplication() {
       liveNavActive = false;
+      hasInitialNavZoomed = false;
       if (watchId !== null && "geolocation" in navigator) {
         navigator.geolocation.clearWatch(watchId);
         watchId = null;
@@ -615,9 +701,15 @@
       }
       map = L.map("map-container").setView(BASE_COORDS, 13);
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 18,
+        maxZoom: 19,
         attribution: "&copy; OpenStreetMap"
       }).addTo(map);
+
+      map.on("dragstart", () => {
+        if (liveNavActive) {
+          followUserCenter = false;
+        }
+      });
 
       L.circleMarker(BASE_COORDS, {
         radius: 8,
@@ -649,7 +741,12 @@
           weight: 5,
           opacity: 0.9
         }).addTo(map);
-        map.fitBounds(routePolyline.getBounds(), { padding: [24, 24] });
+
+        if (liveNavActive) {
+          recenterNavigator(true);
+        } else {
+          map.fitBounds(routePolyline.getBounds(), { padding: [24, 24] });
+        }
       }
       updateRouteProgressMetrics();
     }
@@ -670,9 +767,44 @@
       }
     }
 
+    function haversineMeters(c1, c2) {
+      const R = 6371000;
+      const toRad = (deg) => (deg * Math.PI) / 180;
+      const dLat = toRad(c2[0] - c1[0]);
+      const dLon = toRad(c2[1] - c1[1]);
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(c1[0])) * Math.cos(toRad(c2[0])) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    function computeProgressFromGps(coords, routeCoords) {
+      if (!coords || !routeCoords || routeCoords.length < 2) return null;
+      let cumulative = [0];
+      for (let i = 1; i < routeCoords.length; i++) {
+        cumulative.push(cumulative[i - 1] + haversineMeters(routeCoords[i - 1], routeCoords[i]));
+      }
+      const totalLen = cumulative[cumulative.length - 1];
+      if (totalLen <= 0) return 0;
+
+      let bestDist = Infinity;
+      let bestAlong = 0;
+      for (let i = 0; i < routeCoords.length; i++) {
+        const d = haversineMeters(coords, routeCoords[i]);
+        if (d < bestDist) {
+          bestDist = d;
+          bestAlong = cumulative[i];
+        }
+      }
+      return Math.min(1, Math.max(0, bestAlong / totalLen));
+    }
+
     function updateRouteProgressMetrics() {
       const route = ROUTES[activeRouteId] || ROUTES["magona-loop"];
-      const ratio = Math.min(1, Math.max(0, simulatedProgressRatio));
+      const gpsRatio = userCoords ? computeProgressFromGps(userCoords, route.coords) : null;
+      const ratio = gpsRatio !== null ? gpsRatio : Math.min(1, Math.max(0, simulatedProgressRatio));
+
       const totalKm = route.distanceKm;
       const doneKm = +(totalKm * ratio).toFixed(1);
       const remKm = +(totalKm - doneKm).toFixed(1);
@@ -698,29 +830,75 @@
       document.getElementById("fs-done-elev").textContent = doneElev + " m";
     }
 
+    function renderUserPositionMarker(coords, accuracy) {
+      if (!map || !coords) return;
+      if (!userMarker) {
+        userMarker = L.circleMarker(coords, {
+          radius: 9,
+          color: "#ffffff",
+          weight: 3,
+          fillColor: "#2563eb",
+          fillOpacity: 1
+        }).addTo(map).bindPopup("La tua posizione GPS");
+      } else {
+        userMarker.setLatLng(coords);
+      }
+
+      if (accuracy && accuracy > 0) {
+        if (!userAccuracyCircle) {
+          userAccuracyCircle = L.circle(coords, {
+            radius: Math.min(accuracy, 80),
+            color: "#3b82f6",
+            weight: 1,
+            fillColor: "#3b82f6",
+            fillOpacity: 0.14
+          }).addTo(map);
+        } else {
+          userAccuracyCircle.setLatLng(coords);
+          userAccuracyCircle.setRadius(Math.min(accuracy, 80));
+        }
+      }
+    }
+
     function startWatchingUserLocation() {
-      if (!("geolocation" in navigator) || watchId !== null) return;
-      watchId = navigator.geolocation.watchPosition(
+      if (!("geolocation" in navigator)) return;
+
+      navigator.geolocation.getCurrentPosition(
         (pos) => {
           userCoords = [pos.coords.latitude, pos.coords.longitude];
-          if (map) {
-            if (!userMarker) {
-              userMarker = L.circleMarker(userCoords, {
-                radius: 8,
-                color: "#2563eb",
-                fillColor: "#3b82f6",
-                fillOpacity: 0.95
-              }).addTo(map).bindPopup("La tua posizione");
+          renderUserPositionMarker(userCoords, pos.coords.accuracy);
+          updateRouteProgressMetrics();
+          if (liveNavActive && followUserCenter) {
+            if (!hasInitialNavZoomed) {
+              map.setView(userCoords, NAV_ZOOM_LEVEL, { animate: true });
+              hasInitialNavZoomed = true;
             } else {
-              userMarker.setLatLng(userCoords);
-            }
-            if (liveNavActive) {
-              map.panTo(userCoords);
+              map.panTo(userCoords, { animate: true });
             }
           }
         },
         () => {},
-        { enableHighAccuracy: true, maximumAge: 5000 }
+        { enableHighAccuracy: true, timeout: 6000, maximumAge: 2000 }
+      );
+
+      if (watchId !== null) return;
+      watchId = navigator.geolocation.watchPosition(
+        (pos) => {
+          userCoords = [pos.coords.latitude, pos.coords.longitude];
+          renderUserPositionMarker(userCoords, pos.coords.accuracy);
+          updateRouteProgressMetrics();
+
+          if (liveNavActive && followUserCenter && map) {
+            if (!hasInitialNavZoomed) {
+              map.setView(userCoords, NAV_ZOOM_LEVEL, { animate: true });
+              hasInitialNavZoomed = true;
+            } else {
+              map.panTo(userCoords, { animate: true });
+            }
+          }
+        },
+        () => {},
+        { enableHighAccuracy: true, maximumAge: 2000, timeout: 10000 }
       );
     }
 
@@ -729,29 +907,54 @@
       const banner = document.getElementById("nav-status-banner");
       const statusText = document.getElementById("nav-status-text");
       const btn = document.getElementById("btn-live-nav");
+      const fsBtn = document.getElementById("fs-btn-live-nav");
 
       if (liveNavActive) {
-        startWatchingUserLocation();
+        followUserCenter = true;
+        hasInitialNavZoomed = false;
         banner.classList.remove("hidden");
         statusText.textContent = "Navigazione GPS live attiva — " + (ROUTES[activeRouteId]?.name || "");
         btn.textContent = "Ferma GPS Live";
         btn.className = "px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer";
-        simulatedProgressRatio = Math.min(0.85, simulatedProgressRatio + 0.15);
+        if (fsBtn) {
+          fsBtn.textContent = "Ferma GPS";
+          fsBtn.className = "px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer";
+        }
+
+        const routeStart = ROUTES[activeRouteId]?.coords?.[0] || BASE_COORDS;
+        const targetStart = userCoords || routeStart;
+        if (map) {
+          map.setView(targetStart, NAV_ZOOM_LEVEL, { animate: true });
+          if (userCoords) {
+            hasInitialNavZoomed = true;
+          }
+        }
+        startWatchingUserLocation();
         updateRouteProgressMetrics();
       } else {
         banner.classList.add("hidden");
         btn.textContent = "Naviga Ora";
         btn.className = "px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer";
+        if (fsBtn) {
+          fsBtn.textContent = "GPS Live";
+          fsBtn.className = "px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer";
+        }
       }
     }
 
-    function centerMapOnUser() {
+    function recenterNavigator(forceZoom = true) {
       if (!map) return;
-      if (userCoords) {
-        map.setView(userCoords, 15);
+      followUserCenter = true;
+      const routeStart = ROUTES[activeRouteId]?.coords?.[0] || BASE_COORDS;
+      const target = userCoords || routeStart;
+      if (forceZoom) {
+        map.setView(target, NAV_ZOOM_LEVEL, { animate: true });
       } else {
-        map.setView(BASE_COORDS, 14);
-        showToast("Posizione GPS non ancora disponibile: centrato sulla base");
+        map.panTo(target, { animate: true });
+      }
+      if (!userCoords) {
+        startWatchingUserLocation();
+        showToast("Aggancio GPS in corso: centrato sul punto di partenza");
       }
     }
 
@@ -764,7 +967,12 @@
         weight: 4,
         dashArray: "8, 8"
       }).addTo(map);
-      map.fitBounds([startPt, BASE_COORDS], { padding: [30, 30] });
+      if (userCoords) {
+        followUserCenter = true;
+        map.setView(userCoords, NAV_ZOOM_LEVEL, { animate: true });
+      } else {
+        map.fitBounds([startPt, BASE_COORDS], { padding: [30, 30] });
+      }
       showToast("Rotta interna impostata verso Magona Bike Garage");
     }
 
@@ -772,8 +980,81 @@
       const stage = document.getElementById("map-stage");
       stage.classList.toggle("is-fullscreen");
       setTimeout(() => {
-        if (map) map.invalidateSize();
+        if (map) {
+          map.invalidateSize();
+          if (liveNavActive && followUserCenter && userCoords) {
+            map.setView(userCoords, NAV_ZOOM_LEVEL);
+          }
+        }
       }, 150);
+    }
+
+    function latLngToTile(lat, lon, zoom) {
+      const n = Math.pow(2, zoom);
+      const x = Math.floor(((lon + 180) / 360) * n);
+      const latRad = (lat * Math.PI) / 180;
+      const y = Math.floor(((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2) * n);
+      return { x, y };
+    }
+
+    async function saveOfflineForUser() {
+      const box = document.getElementById("offline-download-box");
+      const bar = document.getElementById("offline-download-bar");
+      const pctEl = document.getElementById("offline-download-pct");
+      const labelEl = document.getElementById("offline-download-label");
+      box.classList.remove("hidden");
+
+      // 1. Salva tutti i percorsi e punti utili nello storage locale protetto dell'app
+      try {
+        localStorage.setItem("magona_offline_routes_v1", JSON.stringify(ROUTES));
+        localStorage.setItem("magona_offline_pois_v1", JSON.stringify(POIS));
+      } catch (e) {}
+
+      // 2. Calcola i riquadri mappa (zoom 13-15) attorno ai percorsi e alla Macchia della Magona
+      const tileUrls = new Set();
+      const allCoords = [BASE_COORDS];
+      Object.values(ROUTES).forEach((r) => {
+        (r.coords || []).forEach((c) => allCoords.push(c));
+      });
+
+      [13, 14, 15].forEach((z) => {
+        allCoords.forEach(([lat, lon]) => {
+          const { x, y } = latLngToTile(lat, lon, z);
+          for (let dx = -1; dx <= 1; dx++) {
+            for (let dy = -1; dy <= 1; dy++) {
+              tileUrls.add(`https://a.tile.openstreetmap.org/${z}/${x + dx}/${y + dy}.png`);
+            }
+          }
+        });
+      });
+
+      const urls = Array.from(tileUrls).slice(0, 75);
+      let completed = 0;
+
+      if ("caches" in window) {
+        try {
+          const cache = await caches.open(OFFLINE_CACHE_NAME);
+          for (const url of urls) {
+            try {
+              const req = new Request(url, { mode: "no-cors" });
+              const resp = await fetch(req);
+              if (resp) await cache.put(req, resp);
+            } catch (err) {}
+            completed++;
+            const pct = Math.round((completed / urls.length) * 100);
+            bar.style.width = pct + "%";
+            pctEl.textContent = pct + "%";
+          }
+        } catch (e) {}
+      } else {
+        bar.style.width = "100%";
+        pctEl.textContent = "100%";
+      }
+
+      localStorage.setItem("magona_offline_ready", "1");
+      document.getElementById("offline-cache-badge").classList.remove("hidden");
+      labelEl.textContent = "Mappa e percorsi salvati offline nell'app!";
+      showToast("Mappa e tour salvati offline sul telefono");
     }
 
     function renderPoiList() {
@@ -804,7 +1085,7 @@
         weight: 4,
         dashArray: "6, 8"
       }).addTo(map);
-      map.setView([lat, lng], 15);
+      map.setView([lat, lng], 16);
       showToast("Navigazione interna verso: " + label);
     }
 
@@ -826,10 +1107,6 @@
         : "Posizione GPS non disponibile";
       const msg = encodeURIComponent(`Ciao Magona Bike Garage, chiedo assistenza. Tracciato: ${routeName}. ${locText}`);
       window.open(`https://wa.me/393313453207?text=${msg}`, "_blank", "noopener");
-    }
-
-    function precacheMagonaMap() {
-      showToast("Riquadri principali della mappa Magona salvati in cache locale");
     }
 
     function handleGpxUpload(event) {
@@ -855,11 +1132,8 @@
             elevationGainM: 500,
             coords: pts
           };
-          const sel = document.getElementById("route-select");
-          const opt = document.createElement("option");
-          opt.value = id;
-          opt.textContent = ROUTES[id].name + " (GPX)";
-          sel.appendChild(opt);
+          localStorage.setItem("magona_offline_routes_v1", JSON.stringify(ROUTES));
+          rebuildRouteSelector();
           switchTab("map");
           selectRoute(id);
           showToast("Tracciato caricato: " + ROUTES[id].name);
@@ -879,3 +1153,9 @@
   </script>
 </body>
 </html>
+"""
+
+with open("magona_bike_garage_app-v4.html", "w", encoding="utf-8") as f:
+    f.write(html_code.strip())
+
+print("Saved magona_bike_garage_app-v4.html successfully, size:", len(html_code.strip()))
