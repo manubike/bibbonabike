@@ -99,25 +99,25 @@
         <img src="logo.png" alt="Magona Bike Garage" class="brand-logo-img" onerror="this.style.display='none'; document.getElementById('perm-fallback-brand').classList.remove('hidden');" />
         <span id="perm-fallback-brand" class="hidden text-xs uppercase tracking-widest text-stone-500 font-semibold">Magona Bike Garage · Bibbona</span>
       </div>
-      <h2 id="perm-title" class="text-xl font-bold text-stone-900 mb-2">Autorizzazioni GPS e Rete Web</h2>
-      <p id="perm-desc" class="text-sm text-stone-600 mb-4">
+      <h2 id="perm-title" data-i18n="permTitle" class="text-xl font-bold text-stone-900 mb-2">Autorizzazioni GPS e Rete Web</h2>
+      <p id="perm-desc" data-i18n="permDesc" class="text-sm text-stone-600 mb-4">
         Per mostrare la tua posizione sul sentiero, calcolare distanza e dislivello rimanenti e salvare le mappe offline, abilita il GPS e la connessione web.
       </p>
       <div class="space-y-2.5 mb-5 text-sm">
         <div class="flex items-center justify-between bg-stone-100 px-3.5 py-2.5 rounded-xl">
-          <span id="perm-gps-label" class="font-medium text-stone-800">Posizione GPS Live</span>
-          <span id="perm-gps-status" class="text-xs font-semibold px-2 py-0.5 rounded bg-stone-200 text-stone-700">In attesa</span>
+          <span id="perm-gps-label" data-i18n="permGpsLabel" class="font-medium text-stone-800">Posizione GPS Live</span>
+          <span id="perm-gps-status" data-i18n="gpsWaiting" class="text-xs font-semibold px-2 py-0.5 rounded bg-stone-200 text-stone-700">In attesa</span>
         </div>
         <div class="flex items-center justify-between bg-stone-100 px-3.5 py-2.5 rounded-xl">
-          <span id="perm-net-label" class="font-medium text-stone-800">Connessione Web & Cache Mappe</span>
+          <span id="perm-net-label" data-i18n="permNetLabel" class="font-medium text-stone-800">Connessione Web & Cache Mappe</span>
           <span id="perm-net-status" class="text-xs font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">Verifica...</span>
         </div>
       </div>
       <div class="flex flex-col gap-2">
-        <button id="btn-authorize-all" onclick="requestStartupPermissions()" class="w-full py-3 px-4 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-semibold text-sm transition cursor-pointer">
+        <button id="btn-authorize-all" data-i18n="authBtn" onclick="requestStartupPermissions()" class="w-full py-3 px-4 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-semibold text-sm transition cursor-pointer">
           Autorizza GPS e Rete Web
         </button>
-        <button id="btn-skip-perm" onclick="dismissStartupPermissions()" class="w-full py-2.5 px-4 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium text-xs transition cursor-pointer">
+        <button id="btn-skip-perm" data-i18n="skipBtn" onclick="dismissStartupPermissions()" class="w-full py-2.5 px-4 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium text-xs transition cursor-pointer">
           Continua senza GPS per ora
         </button>
       </div>
@@ -143,26 +143,26 @@
         </select>
       </div>
 
-      <p id="auth-subtitle" class="text-sm text-stone-600 mb-4">
+      <p id="auth-subtitle" data-i18n="authSub" class="text-sm text-stone-600 mb-4">
         Inserisci il codice fornito in officina per aprire la mappa sentieri.
       </p>
 
-      <label for="access-password-input" id="access-label" class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">
+      <label for="access-password-input" id="access-label" data-i18n="accessLabel" class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">
         Codice Accesso / Password
       </label>
-      <input id="access-password-input" type="password" autocomplete="off" placeholder="Inserisci codice di accesso"
+      <input id="access-password-input" data-i18n-placeholder="accessPlaceholder" type="password" autocomplete="off" placeholder="Inserisci codice di accesso"
         onkeydown="if(event.key==='Enter') submitAccessPassword()"
         class="w-full border border-stone-300 rounded-xl px-3.5 py-2.5 text-sm mb-3 focus:outline-none focus:border-stone-900" />
 
       <div id="auth-error" class="hidden text-xs text-red-600 font-medium mb-3"></div>
 
-      <button id="btn-login" onclick="submitAccessPassword()" class="w-full py-3 px-4 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-semibold text-sm transition cursor-pointer">
+      <button id="btn-login" data-i18n="loginBtn" onclick="submitAccessPassword()" class="w-full py-3 px-4 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-semibold text-sm transition cursor-pointer">
         Accedi alla Mappa
       </button>
 
       <div class="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500">
-        <span>Assistenza: +39 331 345 3207</span>
-        <button onclick="openStartupPermissionsModal()" class="underline hover:text-stone-800 cursor-pointer">Permessi GPS / Web</button>
+        <span><span data-i18n="supportShort">Assistenza</span>: +39 331 345 3207</span>
+        <button id="btn-open-perms" data-i18n="openPerms" onclick="openStartupPermissionsModal()" class="underline hover:text-stone-800 cursor-pointer">Permessi GPS / Web</button>
       </div>
     </div>
   </div>
@@ -174,8 +174,8 @@
       <div class="flex items-center gap-2.5">
         <img src="logo.png" alt="Magona Bike Garage" class="brand-logo-img" onerror="this.style.display='none'; document.getElementById('app-fallback-title').classList.remove('hidden');" />
         <span id="app-fallback-title" class="hidden font-extrabold text-base tracking-tight text-stone-900">Magona Bike Garage</span>
-        <span id="role-badge" class="hidden text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-stone-900 text-white">GESTORE</span>
-        <span id="offline-cache-badge" class="hidden text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">OFFLINE PRONTO</span>
+        <span id="role-badge" data-i18n="roleBadge" class="hidden text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-stone-900 text-white">GESTORE</span>
+        <span id="offline-cache-badge" data-i18n="offlineBadge" class="hidden text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">OFFLINE PRONTO</span>
       </div>
       <div class="flex items-center gap-2">
         <select id="app-lang-select" onchange="changeLanguage(this.value)" class="border border-stone-300 rounded-lg px-2 py-1 text-xs font-semibold bg-stone-50">
@@ -184,7 +184,7 @@
           <option value="de">DE</option>
           <option value="nl">NL</option>
         </select>
-        <button onclick="lockApplication()" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 cursor-pointer">
+        <button id="btn-logout" data-i18n="logoutBtn" onclick="lockApplication()" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 cursor-pointer">
           Esci
         </button>
       </div>
@@ -192,11 +192,11 @@
 
     <!-- Barra menu subito sotto l'intestazione -->
     <nav id="app-nav" class="bg-white border-b border-stone-200 px-4 flex gap-5 overflow-x-auto text-sm font-semibold">
-      <button data-tab="map" onclick="switchTab('map')" class="nav-tab py-3 border-b-2 border-stone-900 text-stone-900 whitespace-nowrap cursor-pointer">Mappa</button>
-      <button data-tab="pois" onclick="switchTab('pois')" class="nav-tab py-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 whitespace-nowrap cursor-pointer">Punti Utili</button>
-      <button data-tab="support" onclick="switchTab('support')" class="nav-tab py-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 whitespace-nowrap cursor-pointer">Assistenza</button>
-      <button id="nav-tours-tab" data-tab="tours" onclick="switchTab('tours')" class="nav-tab hidden py-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 whitespace-nowrap cursor-pointer">Gestione Tour</button>
-      <button id="nav-manager-tab" data-tab="manager" onclick="switchTab('manager')" class="nav-tab hidden py-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 whitespace-nowrap cursor-pointer">Gestore & Cache</button>
+      <button data-tab="map" data-i18n="tabMap" onclick="switchTab('map')" class="nav-tab py-3 border-b-2 border-stone-900 text-stone-900 whitespace-nowrap cursor-pointer">Mappa</button>
+      <button data-tab="pois" data-i18n="tabPois" onclick="switchTab('pois')" class="nav-tab py-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 whitespace-nowrap cursor-pointer">Punti Utili</button>
+      <button data-tab="support" data-i18n="tabSupport" onclick="switchTab('support')" class="nav-tab py-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 whitespace-nowrap cursor-pointer">Assistenza</button>
+      <button id="nav-tours-tab" data-tab="tours" data-i18n="tabTours" onclick="switchTab('tours')" class="nav-tab hidden py-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 whitespace-nowrap cursor-pointer">Gestione Tour</button>
+      <button id="nav-manager-tab" data-tab="manager" data-i18n="tabManager" onclick="switchTab('manager')" class="nav-tab hidden py-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 whitespace-nowrap cursor-pointer">Gestore & Cache</button>
     </nav>
 
     <!-- Scheda Mappa -->
@@ -206,16 +206,16 @@
           <div class="flex flex-wrap gap-2">
             <select id="route-select" onchange="selectRoute(this.value)" class="border border-stone-300 rounded-xl px-3 py-2 text-sm font-semibold bg-stone-50"></select>
             <select id="category-filter" onchange="applyRouteFilters()" class="border border-stone-300 rounded-xl px-3 py-2 text-xs font-semibold bg-stone-50">
-              <option value="all">Tutte le bici</option>
-              <option value="mtb">MTB / E-MTB</option>
-              <option value="gravel">Gravel</option>
+              <option value="all" data-i18n="catAll">Tutte le bici</option>
+              <option value="mtb" data-i18n="catMtb">MTB / E-MTB</option>
+              <option value="gravel" data-i18n="catGravel">Gravel</option>
             </select>
             <select id="difficulty-filter" onchange="applyRouteFilters()" class="border border-stone-300 rounded-xl px-3 py-2 text-xs font-semibold bg-stone-50">
-              <option value="all">Tutte le difficoltà</option>
-              <option value="green">Verde (Facile)</option>
-              <option value="blue">Blu (Intermedio)</option>
-              <option value="red">Rosso (Impegnativo)</option>
-              <option value="black">Nero (Esperto)</option>
+              <option value="all" data-i18n="diffAll">Tutte le difficoltà</option>
+              <option value="green" data-i18n="diffGreen">Verde (Facile)</option>
+              <option value="blue" data-i18n="diffBlue">Blu (Intermedio)</option>
+              <option value="red" data-i18n="diffRed">Rosso (Impegnativo)</option>
+              <option value="black" data-i18n="diffBlack">Nero (Esperto)</option>
             </select>
           </div>
 
@@ -223,16 +223,16 @@
             <button id="btn-live-nav" onclick="toggleLiveNavigation()" class="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
               Naviga Ora
             </button>
-            <button id="btn-user-offline-save" onclick="saveOfflineForUser()" class="px-3.5 py-2 rounded-xl bg-sky-700 hover:bg-sky-800 text-white text-xs font-bold cursor-pointer">
+            <button id="btn-user-offline-save" data-i18n="saveOfflineBtn" onclick="saveOfflineForUser()" class="px-3.5 py-2 rounded-xl bg-sky-700 hover:bg-sky-800 text-white text-xs font-bold cursor-pointer">
               Salva Offline (Mappa + Tour)
             </button>
-            <button onclick="navigateToBase()" class="px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold cursor-pointer">
+            <button id="btn-return-base" data-i18n="returnBaseBtn" onclick="navigateToBase()" class="px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold cursor-pointer">
               Rientra alla Base
             </button>
             <button id="btn-wake-lock" onclick="toggleScreenWakeLock()" class="px-3.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
               Schermo Acceso: OFF
             </button>
-            <button onclick="toggleMapFullscreen()" class="px-3.5 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold cursor-pointer">
+            <button id="btn-fullscreen" data-i18n="fullscreenBtn" onclick="toggleMapFullscreen()" class="px-3.5 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold cursor-pointer">
               Schermo Intero
             </button>
           </div>
@@ -254,13 +254,13 @@
         <!-- Barra avanzamento download offline per l'utente -->
         <div id="offline-download-box" class="hidden bg-sky-50 border border-sky-200 rounded-xl p-3 space-y-1.5">
           <div class="flex items-center justify-between text-xs">
-            <span id="offline-download-label" class="font-bold text-sky-950">Salvataggio mappa e percorsi offline...</span>
+            <span id="offline-download-label" data-i18n="offlineSaving" class="font-bold text-sky-950">Salvataggio mappa e percorsi offline...</span>
             <span id="offline-download-pct" class="font-extrabold text-sky-800">0%</span>
           </div>
           <div class="w-full h-2 bg-sky-200/70 rounded-full overflow-hidden">
             <div id="offline-download-bar" class="h-full bg-sky-700 transition-all duration-150" style="width: 0%"></div>
           </div>
-          <div id="offline-download-sub" class="text-[11px] text-sky-800">
+          <div id="offline-download-sub" data-i18n="offlineSub" class="text-[11px] text-sky-800">
             I percorsi e i tasselli mappa restano consultabili nell'app anche senza campo nel bosco (file GPX protetti).
           </div>
         </div>
@@ -268,26 +268,26 @@
         <!-- Riepilogo distanza e dislivello -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
           <div class="bg-stone-50 border border-stone-200/80 rounded-xl p-2.5">
-            <div class="text-[11px] text-stone-500 font-medium">Distanza Totale</div>
+            <div data-i18n="statTotalDist" class="text-[11px] text-stone-500 font-medium">Distanza Totale</div>
             <div id="stat-total-dist" class="text-base font-extrabold text-stone-900">24.8 km</div>
           </div>
           <div class="bg-stone-50 border border-stone-200/80 rounded-xl p-2.5">
-            <div class="text-[11px] text-stone-500 font-medium">Distanza Rimanente</div>
+            <div data-i18n="statRemDist" class="text-[11px] text-stone-500 font-medium">Distanza Rimanente</div>
             <div id="stat-rem-dist" class="text-base font-extrabold text-emerald-700">24.8 km</div>
           </div>
           <div class="bg-stone-50 border border-stone-200/80 rounded-xl p-2.5">
-            <div class="text-[11px] text-stone-500 font-medium">Dislivello + Totale</div>
+            <div data-i18n="statTotalElev" class="text-[11px] text-stone-500 font-medium">Dislivello + Totale</div>
             <div id="stat-total-elev" class="text-base font-extrabold text-stone-900">640 m</div>
           </div>
           <div class="bg-stone-50 border border-stone-200/80 rounded-xl p-2.5">
-            <div class="text-[11px] text-stone-500 font-medium">Dislivello + Rimanente</div>
+            <div data-i18n="statRemElev" class="text-[11px] text-stone-500 font-medium">Dislivello + Rimanente</div>
             <div id="stat-rem-elev" class="text-base font-extrabold text-emerald-700">640 m</div>
           </div>
         </div>
 
         <div id="nav-status-banner" class="hidden bg-stone-900 text-white rounded-xl px-3.5 py-2.5 text-xs flex flex-wrap items-center justify-between gap-2">
           <span id="nav-status-text" class="font-semibold">Navigazione GPS live attiva</span>
-          <button onclick="recenterNavigator()" class="underline font-bold cursor-pointer">Ricentra Navigatore</button>
+          <button id="recenter-banner-btn" data-i18n="recenterBanner" onclick="recenterNavigator()" class="underline font-bold cursor-pointer">Ricentra Navigatore</button>
         </div>
       </div>
 
@@ -295,11 +295,11 @@
       <div id="map-stage" class="map-stage relative">
         <div class="map-wrapper relative w-full h-full">
           <div id="map-container"></div>
-          <button onclick="recenterNavigator()" title="Centra su GPS"
+          <button id="overlay-center-gps" data-i18n="overlayCenterGps" onclick="recenterNavigator()" title="Centra su GPS"
             class="absolute bottom-4 right-3 z-[450] bg-white/95 hover:bg-white text-stone-900 border border-stone-300 rounded-xl px-3 py-2 text-xs font-bold shadow cursor-pointer">
             ◎ Centra GPS
           </button>
-          <button onclick="toggleMapFullscreen()" title="Schermo Intero"
+          <button id="overlay-fullscreen-btn" data-i18n="overlayFullscreen" onclick="toggleMapFullscreen()" title="Schermo Intero"
             class="absolute top-3 right-3 z-[450] bg-white/95 hover:bg-white text-stone-900 border border-stone-300 rounded-xl px-3 py-1.5 text-xs font-bold shadow cursor-pointer">
             ⤢ Schermo Intero
           </button>
@@ -309,12 +309,12 @@
         <div id="bottom-telemetry-panel" class="bottom-telemetry-panel">
           <div class="flex flex-wrap items-center justify-between gap-2 border-b border-stone-200 pb-2">
             <div class="flex items-center gap-2">
-              <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-stone-900 text-white">Navigazione</span>
+              <span data-i18n="fsBannerLabel" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-stone-900 text-white">Navigazione</span>
               <span id="fs-route-name" class="text-xs sm:text-sm font-extrabold text-stone-900">Anello Macchia della Magona</span>
               <span class="text-xs text-stone-500">· <strong id="fs-progress-pct" class="text-stone-900">0%</strong></span>
             </div>
             <div class="flex flex-wrap items-center gap-1.5">
-              <button onclick="recenterNavigator()" class="px-2.5 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold cursor-pointer">
+              <button data-i18n="fsCenterBtn" onclick="recenterNavigator()" class="px-2.5 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold cursor-pointer">
                 Centra GPS
               </button>
               <button id="fs-btn-wake-lock" onclick="toggleScreenWakeLock()" class="px-2.5 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold cursor-pointer">
@@ -323,7 +323,7 @@
               <button id="fs-btn-live-nav" onclick="toggleLiveNavigation()" class="px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
                 GPS Live
               </button>
-              <button onclick="toggleMapFullscreen()" class="px-3 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold cursor-pointer">
+              <button data-i18n="fsExitBtn" onclick="toggleMapFullscreen()" class="px-3 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold cursor-pointer">
                 Esci
               </button>
             </div>
@@ -331,27 +331,27 @@
 
           <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 text-xs">
             <div class="bg-stone-100 rounded-xl px-2.5 py-2">
-              <div class="text-[10px] text-stone-500">Dist. Rimanente</div>
+              <div data-i18n="fsRemDist" class="text-[10px] text-stone-500">Dist. Rimanente</div>
               <div id="fs-rem-dist" class="text-sm sm:text-base font-extrabold text-emerald-700">24.8 km</div>
             </div>
             <div class="bg-stone-100 rounded-xl px-2.5 py-2">
-              <div class="text-[10px] text-stone-500">Dist. Percorsa</div>
+              <div data-i18n="fsDoneDist" class="text-[10px] text-stone-500">Dist. Percorsa</div>
               <div id="fs-done-dist" class="text-sm font-bold text-stone-900">0.0 km</div>
             </div>
             <div class="bg-stone-100 rounded-xl px-2.5 py-2">
-              <div class="text-[10px] text-stone-500">Dist. Totale</div>
+              <div data-i18n="fsTotalDist" class="text-[10px] text-stone-500">Dist. Totale</div>
               <div id="fs-total-dist" class="text-sm font-bold text-stone-900">24.8 km</div>
             </div>
             <div class="bg-stone-100 rounded-xl px-2.5 py-2">
-              <div class="text-[10px] text-stone-500">Disl. + Rimanente</div>
+              <div data-i18n="fsRemElev" class="text-[10px] text-stone-500">Disl. + Rimanente</div>
               <div id="fs-rem-elev" class="text-sm sm:text-base font-extrabold text-emerald-700">640 m</div>
             </div>
             <div class="bg-stone-100 rounded-xl px-2.5 py-2">
-              <div class="text-[10px] text-stone-500">Salita Effettuata</div>
+              <div data-i18n="fsDoneElev" class="text-[10px] text-stone-500">Salita Effettuata</div>
               <div id="fs-done-elev" class="text-sm font-bold text-stone-900">0 m</div>
             </div>
             <div class="bg-stone-100 rounded-xl px-2.5 py-2">
-              <div class="text-[10px] text-stone-500">Disl. + Totale</div>
+              <div data-i18n="fsTotalElev" class="text-[10px] text-stone-500">Disl. + Totale</div>
               <div id="fs-total-elev" class="text-sm font-bold text-stone-900">640 m</div>
             </div>
           </div>
@@ -365,14 +365,14 @@
       <div id="poi-owner-editor" class="hidden bg-white rounded-2xl border border-stone-200 p-5 space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <h2 id="poi-form-title" class="text-base font-bold text-stone-900">Aggiungi Nuovo Punto Utile o Modifica Esistente</h2>
-            <p class="text-xs text-stone-500">Gestisci fontanelle, punti panoramici, ristori e punti di interesse lungo i percorsi, poi premi <strong>Salva Modifiche</strong>.</p>
+            <h2 id="poi-form-title" data-i18n="poiFormAddTitle" class="text-base font-bold text-stone-900">Aggiungi Nuovo Punto Utile o Modifica Esistente</h2>
+            <p data-i18n="poiFormDesc" class="text-xs text-stone-500">Gestisci fontanelle, punti panoramici, ristori e punti di interesse lungo i percorsi, poi premi Salva Modifiche.</p>
           </div>
           <div class="flex items-center gap-2">
             <span id="pois-save-status-badge" class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800">
               ✓ Salvato su questo dispositivo
             </span>
-            <button id="btn-reset-poi-form" onclick="resetPoiForm()" class="hidden px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
+            <button id="btn-reset-poi-form" data-i18n="cancelEditBtn" onclick="resetPoiForm()" class="hidden px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
               Annulla Modifica
             </button>
           </div>
@@ -382,45 +382,45 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
           <div>
-            <label class="block font-semibold text-stone-700 mb-1">Nome Punto Utile *</label>
-            <input id="poi-name-input" type="text" placeholder="Es. Fontana Campo di Sasso"
+            <label data-i18n="poiNameLabel" class="block font-semibold text-stone-700 mb-1">Nome Punto Utile *</label>
+            <input id="poi-name-input" data-i18n-placeholder="poiNamePlaceholder" type="text" placeholder="Es. Fontana Campo di Sasso"
               class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900" />
           </div>
 
           <div>
-            <label class="block font-semibold text-stone-700 mb-1">Tipologia *</label>
+            <label data-i18n="poiTypeLabel" class="block font-semibold text-stone-700 mb-1">Tipologia *</label>
             <select id="poi-type-input" class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm font-bold bg-stone-50">
-              <option value="water">💧 Fontanella / Acqua</option>
-              <option value="view">🏔️ Panorama / Punto Foto</option>
-              <option value="food">🍽️ Ristoro / Bar / Area Sosta</option>
-              <option value="service">🔧 Assistenza Officina</option>
+              <option value="water" data-i18n="poiOptWater">💧 Fontanella / Acqua</option>
+              <option value="view" data-i18n="poiOptView">🏔️ Panorama / Punto Foto</option>
+              <option value="food" data-i18n="poiOptFood">🍽️ Ristoro / Bar / Area Sosta</option>
+              <option value="service" data-i18n="poiOptService">🔧 Assistenza Officina</option>
             </select>
           </div>
 
           <div>
-            <label class="block font-semibold text-stone-700 mb-1">Latitudine *</label>
+            <label data-i18n="latLabel" class="block font-semibold text-stone-700 mb-1">Latitudine *</label>
             <input id="poi-lat-input" type="number" step="0.000001" min="-90" max="90" placeholder="43.261000"
               class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900" />
           </div>
 
           <div>
-            <label class="block font-semibold text-stone-700 mb-1">Longitudine *</label>
+            <label data-i18n="lngLabel" class="block font-semibold text-stone-700 mb-1">Longitudine *</label>
             <input id="poi-lng-input" type="number" step="0.000001" min="-180" max="180" placeholder="10.636000"
               class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900" />
           </div>
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-stone-700 mb-1">Note / Dettagli Utili</label>
-          <input id="poi-note-input" type="text" placeholder="Es. Acqua fresca potabile sul lato sinistro del sentiero"
+          <label data-i18n="poiNoteLabel" class="block text-xs font-semibold text-stone-700 mb-1">Note / Dettagli Utili</label>
+          <input id="poi-note-input" data-i18n-placeholder="poiNotePlaceholder" type="text" placeholder="Es. Acqua fresca potabile sul lato sinistro del sentiero"
             class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900" />
         </div>
 
         <div class="flex flex-wrap items-center gap-2.5">
-          <button onclick="fillPoiCoordsFromGps()" class="px-3.5 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold cursor-pointer">
+          <button data-i18n="useCurrentGpsBtn" onclick="fillPoiCoordsFromGps()" class="px-3.5 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold cursor-pointer">
             ◎ Usa Posizione GPS Attuale
           </button>
-          <button onclick="savePoiFromForm()" class="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
+          <button data-i18n="saveChangesBtn" onclick="savePoiFromForm()" class="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
             Salva Modifiche
           </button>
           <span id="poi-form-feedback" class="text-xs text-emerald-700 font-semibold"></span>
@@ -431,14 +431,14 @@
       <div class="bg-white rounded-2xl border border-stone-200 p-4 space-y-3">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <h2 class="text-base font-bold text-stone-900">Punti Utili (Fontanelle, Panorami, Ristori)</h2>
+            <h2 data-i18n="poiTitle" class="text-base font-bold text-stone-900">Punti Utili (Fontanelle, Panorami, Ristori)</h2>
             <p id="poi-list-subtitle" class="text-xs text-stone-500">Seleziona un punto per avviare la guida sulla mappa.</p>
           </div>
           <div id="poi-owner-list-actions" class="hidden flex flex-wrap gap-1.5">
-            <button onclick="saveAllPoisChanges()" class="px-3.5 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
+            <button data-i18n="saveChangesBtn" onclick="saveAllPoisChanges()" class="px-3.5 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
               Salva Modifiche
             </button>
-            <button onclick="restoreDefaultPois()" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold cursor-pointer">
+            <button data-i18n="restoreDefaultsBtn" onclick="restoreDefaultPois()" class="px-3.5 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold cursor-pointer">
               Ripristina Predefiniti
             </button>
           </div>
@@ -450,16 +450,16 @@
     <!-- Scheda Assistenza -->
     <section id="tab-support" class="tab-panel hidden flex-1 p-4 max-w-4xl w-full mx-auto space-y-4">
       <div class="bg-white rounded-2xl border border-stone-200 p-4 space-y-3">
-        <h2 class="text-base font-bold text-stone-900">Assistenza Officina — Magona Bike Garage</h2>
-        <p class="text-sm text-stone-600">Numero diretto officina: <strong>+39 331 345 3207</strong></p>
+        <h2 data-i18n="supportTitle" class="text-base font-bold text-stone-900">Assistenza Officina — Magona Bike Garage</h2>
+        <p class="text-sm text-stone-600"><span data-i18n="supportPhoneLabel">Numero diretto officina:</span> <strong>+39 331 345 3207</strong></p>
         <div class="flex flex-wrap gap-2.5">
-          <a href="tel:+393313453207" class="px-4 py-2.5 rounded-xl bg-stone-900 text-white text-xs font-bold">
+          <a data-i18n="callShop" href="tel:+393313453207" class="px-4 py-2.5 rounded-xl bg-stone-900 text-white text-xs font-bold">
             Chiama Officina
           </a>
-          <button onclick="sendWhatsAppLocation()" class="px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
+          <button data-i18n="sendWaGps" onclick="sendWhatsAppLocation()" class="px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
             Invia Posizione GPS su WhatsApp
           </button>
-          <a href="https://wa.me/393313453207" target="_blank" rel="noopener" class="px-4 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold">
+          <a data-i18n="openWaChat" href="https://wa.me/393313453207" target="_blank" rel="noopener" class="px-4 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold">
             Chat WhatsApp Diretta
           </a>
         </div>
@@ -473,14 +473,14 @@
       <div class="bg-white rounded-2xl border border-stone-200 p-5 space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <h2 id="tour-form-title" class="text-base font-bold text-stone-900">Aggiungi Nuovo Tour o Modifica Esistente</h2>
-            <p class="text-xs text-stone-500">Indica se il tour è <strong>MTB</strong> o <strong>Gravel</strong> per mostrarlo ai clienti, carica il GPX e imposta difficoltà, distanza, dislivello e descrizione.</p>
+            <h2 id="tour-form-title" data-i18n="tourFormAddTitle" class="text-base font-bold text-stone-900">Aggiungi Nuovo Tour o Modifica Esistente</h2>
+            <p data-i18n="tourFormDesc" class="text-xs text-stone-500">Indica se il tour è MTB o Gravel per mostrarlo ai clienti, carica il GPX e imposta difficoltà, distanza, dislivello e descrizione.</p>
           </div>
           <div class="flex items-center gap-2">
             <span id="tours-save-status-badge" class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800">
               ✓ Salvato su questo dispositivo
             </span>
-            <button id="btn-reset-tour-form" onclick="resetTourForm()" class="hidden px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
+            <button id="btn-reset-tour-form" data-i18n="cancelEditBtn" onclick="resetTourForm()" class="hidden px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
               Annulla Modifica
             </button>
           </div>
@@ -490,13 +490,13 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
           <div>
-            <label class="block font-semibold text-stone-700 mb-1">Nome del Tour *</label>
-            <input id="tour-name-input" type="text" placeholder="Es. Anello della Magona & Campo di Sasso"
+            <label data-i18n="tourNameLabel" class="block font-semibold text-stone-700 mb-1">Nome del Tour *</label>
+            <input id="tour-name-input" data-i18n-placeholder="tourNamePlaceholder" type="text" placeholder="Es. Anello della Magona & Campo di Sasso"
               class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900" />
           </div>
 
           <div>
-            <label class="block font-semibold text-stone-700 mb-1">Disciplina Tour (MTB / Gravel) *</label>
+            <label data-i18n="tourDisciplineLabel" class="block font-semibold text-stone-700 mb-1">Disciplina Tour (MTB / Gravel) *</label>
             <select id="tour-cat-input" class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm font-bold bg-stone-50">
               <option value="mtb">MTB</option>
               <option value="gravel">Gravel</option>
@@ -504,57 +504,57 @@
           </div>
 
           <div>
-            <label class="block font-semibold text-stone-700 mb-1">Difficoltà</label>
+            <label data-i18n="tourDiffLabel" class="block font-semibold text-stone-700 mb-1">Difficoltà</label>
             <select id="tour-diff-input" class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm bg-stone-50">
-              <option value="green">Verde — Facile / Famiglie</option>
-              <option value="blue" selected>Blu — Intermedio</option>
-              <option value="red">Rosso — Impegnativo / Enduro</option>
-              <option value="black">Nero — Esperto / Tecnico</option>
+              <option value="green" data-i18n="tourDiffOptGreen">Verde — Facile / Famiglie</option>
+              <option value="blue" data-i18n="tourDiffOptBlue" selected>Blu — Intermedio</option>
+              <option value="red" data-i18n="tourDiffOptRed">Rosso — Impegnativo / Enduro</option>
+              <option value="black" data-i18n="tourDiffOptBlack">Nero — Esperto / Tecnico</option>
             </select>
           </div>
 
           <div>
-            <label class="block font-semibold text-stone-700 mb-1">Distanza (km)</label>
+            <label data-i18n="tourDistLabel" class="block font-semibold text-stone-700 mb-1">Distanza (km)</label>
             <input id="tour-dist-input" type="number" step="0.1" min="0.1" placeholder="24.8"
               class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900" />
           </div>
 
           <div>
-            <label class="block font-semibold text-stone-700 mb-1">Dislivello + (m)</label>
+            <label data-i18n="tourElevLabel" class="block font-semibold text-stone-700 mb-1">Dislivello + (m)</label>
             <input id="tour-elev-input" type="number" step="10" min="0" placeholder="640"
               class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900" />
           </div>
 
           <div>
-            <label class="block font-semibold text-stone-700 mb-1">Tempo Stimato</label>
-            <input id="tour-duration-input" type="text" placeholder="Es. 2h 15m"
+            <label data-i18n="tourDurationLabel" class="block font-semibold text-stone-700 mb-1">Tempo Stimato</label>
+            <input id="tour-duration-input" data-i18n-placeholder="tourDurationPlaceholder" type="text" placeholder="Es. 2h 15m"
               class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900" />
           </div>
 
           <div>
-            <label class="block font-semibold text-stone-700 mb-1">Fondo / Terreno</label>
-            <input id="tour-surface-input" type="text" placeholder="Es. Bosco, singletrack e carrarecce"
+            <label data-i18n="tourSurfaceLabel" class="block font-semibold text-stone-700 mb-1">Fondo / Terreno</label>
+            <input id="tour-surface-input" data-i18n-placeholder="tourSurfacePlaceholder" type="text" placeholder="Es. Bosco, singletrack e carrarecce"
               class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900" />
           </div>
 
           <div class="sm:col-span-2">
-            <label class="block font-semibold text-stone-700 mb-1">File Traccia GPX (opzionale in modifica, consigliato per nuovo tour)</label>
+            <label data-i18n="tourGpxLabel" class="block font-semibold text-stone-700 mb-1">File Traccia GPX (opzionale in modifica, consigliato per nuovo tour)</label>
             <input type="file" id="tour-gpx-file" accept=".gpx" onchange="previewGpxMetricsOnForm(event)"
               class="w-full border border-stone-300 rounded-xl px-3 py-1.5 text-xs bg-stone-50" />
           </div>
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-stone-700 mb-1">Descrizione & Note Tecniche per il Cliente</label>
-          <textarea id="tour-desc-input" rows="2" placeholder="Inserisci punti di interesse, consigli sulla batteria e-bike, passaggi tecnici o fontanelle lungo il giro..."
+          <label data-i18n="tourDescLabel" class="block text-xs font-semibold text-stone-700 mb-1">Descrizione & Note Tecniche per il Cliente</label>
+          <textarea id="tour-desc-input" data-i18n-placeholder="tourDescPlaceholder" rows="2" placeholder="Inserisci punti di interesse, consigli sulla batteria e-bike, passaggi tecnici o fontanelle lungo il giro..."
             class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900"></textarea>
         </div>
 
         <div class="flex flex-wrap items-center gap-2.5">
-          <button onclick="saveTourFromForm()" class="px-5 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold cursor-pointer">
+          <button data-i18n="saveTourListBtn" onclick="saveTourFromForm()" class="px-5 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold cursor-pointer">
             Salva Tour nella Lista
           </button>
-          <button onclick="saveAllToursChanges()" class="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
+          <button data-i18n="saveChangesBtn" onclick="saveAllToursChanges()" class="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
             Salva Modifiche
           </button>
           <span id="gpx-parse-feedback" class="text-xs text-emerald-700 font-semibold"></span>
@@ -565,17 +565,17 @@
       <div class="bg-white rounded-2xl border border-stone-200 p-5 space-y-3">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <h3 class="text-base font-bold text-stone-900">Classifica e Ordine dei Tour</h3>
-            <p class="text-xs text-stone-500">Le modifiche vengono salvate subito in memoria permanente (IndexedDB + LocalStorage). Per renderle visibili anche sui telefoni di tutti i clienti, usa <strong>Esporta tours.json</strong> e caricalo su GitHub accanto a <code>index.html</code>.</p>
+            <h3 data-i18n="tourRankTitle" class="text-base font-bold text-stone-900">Classifica e Ordine dei Tour</h3>
+            <p data-i18n="tourRankDesc" class="text-xs text-stone-500">Le modifiche vengono salvate subito in memoria permanente (IndexedDB + LocalStorage). Per renderle visibili anche sui telefoni di tutti i clienti, usa Esporta tours.json e caricalo su GitHub accanto a index.html.</p>
           </div>
           <div class="flex flex-wrap gap-1.5">
-            <button onclick="saveAllToursChanges()" class="px-3.5 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
+            <button data-i18n="saveChangesBtn" onclick="saveAllToursChanges()" class="px-3.5 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
               Salva Modifiche
             </button>
-            <button onclick="exportToursJsonFile()" class="px-3 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold cursor-pointer">
+            <button data-i18n="exportJsonBtn" onclick="exportToursJsonFile()" class="px-3.5 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold cursor-pointer">
               Esporta tours.json
             </button>
-            <button onclick="restoreDefaultRoutes()" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold cursor-pointer">
+            <button data-i18n="restoreDefaultsBtn" onclick="restoreDefaultRoutes()" class="px-3.5 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold cursor-pointer">
               Ripristina Predefiniti
             </button>
           </div>
@@ -588,21 +588,21 @@
     <!-- Scheda Gestore & Cache -->
     <section id="tab-manager" class="tab-panel hidden flex-1 p-4 max-w-4xl w-full mx-auto space-y-4">
       <div class="bg-white rounded-2xl border border-stone-200 p-4 space-y-3">
-        <h2 class="text-base font-bold text-stone-900">Pannello Gestore & Cache Offline</h2>
+        <h2 data-i18n="managerTitle" class="text-base font-bold text-stone-900">Pannello Gestore & Cache Offline</h2>
         <div class="flex flex-wrap items-center justify-between gap-2 bg-stone-50 p-3 rounded-xl border border-stone-200">
           <div>
-            <div class="text-xs text-stone-500">Password Cliente Attiva (monouso / rotazione automatica)</div>
+            <div data-i18n="clientPassLabel" class="text-xs text-stone-500">Password Cliente Attiva (monouso / rotazione automatica)</div>
             <div id="active-client-password" class="text-base font-extrabold text-stone-900">RIDE-4829</div>
           </div>
-          <button onclick="rotateClientPassword()" class="px-3.5 py-2 rounded-xl bg-stone-900 text-white text-xs font-semibold cursor-pointer">
+          <button data-i18n="genCodeBtn" onclick="rotateClientPassword()" class="px-3.5 py-2 rounded-xl bg-stone-900 text-white text-xs font-semibold cursor-pointer">
             Genera Nuovo Codice
           </button>
         </div>
         <div class="flex flex-wrap gap-2">
-          <button onclick="saveOfflineForUser()" class="px-4 py-2 rounded-xl bg-stone-900 text-white text-xs font-semibold cursor-pointer">
+          <button data-i18n="preCacheBtn" onclick="saveOfflineForUser()" class="px-4 py-2 rounded-xl bg-stone-900 text-white text-xs font-semibold cursor-pointer">
             Pre-Scarica Mappa Magona Offline
           </button>
-          <button onclick="switchTab('tours')" class="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold cursor-pointer">
+          <button data-i18n="goToursBtn" onclick="switchTab('tours')" class="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold cursor-pointer">
             Vai a Gestione Tour
           </button>
         </div>
@@ -618,20 +618,18 @@
     const BASE_COORDS = [43.266028, 10.594667]; // 43°15'57.7"N 10°35'40.8"E · Magona Bike Garage, Via del Mandorlo 1, Bibbona
     const BASE_ADDRESS_LABEL = "Via del Mandorlo 1 / Piazza delle Querce 5, 57020 Bibbona";
 
-    // Rete di rientro più breve e più sicuro verso Magona Bike Garage
-    // safetyPenalty: 1.0 = strada asfaltata/principale sicura, >1.0 = sterrato/tratto più esposto o ripido
     const SAFE_RETURN_GRAPH = {
       nodes: {
         base: { coords: [43.266028, 10.594667], name: "Magona Bike Garage · Via del Mandorlo 1 / Piazza delle Querce 5, 57020 Bibbona" },
-        bibbona_centro: { coords: [43.2725, 10.5965], name: "Centro Bibbona (strada sicura)" },
-        via_bolgherese: { coords: [43.2710, 10.5840], name: "Via Bolgherese (viabilità principale)" },
-        magona_ovest: { coords: [43.2650, 10.6180], name: "Ingresso Magona Ovest" },
+        bibbona_centro: { coords: [43.2725, 10.5965], name: "Centro Bibbona" },
+        via_bolgherese: { coords: [43.2710, 10.5840], name: "Via Bolgherese" },
+        magona_ovest: { coords: [43.2650, 10.6180], name: "Magona Ovest" },
         campo_di_sasso: { coords: [43.2610, 10.6360], name: "Campo di Sasso" },
         golazze: { coords: [43.2565, 10.6410], name: "Passo delle Golazze Aperte" },
-        bolgheri_nord: { coords: [43.2550, 10.5820], name: "Bivio Bolgheri (strada sicura)" },
-        casale_nord: { coords: [43.2520, 10.6350], name: "Collegamento Casale / Strada" },
-        riparbella_sud: { coords: [43.3020, 10.6180], name: "Collegamento Riparbella" },
-        cecina_sud: { coords: [43.2900, 10.5900], name: "Viabilità Principale Nord/Sud" }
+        bolgheri_nord: { coords: [43.2550, 10.5820], name: "Bolgheri Nord" },
+        casale_nord: { coords: [43.2520, 10.6350], name: "Casale Nord" },
+        riparbella_sud: { coords: [43.3020, 10.6180], name: "Riparbella Sud" },
+        cecina_sud: { coords: [43.2900, 10.5900], name: "Cecina Sud" }
       },
       edges: [
         ["base", "bibbona_centro", 1.0],
@@ -651,162 +649,6 @@
     };
 
     let returnToBaseLayer = null;
-
-    function findNearestSafeNodeId(pt) {
-      let bestId = "base";
-      let bestDist = Infinity;
-      Object.entries(SAFE_RETURN_GRAPH.nodes).forEach(([id, node]) => {
-        const d = haversineMeters(pt, node.coords);
-        if (d < bestDist) {
-          bestDist = d;
-          bestId = id;
-        }
-      });
-      return bestId;
-    }
-
-    function computeShortestSafeBasePath(startPt) {
-      const nodes = SAFE_RETURN_GRAPH.nodes;
-      const startNodeId = findNearestSafeNodeId(startPt);
-      const adj = {};
-      Object.keys(nodes).forEach((k) => { adj[k] = []; });
-
-      SAFE_RETURN_GRAPH.edges.forEach(([a, b, safetyFactor]) => {
-        const distAtoB = haversineMeters(nodes[a].coords, nodes[b].coords);
-        // Il costo bilancia distanza breve e sicurezza del tracciato (penalità maggiore sui tratti esposti/ripidi)
-        const weight = distAtoB * safetyFactor;
-        adj[a].push({ to: b, weight, dist: distAtoB });
-        adj[b].push({ to: a, weight, dist: distAtoB });
-      });
-
-      const distCost = {};
-      const prev = {};
-      const visited = new Set();
-      Object.keys(nodes).forEach((k) => { distCost[k] = Infinity; });
-      distCost[startNodeId] = 0;
-
-      while (visited.size < Object.keys(nodes).length) {
-        let curr = null;
-        let best = Infinity;
-        for (const k of Object.keys(nodes)) {
-          if (!visited.has(k) && distCost[k] < best) {
-            best = distCost[k];
-            curr = k;
-          }
-        }
-        if (curr === null || curr === "base") break;
-        visited.add(curr);
-
-        for (const edge of adj[curr]) {
-          if (visited.has(edge.to)) continue;
-          const alt = distCost[curr] + edge.weight;
-          if (alt < distCost[edge.to]) {
-            distCost[edge.to] = alt;
-            prev[edge.to] = curr;
-          }
-        }
-      }
-
-      const nodePathIds = [];
-      let step = "base";
-      const guard = new Set();
-      while (step && !guard.has(step)) {
-        guard.add(step);
-        nodePathIds.unshift(step);
-        if (step === startNodeId) break;
-        step = prev[step];
-      }
-
-      const coords = [startPt];
-      let totalMeters = haversineMeters(startPt, nodes[startNodeId].coords);
-      nodePathIds.forEach((nid) => {
-        const c = nodes[nid].coords;
-        const last = coords[coords.length - 1];
-        totalMeters += haversineMeters(last, c);
-        coords.push(c);
-      });
-      const lastPt = coords[coords.length - 1];
-      if (!lastPt || lastPt[0] !== BASE_COORDS[0] || lastPt[1] !== BASE_COORDS[1]) {
-        if (lastPt) totalMeters += haversineMeters(lastPt, BASE_COORDS);
-        coords.push([...BASE_COORDS]);
-      }
-
-      return {
-        coords,
-        distanceKm: +(totalMeters / 1000).toFixed(1),
-        viaNames: nodePathIds.map((id) => nodes[id].name)
-      };
-    }
-
-    async function fetchSafeRoadReturnIfOnline(startPt) {
-      if (!navigator.onLine) return null;
-      try {
-        const url = `https://router.project-osrm.org/route/v1/bicycle/${startPt[1]},${startPt[0]};${BASE_COORDS[1]},${BASE_COORDS[0]}?overview=full&geometries=geojson`;
-        const ctrl = new AbortController();
-        const timer = setTimeout(() => ctrl.abort(), 3500);
-        const resp = await fetch(url, { signal: ctrl.signal });
-        clearTimeout(timer);
-        if (!resp.ok) return null;
-        const data = await resp.json();
-        const route = data?.routes?.[0];
-        if (!route?.geometry?.coordinates?.length) return null;
-        const latLngs = route.geometry.coordinates.map(([lon, lat]) => [lat, lon]);
-        latLngs.push([...BASE_COORDS]);
-        return {
-          coords: latLngs,
-          distanceKm: +(route.distance / 1000).toFixed(1)
-        };
-      } catch (e) {
-        return null;
-      }
-    }
-
-    async function navigateToBase() {
-      switchTab("map");
-      if (!map) initMap();
-
-      const activeRoute = getRouteById(activeRouteId);
-      const startPt = userCoords || activeRoute?.coords?.[Math.floor((activeRoute?.coords?.length || 2) / 2)] || [43.266028, 10.594667];
-
-      const localSafe = computeShortestSafeBasePath(startPt);
-      let chosenPath = localSafe;
-
-      const roadPath = await fetchSafeRoadReturnIfOnline(startPt);
-      if (roadPath && roadPath.coords.length > 1) {
-        chosenPath = {
-          coords: roadPath.coords,
-          distanceKm: roadPath.distanceKm
-        };
-      }
-
-      if (returnToBaseLayer) {
-        map.removeLayer(returnToBaseLayer);
-      }
-      returnToBaseLayer = L.polyline(chosenPath.coords, {
-        color: "#16a34a",
-        weight: 5,
-        opacity: 0.95,
-        dashArray: "10, 6"
-      }).addTo(map);
-      returnToBaseLayer.bindPopup(`Rientro più breve e sicuro · ${BASE_ADDRESS_LABEL} (${chosenPath.distanceKm} km)`);
-
-      const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(BASE_ADDRESS_LABEL)}&travelmode=bicycling`;
-      const banner = document.getElementById("nav-status-banner");
-      const statusText = document.getElementById("nav-status-text");
-      if (banner && statusText) {
-        banner.classList.remove("hidden");
-        statusText.innerHTML = `Rientro più breve e sicuro verso <strong>${BASE_ADDRESS_LABEL}</strong> (${chosenPath.distanceKm} km) · <a href="${gmapsUrl}" target="_blank" rel="noopener" class="underline font-bold text-emerald-300">Apri su Google Maps</a>`;
-      }
-
-      if (userCoords) {
-        followUserCenter = true;
-        map.setView(userCoords, NAV_ZOOM_LEVEL, { animate: true });
-      } else {
-        map.fitBounds(returnToBaseLayer.getBounds(), { padding: [30, 30] });
-      }
-      showToast(`Rientro più breve e sicuro verso ${BASE_ADDRESS_LABEL} (${chosenPath.distanceKm} km)`);
-    }
-
     const NAV_ZOOM_LEVEL = 17;
     const OFFLINE_CACHE_NAME = "magona-offline-v1";
     const ROUTES_STORAGE_KEY = "magona_offline_routes_v3";
@@ -817,9 +659,13 @@
       it: {
         permTitle: "Autorizzazioni GPS e Rete Web",
         permDesc: "Per mostrare la tua posizione sul sentiero, calcolare distanza e dislivello rimanenti e salvare le mappe offline, abilita il GPS e la connessione web.",
+        permGpsLabel: "Posizione GPS Live",
+        permNetLabel: "Connessione Web & Cache Mappe",
         gpsWaiting: "In attesa",
         gpsGranted: "Attivo",
         gpsDenied: "Non disponibile qui",
+        netOnline: "Online · Cache pronta",
+        netOffline: "Offline · Cache locale",
         authBtn: "Autorizza GPS e Rete Web",
         skipBtn: "Continua senza GPS per ora",
         authSub: "Inserisci il codice fornito in officina per aprire la mappa sentieri.",
@@ -827,14 +673,154 @@
         accessPlaceholder: "Inserisci codice di accesso",
         loginBtn: "Accedi alla Mappa",
         invalidPass: "Codice o password non validi.",
-        saveOfflineBtn: "Salva Offline (Mappa + Tour)"
+        supportShort: "Assistenza",
+        openPerms: "Permessi GPS / Web",
+        roleBadge: "GESTORE",
+        offlineBadge: "OFFLINE PRONTO",
+        logoutBtn: "Esci",
+        tabMap: "Mappa",
+        tabPois: "Punti Utili",
+        tabSupport: "Assistenza",
+        tabTours: "Gestione Tour",
+        tabManager: "Gestore & Cache",
+        catAll: "Tutte le bici",
+        catMtb: "MTB / E-MTB",
+        catGravel: "Gravel",
+        diffAll: "Tutte le difficoltà",
+        diffGreen: "Verde (Facile)",
+        diffBlue: "Blu (Intermedio)",
+        diffRed: "Rosso (Impegnativo)",
+        diffBlack: "Nero (Esperto)",
+        diffBadgeGreen: "Verde · Facile",
+        diffBadgeBlue: "Blu · Intermedio",
+        diffBadgeRed: "Rosso · Impegnativo",
+        diffBadgeBlack: "Nero · Esperto",
+        navStart: "Naviga Ora",
+        navStop: "Ferma GPS Live",
+        fsNavStart: "GPS Live",
+        fsNavStop: "Ferma GPS",
+        saveOfflineBtn: "Salva Offline (Mappa + Tour)",
+        returnBaseBtn: "Rientra alla Base",
+        wakeOnLabel: "Schermo Acceso: ON",
+        wakeActiveLabel: "Schermo Acceso: ATTIVO",
+        wakeOffLabel: "Schermo Acceso: OFF",
+        fsWakeOnLabel: "Schermo: ON",
+        fsWakeActiveLabel: "Schermo: ATTIVO",
+        fsWakeOffLabel: "Schermo: OFF",
+        fullscreenBtn: "Schermo Intero",
+        overlayCenterGps: "◎ Centra GPS",
+        overlayFullscreen: "⤢ Schermo Intero",
+        fsExitBtn: "Esci",
+        fsCenterBtn: "Centra GPS",
+        fsBannerLabel: "Navigazione",
+        surfacePrefix: "Fondo",
+        offlineSaving: "Salvataggio mappa e percorsi offline...",
+        offlineSaved: "Mappa e percorsi salvati offline nell'app!",
+        offlineSub: "I percorsi e i tasselli mappa restano consultabili nell'app anche senza campo nel bosco (file GPX protetti).",
+        statTotalDist: "Distanza Totale",
+        statRemDist: "Distanza Rimanente",
+        statTotalElev: "Dislivello + Totale",
+        statRemElev: "Dislivello + Rimanente",
+        fsRemDist: "Dist. Rimanente",
+        fsDoneDist: "Dist. Percorsa",
+        fsTotalDist: "Dist. Totale",
+        fsRemElev: "Disl. + Rimanente",
+        fsDoneElev: "Salita Effettuata",
+        fsTotalElev: "Disl. + Totale",
+        liveNavBanner: "Navigazione GPS live attiva",
+        recenterBanner: "Ricentra Navigatore",
+        returnBasePrefix: "Rientro più breve e sicuro verso",
+        openGmaps: "Apri su Google Maps",
+        yourGpsPopup: "La tua posizione GPS",
+        poiTitle: "Punti Utili (Fontanelle, Panorami, Ristori)",
+        poiSubtitleUser: "Seleziona un punto per avviare la guida sulla mappa.",
+        poiSubtitleOwner: "Modifica, aggiungi o elimina i punti utili e premi Salva Modifiche.",
+        poiFormAddTitle: "Aggiungi Nuovo Punto Utile o Modifica Esistente",
+        poiFormEditTitle: "Modifica Punto Utile:",
+        poiFormDesc: "Gestisci fontanelle, punti panoramici, ristori e punti di interesse lungo i percorsi, poi premi Salva Modifiche.",
+        poiNameLabel: "Nome Punto Utile *",
+        poiNamePlaceholder: "Es. Fontana Campo di Sasso",
+        poiTypeLabel: "Tipologia *",
+        poiOptWater: "💧 Fontanella / Acqua",
+        poiOptView: "🏔️ Panorama / Punto Foto",
+        poiOptFood: "🍽️ Ristoro / Bar / Area Sosta",
+        poiOptService: "🔧 Assistenza Officina",
+        poiBadgeWater: "Fontanella Acqua",
+        poiBadgeView: "Panorama",
+        poiBadgeFood: "Ristoro",
+        poiBadgeService: "Assistenza",
+        latLabel: "Latitudine *",
+        lngLabel: "Longitudine *",
+        poiNoteLabel: "Note / Dettagli Utili",
+        poiNotePlaceholder: "Es. Acqua fresca potabile sul lato sinistro del sentiero",
+        useCurrentGpsBtn: "◎ Usa Posizione GPS Attuale",
+        saveChangesBtn: "Salva Modifiche",
+        restoreDefaultsBtn: "Ripristina Predefiniti",
+        cancelEditBtn: "Annulla Modifica",
+        editBtn: "Modifica",
+        deleteBtn: "Elimina",
+        guideOnMap: "Guida sulla Mappa",
+        supportTitle: "Assistenza Officina — Magona Bike Garage",
+        supportPhoneLabel: "Numero diretto officina:",
+        callShop: "Chiama Officina",
+        sendWaGps: "Invia Posizione GPS su WhatsApp",
+        openWaChat: "Chat WhatsApp Diretta",
+        troubleItems: [
+          "Catena caduta o inceppata: sgancia il pedale, rilascia la tensione del cambio e riposiziona la catena sulla corona.",
+          "Foratura ruota: verifica la presenza di spine/vetri, usa camera d'aria o kit tubeless/CO2 e controlla la pressione.",
+          "Batteria e-bike scarica o assistenza assente: controlla il connettore batteria e seleziona ECO o modalità manuale."
+        ],
+        tourFormAddTitle: "Aggiungi Nuovo Tour o Modifica Esistente",
+        tourFormEditTitle: "Modifica Tour:",
+        tourFormDesc: "Indica se il tour è MTB o Gravel per mostrarlo ai clienti, carica il GPX e imposta difficoltà, distanza, dislivello e descrizione.",
+        tourNameLabel: "Nome del Tour *",
+        tourNamePlaceholder: "Es. Anello della Magona & Campo di Sasso",
+        tourDisciplineLabel: "Disciplina Tour (MTB / Gravel) *",
+        tourDiffLabel: "Difficoltà",
+        tourDiffOptGreen: "Verde — Facile / Famiglie",
+        tourDiffOptBlue: "Blu — Intermedio",
+        tourDiffOptRed: "Rosso — Impegnativo / Enduro",
+        tourDiffOptBlack: "Nero — Esperto / Tecnico",
+        tourDistLabel: "Distanza (km)",
+        tourElevLabel: "Dislivello + (m)",
+        tourDurationLabel: "Tempo Stimato",
+        tourDurationPlaceholder: "Es. 2h 15m",
+        tourSurfaceLabel: "Fondo / Terreno",
+        tourSurfacePlaceholder: "Es. Bosco, singletrack e carrarecce",
+        tourGpxLabel: "File Traccia GPX (opzionale in modifica, consigliato per nuovo tour)",
+        tourDescLabel: "Descrizione & Note Tecniche per il Cliente",
+        tourDescPlaceholder: "Inserisci punti di interesse, consigli sulla batteria e-bike, passaggi tecnici o fontanelle lungo il giro...",
+        saveTourListBtn: "Salva Tour nella Lista",
+        tourRankTitle: "Classifica e Ordine dei Tour",
+        tourRankDesc: "Le modifiche vengono salvate subito in memoria permanente (IndexedDB + LocalStorage). Per renderle visibili anche sui telefoni di tutti i clienti, usa Esporta tours.json e caricalo su GitHub accanto a index.html.",
+        exportJsonBtn: "Esporta tours.json",
+        rankPosLabel: "Pos.",
+        rankUpBtn: "↑ Su",
+        rankDownBtn: "↓ Giù",
+        managerTitle: "Pannello Gestore & Cache Offline",
+        clientPassLabel: "Password Cliente Attiva (monouso / rotazione automatica)",
+        genCodeBtn: "Genera Nuovo Codice",
+        preCacheBtn: "Pre-Scarica Mappa Magona Offline",
+        goToursBtn: "Vai a Gestione Tour",
+        toastNoFilterMatch: "Nessun percorso con questi filtri",
+        toastGpsAcquiring: "Aggancio GPS in corso: centrato sul punto di partenza",
+        toastOfflineSaved: "Mappa e tour salvati offline sul telefono",
+        toastWakeOn: "Schermo sempre acceso attivato",
+        toastWakeOff: "Schermo sempre acceso disattivato",
+        toastWakeUnsupported: "Browser non compatibile con Wake Lock: imposta blocco schermo su 'Mai' dal telefono",
+        toastWakeError: "Impossibile mantenere lo schermo acceso (controlla risparmio batteria o HTTPS)",
+        toastPoiGuided: "Navigazione interna verso:"
       },
       en: {
         permTitle: "GPS & Web Network Permissions",
         permDesc: "To show your position on the trail, calculate remaining distance and elevation gain, and cache maps offline, enable GPS and web access.",
+        permGpsLabel: "Live GPS Location",
+        permNetLabel: "Web Connection & Map Cache",
         gpsWaiting: "Waiting",
         gpsGranted: "Active",
         gpsDenied: "Unavailable here",
+        netOnline: "Online · Cache ready",
+        netOffline: "Offline · Local cache",
         authBtn: "Authorize GPS & Web",
         skipBtn: "Continue without GPS for now",
         authSub: "Enter the access code provided at the shop to open the trail map.",
@@ -842,14 +828,154 @@
         accessPlaceholder: "Enter access code",
         loginBtn: "Open Trail Map",
         invalidPass: "Invalid access code or password.",
-        saveOfflineBtn: "Save Offline (Map + Tours)"
+        supportShort: "Support",
+        openPerms: "GPS / Web Permissions",
+        roleBadge: "MANAGER",
+        offlineBadge: "OFFLINE READY",
+        logoutBtn: "Sign Out",
+        tabMap: "Map",
+        tabPois: "Points of Interest",
+        tabSupport: "Support",
+        tabTours: "Tour Manager",
+        tabManager: "Manager & Cache",
+        catAll: "All bikes",
+        catMtb: "MTB / E-MTB",
+        catGravel: "Gravel",
+        diffAll: "All difficulties",
+        diffGreen: "Green (Easy)",
+        diffBlue: "Blue (Intermediate)",
+        diffRed: "Red (Challenging)",
+        diffBlack: "Black (Expert)",
+        diffBadgeGreen: "Green · Easy",
+        diffBadgeBlue: "Blue · Intermediate",
+        diffBadgeRed: "Red · Challenging",
+        diffBadgeBlack: "Black · Expert",
+        navStart: "Start Navigation",
+        navStop: "Stop Live GPS",
+        fsNavStart: "Live GPS",
+        fsNavStop: "Stop GPS",
+        saveOfflineBtn: "Save Offline (Map + Tours)",
+        returnBaseBtn: "Return to Base",
+        wakeOnLabel: "Keep Screen On: ON",
+        wakeActiveLabel: "Keep Screen On: ACTIVE",
+        wakeOffLabel: "Keep Screen On: OFF",
+        fsWakeOnLabel: "Screen: ON",
+        fsWakeActiveLabel: "Screen: ACTIVE",
+        fsWakeOffLabel: "Screen: OFF",
+        fullscreenBtn: "Fullscreen",
+        overlayCenterGps: "◎ Center GPS",
+        overlayFullscreen: "⤢ Fullscreen",
+        fsExitBtn: "Exit",
+        fsCenterBtn: "Center GPS",
+        fsBannerLabel: "Navigation",
+        surfacePrefix: "Surface",
+        offlineSaving: "Saving map and routes offline...",
+        offlineSaved: "Map and routes saved offline in the app!",
+        offlineSub: "Routes and map tiles remain accessible in the app even without signal in the woods (protected GPX files).",
+        statTotalDist: "Total Distance",
+        statRemDist: "Remaining Distance",
+        statTotalElev: "Elevation Gain + Total",
+        statRemElev: "Elevation Gain + Rem.",
+        fsRemDist: "Rem. Distance",
+        fsDoneDist: "Distance Done",
+        fsTotalDist: "Total Distance",
+        fsRemElev: "Rem. Elev. +",
+        fsDoneElev: "Climb Done",
+        fsTotalElev: "Total Elev. +",
+        liveNavBanner: "Live GPS navigation active",
+        recenterBanner: "Recenter Navigator",
+        returnBasePrefix: "Shortest & safest return to",
+        openGmaps: "Open in Google Maps",
+        yourGpsPopup: "Your GPS location",
+        poiTitle: "Points of Interest (Fountains, Views, Stops)",
+        poiSubtitleUser: "Select a point to start map guidance.",
+        poiSubtitleOwner: "Edit, add or delete points of interest and press Save Changes.",
+        poiFormAddTitle: "Add New Point of Interest or Edit Existing",
+        poiFormEditTitle: "Edit Point of Interest:",
+        poiFormDesc: "Manage water fountains, viewpoints, rest stops and points of interest along the routes, then press Save Changes.",
+        poiNameLabel: "Point Name *",
+        poiNamePlaceholder: "e.g. Campo di Sasso Fountain",
+        poiTypeLabel: "Category *",
+        poiOptWater: "💧 Water Fountain",
+        poiOptView: "🏔️ Viewpoint / Photo Spot",
+        poiOptFood: "🍽️ Rest Stop / Bar / Picnic Area",
+        poiOptService: "🔧 Workshop Support",
+        poiBadgeWater: "Water Fountain",
+        poiBadgeView: "Viewpoint",
+        poiBadgeFood: "Rest Stop",
+        poiBadgeService: "Workshop Support",
+        latLabel: "Latitude *",
+        lngLabel: "Longitude *",
+        poiNoteLabel: "Notes / Useful Details",
+        poiNotePlaceholder: "e.g. Fresh drinking water on the left side of the trail",
+        useCurrentGpsBtn: "◎ Use Current GPS Position",
+        saveChangesBtn: "Save Changes",
+        restoreDefaultsBtn: "Restore Defaults",
+        cancelEditBtn: "Cancel Edit",
+        editBtn: "Edit",
+        deleteBtn: "Delete",
+        guideOnMap: "Guide on Map",
+        supportTitle: "Workshop Support — Magona Bike Garage",
+        supportPhoneLabel: "Direct shop number:",
+        callShop: "Call Shop",
+        sendWaGps: "Send GPS Location on WhatsApp",
+        openWaChat: "Direct WhatsApp Chat",
+        troubleItems: [
+          "Dropped or jammed chain: unclip your foot, release derailleur tension and put the chain back on the chainring.",
+          "Puncture: check for thorns or glass, fit a tube or tubeless/CO2 kit and check tire pressure.",
+          "E-bike battery low or no assist: check the battery connection and select ECO or manual mode."
+        ],
+        tourFormAddTitle: "Add New Tour or Edit Existing",
+        tourFormEditTitle: "Edit Tour:",
+        tourFormDesc: "Specify whether the tour is MTB or Gravel to display it to riders, upload the GPX file and set difficulty, distance, elevation and description.",
+        tourNameLabel: "Tour Name *",
+        tourNamePlaceholder: "e.g. Macchia della Magona & Campo di Sasso Loop",
+        tourDisciplineLabel: "Tour Discipline (MTB / Gravel) *",
+        tourDiffLabel: "Difficulty",
+        tourDiffOptGreen: "Green — Easy / Families",
+        tourDiffOptBlue: "Blue — Intermediate",
+        tourDiffOptRed: "Red — Challenging / Enduro",
+        tourDiffOptBlack: "Black — Expert / Technical",
+        tourDistLabel: "Distance (km)",
+        tourElevLabel: "Elevation Gain + (m)",
+        tourDurationLabel: "Estimated Time",
+        tourDurationPlaceholder: "e.g. 2h 15m",
+        tourSurfaceLabel: "Surface / Terrain",
+        tourSurfacePlaceholder: "e.g. Forest, singletrack and fire roads",
+        tourGpxLabel: "GPX Track File (optional when editing, recommended for new tour)",
+        tourDescLabel: "Description & Technical Notes for the Rider",
+        tourDescPlaceholder: "Enter points of interest, e-bike battery tips, technical sections or water stops along the ride...",
+        saveTourListBtn: "Save Tour to List",
+        tourRankTitle: "Tour Ranking & Order",
+        tourRankDesc: "Changes are saved immediately in permanent storage (IndexedDB + LocalStorage). To publish them to all riders' phones, use Export tours.json and upload it to GitHub next to index.html.",
+        exportJsonBtn: "Export tours.json",
+        rankPosLabel: "Pos.",
+        rankUpBtn: "↑ Up",
+        rankDownBtn: "↓ Down",
+        managerTitle: "Manager & Offline Cache Panel",
+        clientPassLabel: "Active Client Password (single-use / auto-rotation)",
+        genCodeBtn: "Generate New Code",
+        preCacheBtn: "Pre-Download Magona Map Offline",
+        goToursBtn: "Go to Tour Manager",
+        toastNoFilterMatch: "No routes match these filters",
+        toastGpsAcquiring: "Acquiring GPS: centered on starting point",
+        toastOfflineSaved: "Map and tours saved offline on your phone",
+        toastWakeOn: "Keep screen on enabled",
+        toastWakeOff: "Keep screen on disabled",
+        toastWakeUnsupported: "Browser does not support Wake Lock: set screen timeout to 'Never' in phone settings",
+        toastWakeError: "Unable to keep screen awake (check battery saver or HTTPS)",
+        toastPoiGuided: "Internal navigation to:"
       },
       de: {
         permTitle: "GPS- & Web-Berechtigungen",
         permDesc: "Um Ihre Position auf dem Trail anzuzeigen, verbleibende Distanz und Höhenmeter zu berechnen und Karten offline zu speichern, aktivieren Sie GPS und Web.",
+        permGpsLabel: "Live-GPS-Position",
+        permNetLabel: "Webverbindung & Karten-Cache",
         gpsWaiting: "Wartend",
         gpsGranted: "Aktiv",
         gpsDenied: "Hier nicht verfügbar",
+        netOnline: "Online · Cache bereit",
+        netOffline: "Offline · Lokaler Cache",
         authBtn: "GPS & Web freigeben",
         skipBtn: "Vorerst ohne GPS fortfahren",
         authSub: "Geben Sie den im Verleih erhaltenen Zugangscode ein, um die Karte zu öffnen.",
@@ -857,14 +983,154 @@
         accessPlaceholder: "Zugangscode eingeben",
         loginBtn: "Karte öffnen",
         invalidPass: "Ungültiger Zugangscode oder Passwort.",
-        saveOfflineBtn: "Offline speichern (Karte + Touren)"
+        supportShort: "Hilfe",
+        openPerms: "GPS- / Webrechte",
+        roleBadge: "VERWALTER",
+        offlineBadge: "OFFLINE BEREIT",
+        logoutBtn: "Beenden",
+        tabMap: "Karte",
+        tabPois: "Wegpunkte",
+        tabSupport: "Hilfe",
+        tabTours: "Tourenverwaltung",
+        tabManager: "Verwaltung & Cache",
+        catAll: "Alle Bikes",
+        catMtb: "MTB / E-MTB",
+        catGravel: "Gravel",
+        diffAll: "Alle Schwierigkeiten",
+        diffGreen: "Grün (Leicht)",
+        diffBlue: "Blau (Mittel)",
+        diffRed: "Rot (Anspruchsvoll)",
+        diffBlack: "Schwarz (Experte)",
+        diffBadgeGreen: "Grün · Leicht",
+        diffBadgeBlue: "Blau · Mittel",
+        diffBadgeRed: "Rot · Anspruchsvoll",
+        diffBadgeBlack: "Schwarz · Experte",
+        navStart: "Navigation starten",
+        navStop: "Live-GPS stoppen",
+        fsNavStart: "Live-GPS",
+        fsNavStop: "GPS stoppen",
+        saveOfflineBtn: "Offline speichern (Karte + Touren)",
+        returnBaseBtn: "Zurück zur Basis",
+        wakeOnLabel: "Bildschirm an: EIN",
+        wakeActiveLabel: "Bildschirm an: AKTIV",
+        wakeOffLabel: "Bildschirm an: AUS",
+        fsWakeOnLabel: "Display: EIN",
+        fsWakeActiveLabel: "Display: AKTIV",
+        fsWakeOffLabel: "Display: AUS",
+        fullscreenBtn: "Vollbild",
+        overlayCenterGps: "◎ GPS zentrieren",
+        overlayFullscreen: "⤢ Vollbild",
+        fsExitBtn: "Beenden",
+        fsCenterBtn: "GPS zentrieren",
+        fsBannerLabel: "Navigation",
+        surfacePrefix: "Untergrund",
+        offlineSaving: "Karte und Touren werden offline gespeichert...",
+        offlineSaved: "Karte und Touren offline in der App gespeichert!",
+        offlineSub: "Touren und Kartenkacheln bleiben auch ohne Empfang im Wald nutzbar (geschützte GPX-Dateien).",
+        statTotalDist: "Gesamtdistanz",
+        statRemDist: "Verbleibende Distanz",
+        statTotalElev: "Höhenmeter + Gesamt",
+        statRemElev: "Höhenmeter + Verbl.",
+        fsRemDist: "Verbl. Distanz",
+        fsDoneDist: "Zurückgelegt",
+        fsTotalDist: "Gesamtdistanz",
+        fsRemElev: "Verbl. HM +",
+        fsDoneElev: "Anstieg erledigt",
+        fsTotalElev: "Gesamt HM +",
+        liveNavBanner: "Live-GPS-Navigation aktiv",
+        recenterBanner: "Navigation zentrieren",
+        returnBasePrefix: "Kürzester & sicherster Rückweg zu",
+        openGmaps: "In Google Maps öffnen",
+        yourGpsPopup: "Ihre GPS-Position",
+        poiTitle: "Wegpunkte (Brunnen, Aussicht, Einkehr)",
+        poiSubtitleUser: "Wählen Sie einen Punkt für die Kartenführung.",
+        poiSubtitleOwner: "Wegpunkte bearbeiten, hinzufügen oder löschen und Änderungen speichern.",
+        poiFormAddTitle: "Neuen Wegpunkt hinzufügen oder bestehenden bearbeiten",
+        poiFormEditTitle: "Wegpunkt bearbeiten:",
+        poiFormDesc: "Verwalten Sie Trinkbrunnen, Aussichtspunkte, Einkehrmöglichkeiten und Wegpunkte entlang der Strecken und klicken Sie auf Änderungen speichern.",
+        poiNameLabel: "Name des Wegpunkts *",
+        poiNamePlaceholder: "z. B. Brunnen Campo di Sasso",
+        poiTypeLabel: "Kategorie *",
+        poiOptWater: "💧 Trinkbrunnen / Wasser",
+        poiOptView: "🏔️ Aussichtspunkt / Fotopunkt",
+        poiOptFood: "🍽️ Einkehr / Bar / Rastplatz",
+        poiOptService: "🔧 Werkstatt-Hilfe",
+        poiBadgeWater: "Trinkbrunnen",
+        poiBadgeView: "Aussichtspunkt",
+        poiBadgeFood: "Einkehr / Rast",
+        poiBadgeService: "Werkstatt-Hilfe",
+        latLabel: "Breitengrad *",
+        lngLabel: "Längengrad *",
+        poiNoteLabel: "Notizen / Nützliche Hinweise",
+        poiNotePlaceholder: "z. B. Frisches Trinkwasser auf der linken Seite des Trails",
+        useCurrentGpsBtn: "◎ Aktuelle GPS-Position verwenden",
+        saveChangesBtn: "Änderungen speichern",
+        restoreDefaultsBtn: "Standard wiederherstellen",
+        cancelEditBtn: "Bearbeitung abbrechen",
+        editBtn: "Bearbeiten",
+        deleteBtn: "Löschen",
+        guideOnMap: "Auf Karte führen",
+        supportTitle: "Werkstatt-Support — Magona Bike Garage",
+        supportPhoneLabel: "Direkte Werkstattnummer:",
+        callShop: "Werkstatt anrufen",
+        sendWaGps: "GPS-Position per WhatsApp senden",
+        openWaChat: "Direkter WhatsApp-Chat",
+        troubleItems: [
+          "Kette abgesprungen oder blockiert: Fuß ausklicken, Schaltwerk entlasten und Kette wieder auflegen.",
+          "Platten: Dornen oder Glas prüfen, Schlauch oder Tubeless-/CO2-Set nutzen und Luftdruck kontrollieren.",
+          "E-Bike-Akku schwach oder keine Unterstützung: Akkuanschluss prüfen und ECO oder manuellen Modus wählen."
+        ],
+        tourFormAddTitle: "Neue Tour hinzufügen oder bestehende bearbeiten",
+        tourFormEditTitle: "Tour bearbeiten:",
+        tourFormDesc: "Geben Sie an, ob die Tour MTB oder Gravel ist, laden Sie die GPX-Datei hoch und legen Sie Schwierigkeit, Distanz, Höhenmeter und Beschreibung fest.",
+        tourNameLabel: "Name der Tour *",
+        tourNamePlaceholder: "z. B. Runde Macchia della Magona & Campo di Sasso",
+        tourDisciplineLabel: "Tour-Disziplin (MTB / Gravel) *",
+        tourDiffLabel: "Schwierigkeit",
+        tourDiffOptGreen: "Grün — Leicht / Familien",
+        tourDiffOptBlue: "Blau — Mittel",
+        tourDiffOptRed: "Rot — Anspruchsvoll / Enduro",
+        tourDiffOptBlack: "Schwarz — Experte / Technisch",
+        tourDistLabel: "Distanz (km)",
+        tourElevLabel: "Höhenmeter + (m)",
+        tourDurationLabel: "Geschätzte Zeit",
+        tourDurationPlaceholder: "z. B. 2h 15m",
+        tourSurfaceLabel: "Untergrund / Gelände",
+        tourSurfacePlaceholder: "z. B. Wald, Singletrail und Forstwege",
+        tourGpxLabel: "GPX-Trackdatei (optional beim Bearbeiten, empfohlen für neue Tour)",
+        tourDescLabel: "Beschreibung & Technische Hinweise für den Fahrer",
+        tourDescPlaceholder: "Sehenswürdigkeiten, Tipps zum E-Bike-Akku, technische Passagen oder Wasserstellen entlang der Tour eingeben...",
+        saveTourListBtn: "Tour in Liste speichern",
+        tourRankTitle: "Rangfolge und Reihenfolge der Touren",
+        tourRankDesc: "Änderungen werden sofort dauerhaft gespeichert (IndexedDB + LocalStorage). Um sie auf allen Kunden-Smartphones sichtbar zu machen, nutzen Sie tours.json exportieren und laden Sie die Datei neben index.html auf GitHub hoch.",
+        exportJsonBtn: "tours.json exportieren",
+        rankPosLabel: "Pos.",
+        rankUpBtn: "↑ Hoch",
+        rankDownBtn: "↓ Runter",
+        managerTitle: "Verwaltung & Offline-Cache",
+        clientPassLabel: "Aktives Kundenpasswort (Einmalnutzung / automatische Rotation)",
+        genCodeBtn: "Neuen Code erzeugen",
+        preCacheBtn: "Magona-Karte offline vorladen",
+        goToursBtn: "Zur Tourenverwaltung",
+        toastNoFilterMatch: "Keine Touren für diese Filter gefunden",
+        toastGpsAcquiring: "GPS wird gesucht: auf Startpunkt zentriert",
+        toastOfflineSaved: "Karte und Touren offline auf dem Smartphone gespeichert",
+        toastWakeOn: "Bildschirm dauerhaft aktiv eingeschaltet",
+        toastWakeOff: "Bildschirm dauerhaft aktiv ausgeschaltet",
+        toastWakeUnsupported: "Browser unterstützt kein Wake Lock: Bildschirmsperre im Telefon auf 'Nie' stellen",
+        toastWakeError: "Bildschirm konnte nicht aktiv gehalten werden (Energiesparmodus oder HTTPS prüfen)",
+        toastPoiGuided: "Interne Navigation zu:"
       },
       nl: {
         permTitle: "GPS- & Webtoestemmingen",
         permDesc: "Om je positie op de route te tonen, resterende afstand en hoogtemeters te berekenen en kaarten offline op te slaan, schakel je GPS en webtoegang in.",
+        permGpsLabel: "Live GPS-locatie",
+        permNetLabel: "Webverbinding & Kaartcache",
         gpsWaiting: "Wachten",
         gpsGranted: "Actief",
         gpsDenied: "Hier niet beschikbaar",
+        netOnline: "Online · Cache gereed",
+        netOffline: "Offline · Lokale cache",
         authBtn: "GPS & Web toestaan",
         skipBtn: "Voorlopig zonder GPS verder",
         authSub: "Voer de toegangscode in die je in de winkel hebt ontvangen.",
@@ -872,16 +1138,313 @@
         accessPlaceholder: "Voer toegangscode in",
         loginBtn: "Kaart openen",
         invalidPass: "Ongeldige toegangscode of wachtwoord.",
-        saveOfflineBtn: "Offline opslaan (Kaart + Routes)"
+        supportShort: "Hulp",
+        openPerms: "GPS- / Webrechten",
+        roleBadge: "BEHEERDER",
+        offlineBadge: "OFFLINE GEREED",
+        logoutBtn: "Uitloggen",
+        tabMap: "Kaart",
+        tabPois: "Nuttige Punten",
+        tabSupport: "Hulp",
+        tabTours: "RouteBeheer",
+        tabManager: "Beheer & Cache",
+        catAll: "Alle fietsen",
+        catMtb: "MTB / E-MTB",
+        catGravel: "Gravel",
+        diffAll: "Alle moeilijkheden",
+        diffGreen: "Groen (Makkelijk)",
+        diffBlue: "Blauw (Gemiddeld)",
+        diffRed: "Rood (Uitdagend)",
+        diffBlack: "Zwart (Expert)",
+        diffBadgeGreen: "Groen · Makkelijk",
+        diffBadgeBlue: "Blauw · Gemiddeld",
+        diffBadgeRed: "Rood · Uitdagend",
+        diffBadgeBlack: "Zwart · Expert",
+        navStart: "Start Navigatie",
+        navStop: "Stop Live GPS",
+        fsNavStart: "Live GPS",
+        fsNavStop: "Stop GPS",
+        saveOfflineBtn: "Offline opslaan (Kaart + Routes)",
+        returnBaseBtn: "Terug naar Basis",
+        wakeOnLabel: "Scherm aan: AAN",
+        wakeActiveLabel: "Scherm aan: ACTIEF",
+        wakeOffLabel: "Scherm aan: UIT",
+        fsWakeOnLabel: "Scherm: AAN",
+        fsWakeActiveLabel: "Scherm: ACTIEF",
+        fsWakeOffLabel: "Scherm: UIT",
+        fullscreenBtn: "Volledig scherm",
+        overlayCenterGps: "◎ Centreer GPS",
+        overlayFullscreen: "⤢ Volledig scherm",
+        fsExitBtn: "Sluiten",
+        fsCenterBtn: "Centreer GPS",
+        fsBannerLabel: "Navigatie",
+        surfacePrefix: "Ondergrond",
+        offlineSaving: "Kaart en routes offline opslaan...",
+        offlineSaved: "Kaart en routes offline opgeslagen in de app!",
+        offlineSub: "Routes en kaarttegels blijven ook zonder bereik in het bos beschikbaar (beveiligde GPX-bestanden).",
+        statTotalDist: "Totale Afstand",
+        statRemDist: "Resterende Afstand",
+        statTotalElev: "Hoogtemeters + Totaal",
+        statRemElev: "Hoogtemeters + Rest.",
+        fsRemDist: "Rest. Afstand",
+        fsDoneDist: "Afgelegd",
+        fsTotalDist: "Totale Afstand",
+        fsRemElev: "Rest. HM +",
+        fsDoneElev: "Klim voltooid",
+        fsTotalElev: "Totaal HM +",
+        liveNavBanner: "Live GPS-navigatie actief",
+        recenterBanner: "Navigator centreren",
+        returnBasePrefix: "Kortste & veiligste terugweg naar",
+        openGmaps: "Openen in Google Maps",
+        yourGpsPopup: "Jouw GPS-locatie",
+        poiTitle: "Nuttige Punten (Water, Uitzicht, Rust)",
+        poiSubtitleUser: "Selecteer een punt om begeleiding op de kaart te starten.",
+        poiSubtitleOwner: "Bewerk, voeg toe of verwijder nuttige punten en klik op Wijzigingen opslaan.",
+        poiFormAddTitle: "Nieuw Nuttig Punt toevoegen of bestaand bewerken",
+        poiFormEditTitle: "Nuttig Punt bewerken:",
+        poiFormDesc: "Beheer waterpunten, uitzichtpunten, rustplaatsen en nuttige punten langs de routes en klik op Wijzigingen opslaan.",
+        poiNameLabel: "Naam Nuttig Punt *",
+        poiNamePlaceholder: "bijv. Waterpunt Campo di Sasso",
+        poiTypeLabel: "Categorie *",
+        poiOptWater: "💧 Waterpunt / Kraan",
+        poiOptView: "🏔️ Uitzichtpunt / Fotoplek",
+        poiOptFood: "🍽️ Rustplaats / Bar / Picknick",
+        poiOptService: "🔧 Werkplaatshulp",
+        poiBadgeWater: "Waterpunt",
+        poiBadgeView: "Uitzichtpunt",
+        poiBadgeFood: "Rustplaats",
+        poiBadgeService: "Werkplaatshulp",
+        latLabel: "Breedtegraad *",
+        lngLabel: "Lengtegraad *",
+        poiNoteLabel: "Notities / Handige Details",
+        poiNotePlaceholder: "bijv. Vers drinkwater aan de linkerkant van het pad",
+        useCurrentGpsBtn: "◎ Huidige GPS-positie gebruiken",
+        saveChangesBtn: "Wijzigingen opslaan",
+        restoreDefaultsBtn: "Standaard herstellen",
+        cancelEditBtn: "Bewerking annuleren",
+        editBtn: "Bewerken",
+        deleteBtn: "Verwijderen",
+        guideOnMap: "Gids op Kaart",
+        supportTitle: "Werkplaatshulp — Magona Bike Garage",
+        supportPhoneLabel: "Direct werkplaatsnummer:",
+        callShop: "Bel Werkplaats",
+        sendWaGps: "Stuur GPS-locatie via WhatsApp",
+        openWaChat: "Directe WhatsApp-chat",
+        troubleItems: [
+          "Ketting eraf of vastgelopen: klik los, ontlast de derailleur en leg de ketting terug op het voorblad.",
+          "Lekke band: controleer op doornen of glas, monteer binnenband of tubeless-/CO2-set en controleer de druk.",
+          "E-bike accu bijna leeg of geen trapondersteuning: controleer de accu-aansluiting en kies ECO of handmatig."
+        ],
+        tourFormAddTitle: "Nieuwe Route toevoegen of bestaande bewerken",
+        tourFormEditTitle: "Route bewerken:",
+        tourFormDesc: "Geef aan of de route MTB of Gravel is voor klanten, upload het GPX-bestand en stel moeilijkheid, afstand, hoogtemeters en beschrijving in.",
+        tourNameLabel: "Naam van de Route *",
+        tourNamePlaceholder: "bijv. Lus Macchia della Magona & Campo di Sasso",
+        tourDisciplineLabel: "Routediscipline (MTB / Gravel) *",
+        tourDiffLabel: "Moeilijkheidsgraad",
+        tourDiffOptGreen: "Groen — Makkelijk / Gezinnen",
+        tourDiffOptBlue: "Blauw — Gemiddeld",
+        tourDiffOptRed: "Rood — Uitdagend / Enduro",
+        tourDiffOptBlack: "Zwart — Expert / Technisch",
+        tourDistLabel: "Afstand (km)",
+        tourElevLabel: "Hoogtemeters + (m)",
+        tourDurationLabel: "Geschatte Tijd",
+        tourDurationPlaceholder: "bijv. 2u 15m",
+        tourSurfaceLabel: "Ondergrond / Terrein",
+        tourSurfacePlaceholder: "bijv. Bos, singletrack en onverharde wegen",
+        tourGpxLabel: "GPX-trackbestand (optioneel bij bewerken, aanbevolen voor nieuwe route)",
+        tourDescLabel: "Beschrijving & Technische Notities voor de Rijder",
+        tourDescPlaceholder: "Voer bezienswaardigheden, e-bike accutips, technische passages of waterpunten langs de rit in...",
+        saveTourListBtn: "Route opslaan in lijst",
+        tourRankTitle: "Volgorde en Rangschikking van Routes",
+        tourRankDesc: "Wijzigingen worden direct permanent opgeslagen (IndexedDB + LocalStorage). Om ze op alle telefoons van klanten te tonen, gebruik Exporteer tours.json en upload het bestand op GitHub naast index.html.",
+        exportJsonBtn: "Exporteer tours.json",
+        rankPosLabel: "Pos.",
+        rankUpBtn: "↑ Omhoog",
+        rankDownBtn: "↓ Omlaag",
+        managerTitle: "Beheer & Offline Cache Paneel",
+        clientPassLabel: "Actief Klantwachtwoord (eenmalig / automatische rotatie)",
+        genCodeBtn: "Nieuwe Code Genereren",
+        preCacheBtn: "Magona-kaart offline voorladen",
+        goToursBtn: "Naar RouteBeheer",
+        toastNoFilterMatch: "Geen routes gevonden met deze filters",
+        toastGpsAcquiring: "GPS zoeken: gecentreerd op startpunt",
+        toastOfflineSaved: "Kaart en routes offline opgeslagen op je telefoon",
+        toastWakeOn: "Scherm altijd aan ingeschakeld",
+        toastWakeOff: "Scherm altijd aan uitgeschakeld",
+        toastWakeUnsupported: "Browser ondersteunt geen Wake Lock: zet schermtime-out op 'Nooit' in telefooninstellingen",
+        toastWakeError: "Kan scherm niet actief houden (controleer batterijbesparing of HTTPS)",
+        toastPoiGuided: "Interne navigatie naar:"
       }
     };
 
-    const DIFFICULTY_META = {
-      green: { label: "Verde · Facile", badgeClass: "bg-emerald-100 text-emerald-800" },
-      blue: { label: "Blu · Intermedio", badgeClass: "bg-blue-100 text-blue-800" },
-      red: { label: "Rosso · Impegnativo", badgeClass: "bg-red-100 text-red-800" },
-      black: { label: "Nero · Esperto", badgeClass: "bg-stone-900 text-white" }
+    const ROUTE_LOCALIZED_CONTENT = {
+      "magona-loop": {
+        it: {
+          name: "Anello Macchia della Magona",
+          surface: "Bosco, singletrack e carrarecce",
+          description: "Giro classico nella Macchia della Magona tra sugherete, leccete e punti panoramici verso il mare."
+        },
+        en: {
+          name: "Macchia della Magona Loop",
+          surface: "Forest, singletrack and fire roads",
+          description: "Classic loop inside the Macchia della Magona forest through cork and holm oak woods with sea viewpoints."
+        },
+        de: {
+          name: "Runde Macchia della Magona",
+          surface: "Wald, Singletrail und Forstwege",
+          description: "Klassische Rundtour durch den Wald Macchia della Magona mit Kork- und Steineichen sowie Meerblick."
+        },
+        nl: {
+          name: "Lus Macchia della Magona",
+          surface: "Bos, singletrack en onverharde wegen",
+          description: "Klassieke lus door het bos Macchia della Magona langs kurk- en steeneiken met uitzicht op zee."
+        }
+      },
+      "bolgheri-gravel": {
+        it: {
+          name: "Strada del Vino & Bolgheri",
+          surface: "Strade bianche e asfalto secondario",
+          description: "Percorso scorrevole tra vigneti, oliveti e il Viale dei Cipressi di Bolgheri, ideale per gravel ed e-bike."
+        },
+        en: {
+          name: "Wine Road & Bolgheri Gravel",
+          surface: "White gravel roads and quiet country tarmac",
+          description: "Smooth, scenic ride through vineyards, olive groves and the famous Bolgheri Cypress Avenue, ideal for gravel and e-bikes."
+        },
+        de: {
+          name: "Weinstraße & Bolgheri Gravel",
+          surface: "Schotterwege und ruhige Nebenstraßen",
+          description: "Flüssige Genusstour durch Weinberge, Olivenhaine und die Zypressenallee von Bolgheri, ideal für Gravel und E-Bikes."
+        },
+        nl: {
+          name: "Wijnroute & Bolgheri Gravel",
+          surface: "Witte grindwegen en rustige landwegen",
+          description: "Vlotte tocht langs wijngaarden, olijfgaarden en de beroemde Cipressenlaan van Bolgheri, ideaal voor gravel en e-bikes."
+        }
+      },
+      "riparbella-trail": {
+        it: {
+          name: "Riparbella & Acquerta",
+          surface: "Trail tecnici, radici e pietraia",
+          description: "Itinerario enduro/all-mountain verso il Giardino di Riparbella e il torrente Acquerta con discese guidate."
+        },
+        en: {
+          name: "Riparbella & Acquerta Trails",
+          surface: "Technical trails, roots and rocky sections",
+          description: "Enduro / all-mountain route towards Il Giardino in Riparbella and the Acquerta stream with flow and technical descents."
+        },
+        de: {
+          name: "Riparbella & Acquerta Trails",
+          surface: "Technische Trails, Wurzeln und Steinfelder",
+          description: "Enduro-/All-Mountain-Tour Richtung Il Giardino in Riparbella und zum Bach Acquerta mit abwechslungsreichen Abfahrten."
+        },
+        nl: {
+          name: "Riparbella & Acquerta Trails",
+          surface: "Technische trails, wortels en rotsachtige paden",
+          description: "Enduro / all-mountain route richting Il Giardino in Riparbella en de Acquerta-beek met technische afdalingen."
+        }
+      }
     };
+
+    const POI_LOCALIZED_CONTENT = {
+      "v-golazze": {
+        it: { name: "Passo delle Golazze Aperte", note: "Vista panoramica sulla Val di Cecina e la costa" },
+        en: { name: "Passo delle Golazze Aperte", note: "Panoramic viewpoint over the Val di Cecina and the coast" },
+        de: { name: "Passo delle Golazze Aperte", note: "Panoramablick über das Val di Cecina und die Küste" },
+        nl: { name: "Passo delle Golazze Aperte", note: "Panoramisch uitzicht over de Val di Cecina en de kust" }
+      },
+      "r-bibbona-base": {
+        it: { name: "Magona Bike Garage · Base", note: "Via del Mandorlo 1 (angolo Piazza delle Querce), 57020 Bibbona" },
+        en: { name: "Magona Bike Garage · Base", note: "Via del Mandorlo 1 (corner Piazza delle Querce), 57020 Bibbona" },
+        de: { name: "Magona Bike Garage · Basis", note: "Via del Mandorlo 1 (Ecke Piazza delle Querce), 57020 Bibbona" },
+        nl: { name: "Magona Bike Garage · Basis", note: "Via del Mandorlo 1 (hoek Piazza delle Querce), 57020 Bibbona" }
+      }
+    };
+
+    const TERM_GLOSSARY = {
+      en: [
+        [/\bAnello\b/gi, "Loop"],
+        [/\bSentiero\b/gi, "Trail"],
+        [/\bPercorso\b/gi, "Route"],
+        [/\bBosco\b/gi, "Forest"],
+        [/\bcarrarecce\b/gi, "fire roads"],
+        [/\bStrade bianche\b/gi, "Gravel roads"],
+        [/\basfalto secondario\b/gi, "quiet country roads"],
+        [/\bradici e pietraia\b/gi, "roots and rocks"],
+        [/\bVista panoramica\b/gi, "Panoramic view"]
+      ],
+      de: [
+        [/\bAnello\b/gi, "Runde"],
+        [/\bSentiero\b/gi, "Pfad"],
+        [/\bPercorso\b/gi, "Strecke"],
+        [/\bBosco\b/gi, "Wald"],
+        [/\bcarrarecce\b/gi, "Forstwege"],
+        [/\bStrade bianche\b/gi, "Schotterwege"],
+        [/\basfalto secondario\b/gi, "Nebenstraßen"],
+        [/\bradici e pietraia\b/gi, "Wurzeln und Steine"],
+        [/\bVista panoramica\b/gi, "Panoramablick"]
+      ],
+      nl: [
+        [/\bAnello\b/gi, "Lus"],
+        [/\bSentiero\b/gi, "Pad"],
+        [/\bPercorso\b/gi, "Route"],
+        [/\bBosco\b/gi, "Bos"],
+        [/\bcarrarecce\b/gi, "onverharde wegen"],
+        [/\bStrade bianche\b/gi, "Grindwegen"],
+        [/\basfalto secondario\b/gi, "rustige asfaltwegen"],
+        [/\bradici e pietraia\b/gi, "wortels en stenen"],
+        [/\bVista panoramica\b/gi, "Panoramisch uitzicht"]
+      ]
+    };
+
+    function translateTextFallback(text) {
+      if (!text || currentLang === "it") return text;
+      let out = String(text);
+      const rules = TERM_GLOSSARY[currentLang] || [];
+      rules.forEach(([pattern, rep]) => {
+        out = out.replace(pattern, rep);
+      });
+      return out;
+    }
+
+    function getLocalizedRouteField(route, field) {
+      if (!route) return "";
+      const loc = ROUTE_LOCALIZED_CONTENT[route.id]?.[currentLang];
+      if (loc && loc[field]) return loc[field];
+      if (route.i18n?.[currentLang]?.[field]) return route.i18n[currentLang][field];
+      return translateTextFallback(route[field] || "");
+    }
+
+    function getLocalizedPoiField(poi, field) {
+      if (!poi) return "";
+      const loc = POI_LOCALIZED_CONTENT[poi.id]?.[currentLang];
+      if (loc && loc[field]) return loc[field];
+      if (poi.i18n?.[currentLang]?.[field]) return poi.i18n[currentLang][field];
+      return translateTextFallback(poi[field] || "");
+    }
+
+    function getDifficultyMeta(diffKey) {
+      const t = I18N[currentLang] || I18N.it;
+      const mapDiff = {
+        green: { label: t.diffBadgeGreen, badgeClass: "bg-emerald-100 text-emerald-800" },
+        blue: { label: t.diffBadgeBlue, badgeClass: "bg-blue-100 text-blue-800" },
+        red: { label: t.diffBadgeRed, badgeClass: "bg-red-100 text-red-800" },
+        black: { label: t.diffBadgeBlack, badgeClass: "bg-stone-900 text-white" }
+      };
+      return mapDiff[diffKey] || mapDiff.blue;
+    }
+
+    function getPoiTypeMeta(typeKey) {
+      const t = I18N[currentLang] || I18N.it;
+      const mapPoi = {
+        water: { badge: t.poiBadgeWater, color: "#2563eb" },
+        view: { badge: t.poiBadgeView, color: "#d97706" },
+        food: { badge: t.poiBadgeFood, color: "#15803d" },
+        service: { badge: t.poiBadgeService, color: "#7c3aed" }
+      };
+      return mapPoi[typeKey] || mapPoi.food;
+    }
 
     const DEFAULT_ROUTES = [
       {
@@ -939,6 +1502,11 @@
           [43.266028, 10.594667]
         ]
       }
+    ];
+
+    const DEFAULT_POIS = [
+      { id: "v-golazze", type: "view", name: "Passo delle Golazze Aperte", note: "Vista panoramica sulla Val di Cecina e la costa", coords: [43.2565, 10.6410] },
+      { id: "r-bibbona-base", type: "food", name: "Magona Bike Garage · Base", note: "Via del Mandorlo 1 (angolo Piazza delle Querce), 57020 Bibbona", coords: [43.266028, 10.594667] }
     ];
 
     /* ================= STORAGE PERSISTENTE (IndexedDB + LocalStorage + tours.json) ================= */
@@ -1011,10 +1579,10 @@
       const badge = document.getElementById("tours-save-status-badge");
       if (!badge) return;
       if (savedOk) {
-        badge.textContent = detailText || "✓ Salvato permanentemente";
+        badge.textContent = detailText || "✓ Salvato";
         badge.className = "text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800";
       } else {
-        badge.textContent = detailText || "⚠ Errore salvataggio locale";
+        badge.textContent = detailText || "⚠ Error";
         badge.className = "text-[11px] font-bold px-2.5 py-1 rounded-full bg-red-100 text-red-800";
       }
     }
@@ -1026,7 +1594,6 @@
         localStorage.setItem(ROUTES_STORAGE_KEY, serialized);
         lsOk = true;
       } catch (e) {
-        // Se supera la quota di localStorage, comprimiamo ulteriormente le coordinate e riproviamo
         try {
           const compactList = ROUTES_LIST.map((r) => ({
             ...r,
@@ -1041,7 +1608,7 @@
 
       const idbOk = await saveRoutesToIndexedDB(ROUTES_LIST);
       const ok = idbOk || lsOk;
-      setSaveBadgeState(ok, ok ? `✓ Salvato (${ROUTES_LIST.length} tour)` : "⚠ Memoria piena: esporta tours.json");
+      setSaveBadgeState(ok, ok ? `✓ (${ROUTES_LIST.length})` : "⚠ Export tours.json");
       return ok;
     }
 
@@ -1053,7 +1620,6 @@
           localStorage.setItem(ROUTES_STORAGE_KEY, JSON.stringify(ROUTES_LIST));
         } catch (e) {}
       } else {
-        // Se non ci sono ancora modifiche locali salvate, controlla se esiste un file tours.json pubblicato sul sito
         try {
           const resp = await fetch("tours.json?ts=" + Date.now(), { cache: "no-store" });
           if (resp.ok) {
@@ -1085,7 +1651,7 @@
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      showToast("File tours.json scaricato: caricalo su GitHub nella stessa cartella di index.html");
+      showToast("tours.json downloaded");
     }
 
     function getRouteById(id) {
@@ -1093,17 +1659,6 @@
     }
 
     const POIS_STORAGE_KEY = "magona_offline_pois_v2";
-    const POI_TYPE_META = {
-      water: { badge: "Fontanella Acqua", color: "#2563eb" },
-      view: { badge: "Panorama", color: "#d97706" },
-      food: { badge: "Ristoro", color: "#15803d" },
-      service: { badge: "Assistenza", color: "#7c3aed" }
-    };
-
-    const DEFAULT_POIS = [
-      { id: "v-golazze", type: "view", name: "Passo delle Golazze Aperte", note: "Vista panoramica sulla Val di Cecina e la costa", coords: [43.2565, 10.6410] },
-      { id: "r-bibbona-base", type: "food", name: "Magona Bike Garage · Base", note: "Via del Mandorlo 1 (angolo Piazza delle Querce), 57020 Bibbona", coords: [43.266028, 10.594667] }
-    ];
 
     function loadStoredPoisSync() {
       for (const key of [POIS_STORAGE_KEY, "magona_offline_pois_v1"]) {
@@ -1128,10 +1683,10 @@
       const badge = document.getElementById("pois-save-status-badge");
       if (!badge) return;
       if (savedOk) {
-        badge.textContent = detailText || "✓ Salvato permanentemente";
+        badge.textContent = detailText || "✓ Salvato";
         badge.className = "text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800";
       } else {
-        badge.textContent = detailText || "⚠ Errore salvataggio locale";
+        badge.textContent = detailText || "⚠ Error";
         badge.className = "text-[11px] font-bold px-2.5 py-1 rounded-full bg-red-100 text-red-800";
       }
     }
@@ -1160,7 +1715,7 @@
       }
 
       const ok = idbOk || lsOk;
-      setPoisSaveBadgeState(ok, ok ? `✓ Salvato (${POIS.length} punti)` : "⚠ Errore salvataggio");
+      setPoisSaveBadgeState(ok, ok ? `✓ (${POIS.length})` : "⚠ Error");
       return ok;
     }
 
@@ -1210,41 +1765,41 @@
     let keepScreenAwakeEnabled = localStorage.getItem("magona_keep_screen_awake") === "1";
 
     function updateWakeLockUI() {
+      const t = I18N[currentLang] || I18N.it;
       const btn = document.getElementById("btn-wake-lock");
       const fsBtn = document.getElementById("fs-btn-wake-lock");
       const active = Boolean(keepScreenAwakeEnabled && screenWakeLock);
 
       if (btn) {
         if (keepScreenAwakeEnabled) {
-          btn.textContent = active ? "Schermo Acceso: ON" : "Schermo Acceso: ATTIVO";
+          btn.textContent = active ? t.wakeOnLabel : t.wakeActiveLabel;
           btn.className = "px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold cursor-pointer";
         } else {
-          btn.textContent = "Schermo Acceso: OFF";
+          btn.textContent = t.wakeOffLabel;
           btn.className = "px-3.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer";
         }
       }
 
       if (fsBtn) {
         if (keepScreenAwakeEnabled) {
-          fsBtn.textContent = active ? "Schermo: ON" : "Schermo: ATTIVO";
+          fsBtn.textContent = active ? t.fsWakeOnLabel : t.fsWakeActiveLabel;
           fsBtn.className = "px-2.5 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold cursor-pointer";
         } else {
-          fsBtn.textContent = "Schermo: OFF";
+          fsBtn.textContent = t.fsWakeOffLabel;
           fsBtn.className = "px-2.5 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold cursor-pointer";
         }
       }
     }
 
     async function requestScreenWakeLock(notifyUser) {
+      const t = I18N[currentLang] || I18N.it;
       if (!keepScreenAwakeEnabled) {
         updateWakeLockUI();
         return false;
       }
       if (!("wakeLock" in navigator) || typeof navigator.wakeLock.request !== "function") {
         updateWakeLockUI();
-        if (notifyUser) {
-          showToast("Browser non compatibile con Wake Lock: imposta blocco schermo su 'Mai' dal telefono");
-        }
+        if (notifyUser) showToast(t.toastWakeUnsupported);
         return false;
       }
       if (document.visibilityState !== "visible") {
@@ -1260,21 +1815,18 @@
           });
         }
         updateWakeLockUI();
-        if (notifyUser) {
-          showToast("Schermo sempre acceso attivato");
-        }
+        if (notifyUser) showToast(t.toastWakeOn);
         return true;
       } catch (err) {
         screenWakeLock = null;
         updateWakeLockUI();
-        if (notifyUser) {
-          showToast("Impossibile mantenere lo schermo acceso (controlla risparmio batteria o HTTPS)");
-        }
+        if (notifyUser) showToast(t.toastWakeError);
         return false;
       }
     }
 
     async function releaseScreenWakeLock(notifyUser) {
+      const t = I18N[currentLang] || I18N.it;
       keepScreenAwakeEnabled = false;
       localStorage.setItem("magona_keep_screen_awake", "0");
       if (screenWakeLock) {
@@ -1284,9 +1836,7 @@
         screenWakeLock = null;
       }
       updateWakeLockUI();
-      if (notifyUser) {
-        showToast("Schermo sempre acceso disattivato");
-      }
+      if (notifyUser) showToast(t.toastWakeOff);
     }
 
     async function toggleScreenWakeLock() {
@@ -1323,23 +1873,48 @@
       const s2 = document.getElementById("app-lang-select");
       if (s1) s1.value = currentLang;
       if (s2) s2.value = currentLang;
-      document.getElementById("perm-title").textContent = t.permTitle;
-      document.getElementById("perm-desc").textContent = t.permDesc;
-      document.getElementById("btn-authorize-all").textContent = t.authBtn;
-      document.getElementById("btn-skip-perm").textContent = t.skipBtn;
-      document.getElementById("auth-subtitle").textContent = t.authSub;
-      document.getElementById("access-label").textContent = t.accessLabel;
-      document.getElementById("access-password-input").placeholder = t.accessPlaceholder;
-      document.getElementById("btn-login").textContent = t.loginBtn;
-      const offlineBtn = document.getElementById("btn-user-offline-save");
-      if (offlineBtn) offlineBtn.textContent = t.saveOfflineBtn;
+
+      document.querySelectorAll("[data-i18n]").forEach((el) => {
+        const key = el.getAttribute("data-i18n");
+        if (key && Object.prototype.hasOwnProperty.call(t, key)) {
+          el.textContent = t[key];
+        }
+      });
+
+      document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+        const key = el.getAttribute("data-i18n-placeholder");
+        if (key && Object.prototype.hasOwnProperty.call(t, key)) {
+          el.placeholder = t[key];
+        }
+      });
+
+      const liveBtn = document.getElementById("btn-live-nav");
+      if (liveBtn) liveBtn.textContent = liveNavActive ? t.navStop : t.navStart;
+      const fsLiveBtn = document.getElementById("fs-btn-live-nav");
+      if (fsLiveBtn) fsLiveBtn.textContent = liveNavActive ? t.fsNavStop : t.fsNavStart;
+
+      updateNetworkStatusUI();
+      updateWakeLockUI();
+      updatePoiOwnerVisibility();
+      rebuildRouteSelector();
+      selectRoute(activeRouteId);
+      renderPoiList();
+      renderPoiMarkersOnMap();
+      renderTroubleshooting();
+      if (isOwner) {
+        renderToursManagerList();
+      }
+      if (userMarker) {
+        userMarker.setPopupContent(t.yourGpsPopup);
+      }
     }
 
     function updateNetworkStatusUI() {
       const el = document.getElementById("perm-net-status");
       if (!el) return;
+      const t = I18N[currentLang] || I18N.it;
       const online = navigator.onLine;
-      el.textContent = online ? "Online · Cache pronta" : "Offline · Cache locale";
+      el.textContent = online ? t.netOnline : t.netOffline;
       el.className = online
         ? "text-xs font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800"
         : "text-xs font-semibold px-2 py-0.5 rounded bg-amber-100 text-amber-800";
@@ -1357,7 +1932,7 @@
     function requestStartupPermissions() {
       updateNetworkStatusUI();
       const gpsStatus = document.getElementById("perm-gps-status");
-      const t = I18N[currentLang];
+      const t = I18N[currentLang] || I18N.it;
 
       if (!("geolocation" in navigator)) {
         if (gpsStatus) gpsStatus.textContent = t.gpsDenied;
@@ -1400,7 +1975,7 @@
       localStorage.setItem("magona_active_client_pwd", code);
       const el = document.getElementById("active-client-password");
       if (el) el.textContent = code;
-      showToast("Nuovo codice cliente: " + code);
+      showToast(code);
     }
 
     function submitAccessPassword() {
@@ -1421,7 +1996,7 @@
         errEl.classList.add("hidden");
         unlockApplication();
       } else {
-        errEl.textContent = I18N[currentLang].invalidPass;
+        errEl.textContent = (I18N[currentLang] || I18N.it).invalidPass;
         errEl.classList.remove("hidden");
       }
     }
@@ -1431,7 +2006,8 @@
       if (!sel) return;
       sel.innerHTML = ROUTES_LIST.map((r, idx) => {
         const tag = r.category === "gravel" ? "Gravel" : "MTB";
-        return `<option value="${r.id}">#${idx + 1} · ${r.name} (${tag})</option>`;
+        const localizedName = getLocalizedRouteField(r, "name");
+        return `<option value="${r.id}">#${idx + 1} · ${localizedName} (${tag})</option>`;
       }).join("");
       if (!ROUTES_LIST.some((r) => r.id === activeRouteId) && ROUTES_LIST.length > 0) {
         activeRouteId = ROUTES_LIST[0].id;
@@ -1468,8 +2044,8 @@
       updatePoiOwnerVisibility();
       if (isOwner) {
         renderToursManagerList();
-        setSaveBadgeState(true, `✓ Salvato (${ROUTES_LIST.length} tour)`);
-        setPoisSaveBadgeState(true, `✓ Salvato (${POIS.length} punti)`);
+        setSaveBadgeState(true, `✓ (${ROUTES_LIST.length})`);
+        setPoisSaveBadgeState(true, `✓ (${POIS.length})`);
       }
       updateWakeLockUI();
       if (keepScreenAwakeEnabled) requestScreenWakeLock(false);
@@ -1541,15 +2117,17 @@
 
     function updateRouteInfoCard(route) {
       if (!route) return;
-      const meta = DIFFICULTY_META[route.difficulty] || DIFFICULTY_META.blue;
+      const t = I18N[currentLang] || I18N.it;
+      const meta = getDifficultyMeta(route.difficulty);
       const diffBadge = document.getElementById("route-diff-badge");
       diffBadge.textContent = meta.label;
       diffBadge.className = "px-2 py-0.5 rounded font-bold text-[11px] " + meta.badgeClass;
 
       document.getElementById("route-cat-badge").textContent = route.category === "gravel" ? "Gravel" : "MTB";
       document.getElementById("route-duration-text").textContent = route.duration ? "⏱ " + route.duration : "";
-      document.getElementById("route-surface-text").textContent = route.surface ? "· Fondo: " + route.surface : "";
-      document.getElementById("route-description-text").textContent = route.description || "";
+      const locSurface = getLocalizedRouteField(route, "surface");
+      document.getElementById("route-surface-text").textContent = locSurface ? `· ${t.surfacePrefix}: ${locSurface}` : "";
+      document.getElementById("route-description-text").textContent = getLocalizedRouteField(route, "description");
     }
 
     function selectRoute(routeId) {
@@ -1579,6 +2157,7 @@
     }
 
     function applyRouteFilters() {
+      const t = I18N[currentLang] || I18N.it;
       const cat = document.getElementById("category-filter").value;
       const diff = document.getElementById("difficulty-filter").value;
       const matches = ROUTES_LIST.filter((r) =>
@@ -1588,7 +2167,7 @@
       if (matches.length > 0) {
         selectRoute(matches[0].id);
       } else {
-        showToast("Nessun percorso con questi filtri");
+        showToast(t.toastNoFilterMatch);
       }
     }
 
@@ -1645,7 +2224,7 @@
       document.getElementById("stat-total-elev").textContent = totalElev + " m";
       document.getElementById("stat-rem-elev").textContent = remElev + " m";
 
-      document.getElementById("fs-route-name").textContent = route.name;
+      document.getElementById("fs-route-name").textContent = getLocalizedRouteField(route, "name");
       document.getElementById("fs-rem-dist").textContent = remKm.toFixed(1) + " km";
       document.getElementById("fs-done-dist").textContent = doneKm.toFixed(1) + " km";
       document.getElementById("fs-total-dist").textContent = totalKm.toFixed(1) + " km";
@@ -1657,16 +2236,14 @@
     }
 
     function createMiniCyclistIcon() {
+      const t = I18N[currentLang] || I18N.it;
       return L.divIcon({
         className: "",
-        html: `<div class="cyclist-gps-marker" title="La tua posizione GPS">
+        html: `<div class="cyclist-gps-marker" title="${t.yourGpsPopup}">
           <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <!-- Ruote -->
             <circle cx="7" cy="20" r="4.2" stroke="#10b981" stroke-width="2.1"/>
             <circle cx="21" cy="20" r="4.2" stroke="#10b981" stroke-width="2.1"/>
-            <!-- Telaio bici -->
             <path d="M7 20L12.2 13.5H17.5L21 20M12.2 13.5L14.2 20H7M17.5 13.5L16.3 10.5H19" stroke="#ffffff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
-            <!-- Ciclista (testa, busto, braccia, gamba) -->
             <circle cx="15.2" cy="6.2" r="2.2" fill="#facc15"/>
             <path d="M14.5 9.2L11.5 13.2L14.5 16.2L14 20" stroke="#facc15" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M13.5 10.2L17.3 12.6" stroke="#facc15" stroke-width="2" stroke-linecap="round"/>
@@ -1679,12 +2256,13 @@
     }
 
     function renderUserPositionMarker(coords, accuracy) {
+      const t = I18N[currentLang] || I18N.it;
       if (!map || !coords) return;
       if (!userMarker) {
         userMarker = L.marker(coords, {
           icon: createMiniCyclistIcon(),
           zIndexOffset: 900
-        }).addTo(map).bindPopup("La tua posizione GPS");
+        }).addTo(map).bindPopup(t.yourGpsPopup);
       } else {
         userMarker.setLatLng(coords);
       }
@@ -1748,6 +2326,7 @@
     }
 
     function toggleLiveNavigation() {
+      const t = I18N[currentLang] || I18N.it;
       liveNavActive = !liveNavActive;
       const banner = document.getElementById("nav-status-banner");
       const statusText = document.getElementById("nav-status-text");
@@ -1759,11 +2338,11 @@
         followUserCenter = true;
         hasInitialNavZoomed = false;
         banner.classList.remove("hidden");
-        statusText.textContent = "Navigazione GPS live attiva — " + (activeRoute?.name || "");
-        btn.textContent = "Ferma GPS Live";
+        statusText.textContent = `${t.liveNavBanner} — ${getLocalizedRouteField(activeRoute, "name")}`;
+        btn.textContent = t.navStop;
         btn.className = "px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer";
         if (fsBtn) {
-          fsBtn.textContent = "Ferma GPS";
+          fsBtn.textContent = t.fsNavStop;
           fsBtn.className = "px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer";
         }
 
@@ -1779,16 +2358,17 @@
         updateRouteProgressMetrics();
       } else {
         banner.classList.add("hidden");
-        btn.textContent = "Naviga Ora";
+        btn.textContent = t.navStart;
         btn.className = "px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer";
         if (fsBtn) {
-          fsBtn.textContent = "GPS Live";
+          fsBtn.textContent = t.fsNavStart;
           fsBtn.className = "px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer";
         }
       }
     }
 
     function recenterNavigator(forceZoom = true) {
+      const t = I18N[currentLang] || I18N.it;
       if (!map) return;
       followUserCenter = true;
       const routeStart = getRouteById(activeRouteId)?.coords?.[0] || BASE_COORDS;
@@ -1800,7 +2380,7 @@
       }
       if (!userCoords) {
         startWatchingUserLocation();
-        showToast("Aggancio GPS in corso: centrato sul punto di partenza");
+        showToast(t.toastGpsAcquiring);
       }
     }
 
@@ -1817,6 +2397,160 @@
       }, 150);
     }
 
+    function findNearestSafeNodeId(pt) {
+      let bestId = "base";
+      let bestDist = Infinity;
+      Object.entries(SAFE_RETURN_GRAPH.nodes).forEach(([id, node]) => {
+        const d = haversineMeters(pt, node.coords);
+        if (d < bestDist) {
+          bestDist = d;
+          bestId = id;
+        }
+      });
+      return bestId;
+    }
+
+    function computeShortestSafeBasePath(startPt) {
+      const nodes = SAFE_RETURN_GRAPH.nodes;
+      const startNodeId = findNearestSafeNodeId(startPt);
+      const adj = {};
+      Object.keys(nodes).forEach((k) => { adj[k] = []; });
+
+      SAFE_RETURN_GRAPH.edges.forEach(([a, b, safetyFactor]) => {
+        const distAtoB = haversineMeters(nodes[a].coords, nodes[b].coords);
+        const weight = distAtoB * safetyFactor;
+        adj[a].push({ to: b, weight, dist: distAtoB });
+        adj[b].push({ to: a, weight, dist: distAtoB });
+      });
+
+      const distCost = {};
+      const prev = {};
+      const visited = new Set();
+      Object.keys(nodes).forEach((k) => { distCost[k] = Infinity; });
+      distCost[startNodeId] = 0;
+
+      while (visited.size < Object.keys(nodes).length) {
+        let curr = null;
+        let best = Infinity;
+        for (const k of Object.keys(nodes)) {
+          if (!visited.has(k) && distCost[k] < best) {
+            best = distCost[k];
+            curr = k;
+          }
+        }
+        if (curr === null || curr === "base") break;
+        visited.add(curr);
+
+        for (const edge of adj[curr]) {
+          if (visited.has(edge.to)) continue;
+          const alt = distCost[curr] + edge.weight;
+          if (alt < distCost[edge.to]) {
+            distCost[edge.to] = alt;
+            prev[edge.to] = curr;
+          }
+        }
+      }
+
+      const nodePathIds = [];
+      let step = "base";
+      const guard = new Set();
+      while (step && !guard.has(step)) {
+        guard.add(step);
+        nodePathIds.unshift(step);
+        if (step === startNodeId) break;
+        step = prev[step];
+      }
+
+      const coords = [startPt];
+      let totalMeters = haversineMeters(startPt, nodes[startNodeId].coords);
+      nodePathIds.forEach((nid) => {
+        const c = nodes[nid].coords;
+        const last = coords[coords.length - 1];
+        totalMeters += haversineMeters(last, c);
+        coords.push(c);
+      });
+      const lastPt = coords[coords.length - 1];
+      if (!lastPt || lastPt[0] !== BASE_COORDS[0] || lastPt[1] !== BASE_COORDS[1]) {
+        if (lastPt) totalMeters += haversineMeters(lastPt, BASE_COORDS);
+        coords.push([...BASE_COORDS]);
+      }
+
+      return {
+        coords,
+        distanceKm: +(totalMeters / 1000).toFixed(1)
+      };
+    }
+
+    async function fetchSafeRoadReturnIfOnline(startPt) {
+      if (!navigator.onLine) return null;
+      try {
+        const url = `https://router.project-osrm.org/route/v1/bicycle/${startPt[1]},${startPt[0]};${BASE_COORDS[1]},${BASE_COORDS[0]}?overview=full&geometries=geojson`;
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 3500);
+        const resp = await fetch(url, { signal: ctrl.signal });
+        clearTimeout(timer);
+        if (!resp.ok) return null;
+        const data = await resp.json();
+        const route = data?.routes?.[0];
+        if (!route?.geometry?.coordinates?.length) return null;
+        const latLngs = route.geometry.coordinates.map(([lon, lat]) => [lat, lon]);
+        latLngs.push([...BASE_COORDS]);
+        return {
+          coords: latLngs,
+          distanceKm: +(route.distance / 1000).toFixed(1)
+        };
+      } catch (e) {
+        return null;
+      }
+    }
+
+    async function navigateToBase() {
+      const t = I18N[currentLang] || I18N.it;
+      switchTab("map");
+      if (!map) initMap();
+
+      const activeRoute = getRouteById(activeRouteId);
+      const startPt = userCoords || activeRoute?.coords?.[Math.floor((activeRoute?.coords?.length || 2) / 2)] || [...BASE_COORDS];
+
+      const localSafe = computeShortestSafeBasePath(startPt);
+      let chosenPath = localSafe;
+
+      const roadPath = await fetchSafeRoadReturnIfOnline(startPt);
+      if (roadPath && roadPath.coords.length > 1) {
+        chosenPath = {
+          coords: roadPath.coords,
+          distanceKm: roadPath.distanceKm
+        };
+      }
+
+      if (returnToBaseLayer) {
+        map.removeLayer(returnToBaseLayer);
+      }
+      returnToBaseLayer = L.polyline(chosenPath.coords, {
+        color: "#16a34a",
+        weight: 5,
+        opacity: 0.95,
+        dashArray: "10, 6"
+      }).addTo(map);
+      returnToBaseLayer.bindPopup(`${t.returnBasePrefix} · ${BASE_ADDRESS_LABEL} (${chosenPath.distanceKm} km)`);
+
+      const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(BASE_ADDRESS_LABEL)}&travelmode=bicycling`;
+      const banner = document.getElementById("nav-status-banner");
+      const statusText = document.getElementById("nav-status-text");
+      if (banner && statusText) {
+        banner.classList.remove("hidden");
+        statusText.innerHTML = `${t.returnBasePrefix} <strong>${BASE_ADDRESS_LABEL}</strong> (${chosenPath.distanceKm} km) · <a href="${gmapsUrl}" target="_blank" rel="noopener" class="underline font-bold text-emerald-300">${t.openGmaps}</a>`;
+      }
+
+      if (userCoords) {
+        followUserCenter = true;
+        map.setView(userCoords, NAV_ZOOM_LEVEL, { animate: true });
+      } else {
+        map.fitBounds(returnToBaseLayer.getBounds(), { padding: [30, 30] });
+      }
+      showToast(`${t.returnBasePrefix} ${BASE_ADDRESS_LABEL} (${chosenPath.distanceKm} km)`);
+    }
+
     function latLngToTile(lat, lon, zoom) {
       const n = Math.pow(2, zoom);
       const x = Math.floor(((lon + 180) / 360) * n);
@@ -1826,11 +2560,13 @@
     }
 
     async function saveOfflineForUser() {
+      const t = I18N[currentLang] || I18N.it;
       const box = document.getElementById("offline-download-box");
       const bar = document.getElementById("offline-download-bar");
       const pctEl = document.getElementById("offline-download-pct");
       const labelEl = document.getElementById("offline-download-label");
       box.classList.remove("hidden");
+      labelEl.textContent = t.offlineSaving;
 
       await persistRoutesList();
       try {
@@ -1879,8 +2615,8 @@
 
       localStorage.setItem("magona_offline_ready", "1");
       document.getElementById("offline-cache-badge").classList.remove("hidden");
-      labelEl.textContent = "Mappa e percorsi salvati offline nell'app!";
-      showToast("Mappa e tour salvati offline sul telefono");
+      labelEl.textContent = t.offlineSaved;
+      showToast(t.toastOfflineSaved);
     }
 
     function simplifyCoords(coords, maxPoints = 600) {
@@ -1964,20 +2700,21 @@
             document.getElementById("tour-elev-input").value = parsed.elevationGainM;
           }
           document.getElementById("gpx-parse-feedback").textContent =
-            `GPX pronto: ${parsed.originalCount} punti · ${parsed.distanceKm} km · +${parsed.elevationGainM} m`;
+            `GPX: ${parsed.originalCount} pt · ${parsed.distanceKm} km · +${parsed.elevationGainM} m`;
         } else {
           pendingFormCoords = null;
-          document.getElementById("gpx-parse-feedback").textContent = "Nessun punto valido nel GPX";
+          document.getElementById("gpx-parse-feedback").textContent = "GPX error";
         }
       } catch (err) {
         pendingFormCoords = null;
-        document.getElementById("gpx-parse-feedback").textContent = "Errore lettura file GPX";
+        document.getElementById("gpx-parse-feedback").textContent = "GPX error";
       }
     }
 
     function resetTourForm() {
+      const t = I18N[currentLang] || I18N.it;
       document.getElementById("edit-tour-id").value = "";
-      document.getElementById("tour-form-title").textContent = "Aggiungi Nuovo Tour o Modifica Esistente";
+      document.getElementById("tour-form-title").textContent = t.tourFormAddTitle;
       document.getElementById("btn-reset-tour-form").classList.add("hidden");
       document.getElementById("tour-name-input").value = "";
       document.getElementById("tour-cat-input").value = "mtb";
@@ -1993,10 +2730,11 @@
     }
 
     function editTourInForm(tourId) {
+      const t = I18N[currentLang] || I18N.it;
       const route = getRouteById(tourId);
       if (!route) return;
       document.getElementById("edit-tour-id").value = route.id;
-      document.getElementById("tour-form-title").textContent = "Modifica Tour: " + route.name;
+      document.getElementById("tour-form-title").textContent = `${t.tourFormEditTitle} ${route.name}`;
       document.getElementById("btn-reset-tour-form").classList.remove("hidden");
       document.getElementById("tour-name-input").value = route.name || "";
       document.getElementById("tour-cat-input").value = route.category === "gravel" ? "gravel" : "mtb";
@@ -2007,7 +2745,7 @@
       document.getElementById("tour-surface-input").value = route.surface || "";
       document.getElementById("tour-desc-input").value = route.description || "";
       document.getElementById("tour-gpx-file").value = "";
-      document.getElementById("gpx-parse-feedback").textContent = "Traccia GPS esistente mantenuta (carica un nuovo GPX solo se vuoi sostituirla)";
+      document.getElementById("gpx-parse-feedback").textContent = "";
       pendingFormCoords = null;
       document.getElementById("tab-tours").scrollIntoView({ behavior: "smooth" });
     }
@@ -2016,12 +2754,8 @@
       if (!isOwner) return;
       const editId = document.getElementById("edit-tour-id").value.trim();
       const name = document.getElementById("tour-name-input").value.trim();
-      if (!name) {
-        showToast("Inserisci almeno il nome del tour");
-        return;
-      }
+      if (!name) return;
 
-      // Se l'utente ha selezionato un GPX ma non era ancora stato letto, lo leggiamo ora prima di salvare
       const fileInput = document.getElementById("tour-gpx-file");
       if (!pendingFormCoords && fileInput && fileInput.files && fileInput.files[0]) {
         try {
@@ -2058,7 +2792,6 @@
             description,
             coords: pendingFormCoords || ROUTES_LIST[idx].coords
           };
-          showToast("Tour salvato e aggiornato: " + name);
         }
       } else {
         const newId = "tour-" + Date.now();
@@ -2081,7 +2814,6 @@
           coords
         });
         activeRouteId = newId;
-        showToast("Nuovo tour salvato: " + name);
       }
 
       await persistRoutesList();
@@ -2089,6 +2821,7 @@
       selectRoute(activeRouteId);
       renderToursManagerList();
       resetTourForm();
+      showToast("✓ " + name);
     }
 
     async function updateTourCategoryInline(index, newCategory) {
@@ -2100,8 +2833,6 @@
         updateRouteInfoCard(ROUTES_LIST[index]);
       }
       renderToursManagerList();
-      const label = ROUTES_LIST[index].category === "gravel" ? "Gravel" : "MTB";
-      showToast(`"${ROUTES_LIST[index].name}" salvato come ${label}`);
     }
 
     async function moveTourRank(index, delta) {
@@ -2115,7 +2846,6 @@
       await persistRoutesList();
       rebuildRouteSelector();
       renderToursManagerList();
-      showToast(`Posizione salvata: #${targetIdx + 1} ${ROUTES_LIST[targetIdx].name}`);
     }
 
     async function setTourRankExact(index, newRankValue) {
@@ -2131,16 +2861,10 @@
       await persistRoutesList();
       rebuildRouteSelector();
       renderToursManagerList();
-      showToast(`Posizione #${targetIdx + 1} salvata`);
     }
 
     async function deleteTourById(tourId) {
-      if (!isOwner) return;
-      if (ROUTES_LIST.length <= 1) {
-        showToast("Deve rimanere almeno un tour nella lista");
-        return;
-      }
-      const route = getRouteById(tourId);
+      if (!isOwner || ROUTES_LIST.length <= 1) return;
       ROUTES_LIST = ROUTES_LIST.filter((r) => r.id !== tourId);
       if (activeRouteId === tourId) {
         activeRouteId = ROUTES_LIST[0].id;
@@ -2149,7 +2873,6 @@
       rebuildRouteSelector();
       selectRoute(activeRouteId);
       renderToursManagerList();
-      showToast("Tour eliminato e lista salvata: " + (route?.name || ""));
     }
 
     async function restoreDefaultRoutes() {
@@ -2160,60 +2883,60 @@
       rebuildRouteSelector();
       selectRoute(activeRouteId);
       renderToursManagerList();
-      showToast("Tour predefiniti ripristinati e salvati");
     }
 
     function renderToursManagerList() {
       const container = document.getElementById("tours-manager-list");
       if (!container) return;
+      const t = I18N[currentLang] || I18N.it;
 
       container.innerHTML = ROUTES_LIST.map((r, idx) => {
-        const meta = DIFFICULTY_META[r.difficulty] || DIFFICULTY_META.blue;
+        const meta = getDifficultyMeta(r.difficulty);
+        const locName = getLocalizedRouteField(r, "name");
+        const locSurface = getLocalizedRouteField(r, "surface");
+        const locDesc = getLocalizedRouteField(r, "description");
         return `
           <div class="p-3.5 rounded-xl border border-stone-200 bg-stone-50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div class="flex items-start gap-3">
               <div class="flex flex-col items-center gap-1">
-                <label class="text-[10px] font-bold uppercase text-stone-400">Pos.</label>
+                <label class="text-[10px] font-bold uppercase text-stone-400">${t.rankPosLabel}</label>
                 <input type="number" min="1" max="${ROUTES_LIST.length}" value="${idx + 1}"
                   onchange="setTourRankExact(${idx}, this.value)"
                   class="w-12 text-center font-extrabold text-sm border border-stone-300 rounded-lg py-1 bg-white" />
               </div>
               <div class="space-y-1">
                 <div class="flex flex-wrap items-center gap-1.5">
-                  <span class="text-sm font-extrabold text-stone-900">${r.name}</span>
+                  <span class="text-sm font-extrabold text-stone-900">${locName}</span>
                   <span class="px-2 py-0.5 rounded text-[10px] font-bold ${meta.badgeClass}">${meta.label}</span>
-                  <select aria-label="Disciplina tour per clienti"
-                    onchange="updateTourCategoryInline(${idx}, this.value)"
+                  <select onchange="updateTourCategoryInline(${idx}, this.value)"
                     class="px-2 py-0.5 rounded text-[11px] font-bold border border-stone-300 bg-white text-stone-900 cursor-pointer">
                     <option value="mtb" ${r.category !== "gravel" ? "selected" : ""}>MTB</option>
                     <option value="gravel" ${r.category === "gravel" ? "selected" : ""}>Gravel</option>
                   </select>
                 </div>
                 <div class="text-xs text-stone-600 font-medium">
-                  ${Number(r.distanceKm).toFixed(1)} km · +${r.elevationGainM} m ${r.duration ? "· ⏱ " + r.duration : ""} ${r.surface ? "· " + r.surface : ""}
+                  ${Number(r.distanceKm).toFixed(1)} km · +${r.elevationGainM} m ${r.duration ? "· ⏱ " + r.duration : ""} ${locSurface ? "· " + locSurface : ""}
                 </div>
-                ${r.description ? `<p class="text-xs text-stone-500">${r.description}</p>` : ""}
+                ${locDesc ? `<p class="text-xs text-stone-500">${locDesc}</p>` : ""}
               </div>
             </div>
 
             <div class="flex flex-wrap items-center gap-1.5 self-end sm:self-center">
               <button onclick="moveTourRank(${idx}, -1)" ${idx === 0 ? "disabled" : ""}
-                title="Sposta su in classifica"
                 class="px-2.5 py-1.5 rounded-lg border border-stone-300 bg-white hover:bg-stone-100 disabled:opacity-35 text-xs font-bold cursor-pointer">
-                ↑ Su
+                ${t.rankUpBtn}
               </button>
               <button onclick="moveTourRank(${idx}, 1)" ${idx === ROUTES_LIST.length - 1 ? "disabled" : ""}
-                title="Sposta giù in classifica"
                 class="px-2.5 py-1.5 rounded-lg border border-stone-300 bg-white hover:bg-stone-100 disabled:opacity-35 text-xs font-bold cursor-pointer">
-                ↓ Giù
+                ${t.rankDownBtn}
               </button>
               <button onclick="editTourInForm('${r.id}')"
                 class="px-3 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold cursor-pointer">
-                Modifica
+                ${t.editBtn}
               </button>
               <button onclick="deleteTourById('${r.id}')"
                 class="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-semibold cursor-pointer">
-                Elimina
+                ${t.deleteBtn}
               </button>
             </div>
           </div>
@@ -2222,15 +2945,14 @@
     }
 
     function updatePoiOwnerVisibility() {
+      const t = I18N[currentLang] || I18N.it;
       const editor = document.getElementById("poi-owner-editor");
       const actions = document.getElementById("poi-owner-list-actions");
       const sub = document.getElementById("poi-list-subtitle");
       if (editor) editor.classList.toggle("hidden", !isOwner);
       if (actions) actions.classList.toggle("hidden", !isOwner);
       if (sub) {
-        sub.textContent = isOwner
-          ? "Modifica, aggiungi o elimina i punti utili e premi Salva Modifiche."
-          : "Seleziona un punto per avviare la guida sulla mappa.";
+        sub.textContent = isOwner ? t.poiSubtitleOwner : t.poiSubtitleUser;
       }
     }
 
@@ -2241,8 +2963,10 @@
       }
       poiMarkersLayer = L.layerGroup().addTo(map);
       POIS.forEach((poi) => {
-        const meta = POI_TYPE_META[poi.type] || POI_TYPE_META.food;
-        const popupLabel = `${meta.badge} · ${poi.name}${poi.note ? "<br><small>" + poi.note + "</small>" : ""}`;
+        const meta = getPoiTypeMeta(poi.type);
+        const locName = getLocalizedPoiField(poi, "name");
+        const locNote = getLocalizedPoiField(poi, "note");
+        const popupLabel = `${meta.badge} · ${locName}${locNote ? "<br><small>" + locNote + "</small>" : ""}`;
         L.circleMarker(poi.coords, {
           radius: 7,
           color: meta.color,
@@ -2253,8 +2977,9 @@
     }
 
     function resetPoiForm() {
+      const t = I18N[currentLang] || I18N.it;
       document.getElementById("edit-poi-id").value = "";
-      document.getElementById("poi-form-title").textContent = "Aggiungi Nuovo Punto Utile o Modifica Esistente";
+      document.getElementById("poi-form-title").textContent = t.poiFormAddTitle;
       document.getElementById("btn-reset-poi-form").classList.add("hidden");
       document.getElementById("poi-name-input").value = "";
       document.getElementById("poi-type-input").value = "water";
@@ -2266,17 +2991,18 @@
 
     function editPoiInForm(poiId) {
       if (!isOwner) return;
+      const t = I18N[currentLang] || I18N.it;
       const poi = POIS.find((p) => p.id === poiId);
       if (!poi) return;
       document.getElementById("edit-poi-id").value = poi.id;
-      document.getElementById("poi-form-title").textContent = "Modifica Punto Utile: " + poi.name;
+      document.getElementById("poi-form-title").textContent = `${t.poiFormEditTitle} ${poi.name}`;
       document.getElementById("btn-reset-poi-form").classList.remove("hidden");
       document.getElementById("poi-name-input").value = poi.name || "";
       document.getElementById("poi-type-input").value = poi.type || "water";
       document.getElementById("poi-lat-input").value = Array.isArray(poi.coords) ? poi.coords[0] : "";
       document.getElementById("poi-lng-input").value = Array.isArray(poi.coords) ? poi.coords[1] : "";
       document.getElementById("poi-note-input").value = poi.note || "";
-      document.getElementById("poi-form-feedback").textContent = "Stai modificando questo punto utile";
+      document.getElementById("poi-form-feedback").textContent = "";
       document.getElementById("tab-pois").scrollIntoView({ behavior: "smooth" });
     }
 
@@ -2284,9 +3010,6 @@
       const target = userCoords || BASE_COORDS;
       document.getElementById("poi-lat-input").value = Number(target[0]).toFixed(6);
       document.getElementById("poi-lng-input").value = Number(target[1]).toFixed(6);
-      document.getElementById("poi-form-feedback").textContent = userCoords
-        ? "Coordinate acquisite dal GPS attuale"
-        : "Coordinate impostate sulla base (GPS non ancora attivo)";
     }
 
     async function savePoiFromForm() {
@@ -2298,56 +3021,32 @@
       const lng = parseFloat(document.getElementById("poi-lng-input").value);
       const note = document.getElementById("poi-note-input").value.trim();
 
-      if (!name) {
-        showToast("Inserisci il nome del punto utile");
-        return;
-      }
-      if (Number.isNaN(lat) || Number.isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-        showToast("Inserisci latitudine e longitudine valide");
+      if (!name || Number.isNaN(lat) || Number.isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
         return;
       }
 
       if (editId) {
         const idx = POIS.findIndex((p) => p.id === editId);
         if (idx !== -1) {
-          POIS[idx] = {
-            ...POIS[idx],
-            name,
-            type,
-            note,
-            coords: [lat, lng]
-          };
-          showToast("Punto utile aggiornato: " + name);
+          POIS[idx] = { ...POIS[idx], name, type, note, coords: [lat, lng] };
         }
       } else {
-        POIS.push({
-          id: "poi-" + Date.now(),
-          name,
-          type,
-          note,
-          coords: [lat, lng]
-        });
-        showToast("Nuovo punto utile aggiunto: " + name);
+        POIS.push({ id: "poi-" + Date.now(), name, type, note, coords: [lat, lng] });
       }
 
       await persistPoisList();
       renderPoiList();
       renderPoiMarkersOnMap();
       resetPoiForm();
+      showToast("✓ " + name);
     }
 
     async function deletePoiById(poiId) {
-      if (!isOwner) return;
-      if (POIS.length <= 1) {
-        showToast("Deve rimanere almeno un punto utile");
-        return;
-      }
-      const removed = POIS.find((p) => p.id === poiId);
+      if (!isOwner || POIS.length <= 1) return;
       POIS = POIS.filter((p) => p.id !== poiId);
       await persistPoisList();
       renderPoiList();
       renderPoiMarkersOnMap();
-      showToast("Punto utile eliminato: " + (removed?.name || ""));
     }
 
     async function restoreDefaultPois() {
@@ -2356,32 +3055,34 @@
       await persistPoisList();
       renderPoiList();
       renderPoiMarkersOnMap();
-      showToast("Punti utili predefiniti ripristinati e salvati");
     }
 
     async function saveAllPoisChanges() {
       if (!isOwner) return;
-      const ok = await persistPoisList();
+      await persistPoisList();
       renderPoiList();
       renderPoiMarkersOnMap();
-      showToast(ok ? "Modifiche ai Punti Utili salvate" : "Errore durante il salvataggio dei Punti Utili");
+      showToast("✓");
     }
 
     async function saveAllToursChanges() {
       if (!isOwner) return;
-      const ok = await persistRoutesList();
+      await persistRoutesList();
       rebuildRouteSelector();
       selectRoute(activeRouteId);
       renderToursManagerList();
-      showToast(ok ? "Modifiche ai Tour salvate" : "Errore durante il salvataggio dei Tour");
+      showToast("✓");
     }
 
     function renderPoiList() {
       const container = document.getElementById("poi-list");
       if (!container) return;
+      const t = I18N[currentLang] || I18N.it;
       container.innerHTML = POIS.map((poi) => {
-        const meta = POI_TYPE_META[poi.type] || POI_TYPE_META.food;
-        const safeName = encodeURIComponent(poi.name);
+        const meta = getPoiTypeMeta(poi.type);
+        const locName = getLocalizedPoiField(poi, "name");
+        const locNote = getLocalizedPoiField(poi, "note");
+        const safeName = encodeURIComponent(locName);
         const coordsText = Array.isArray(poi.coords)
           ? `${Number(poi.coords[0]).toFixed(5)}, ${Number(poi.coords[1]).toFixed(5)}`
           : "";
@@ -2392,22 +3093,22 @@
                 <span class="text-xs font-bold text-stone-600">${meta.badge}</span>
                 ${coordsText ? `<span class="text-[11px] text-stone-400">${coordsText}</span>` : ""}
               </div>
-              <div class="text-sm font-bold text-stone-900">${poi.name}</div>
-              ${poi.note ? `<div class="text-xs text-stone-600">${poi.note}</div>` : ""}
+              <div class="text-sm font-bold text-stone-900">${locName}</div>
+              ${locNote ? `<div class="text-xs text-stone-600">${locNote}</div>` : ""}
             </div>
             <div class="flex flex-wrap items-center gap-1.5 self-end sm:self-center">
               <button onclick="focusPoiOnMap(${poi.coords[0]}, ${poi.coords[1]}, decodeURIComponent('${safeName}'))"
                 class="px-3 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold cursor-pointer">
-                Guida sulla Mappa
+                ${t.guideOnMap}
               </button>
               ${isOwner ? `
                 <button onclick="editPoiInForm('${poi.id}')"
                   class="px-3 py-1.5 rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-900 text-xs font-semibold cursor-pointer">
-                  Modifica
+                  ${t.editBtn}
                 </button>
                 <button onclick="deletePoiById('${poi.id}')"
                   class="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-semibold cursor-pointer">
-                  Elimina
+                  ${t.deleteBtn}
                 </button>
               ` : ""}
             </div>
@@ -2417,6 +3118,7 @@
     }
 
     function focusPoiOnMap(lat, lng, label) {
+      const t = I18N[currentLang] || I18N.it;
       switchTab("map");
       if (!map) initMap();
       const startPt = userCoords || BASE_COORDS;
@@ -2426,26 +3128,24 @@
         dashArray: "6, 8"
       }).addTo(map);
       map.setView([lat, lng], 16);
-      showToast("Navigazione interna verso: " + label);
+      showToast(`${t.toastPoiGuided} ${label}`);
     }
 
     function renderTroubleshooting() {
-      const items = [
-        "Catena caduta o inceppata: sgancia il pedale, rilascia la tensione del cambio e riposiziona la catena sulla corona.",
-        "Foratura ruota: verifica la presenza di spine/vetri, usa camera d'aria o kit tubeless/CO2 e controlla la pressione.",
-        "Batteria e-bike scarica o assistenza assente: controlla il connettore batteria e seleziona ECO o modalità manuale."
-      ];
+      const t = I18N[currentLang] || I18N.it;
+      const items = Array.isArray(t.troubleItems) ? t.troubleItems : I18N.it.troubleItems;
       document.getElementById("troubleshooting-list").innerHTML = items
         .map((txt) => `<div class="p-2.5 rounded-xl bg-stone-50 border border-stone-200/70">${txt}</div>`)
         .join("");
     }
 
     function sendWhatsAppLocation() {
-      const routeName = getRouteById(activeRouteId)?.name || "Percorso";
+      const route = getRouteById(activeRouteId);
+      const routeName = getLocalizedRouteField(route, "name") || "Route";
       const locText = userCoords
         ? `Lat ${userCoords[0].toFixed(5)}, Lng ${userCoords[1].toFixed(5)}`
-        : "Posizione GPS non disponibile";
-      const msg = encodeURIComponent(`Ciao Magona Bike Garage, chiedo assistenza. Tracciato: ${routeName}. ${locText}`);
+        : "GPS N/A";
+      const msg = encodeURIComponent(`Magona Bike Garage · ${routeName} · ${locText}`);
       window.open(`https://wa.me/393313453207?text=${msg}`, "_blank", "noopener");
     }
 
