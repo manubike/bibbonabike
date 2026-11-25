@@ -209,6 +209,9 @@
             <button id="btn-user-offline-save" onclick="saveOfflineForUser()" class="px-3.5 py-2 rounded-xl bg-sky-700 hover:bg-sky-800 text-white text-xs font-bold cursor-pointer">
               Salva Offline (Mappa + Tour)
             </button>
+            <button onclick="navigateToBase()" class="px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold cursor-pointer">
+              Rientra alla Base
+            </button>
             <button onclick="toggleMapFullscreen()" class="px-3.5 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold cursor-pointer">
               Schermo Intero
             </button>
@@ -589,7 +592,198 @@
 
   <script>
     const OWNER_PASSWORD = "MAGONA2026";
-    const BASE_COORDS = [43.2742, 10.6018]; // Via del Mandorlo 1, Bibbona
+    const BASE_COORDS = [43.266028, 10.594667]; // 43°15'57.7"N 10°35'40.8"E · Magona Bike Garage, Via del Mandorlo 1, Bibbona
+    const BASE_ADDRESS_LABEL = "Via del Mandorlo 1 / Piazza delle Querce 5, 57020 Bibbona";
+
+    // Rete di rientro più breve e più sicuro verso Magona Bike Garage
+    // safetyPenalty: 1.0 = strada asfaltata/principale sicura, >1.0 = sterrato/tratto più esposto o ripido
+    const SAFE_RETURN_GRAPH = {
+      nodes: {
+        base: { coords: [43.266028, 10.594667], name: "Magona Bike Garage · Via del Mandorlo 1 / Piazza delle Querce 5, 57020 Bibbona" },
+        bibbona_centro: { coords: [43.2725, 10.5965], name: "Centro Bibbona (strada sicura)" },
+        via_bolgherese: { coords: [43.2710, 10.5840], name: "Via Bolgherese (viabilità principale)" },
+        magona_ovest: { coords: [43.2650, 10.6180], name: "Ingresso Magona Ovest" },
+        campo_di_sasso: { coords: [43.2610, 10.6360], name: "Campo di Sasso" },
+        golazze: { coords: [43.2565, 10.6410], name: "Passo delle Golazze Aperte" },
+        bolgheri_nord: { coords: [43.2550, 10.5820], name: "Bivio Bolgheri (strada sicura)" },
+        casale_nord: { coords: [43.2520, 10.6350], name: "Collegamento Casale / Strada" },
+        riparbella_sud: { coords: [43.3020, 10.6180], name: "Collegamento Riparbella" },
+        cecina_sud: { coords: [43.2900, 10.5900], name: "Viabilità Principale Nord/Sud" }
+      },
+      edges: [
+        ["base", "bibbona_centro", 1.0],
+        ["bibbona_centro", "via_bolgherese", 1.0],
+        ["bibbona_centro", "magona_ovest", 1.15],
+        ["magona_ovest", "base", 1.1],
+        ["magona_ovest", "campo_di_sasso", 1.35],
+        ["campo_di_sasso", "golazze", 1.6],
+        ["golazze", "casale_nord", 1.5],
+        ["casale_nord", "campo_di_sasso", 1.45],
+        ["via_bolgherese", "bolgheri_nord", 1.0],
+        ["bolgheri_nord", "casale_nord", 1.2],
+        ["riparbella_sud", "cecina_sud", 1.05],
+        ["cecina_sud", "base", 1.0],
+        ["riparbella_sud", "base", 1.35]
+      ]
+    };
+
+    let returnToBaseLayer = null;
+
+    function findNearestSafeNodeId(pt) {
+      let bestId = "base";
+      let bestDist = Infinity;
+      Object.entries(SAFE_RETURN_GRAPH.nodes).forEach(([id, node]) => {
+        const d = haversineMeters(pt, node.coords);
+        if (d < bestDist) {
+          bestDist = d;
+          bestId = id;
+        }
+      });
+      return bestId;
+    }
+
+    function computeShortestSafeBasePath(startPt) {
+      const nodes = SAFE_RETURN_GRAPH.nodes;
+      const startNodeId = findNearestSafeNodeId(startPt);
+      const adj = {};
+      Object.keys(nodes).forEach((k) => { adj[k] = []; });
+
+      SAFE_RETURN_GRAPH.edges.forEach(([a, b, safetyFactor]) => {
+        const distAtoB = haversineMeters(nodes[a].coords, nodes[b].coords);
+        // Il costo bilancia distanza breve e sicurezza del tracciato (penalità maggiore sui tratti esposti/ripidi)
+        const weight = distAtoB * safetyFactor;
+        adj[a].push({ to: b, weight, dist: distAtoB });
+        adj[b].push({ to: a, weight, dist: distAtoB });
+      });
+
+      const distCost = {};
+      const prev = {};
+      const visited = new Set();
+      Object.keys(nodes).forEach((k) => { distCost[k] = Infinity; });
+      distCost[startNodeId] = 0;
+
+      while (visited.size < Object.keys(nodes).length) {
+        let curr = null;
+        let best = Infinity;
+        for (const k of Object.keys(nodes)) {
+          if (!visited.has(k) && distCost[k] < best) {
+            best = distCost[k];
+            curr = k;
+          }
+        }
+        if (curr === null || curr === "base") break;
+        visited.add(curr);
+
+        for (const edge of adj[curr]) {
+          if (visited.has(edge.to)) continue;
+          const alt = distCost[curr] + edge.weight;
+          if (alt < distCost[edge.to]) {
+            distCost[edge.to] = alt;
+            prev[edge.to] = curr;
+          }
+        }
+      }
+
+      const nodePathIds = [];
+      let step = "base";
+      const guard = new Set();
+      while (step && !guard.has(step)) {
+        guard.add(step);
+        nodePathIds.unshift(step);
+        if (step === startNodeId) break;
+        step = prev[step];
+      }
+
+      const coords = [startPt];
+      let totalMeters = haversineMeters(startPt, nodes[startNodeId].coords);
+      nodePathIds.forEach((nid) => {
+        const c = nodes[nid].coords;
+        const last = coords[coords.length - 1];
+        totalMeters += haversineMeters(last, c);
+        coords.push(c);
+      });
+      const lastPt = coords[coords.length - 1];
+      if (!lastPt || lastPt[0] !== BASE_COORDS[0] || lastPt[1] !== BASE_COORDS[1]) {
+        if (lastPt) totalMeters += haversineMeters(lastPt, BASE_COORDS);
+        coords.push([...BASE_COORDS]);
+      }
+
+      return {
+        coords,
+        distanceKm: +(totalMeters / 1000).toFixed(1),
+        viaNames: nodePathIds.map((id) => nodes[id].name)
+      };
+    }
+
+    async function fetchSafeRoadReturnIfOnline(startPt) {
+      if (!navigator.onLine) return null;
+      try {
+        const url = `https://router.project-osrm.org/route/v1/bicycle/${startPt[1]},${startPt[0]};${BASE_COORDS[1]},${BASE_COORDS[0]}?overview=full&geometries=geojson`;
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 3500);
+        const resp = await fetch(url, { signal: ctrl.signal });
+        clearTimeout(timer);
+        if (!resp.ok) return null;
+        const data = await resp.json();
+        const route = data?.routes?.[0];
+        if (!route?.geometry?.coordinates?.length) return null;
+        const latLngs = route.geometry.coordinates.map(([lon, lat]) => [lat, lon]);
+        latLngs.push([...BASE_COORDS]);
+        return {
+          coords: latLngs,
+          distanceKm: +(route.distance / 1000).toFixed(1)
+        };
+      } catch (e) {
+        return null;
+      }
+    }
+
+    async function navigateToBase() {
+      switchTab("map");
+      if (!map) initMap();
+
+      const activeRoute = getRouteById(activeRouteId);
+      const startPt = userCoords || activeRoute?.coords?.[Math.floor((activeRoute?.coords?.length || 2) / 2)] || [43.266028, 10.594667];
+
+      const localSafe = computeShortestSafeBasePath(startPt);
+      let chosenPath = localSafe;
+
+      const roadPath = await fetchSafeRoadReturnIfOnline(startPt);
+      if (roadPath && roadPath.coords.length > 1) {
+        chosenPath = {
+          coords: roadPath.coords,
+          distanceKm: roadPath.distanceKm
+        };
+      }
+
+      if (returnToBaseLayer) {
+        map.removeLayer(returnToBaseLayer);
+      }
+      returnToBaseLayer = L.polyline(chosenPath.coords, {
+        color: "#16a34a",
+        weight: 5,
+        opacity: 0.95,
+        dashArray: "10, 6"
+      }).addTo(map);
+      returnToBaseLayer.bindPopup(`Rientro più breve e sicuro · ${BASE_ADDRESS_LABEL} (${chosenPath.distanceKm} km)`);
+
+      const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(BASE_ADDRESS_LABEL)}&travelmode=bicycling`;
+      const banner = document.getElementById("nav-status-banner");
+      const statusText = document.getElementById("nav-status-text");
+      if (banner && statusText) {
+        banner.classList.remove("hidden");
+        statusText.innerHTML = `Rientro più breve e sicuro verso <strong>${BASE_ADDRESS_LABEL}</strong> (${chosenPath.distanceKm} km) · <a href="${gmapsUrl}" target="_blank" rel="noopener" class="underline font-bold text-emerald-300">Apri su Google Maps</a>`;
+      }
+
+      if (userCoords) {
+        followUserCenter = true;
+        map.setView(userCoords, NAV_ZOOM_LEVEL, { animate: true });
+      } else {
+        map.fitBounds(returnToBaseLayer.getBounds(), { padding: [30, 30] });
+      }
+      showToast(`Rientro più breve e sicuro verso ${BASE_ADDRESS_LABEL} (${chosenPath.distanceKm} km)`);
+    }
+
     const NAV_ZOOM_LEVEL = 17;
     const OFFLINE_CACHE_NAME = "magona-offline-v1";
     const ROUTES_STORAGE_KEY = "magona_offline_routes_v3";
@@ -678,12 +872,12 @@
         surface: "Bosco, singletrack e carrarecce",
         description: "Giro classico nella Macchia della Magona tra sugherete, leccete e punti panoramici verso il mare.",
         coords: [
-          [43.2742, 10.6018],
+          [43.266028, 10.594667],
           [43.2685, 10.6240],
           [43.2590, 10.6480],
           [43.2495, 10.6320],
           [43.2620, 10.6100],
-          [43.2742, 10.6018]
+          [43.266028, 10.594667]
         ]
       },
       {
@@ -697,11 +891,11 @@
         surface: "Strade bianche e asfalto secondario",
         description: "Percorso scorrevole tra vigneti, oliveti e il Viale dei Cipressi di Bolgheri, ideale per gravel ed e-bike.",
         coords: [
-          [43.2742, 10.6018],
+          [43.266028, 10.594667],
           [43.2550, 10.5820],
           [43.2380, 10.6080],
           [43.2520, 10.6350],
-          [43.2742, 10.6018]
+          [43.266028, 10.594667]
         ]
       },
       {
@@ -715,11 +909,11 @@
         surface: "Trail tecnici, radici e pietraia",
         description: "Itinerario enduro/all-mountain verso il Giardino di Riparbella e il torrente Acquerta con discese guidate.",
         coords: [
-          [43.2742, 10.6018],
+          [43.266028, 10.594667],
           [43.3020, 10.6180],
           [43.3320, 10.6090],
           [43.3150, 10.5880],
-          [43.2742, 10.6018]
+          [43.266028, 10.594667]
         ]
       }
     ];
@@ -885,7 +1079,7 @@
 
     const DEFAULT_POIS = [
       { id: "v-golazze", type: "view", name: "Passo delle Golazze Aperte", note: "Vista panoramica sulla Val di Cecina e la costa", coords: [43.2565, 10.6410] },
-      { id: "r-bibbona-base", type: "food", name: "Magona Bike Garage · Ristoro & Base", note: "Angolo Via del Mandorlo 1 / Piazza delle Querce 5, 57020 Bibbona", coords: [43.2742, 10.6018] }
+      { id: "r-bibbona-base", type: "food", name: "Magona Bike Garage · Base", note: "Via del Mandorlo 1 (angolo Piazza delle Querce), 57020 Bibbona", coords: [43.266028, 10.594667] }
     ];
 
     function loadStoredPoisSync() {
@@ -1215,7 +1409,7 @@
         color: "#141413",
         fillColor: "#141413",
         fillOpacity: 0.9
-      }).addTo(map).bindPopup("Magona Bike Garage · Angolo Via del Mandorlo 1 / Piazza delle Querce 5, 57020 Bibbona");
+      }).addTo(map).bindPopup("Magona Bike Garage · Via del Mandorlo 1 / Piazza delle Querce 5, 57020 Bibbona");
 
       renderPoiMarkersOnMap();
     }
@@ -1905,23 +2099,15 @@
         map.removeLayer(poiMarkersLayer);
       }
       poiMarkersLayer = L.layerGroup().addTo(map);
-      const blueDropIcon = createBlueWaterDropIcon();
-
       POIS.forEach((poi) => {
         const meta = POI_TYPE_META[poi.type] || POI_TYPE_META.food;
         const popupLabel = `${meta.badge} · ${poi.name}${poi.note ? "<br><small>" + poi.note + "</small>" : ""}`;
-        if (poi.type === "water") {
-          L.marker(poi.coords, { icon: blueDropIcon, zIndexOffset: 300 })
-            .addTo(poiMarkersLayer)
-            .bindPopup(popupLabel);
-        } else {
-          L.circleMarker(poi.coords, {
-            radius: 7,
-            color: meta.color,
-            fillColor: meta.color,
-            fillOpacity: 0.9
-          }).addTo(poiMarkersLayer).bindPopup(popupLabel);
-        }
+        L.circleMarker(poi.coords, {
+          radius: 7,
+          color: meta.color,
+          fillColor: meta.color,
+          fillOpacity: 0.9
+        }).addTo(poiMarkersLayer).bindPopup(popupLabel);
       });
     }
 
