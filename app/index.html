@@ -203,14 +203,17 @@
     <section id="tab-map" class="tab-panel flex-1 p-4 max-w-6xl w-full mx-auto space-y-4">
       <div class="bg-white rounded-2xl border border-stone-200 p-4 space-y-3">
         <div class="flex flex-wrap items-center justify-between gap-2">
-          <div class="flex flex-wrap gap-2">
-            <select id="route-select" onchange="selectRoute(this.value)" class="border border-stone-300 rounded-xl px-3 py-2 text-sm font-semibold bg-stone-50"></select>
-            <select id="category-filter" onchange="applyRouteFilters()" class="border border-stone-300 rounded-xl px-3 py-2 text-xs font-semibold bg-stone-50">
+          <div class="flex flex-wrap items-center gap-2 min-w-0 max-w-full w-full sm:w-auto">
+            <select id="route-select" onchange="selectRoute(this.value)"
+              class="border border-stone-300 rounded-xl px-3 py-2 text-sm font-semibold bg-stone-50 max-w-full sm:max-w-xs truncate"></select>
+            <select id="category-filter" onchange="applyRouteFilters()"
+              class="border border-stone-300 rounded-xl px-3 py-2 text-xs font-semibold bg-stone-50 max-w-full">
               <option value="all" data-i18n="catAll">Tutte le bici</option>
               <option value="mtb" data-i18n="catMtb">MTB / E-MTB</option>
               <option value="gravel" data-i18n="catGravel">Gravel</option>
             </select>
-            <select id="difficulty-filter" onchange="applyRouteFilters()" class="border border-stone-300 rounded-xl px-3 py-2 text-xs font-semibold bg-stone-50">
+            <select id="difficulty-filter" onchange="applyRouteFilters()"
+              class="border border-stone-300 rounded-xl px-3 py-2 text-xs font-semibold bg-stone-50 max-w-full">
               <option value="all" data-i18n="diffAll">Tutte le difficoltà</option>
               <option value="green" data-i18n="diffGreen">Verde (Facile)</option>
               <option value="blue" data-i18n="diffBlue">Blu (Intermedio)</option>
