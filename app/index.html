@@ -1792,14 +1792,4 @@
     });
   </script>
 </body>
-</html>"""
-
-with open("index.html", "w", encoding="utf-8") as f:
-    f.write(html_fixed.strip())
-
-# Verifica automatica del codice generato (controllo bilanciamento tag, assenza residui, sintassi JS)
-assert html_fixed.strip().startswith("<!DOCTYPE html>"), "Start tag mismatch"
-assert html_fixed.strip().endswith("</html>"), "End tag mismatch"
-assert html_fixed.count("<script") == html_fixed.count("</script>"), "Script tags unbalanced"
-assert "with open(" not in html_fixed, "Python artifact found"
-print("Verified and saved index.html cleanly. Bytes:", len(html_fixed.strip().encode("utf-8")))
+</html>
