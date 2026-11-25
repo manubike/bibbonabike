@@ -593,12 +593,12 @@
   <script>
     const OWNER_PASSWORD = "MAGONA2026";
     const BASE_COORDS = [43.2742, 10.6018]; // Via del Mandorlo 1, Bibbona
-    const BASE_ADDRESS_LABEL = "Via del Mandorlo 1, Bibbona";
+    const BASE_ADDRESS_LABEL = "Via del Mandorlo 1 / Piazza delle Querce 5, 57020 Bibbona";
 
     // Nodi di viabilità facile / strade principali attorno a Bibbona e Macchia della Magona (easyScore: 1.0 = strada asfaltata/facile, >1.5 = tratto più ripido/sterrato)
     const EASY_RETURN_GRAPH = {
       nodes: {
-        base: { coords: [43.2742, 10.6018], name: "Via del Mandorlo 1, Bibbona" },
+        base: { coords: [43.2742, 10.6018], name: "Angolo Via del Mandorlo 1 / Piazza delle Querce 5, 57020 Bibbona" },
         bibbona_centro: { coords: [43.2725, 10.5965], name: "Centro Bibbona" },
         via_bolgherese: { coords: [43.2710, 10.5840], name: "Via Bolgherese" },
         campo_di_sasso: { coords: [43.2610, 10.6360], name: "Campo di Sasso" },
@@ -1283,7 +1283,7 @@
         color: "#141413",
         fillColor: "#141413",
         fillOpacity: 0.9
-      }).addTo(map).bindPopup("Magona Bike Garage · Base");
+      }).addTo(map).bindPopup("Magona Bike Garage · Angolo Via del Mandorlo 1 / Piazza delle Querce 5, 57020 Bibbona");
 
       renderPoiMarkersOnMap();
     }
@@ -1672,13 +1672,23 @@
       }).addTo(map);
       returnToBaseLayer.bindPopup(`Rientro più breve e facile · ${BASE_ADDRESS_LABEL} (${chosenPath.distanceKm} km)`);
 
+      const destLabel = "Via del Mandorlo 1, Piazza delle Querce 5, 57020 Bibbona";
+      const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destLabel)}&travelmode=bicycling`;
+
+      const banner = document.getElementById("nav-status-banner");
+      const statusText = document.getElementById("nav-status-text");
+      if (banner && statusText) {
+        banner.classList.remove("hidden");
+        statusText.innerHTML = `Rientro verso <strong>${destLabel}</strong> (${chosenPath.distanceKm} km) · <a href="${gmapsUrl}" target="_blank" rel="noopener" class="underline font-bold text-emerald-300">Apri su Google Maps</a>`;
+      }
+
       if (userCoords) {
         followUserCenter = true;
         map.setView(userCoords, NAV_ZOOM_LEVEL, { animate: true });
       } else {
         map.fitBounds(returnToBaseLayer.getBounds(), { padding: [30, 30] });
       }
-      showToast(`Rientro più breve e facile verso ${BASE_ADDRESS_LABEL} (${chosenPath.distanceKm} km)`);
+      showToast(`Rientro verso ${destLabel} (${chosenPath.distanceKm} km)`);
     }
 
     function toggleMapFullscreen() {
@@ -2110,8 +2120,6 @@
           : "Seleziona un punto per avviare la guida sulla mappa.";
       }
     }
-
-
 
     function renderPoiMarkersOnMap() {
       if (!map) return;
