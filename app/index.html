@@ -14,6 +14,7 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background-color: #f4f4f2;
       color: #141413;
+      transition: background-color 0.2s ease, color 0.2s ease;
     }
     .brand-logo-img {
       height: 36px;
@@ -102,6 +103,61 @@
     #map-container.heading-up-active .cyclist-gps-marker {
       transform: rotate(calc(var(--map-rot, 0deg) * -1));
     }
+
+    /* Dark Mode */
+    html.dark-mode,
+    html.dark-mode body {
+      background-color: #0f1110;
+      color: #f3f4f3;
+    }
+    html.dark-mode header,
+    html.dark-mode nav,
+    html.dark-mode section > div,
+    html.dark-mode #auth-screen > div,
+    html.dark-mode #startup-permissions-modal > div {
+      background-color: #181b1a !important;
+      border-color: #2c312f !important;
+      color: #f3f4f3 !important;
+    }
+    html.dark-mode .bg-stone-50,
+    html.dark-mode .bg-stone-100 {
+      background-color: #222625 !important;
+      border-color: #323836 !important;
+      color: #e7e9e8 !important;
+    }
+    html.dark-mode select,
+    html.dark-mode input,
+    html.dark-mode textarea {
+      background-color: #202423 !important;
+      border-color: #3a403e !important;
+      color: #f3f4f3 !important;
+    }
+    html.dark-mode .text-stone-900 {
+      color: #f5f5f4 !important;
+    }
+    html.dark-mode .text-stone-800,
+    html.dark-mode .text-stone-700 {
+      color: #d6d3d1 !important;
+    }
+    html.dark-mode .text-stone-600,
+    html.dark-mode .text-stone-500 {
+      color: #a8a29e !important;
+    }
+    html.dark-mode .border-stone-200,
+    html.dark-mode .border-stone-100 {
+      border-color: #2c312f !important;
+    }
+    html.dark-mode .nav-tab.border-stone-900 {
+      border-color: #10b981 !important;
+      color: #ffffff !important;
+    }
+    html.dark-mode .map-stage.is-fullscreen .bottom-telemetry-panel {
+      background: rgba(24, 27, 26, 0.98) !important;
+      color: #f3f4f3 !important;
+    }
+    html.dark-mode .map-stage.is-fullscreen .bottom-telemetry-panel .bg-stone-100 {
+      background-color: #262b29 !important;
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -141,7 +197,7 @@
   <!-- Schermata di accesso cliente / gestore -->
   <div id="auth-screen" class="flex-1 flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-md border border-stone-200">
-      <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center justify-between gap-2 mb-4">
         <div>
           <div class="text-[11px] uppercase tracking-widest text-stone-500 font-semibold">Bibbona · Val di Cecina</div>
           <div class="mt-0.5">
@@ -149,12 +205,19 @@
             <h1 id="auth-fallback-title" class="hidden text-2xl font-extrabold text-stone-900">Magona Bike Garage</h1>
           </div>
         </div>
-        <select id="lang-select" onchange="changeLanguage(this.value)" class="border border-stone-300 rounded-lg px-2.5 py-1.5 text-xs font-semibold bg-stone-50">
-          <option value="it">IT</option>
-          <option value="en">EN</option>
-          <option value="de">DE</option>
-          <option value="nl">NL</option>
-        </select>
+        <div class="flex items-center gap-1.5">
+          <select id="auth-theme-select" onchange="changeThemeMode(this.value)" class="border border-stone-300 rounded-lg px-2 py-1.5 text-xs font-semibold bg-stone-50">
+            <option value="light" data-i18n="themeLight">Chiaro</option>
+            <option value="dark" data-i18n="themeDark">Scuro</option>
+            <option value="auto" data-i18n="themeAuto">Auto</option>
+          </select>
+          <select id="lang-select" onchange="changeLanguage(this.value)" class="border border-stone-300 rounded-lg px-2.5 py-1.5 text-xs font-semibold bg-stone-50">
+            <option value="it">IT</option>
+            <option value="en">EN</option>
+            <option value="de">DE</option>
+            <option value="nl">NL</option>
+          </select>
+        </div>
       </div>
 
       <p id="auth-subtitle" data-i18n="authSub" class="text-sm text-stone-600 mb-4">
@@ -192,6 +255,11 @@
         <span id="offline-cache-badge" data-i18n="offlineBadge" class="hidden text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">OFFLINE PRONTO</span>
       </div>
       <div class="flex items-center gap-2">
+        <select id="app-theme-select" onchange="changeThemeMode(this.value)" class="border border-stone-300 rounded-lg px-2 py-1 text-xs font-semibold bg-stone-50">
+          <option value="light" data-i18n="themeLight">Chiaro</option>
+          <option value="dark" data-i18n="themeDark">Scuro</option>
+          <option value="auto" data-i18n="themeAuto">Auto</option>
+        </select>
         <select id="app-lang-select" onchange="changeLanguage(this.value)" class="border border-stone-300 rounded-lg px-2 py-1 text-xs font-semibold bg-stone-50">
           <option value="it">IT</option>
           <option value="en">EN</option>
@@ -639,7 +707,7 @@
   <div id="toast-msg" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[10000] hidden bg-stone-900 text-white text-xs font-semibold px-4 py-2.5 rounded-full shadow-lg"></div>
 
   <script>
-    const OWNER_PASSWORD = "MAGONABIKEGARAGE2025";
+    const OWNER_PASSWORD = "MAGONA2026";
     const FIREBASE_RTDB_URL = "https://magonabikegarage-c61b2-default-rtdb.europe-west1.firebasedatabase.app/";
     const FIREBASE_ROOT_PATH = "magona_bike_garage_state";
 
@@ -683,12 +751,16 @@
     const ROUTES_STORAGE_KEY = "magona_offline_routes_v3";
     const POIS_STORAGE_KEY = "magona_offline_pois_v2";
     const CLIENT_CODES_STORAGE_KEY = "magona_client_codes_pool_v1";
+    const THEME_STORAGE_KEY = "magona_theme_mode_v1";
     const MAX_USES_PER_CODE = 3;
     const IDB_NAME = "MagonaBikeGarageDB";
     const IDB_STORE = "appState";
 
     const I18N = {
       it: {
+        themeLight: "Chiaro",
+        themeDark: "Scuro",
+        themeAuto: "Auto",
         permTitle: "Autorizzazioni GPS e Rete Web",
         permDesc: "Per mostrare la tua posizione sul sentiero, calcolare distanza e dislivello rimanenti e salvare le mappe offline, abilita il GPS e la connessione web.",
         permGpsLabel: "Posizione GPS Live",
@@ -845,6 +917,9 @@
         toastPoiCalc: "Calcolo percorso su sentieri e sterrati verso:"
       },
       en: {
+        themeLight: "Light",
+        themeDark: "Dark",
+        themeAuto: "Auto",
         permTitle: "GPS & Web Network Permissions",
         permDesc: "To show your position on the trail, calculate remaining distance and elevation gain, and cache maps offline, enable GPS and web access.",
         permGpsLabel: "Live GPS Location",
@@ -1001,6 +1076,9 @@
         toastPoiCalc: "Calculating trail & dirt route to:"
       },
       de: {
+        themeLight: "Hell",
+        themeDark: "Dunkel",
+        themeAuto: "Auto",
         permTitle: "GPS- & Web-Berechtigungen",
         permDesc: "Um Ihre Position auf dem Trail anzuzeigen, verbleibende Distanz und Höhenmeter zu berechnen und Karten offline zu speichern, aktivieren Sie GPS und Web.",
         permGpsLabel: "Live-GPS-Position",
@@ -1157,6 +1235,9 @@
         toastPoiCalc: "Berechne Trail- & Schotterroute nach:"
       },
       nl: {
+        themeLight: "Licht",
+        themeDark: "Donker",
+        themeAuto: "Auto",
         permTitle: "GPS- & Webtoestemmingen",
         permDesc: "Om je positie op de route te tonen, resterende afstand en hoogtemeters te berekenen en kaarten offline op te slaan, schakel je GPS en webtoegang in.",
         permGpsLabel: "Live GPS-locatie",
@@ -1498,6 +1579,7 @@
     ];
 
     let currentLang = "it";
+    let currentThemeMode = localStorage.getItem(THEME_STORAGE_KEY) || "light";
     let isOwner = false;
     let map = null;
     let routePolyline = null;
@@ -1516,6 +1598,44 @@
 
     let screenWakeLock = null;
     let keepScreenAwakeEnabled = localStorage.getItem("magona_keep_screen_awake") === "1";
+
+    /* ================= THEME MODE ================= */
+
+    function resolveIsDarkMode(mode) {
+      if (mode === "dark") return true;
+      if (mode === "auto" && window.matchMedia) {
+        return window.matchMedia("(prefers-color-scheme: dark)").matches;
+      }
+      return false;
+    }
+
+    function applyThemeMode(mode) {
+      currentThemeMode = ["light", "dark", "auto"].includes(mode) ? mode : "light";
+      try {
+        localStorage.setItem(THEME_STORAGE_KEY, currentThemeMode);
+      } catch (e) {}
+
+      const useDark = resolveIsDarkMode(currentThemeMode);
+      document.documentElement.classList.toggle("dark-mode", useDark);
+
+      const authSel = document.getElementById("auth-theme-select");
+      const appSel = document.getElementById("app-theme-select");
+      if (authSel) authSel.value = currentThemeMode;
+      if (appSel) appSel.value = currentThemeMode;
+    }
+
+    function changeThemeMode(mode) {
+      applyThemeMode(mode);
+    }
+
+    if (window.matchMedia) {
+      const darkMedia = window.matchMedia("(prefers-color-scheme: dark)");
+      darkMedia.addEventListener("change", () => {
+        if (currentThemeMode === "auto") {
+          applyThemeMode("auto");
+        }
+      });
+    }
 
     /* ================= FIREBASE RTDB HELPERS ================= */
 
@@ -3590,6 +3710,7 @@
     });
     window.addEventListener("offline", updateNetworkStatusUI);
     window.addEventListener("DOMContentLoaded", async () => {
+      applyThemeMode(currentThemeMode);
       updateNetworkStatusUI();
       renderClientCodesPoolUI();
       changeLanguage("it");
