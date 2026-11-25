@@ -438,7 +438,7 @@
             <button data-i18n="saveChangesBtn" onclick="saveAllPoisChanges()" class="px-3.5 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
               Salva Modifiche
             </button>
-            <button data-i18n="restoreDefaultsBtn" onclick="restoreDefaultPois()" class="px-3.5 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold cursor-pointer">
+            <button data-i18n="restoreDefaultsBtn" onclick="restoreDefaultPois()" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold cursor-pointer">
               Ripristina Predefiniti
             </button>
           </div>
@@ -623,6 +623,80 @@
 
   <script>
     const OWNER_PASSWORD = "MAGONA2026";
+    const FIREBASE_RTDB_URL = "https://magonabikegarage-c61b2-default-rtdb.europe-west1.firebasedatabase.app/";
+    const FIREBASE_ROOT_PATH = "magona_bike_garage_state";
+
+    function isFirebaseConfigured() {
+      return typeof FIREBASE_RTDB_URL === "string" && /^https:\/\/[a-z0-9-]+\.([a-z0-9-]+\.)?firebasedatabase\.app\/?$/i.test(FIREBASE_RTDB_URL.trim());
+    }
+
+    function getFirebaseEndpoint(subPath) {
+      const cleanBase = FIREBASE_RTDB_URL.trim().replace(/\/+$/, "");
+      const cleanSub = subPath ? "/" + subPath.replace(/^\/+|\/+$/g, "") : "";
+      return `${cleanBase}/${FIREBASE_ROOT_PATH}${cleanSub}.json`;
+    }
+
+    async function cloudReadJson(subPath) {
+      if (!isFirebaseConfigured() || !navigator.onLine) return null;
+      try {
+        const resp = await fetch(getFirebaseEndpoint(subPath) + "?ts=" + Date.now(), { cache: "no-store" });
+        if (!resp.ok) return null;
+        return await resp.json();
+      } catch (e) {
+        return null;
+      }
+    }
+
+    async function cloudWriteJson(subPath, payload) {
+      if (!isFirebaseConfigured() || !navigator.onLine) return false;
+      try {
+        const resp = await fetch(getFirebaseEndpoint(subPath), {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        return resp.ok;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    async function syncAllCloudStateOnBoot() {
+      if (!isFirebaseConfigured() || !navigator.onLine) return;
+      const cloudData = await cloudReadJson("");
+      if (!cloudData || typeof cloudData !== "object") return;
+
+      if (Array.isArray(cloudData.routes) && cloudData.routes.length > 0) {
+        ROUTES_LIST = cloudData.routes;
+        try { localStorage.setItem(ROUTES_STORAGE_KEY, JSON.stringify(ROUTES_LIST)); } catch (e) {}
+        await saveRoutesToIndexedDB(ROUTES_LIST);
+        if (ROUTES_LIST.length > 0 && !ROUTES_LIST.some((r) => r.id === activeRouteId)) {
+          activeRouteId = ROUTES_LIST[0].id;
+        }
+        rebuildRouteSelector();
+        if (isOwner) renderToursManagerList();
+      }
+
+      if (Array.isArray(cloudData.pois) && cloudData.pois.length > 0) {
+        const cleaned = cloudData.pois.filter((p) => p && p.type !== "water");
+        if (cleaned.length > 0) {
+          POIS = cleaned;
+          try { localStorage.setItem(POIS_STORAGE_KEY, JSON.stringify(POIS)); } catch (e) {}
+          await persistPoisList(false);
+          renderPoiList();
+          renderPoiMarkersOnMap();
+        }
+      }
+
+      if (Array.isArray(cloudData.codes) && cloudData.codes.length > 0) {
+        const validPool = cloudData.codes.filter((item) => item && item.code);
+        if (validPool.length > 0) {
+          try { localStorage.setItem(CLIENT_CODES_STORAGE_KEY, JSON.stringify(validPool)); } catch (e) {}
+          renderClientCodesPoolUI();
+        }
+      }
+    }
+
     const BASE_COORDS = [43.266028, 10.594667]; // 43°15'57.7"N 10°35'40.8"E · Magona Bike Garage, Via del Mandorlo 1, Bibbona
     const BASE_ADDRESS_LABEL = "Via del Mandorlo 1 / Piazza delle Querce 5, 57020 Bibbona";
 
@@ -1615,7 +1689,8 @@
       }
 
       const idbOk = await saveRoutesToIndexedDB(ROUTES_LIST);
-      const ok = idbOk || lsOk;
+      const cloudOk = await cloudWriteJson("routes", ROUTES_LIST);
+      const ok = idbOk || lsOk || cloudOk;
       setSaveBadgeState(ok, ok ? `✓ (${ROUTES_LIST.length})` : "⚠ Export tours.json");
       return ok;
     }
@@ -1699,7 +1774,7 @@
       }
     }
 
-    async function persistPoisList() {
+    async function persistPoisList(syncCloud = true) {
       let lsOk = false;
       try {
         localStorage.setItem(POIS_STORAGE_KEY, JSON.stringify(POIS));
@@ -1722,7 +1797,8 @@
         idbOk = false;
       }
 
-      const ok = idbOk || lsOk;
+      const cloudOk = syncCloud ? await cloudWriteJson("pois", POIS) : false;
+      const ok = idbOk || lsOk || cloudOk;
       setPoisSaveBadgeState(ok, ok ? `✓ (${POIS.length})` : "⚠ Error");
       return ok;
     }
@@ -1995,6 +2071,7 @@
         if (active) {
           localStorage.setItem("magona_active_client_pwd", active.code);
         }
+        cloudWriteJson("codes", pool);
       } catch (e) {}
     }
 
@@ -2083,7 +2160,7 @@
       showToast("Codice revocato: " + code);
     }
 
-    function submitAccessPassword() {
+    async function submitAccessPassword() {
       const input = document.getElementById("access-password-input");
       const errEl = document.getElementById("auth-error");
       const val = (input ? input.value : "").trim().toUpperCase();
@@ -2101,6 +2178,12 @@
         return;
       }
 
+      if (isFirebaseConfigured() && navigator.onLine) {
+        const remoteCodes = await cloudReadJson("codes");
+        if (Array.isArray(remoteCodes) && remoteCodes.length > 0) {
+          try { localStorage.setItem(CLIENT_CODES_STORAGE_KEY, JSON.stringify(remoteCodes)); } catch (e) {}
+        }
+      }
       const pool = loadClientCodesPool();
       const matchIdx = pool.findIndex((item) => item.code.toUpperCase() === val);
 
@@ -3282,8 +3365,10 @@
       updateNetworkStatusUI();
       renderClientCodesPoolUI();
       changeLanguage("it");
-      hydrateRoutesOnBoot();
-      hydratePoisOnBoot();
+      syncAllCloudStateOnBoot().finally(() => {
+        hydrateRoutesOnBoot();
+        hydratePoisOnBoot();
+      });
     });
   </script>
 </body>
