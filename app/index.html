@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Magona Bike Garage — Tour & Assistenza</title>
+  <title>Magona Bike Garage — Trail & Assistenza</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -587,17 +587,25 @@
 
     <!-- Scheda Gestore & Cache -->
     <section id="tab-manager" class="tab-panel hidden flex-1 p-4 max-w-4xl w-full mx-auto space-y-4">
-      <div class="bg-white rounded-2xl border border-stone-200 p-4 space-y-3">
-        <h2 data-i18n="managerTitle" class="text-base font-bold text-stone-900">Pannello Gestore & Cache Offline</h2>
-        <div class="flex flex-wrap items-center justify-between gap-2 bg-stone-50 p-3 rounded-xl border border-stone-200">
+      <div class="bg-white rounded-2xl border border-stone-200 p-4 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <div data-i18n="clientPassLabel" class="text-xs text-stone-500">Password Cliente Attiva (monouso / rotazione automatica)</div>
-            <div id="active-client-password" class="text-base font-extrabold text-stone-900">RIDE-4829</div>
+            <h2 data-i18n="managerTitle" class="text-base font-bold text-stone-900">Pannello Gestore & Cache Offline</h2>
+            <p id="codes-pool-desc" class="text-xs text-stone-500">Più persone possono accedere con lo stesso codice. Ogni codice resta valido anche quando ne generi altri, fino a un massimo di 3 accessi per codice.</p>
           </div>
-          <button data-i18n="genCodeBtn" onclick="rotateClientPassword()" class="px-3.5 py-2 rounded-xl bg-stone-900 text-white text-xs font-semibold cursor-pointer">
+          <button id="btn-gen-code" onclick="rotateClientPassword()" class="px-3.5 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold cursor-pointer">
             Genera Nuovo Codice
           </button>
         </div>
+
+        <div class="bg-stone-50 p-3 rounded-xl border border-stone-200 space-y-2">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="text-xs font-semibold text-stone-600">Codici Attivi (max 3 accessi per codice)</div>
+            <div id="active-client-password" class="text-sm font-extrabold text-stone-900">RIDE-4829</div>
+          </div>
+          <div id="client-codes-list" class="space-y-2"></div>
+        </div>
+
         <div class="flex flex-wrap gap-2">
           <button data-i18n="preCacheBtn" onclick="saveOfflineForUser()" class="px-4 py-2 rounded-xl bg-stone-900 text-white text-xs font-semibold cursor-pointer">
             Pre-Scarica Mappa Magona Offline
@@ -1961,44 +1969,163 @@
       );
     }
 
+    const CLIENT_CODES_STORAGE_KEY = "magona_client_codes_pool_v1";
+    const MAX_USES_PER_CODE = 3;
+
+    function loadClientCodesPool() {
+      try {
+        const raw = localStorage.getItem(CLIENT_CODES_STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            return parsed.filter((item) => item && item.code);
+          }
+        }
+      } catch (e) {}
+      const initialLegacy = (localStorage.getItem("magona_active_client_pwd") || "RIDE-4829").trim().toUpperCase();
+      const initialPool = [{ code: initialLegacy, uses: 0, maxUses: MAX_USES_PER_CODE }];
+      saveClientCodesPool(initialPool);
+      return initialPool;
+    }
+
+    function saveClientCodesPool(pool) {
+      try {
+        localStorage.setItem(CLIENT_CODES_STORAGE_KEY, JSON.stringify(pool));
+        const active = pool.find((c) => (c.uses || 0) < (c.maxUses || MAX_USES_PER_CODE));
+        if (active) {
+          localStorage.setItem("magona_active_client_pwd", active.code);
+        }
+      } catch (e) {}
+    }
+
     function getActiveClientPassword() {
-      let pwd = localStorage.getItem("magona_active_client_pwd");
-      if (!pwd) {
-        pwd = "RIDE-4829";
-        localStorage.setItem("magona_active_client_pwd", pwd);
+      const pool = loadClientCodesPool();
+      const validCodes = pool.filter((c) => (c.uses || 0) < (c.maxUses || MAX_USES_PER_CODE));
+      if (validCodes.length === 0) {
+        return "NESSUN CODICE ATTIVO";
       }
-      return pwd;
+      return validCodes.map((c) => `${c.code} (${c.uses || 0}/${c.maxUses || MAX_USES_PER_CODE})`).join(" · ");
+    }
+
+    function renderClientCodesPoolUI() {
+      const el = document.getElementById("active-client-password");
+      if (el) el.textContent = getActiveClientPassword();
+
+      const listEl = document.getElementById("client-codes-list");
+      if (!listEl) return;
+
+      const pool = loadClientCodesPool();
+      if (pool.length === 0) {
+        listEl.innerHTML = `<div class="text-xs text-stone-500">Nessun codice presente. Premi "Genera Nuovo Codice".</div>`;
+        return;
+      }
+
+      listEl.innerHTML = pool.map((item) => {
+        const uses = item.uses || 0;
+        const maxUses = item.maxUses || MAX_USES_PER_CODE;
+        const exhausted = uses >= maxUses;
+        const badgeClass = exhausted
+          ? "bg-red-100 text-red-800"
+          : "bg-emerald-100 text-emerald-800";
+        const statusLabel = exhausted
+          ? `Esaurito (${uses}/${maxUses})`
+          : `Attivo · ${uses}/${maxUses} accessi`;
+
+        return `
+          <div class="flex flex-wrap items-center justify-between gap-2 bg-white px-3 py-2 rounded-xl border border-stone-200/80 text-xs">
+            <div class="flex items-center gap-2">
+              <span class="font-extrabold text-stone-900 tracking-wide">${item.code}</span>
+              <span class="px-2 py-0.5 rounded font-bold text-[11px] ${badgeClass}">${statusLabel}</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              ${exhausted ? `
+                <button onclick="resetClientCodeUses('${item.code}')" class="px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 font-semibold cursor-pointer">
+                  Ripristina 0/3
+                </button>
+              ` : ""}
+              <button onclick="revokeClientCode('${item.code}')" class="px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 font-semibold cursor-pointer">
+                Revoca
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
     }
 
     function rotateClientPassword() {
-      const code = "RIDE-" + Math.floor(1000 + Math.random() * 9000);
-      localStorage.setItem("magona_active_client_pwd", code);
-      const el = document.getElementById("active-client-password");
-      if (el) el.textContent = code;
-      showToast(code);
+      const pool = loadClientCodesPool();
+      let code = "";
+      let attempts = 0;
+      do {
+        code = "RIDE-" + Math.floor(1000 + Math.random() * 9000);
+        attempts++;
+      } while (pool.some((item) => item.code === code) && attempts < 20);
+
+      pool.unshift({ code, uses: 0, maxUses: MAX_USES_PER_CODE });
+      saveClientCodesPool(pool);
+      renderClientCodesPoolUI();
+      showToast("Nuovo codice aggiunto (max 3 accessi): " + code);
+    }
+
+    function resetClientCodeUses(code) {
+      const pool = loadClientCodesPool().map((item) =>
+        item.code === code ? { ...item, uses: 0, maxUses: MAX_USES_PER_CODE } : item
+      );
+      saveClientCodesPool(pool);
+      renderClientCodesPoolUI();
+      showToast("Accessi azzerati (0/3) per " + code);
+    }
+
+    function revokeClientCode(code) {
+      const pool = loadClientCodesPool().filter((item) => item.code !== code);
+      saveClientCodesPool(pool);
+      renderClientCodesPoolUI();
+      showToast("Codice revocato: " + code);
     }
 
     function submitAccessPassword() {
       const input = document.getElementById("access-password-input");
       const errEl = document.getElementById("auth-error");
       const val = (input ? input.value : "").trim().toUpperCase();
-      const activeClient = getActiveClientPassword().toUpperCase();
+
+      if (!val) {
+        errEl.textContent = (I18N[currentLang] || I18N.it).invalidPass;
+        errEl.classList.remove("hidden");
+        return;
+      }
 
       if (val === OWNER_PASSWORD) {
         isOwner = true;
         errEl.classList.add("hidden");
         unlockApplication();
-      } else if (val && (val === activeClient || val.startsWith("RIDE-"))) {
-        isOwner = false;
-        if (val === activeClient) {
-          rotateClientPassword();
-        }
-        errEl.classList.add("hidden");
-        unlockApplication();
-      } else {
+        return;
+      }
+
+      const pool = loadClientCodesPool();
+      const matchIdx = pool.findIndex((item) => item.code.toUpperCase() === val);
+
+      if (matchIdx === -1) {
         errEl.textContent = (I18N[currentLang] || I18N.it).invalidPass;
         errEl.classList.remove("hidden");
+        return;
       }
+
+      const target = pool[matchIdx];
+      const currentUses = target.uses || 0;
+      const maxUses = target.maxUses || MAX_USES_PER_CODE;
+
+      if (currentUses >= maxUses) {
+        errEl.textContent = `Codice ${target.code}: limite massimo di ${maxUses} accessi raggiunto.`;
+        errEl.classList.remove("hidden");
+        return;
+      }
+
+      pool[matchIdx] = { ...target, uses: currentUses + 1, maxUses };
+      saveClientCodesPool(pool);
+      renderClientCodesPoolUI();
+      isOwner = false;
+      errEl.classList.add("hidden");
+      unlockApplication();
     }
 
     function rebuildRouteSelector() {
@@ -2026,7 +2153,7 @@
       document.getElementById("role-badge").classList.toggle("hidden", !isOwner);
       document.getElementById("nav-manager-tab").classList.toggle("hidden", !isOwner);
       document.getElementById("nav-tours-tab").classList.toggle("hidden", !isOwner);
-      document.getElementById("active-client-password").textContent = getActiveClientPassword();
+      renderClientCodesPoolUI();
 
       if (localStorage.getItem("magona_offline_ready") === "1") {
         document.getElementById("offline-cache-badge").classList.remove("hidden");
@@ -3153,6 +3280,7 @@
     window.addEventListener("offline", updateNetworkStatusUI);
     window.addEventListener("DOMContentLoaded", () => {
       updateNetworkStatusUI();
+      renderClientCodesPoolUI();
       changeLanguage("it");
       hydrateRoutesOnBoot();
       hydratePoisOnBoot();
@@ -3160,3 +3288,4 @@
   </script>
 </body>
 </html>
+```[cite: 24]
