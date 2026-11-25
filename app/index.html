@@ -705,7 +705,7 @@
   <div id="toast-msg" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[10000] hidden bg-stone-900 text-white text-xs font-semibold px-4 py-2.5 rounded-full shadow-lg"></div>
 
   <script>
-    const OWNER_PASSWORD = "MAGONABIKEGARAGE2025";
+    const OWNER_PASSWORD = "MAGONA2026";
     const FIREBASE_RTDB_URL = "https://magonabikegarage-c61b2-default-rtdb.europe-west1.firebasedatabase.app/";
     const FIREBASE_ROOT_PATH = "magona_bike_garage_state";
 
@@ -750,6 +750,7 @@
     const POIS_STORAGE_KEY = "magona_offline_pois_v2";
     const CLIENT_CODES_STORAGE_KEY = "magona_client_codes_pool_v1";
     const THEME_STORAGE_KEY = "magona_theme_mode_v1";
+    const PERMISSIONS_PROMPT_KEY = "magona_permissions_prompt_seen_v1";
     const MAX_USES_PER_CODE = 3;
     const IDB_NAME = "MagonaBikeGarageDB";
     const IDB_STORE = "appState";
@@ -2154,16 +2155,25 @@
       }
     }
 
+    function markStartupPermissionsSeen() {
+      try {
+        localStorage.setItem(PERMISSIONS_PROMPT_KEY, "1");
+      } catch (e) {}
+    }
+
     function openStartupPermissionsModal() {
       updateNetworkStatusUI();
       document.getElementById("startup-permissions-modal").classList.remove("hidden");
     }
 
     function dismissStartupPermissions() {
-      document.getElementById("startup-permissions-modal").classList.add("hidden");
+      markStartupPermissionsSeen();
+      const modal = document.getElementById("startup-permissions-modal");
+      if (modal) modal.classList.add("hidden");
     }
 
     function requestStartupPermissions() {
+      markStartupPermissionsSeen();
       updateNetworkStatusUI();
       const gpsStatus = document.getElementById("perm-gps-status");
       const t = I18N[currentLang] || I18N.it;
@@ -3776,6 +3786,10 @@
     });
     window.addEventListener("offline", updateNetworkStatusUI);
     window.addEventListener("DOMContentLoaded", async () => {
+      const modal = document.getElementById("startup-permissions-modal");
+      if (modal && localStorage.getItem(PERMISSIONS_PROMPT_KEY) === "1") {
+        modal.classList.add("hidden");
+      }
       applyThemeMode(currentThemeMode);
       updateNetworkStatusUI();
       renderClientCodesPoolUI();
