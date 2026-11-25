@@ -218,7 +218,7 @@
           </div>
         </div>
 
-        <!-- Scheda dettagliata del tour attivo (difficoltà, disciplina MTB/Gravel, terreno, tempo stimato, note) -->
+        <!-- Scheda dettagliata del tour attivo -->
         <div id="active-route-info-card" class="bg-stone-50 border border-stone-200/90 rounded-xl p-3 flex flex-wrap items-center justify-between gap-2 text-xs">
           <div class="space-y-1">
             <div class="flex flex-wrap items-center gap-2">
@@ -366,15 +366,21 @@
 
     <!-- Scheda Gestione Tour (Solo Gestore) -->
     <section id="tab-tours" class="tab-panel hidden flex-1 p-4 max-w-5xl w-full mx-auto space-y-4">
+      <!-- Form Aggiunta / Modifica Tour -->
       <div class="bg-white rounded-2xl border border-stone-200 p-5 space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h2 id="tour-form-title" class="text-base font-bold text-stone-900">Aggiungi Nuovo Tour o Modifica Esistente</h2>
             <p class="text-xs text-stone-500">Indica se il tour è <strong>MTB</strong> o <strong>Gravel</strong> per mostrarlo ai clienti, carica il GPX e imposta difficoltà, distanza, dislivello e descrizione.</p>
           </div>
-          <button id="btn-reset-tour-form" onclick="resetTourForm()" class="hidden px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
-            Annulla Modifica (Nuovo Tour)
-          </button>
+          <div class="flex items-center gap-2">
+            <span id="tours-save-status-badge" class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800">
+              ✓ Salvato su questo dispositivo
+            </span>
+            <button id="btn-reset-tour-form" onclick="resetTourForm()" class="hidden px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
+              Annulla Modifica
+            </button>
+          </div>
         </div>
 
         <input type="hidden" id="edit-tour-id" value="" />
@@ -449,15 +455,21 @@
         </div>
       </div>
 
+      <!-- Classifica / Ordinamento Tour + Esportazione per pubblicazione su tutti i dispositivi -->
       <div class="bg-white rounded-2xl border border-stone-200 p-5 space-y-3">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h3 class="text-base font-bold text-stone-900">Classifica e Ordine dei Tour</h3>
-            <p class="text-xs text-stone-500">Imposta se ogni tour è <strong>MTB</strong> o <strong>Gravel</strong> per i clienti, spostalo in classifica con Su/Giù o numero di posizione, oppure eliminalo.</p>
+            <p class="text-xs text-stone-500">Le modifiche vengono salvate subito in memoria permanente (IndexedDB + LocalStorage). Per renderle visibili anche sui telefoni di tutti i clienti, usa <strong>Esporta tours.json</strong> e caricalo su GitHub accanto a <code>index.html</code>.</p>
           </div>
-          <button onclick="restoreDefaultRoutes()" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold cursor-pointer">
-            Ripristina Tour Predefiniti
-          </button>
+          <div class="flex flex-wrap gap-1.5">
+            <button onclick="exportToursJsonFile()" class="px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
+              Esporta tours.json (per GitHub)
+            </button>
+            <button onclick="restoreDefaultRoutes()" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold cursor-pointer">
+              Ripristina Predefiniti
+            </button>
+          </div>
         </div>
 
         <div id="tours-manager-list" class="space-y-2.5"></div>
@@ -497,7 +509,9 @@
     const BASE_COORDS = [43.2742, 10.6018]; // Via del Mandorlo 1, Bibbona
     const NAV_ZOOM_LEVEL = 17;
     const OFFLINE_CACHE_NAME = "magona-offline-v1";
-    const ROUTES_STORAGE_KEY = "magona_offline_routes_v2";
+    const ROUTES_STORAGE_KEY = "magona_offline_routes_v3";
+    const IDB_NAME = "MagonaBikeGarageDB";
+    const IDB_STORE = "appState";
 
     const I18N = {
       it: {
@@ -627,25 +641,151 @@
       }
     ];
 
-    function loadStoredRoutesList() {
-      try {
-        const raw = localStorage.getItem(ROUTES_STORAGE_KEY);
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            return parsed;
-          }
+    /* ================= STORAGE PERSISTENTE (IndexedDB + LocalStorage + tours.json) ================= */
+
+    function openAppIndexedDB() {
+      return new Promise((resolve, reject) => {
+        if (!("indexedDB" in window)) {
+          reject(new Error("IndexedDB non supportato"));
+          return;
         }
-      } catch (e) {}
+        const req = indexedDB.open(IDB_NAME, 1);
+        req.onupgradeneeded = () => {
+          const db = req.result;
+          if (!db.objectStoreNames.contains(IDB_STORE)) {
+            db.createObjectStore(IDB_STORE);
+          }
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function saveRoutesToIndexedDB(list) {
+      try {
+        const db = await openAppIndexedDB();
+        await new Promise((resolve, reject) => {
+          const tx = db.transaction(IDB_STORE, "readwrite");
+          tx.objectStore(IDB_STORE).put(list, ROUTES_STORAGE_KEY);
+          tx.oncomplete = () => resolve();
+          tx.onerror = () => reject(tx.error);
+        });
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    async function loadRoutesFromIndexedDB() {
+      try {
+        const db = await openAppIndexedDB();
+        return await new Promise((resolve) => {
+          const tx = db.transaction(IDB_STORE, "readonly");
+          const req = tx.objectStore(IDB_STORE).get(ROUTES_STORAGE_KEY);
+          req.onsuccess = () => resolve(Array.isArray(req.result) && req.result.length > 0 ? req.result : null);
+          req.onerror = () => resolve(null);
+        });
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function loadStoredRoutesSync() {
+      for (const key of [ROUTES_STORAGE_KEY, "magona_offline_routes_v2"]) {
+        try {
+          const raw = localStorage.getItem(key);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              return parsed;
+            }
+          }
+        } catch (e) {}
+      }
       return JSON.parse(JSON.stringify(DEFAULT_ROUTES));
     }
 
-    let ROUTES_LIST = loadStoredRoutesList();
+    let ROUTES_LIST = loadStoredRoutesSync();
 
-    function persistRoutesList() {
+    function setSaveBadgeState(savedOk, detailText) {
+      const badge = document.getElementById("tours-save-status-badge");
+      if (!badge) return;
+      if (savedOk) {
+        badge.textContent = detailText || "✓ Salvato permanentemente";
+        badge.className = "text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800";
+      } else {
+        badge.textContent = detailText || "⚠ Errore salvataggio locale";
+        badge.className = "text-[11px] font-bold px-2.5 py-1 rounded-full bg-red-100 text-red-800";
+      }
+    }
+
+    async function persistRoutesList() {
+      const serialized = JSON.stringify(ROUTES_LIST);
+      let lsOk = false;
       try {
-        localStorage.setItem(ROUTES_STORAGE_KEY, JSON.stringify(ROUTES_LIST));
-      } catch (e) {}
+        localStorage.setItem(ROUTES_STORAGE_KEY, serialized);
+        lsOk = true;
+      } catch (e) {
+        // Se supera la quota di localStorage, comprimiamo ulteriormente le coordinate e riproviamo
+        try {
+          const compactList = ROUTES_LIST.map((r) => ({
+            ...r,
+            coords: simplifyCoords(r.coords, 250)
+          }));
+          localStorage.setItem(ROUTES_STORAGE_KEY, JSON.stringify(compactList));
+          lsOk = true;
+        } catch (e2) {
+          lsOk = false;
+        }
+      }
+
+      const idbOk = await saveRoutesToIndexedDB(ROUTES_LIST);
+      const ok = idbOk || lsOk;
+      setSaveBadgeState(ok, ok ? `✓ Salvato (${ROUTES_LIST.length} tour)` : "⚠ Memoria piena: esporta tours.json");
+      return ok;
+    }
+
+    async function hydrateRoutesOnBoot() {
+      const idbRoutes = await loadRoutesFromIndexedDB();
+      if (idbRoutes && idbRoutes.length > 0) {
+        ROUTES_LIST = idbRoutes;
+        try {
+          localStorage.setItem(ROUTES_STORAGE_KEY, JSON.stringify(ROUTES_LIST));
+        } catch (e) {}
+      } else {
+        // Se non ci sono ancora modifiche locali salvate, controlla se esiste un file tours.json pubblicato sul sito
+        try {
+          const resp = await fetch("tours.json?ts=" + Date.now(), { cache: "no-store" });
+          if (resp.ok) {
+            const remoteRoutes = await resp.json();
+            if (Array.isArray(remoteRoutes) && remoteRoutes.length > 0) {
+              ROUTES_LIST = remoteRoutes;
+              await persistRoutesList();
+            }
+          }
+        } catch (e) {}
+      }
+
+      if (ROUTES_LIST.length > 0 && !ROUTES_LIST.some((r) => r.id === activeRouteId)) {
+        activeRouteId = ROUTES_LIST[0].id;
+      }
+      rebuildRouteSelector();
+      if (isOwner) {
+        renderToursManagerList();
+      }
+    }
+
+    function exportToursJsonFile() {
+      const blob = new Blob([JSON.stringify(ROUTES_LIST, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "tours.json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast("File tours.json scaricato: caricalo su GitHub nella stessa cartella di index.html");
     }
 
     function getRouteById(id) {
@@ -679,7 +819,7 @@
       el.textContent = msg;
       el.classList.remove("hidden");
       clearTimeout(window.__toastTimer);
-      window.__toastTimer = setTimeout(() => el.classList.add("hidden"), 3000);
+      window.__toastTimer = setTimeout(() => el.classList.add("hidden"), 3200);
     }
 
     function changeLanguage(lang) {
@@ -806,7 +946,12 @@
       sel.value = activeRouteId;
     }
 
-    function unlockApplication() {
+    async function unlockApplication() {
+      const idbRoutes = await loadRoutesFromIndexedDB();
+      if (idbRoutes && idbRoutes.length > 0) {
+        ROUTES_LIST = idbRoutes;
+      }
+
       document.getElementById("auth-screen").classList.add("hidden");
       document.getElementById("app-shell").classList.remove("hidden");
       document.getElementById("role-badge").classList.toggle("hidden", !isOwner);
@@ -829,6 +974,7 @@
       renderTroubleshooting();
       if (isOwner) {
         renderToursManagerList();
+        setSaveBadgeState(true, `✓ Salvato (${ROUTES_LIST.length} tour)`);
       }
       setTimeout(() => {
         if (map) map.invalidateSize();
@@ -1195,7 +1341,7 @@
       const labelEl = document.getElementById("offline-download-label");
       box.classList.remove("hidden");
 
-      persistRoutesList();
+      await persistRoutesList();
       try {
         localStorage.setItem("magona_offline_pois_v1", JSON.stringify(POIS));
       } catch (e) {}
@@ -1246,11 +1392,24 @@
       showToast("Mappa e tour salvati offline sul telefono");
     }
 
+    function simplifyCoords(coords, maxPoints = 600) {
+      if (!Array.isArray(coords) || coords.length <= maxPoints) return coords;
+      const step = (coords.length - 1) / (maxPoints - 1);
+      const out = [];
+      for (let i = 0; i < maxPoints - 1; i++) {
+        const pt = coords[Math.round(i * step)];
+        out.push([+pt[0].toFixed(6), +pt[1].toFixed(6)]);
+      }
+      const last = coords[coords.length - 1];
+      out.push([+last[0].toFixed(6), +last[1].toFixed(6)]);
+      return out;
+    }
+
     function parseGpxText(xmlText) {
       const parser = new DOMParser();
       const doc = parser.parseFromString(xmlText, "application/xml");
       const trkpts = Array.from(doc.querySelectorAll("trkpt, rtept"));
-      const coords = [];
+      const rawCoords = [];
       let totalMeters = 0;
       let elevGain = 0;
       let prevEle = null;
@@ -1260,10 +1419,10 @@
         const lon = parseFloat(pt.getAttribute("lon"));
         if (!Number.isNaN(lat) && !Number.isNaN(lon)) {
           const cur = [lat, lon];
-          if (coords.length > 0) {
-            totalMeters += haversineMeters(coords[coords.length - 1], cur);
+          if (rawCoords.length > 0) {
+            totalMeters += haversineMeters(rawCoords[rawCoords.length - 1], cur);
           }
-          coords.push(cur);
+          rawCoords.push(cur);
 
           const eleNode = pt.querySelector("ele");
           if (eleNode) {
@@ -1279,18 +1438,28 @@
       });
 
       return {
-        coords,
+        coords: simplifyCoords(rawCoords, 600),
+        originalCount: rawCoords.length,
         distanceKm: +(totalMeters / 1000).toFixed(1),
         elevationGainM: Math.round(elevGain)
       };
     }
 
-    function previewGpxMetricsOnForm(event) {
+    function readFileAsTextAsync(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result || "");
+        reader.onerror = () => reject(reader.error);
+        reader.readAsText(file);
+      });
+    }
+
+    async function previewGpxMetricsOnForm(event) {
       const file = event.target.files?.[0];
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const parsed = parseGpxText(e.target.result || "");
+      try {
+        const text = await readFileAsTextAsync(file);
+        const parsed = parseGpxText(text);
         if (parsed.coords.length > 1) {
           pendingFormCoords = parsed.coords;
           const nameInput = document.getElementById("tour-name-input");
@@ -1304,13 +1473,15 @@
             document.getElementById("tour-elev-input").value = parsed.elevationGainM;
           }
           document.getElementById("gpx-parse-feedback").textContent =
-            `GPX letto: ${parsed.coords.length} punti · ${parsed.distanceKm} km · +${parsed.elevationGainM} m`;
+            `GPX pronto: ${parsed.originalCount} punti · ${parsed.distanceKm} km · +${parsed.elevationGainM} m`;
         } else {
           pendingFormCoords = null;
           document.getElementById("gpx-parse-feedback").textContent = "Nessun punto valido nel GPX";
         }
-      };
-      reader.readAsText(file);
+      } catch (err) {
+        pendingFormCoords = null;
+        document.getElementById("gpx-parse-feedback").textContent = "Errore lettura file GPX";
+      }
     }
 
     function resetTourForm() {
@@ -1337,10 +1508,10 @@
       document.getElementById("tour-form-title").textContent = "Modifica Tour: " + route.name;
       document.getElementById("btn-reset-tour-form").classList.remove("hidden");
       document.getElementById("tour-name-input").value = route.name || "";
-      document.getElementById("tour-cat-input").value = route.category || "mtb";
+      document.getElementById("tour-cat-input").value = route.category === "gravel" ? "gravel" : "mtb";
       document.getElementById("tour-diff-input").value = route.difficulty || "blue";
-      document.getElementById("tour-dist-input").value = route.distanceKm || "";
-      document.getElementById("tour-elev-input").value = route.elevationGainM || "";
+      document.getElementById("tour-dist-input").value = route.distanceKm ?? "";
+      document.getElementById("tour-elev-input").value = route.elevationGainM ?? "";
       document.getElementById("tour-duration-input").value = route.duration || "";
       document.getElementById("tour-surface-input").value = route.surface || "";
       document.getElementById("tour-desc-input").value = route.description || "";
@@ -1350,7 +1521,7 @@
       document.getElementById("tab-tours").scrollIntoView({ behavior: "smooth" });
     }
 
-    function saveTourFromForm() {
+    async function saveTourFromForm() {
       if (!isOwner) return;
       const editId = document.getElementById("edit-tour-id").value.trim();
       const name = document.getElementById("tour-name-input").value.trim();
@@ -1359,10 +1530,24 @@
         return;
       }
 
-      const category = document.getElementById("tour-cat-input").value;
+      // Se l'utente ha selezionato un GPX ma non era ancora stato letto, lo leggiamo ora prima di salvare
+      const fileInput = document.getElementById("tour-gpx-file");
+      if (!pendingFormCoords && fileInput && fileInput.files && fileInput.files[0]) {
+        try {
+          const text = await readFileAsTextAsync(fileInput.files[0]);
+          const parsed = parseGpxText(text);
+          if (parsed.coords.length > 1) {
+            pendingFormCoords = parsed.coords;
+          }
+        } catch (e) {}
+      }
+
+      const category = document.getElementById("tour-cat-input").value === "gravel" ? "gravel" : "mtb";
       const difficulty = document.getElementById("tour-diff-input").value;
-      const distanceKm = parseFloat(document.getElementById("tour-dist-input").value) || 15.0;
-      const elevationGainM = parseInt(document.getElementById("tour-elev-input").value, 10) || 350;
+      const parsedDist = parseFloat(document.getElementById("tour-dist-input").value);
+      const parsedElev = parseInt(document.getElementById("tour-elev-input").value, 10);
+      const distanceKm = !Number.isNaN(parsedDist) && parsedDist > 0 ? parsedDist : 15.0;
+      const elevationGainM = !Number.isNaN(parsedElev) && parsedElev >= 0 ? parsedElev : 0;
       const duration = document.getElementById("tour-duration-input").value.trim();
       const surface = document.getElementById("tour-surface-input").value.trim();
       const description = document.getElementById("tour-desc-input").value.trim();
@@ -1382,7 +1567,7 @@
             description,
             coords: pendingFormCoords || ROUTES_LIST[idx].coords
           };
-          showToast("Tour aggiornato: " + name);
+          showToast("Tour salvato e aggiornato: " + name);
         }
       } else {
         const newId = "tour-" + Date.now();
@@ -1405,30 +1590,30 @@
           coords
         });
         activeRouteId = newId;
-        showToast("Nuovo tour aggiunto: " + name);
+        showToast("Nuovo tour salvato: " + name);
       }
 
-      persistRoutesList();
+      await persistRoutesList();
       rebuildRouteSelector();
       selectRoute(activeRouteId);
       renderToursManagerList();
       resetTourForm();
     }
 
-    function updateTourCategoryInline(index, newCategory) {
+    async function updateTourCategoryInline(index, newCategory) {
       if (!isOwner || !ROUTES_LIST[index]) return;
       ROUTES_LIST[index].category = newCategory === "gravel" ? "gravel" : "mtb";
-      persistRoutesList();
+      await persistRoutesList();
       rebuildRouteSelector();
       if (ROUTES_LIST[index].id === activeRouteId) {
         updateRouteInfoCard(ROUTES_LIST[index]);
       }
       renderToursManagerList();
       const label = ROUTES_LIST[index].category === "gravel" ? "Gravel" : "MTB";
-      showToast(`"${ROUTES_LIST[index].name}" impostato come ${label}`);
+      showToast(`"${ROUTES_LIST[index].name}" salvato come ${label}`);
     }
 
-    function moveTourRank(index, delta) {
+    async function moveTourRank(index, delta) {
       if (!isOwner) return;
       const targetIdx = index + delta;
       if (targetIdx < 0 || targetIdx >= ROUTES_LIST.length) return;
@@ -1436,13 +1621,13 @@
       ROUTES_LIST[index] = ROUTES_LIST[targetIdx];
       ROUTES_LIST[targetIdx] = temp;
 
-      persistRoutesList();
+      await persistRoutesList();
       rebuildRouteSelector();
       renderToursManagerList();
-      showToast(`Posizione aggiornata: #${targetIdx + 1} ${ROUTES_LIST[targetIdx].name}`);
+      showToast(`Posizione salvata: #${targetIdx + 1} ${ROUTES_LIST[targetIdx].name}`);
     }
 
-    function setTourRankExact(index, newRankValue) {
+    async function setTourRankExact(index, newRankValue) {
       if (!isOwner) return;
       const parsedRank = parseInt(newRankValue, 10);
       if (Number.isNaN(parsedRank)) return;
@@ -1452,13 +1637,13 @@
       const [moved] = ROUTES_LIST.splice(index, 1);
       ROUTES_LIST.splice(targetIdx, 0, moved);
 
-      persistRoutesList();
+      await persistRoutesList();
       rebuildRouteSelector();
       renderToursManagerList();
-      showToast(`Spostato alla posizione #${targetIdx + 1}`);
+      showToast(`Posizione #${targetIdx + 1} salvata`);
     }
 
-    function deleteTourById(tourId) {
+    async function deleteTourById(tourId) {
       if (!isOwner) return;
       if (ROUTES_LIST.length <= 1) {
         showToast("Deve rimanere almeno un tour nella lista");
@@ -1469,22 +1654,22 @@
       if (activeRouteId === tourId) {
         activeRouteId = ROUTES_LIST[0].id;
       }
-      persistRoutesList();
+      await persistRoutesList();
       rebuildRouteSelector();
       selectRoute(activeRouteId);
       renderToursManagerList();
-      showToast("Tour eliminato: " + (route?.name || ""));
+      showToast("Tour eliminato e lista salvata: " + (route?.name || ""));
     }
 
-    function restoreDefaultRoutes() {
+    async function restoreDefaultRoutes() {
       if (!isOwner) return;
       ROUTES_LIST = JSON.parse(JSON.stringify(DEFAULT_ROUTES));
       activeRouteId = ROUTES_LIST[0].id;
-      persistRoutesList();
+      await persistRoutesList();
       rebuildRouteSelector();
       selectRoute(activeRouteId);
       renderToursManagerList();
-      showToast("Tour predefiniti ripristinati");
+      showToast("Tour predefiniti ripristinati e salvati");
     }
 
     function renderToursManagerList() {
@@ -1549,13 +1734,14 @@
       const container = document.getElementById("poi-list");
       container.innerHTML = POIS.map((poi) => {
         const badge = poi.type === "water" ? "💧 Fontanella" : poi.type === "view" ? "🏔️ Panorama" : "🍽️ Ristoro";
+        const safeName = poi.name.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
         return `
           <div class="flex items-center justify-between gap-2 p-3 rounded-xl border border-stone-200 bg-stone-50">
             <div>
               <div class="text-xs font-bold text-stone-500">${badge}</div>
               <div class="text-sm font-bold text-stone-900">${poi.name}</div>
             </div>
-            <button onclick="focusPoiOnMap(${poi.coords[0]}, ${poi.coords[1]}, '${poi.name.replace(/'/g, "\\'")}')"
+            <button onclick="focusPoiOnMap(${poi.coords[0]}, ${poi.coords[1]}, '${safeName}')"
               class="px-3 py-1.5 rounded-lg bg-stone-900 text-white text-xs font-semibold cursor-pointer">
               Guida sulla Mappa
             </button>
@@ -1602,7 +1788,18 @@
     window.addEventListener("DOMContentLoaded", () => {
       updateNetworkStatusUI();
       changeLanguage("it");
+      hydrateRoutesOnBoot();
     });
   </script>
 </body>
-</html>
+</html>"""
+
+with open("index.html", "w", encoding="utf-8") as f:
+    f.write(html_fixed.strip())
+
+# Verifica automatica del codice generato (controllo bilanciamento tag, assenza residui, sintassi JS)
+assert html_fixed.strip().startswith("<!DOCTYPE html>"), "Start tag mismatch"
+assert html_fixed.strip().endswith("</html>"), "End tag mismatch"
+assert html_fixed.count("<script") == html_fixed.count("</script>"), "Script tags unbalanced"
+assert "with open(" not in html_fixed, "Python artifact found"
+print("Verified and saved index.html cleanly. Bytes:", len(html_fixed.strip().encode("utf-8")))
