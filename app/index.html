@@ -639,7 +639,7 @@
   <div id="toast-msg" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[10000] hidden bg-stone-900 text-white text-xs font-semibold px-4 py-2.5 rounded-full shadow-lg"></div>
 
   <script>
-    const OWNER_PASSWORD = "MAGONA2026";
+    const OWNER_PASSWORD = "MAGONABIKEGARAGE2025";
     const FIREBASE_RTDB_URL = "https://magonabikegarage-c61b2-default-rtdb.europe-west1.firebasedatabase.app/";
     const FIREBASE_ROOT_PATH = "magona_bike_garage_state";
 
@@ -766,7 +766,7 @@
         yourGpsPopup: "La tua posizione GPS",
         poiTitle: "Punti Utili (Fontanelle, Panorami, Ristori)",
         poiSubtitleUser: "Seleziona un punto per avviare la guida sulla mappa.",
-        poiSubtitleOwner: "Modifica, aggiungi o elimina i punti utili e premi Salva Modifiche.",
+        poiSubtitleOwner: "Ordina, modifica, aggiungi o elimina i punti utili e premi Salva Modifiche.",
         poiFormAddTitle: "Aggiungi Nuovo Punto Utile o Modifica Esistente",
         poiFormEditTitle: "Modifica Punto Utile:",
         poiFormDesc: "Gestisci fontanelle, punti panoramici, ristori e punti di interesse lungo i percorsi, poi premi Salva Modifiche.",
@@ -922,7 +922,7 @@
         yourGpsPopup: "Your GPS location",
         poiTitle: "Points of Interest (Fountains, Views, Stops)",
         poiSubtitleUser: "Select a point to start map guidance.",
-        poiSubtitleOwner: "Edit, add or delete points of interest and press Save Changes.",
+        poiSubtitleOwner: "Order, edit, add or delete points of interest and press Save Changes.",
         poiFormAddTitle: "Add New Point of Interest or Edit Existing",
         poiFormEditTitle: "Edit Point of Interest:",
         poiFormDesc: "Manage water fountains, viewpoints, rest stops and points of interest along the routes, then press Save Changes.",
@@ -1078,7 +1078,7 @@
         yourGpsPopup: "Ihre GPS-Position",
         poiTitle: "Wegpunkte (Brunnen, Aussicht, Einkehr)",
         poiSubtitleUser: "Wählen Sie einen Punkt für die Kartenführung.",
-        poiSubtitleOwner: "Wegpunkte bearbeiten, hinzufügen oder löschen und Änderungen speichern.",
+        poiSubtitleOwner: "Sortieren, bearbeiten, hinzufügen oder löschen und Änderungen speichern.",
         poiFormAddTitle: "Neuen Wegpunkt hinzufügen oder bestehenden bearbeiten",
         poiFormEditTitle: "Wegpunkt bearbeiten:",
         poiFormDesc: "Verwalten Sie Trinkbrunnen, Aussichtspunkte, Einkehrmöglichkeiten und Wegpunkte entlang der Strecken und klicken Sie auf Änderungen speichern.",
@@ -1234,7 +1234,7 @@
         yourGpsPopup: "Jouw GPS-locatie",
         poiTitle: "Nuttige Punten (Water, Uitzicht, Rust)",
         poiSubtitleUser: "Selecteer een punt om begeleiding op de kaart te starten.",
-        poiSubtitleOwner: "Bewerk, voeg toe of verwijder nuttige punten en klik op Wijzigingen opslaan.",
+        poiSubtitleOwner: "Sorteer, bewerk, voeg toe of verwijder nuttige punten en klik op Wijzigingen opslaan.",
         poiFormAddTitle: "Nieuw Nuttig Punt toevoegen of bestaand bewerken",
         poiFormEditTitle: "Nuttig Punt bewerken:",
         poiFormDesc: "Beheer waterpunten, uitzichtpunten, rustplaatsen en nuttige punten langs de routes en klik op Wijzigingen opslaan.",
@@ -1775,6 +1775,7 @@
         const validPool = cloudData.codes.filter((item) => item && item.code);
         if (validPool.length > 0) {
           try { localStorage.setItem(CLIENT_CODES_STORAGE_KEY, JSON.stringify(validPool)); } catch (e) {}
+          await idbWrite(CLIENT_CODES_STORAGE_KEY, validPool);
           renderClientCodesPoolUI();
         }
       }
@@ -2058,19 +2059,57 @@
       } catch (e) {}
       const initialLegacy = (localStorage.getItem("magona_active_client_pwd") || "RIDE-4829").trim().toUpperCase();
       const initialPool = [{ code: initialLegacy, uses: 0, maxUses: MAX_USES_PER_CODE }];
-      saveClientCodesPool(initialPool);
+      try {
+        localStorage.setItem(CLIENT_CODES_STORAGE_KEY, JSON.stringify(initialPool));
+      } catch (e) {}
       return initialPool;
     }
 
-    function saveClientCodesPool(pool) {
+    async function saveClientCodesPool(pool, showSyncFeedback = false) {
       try {
         localStorage.setItem(CLIENT_CODES_STORAGE_KEY, JSON.stringify(pool));
         const active = pool.find((c) => (c.uses || 0) < (c.maxUses || MAX_USES_PER_CODE));
         if (active) {
           localStorage.setItem("magona_active_client_pwd", active.code);
         }
-        cloudWriteJson("codes", pool);
       } catch (e) {}
+      await idbWrite(CLIENT_CODES_STORAGE_KEY, pool);
+
+      const cloudOk = await cloudWriteJson("codes", pool);
+      if (showSyncFeedback) {
+        if (cloudOk) {
+          showToast("✓ Codici salvati e sincronizzati su Firebase");
+        } else {
+          showToast("Salvato in locale (offline/cloud non raggiungibile)");
+        }
+      }
+      return cloudOk;
+    }
+
+    async function syncClientCodesFromCloud(notifyUser = false) {
+      let pool = loadClientCodesPool();
+      const idbPool = await idbRead(CLIENT_CODES_STORAGE_KEY);
+      if (Array.isArray(idbPool) && idbPool.length > 0) {
+        pool = idbPool.filter((item) => item && item.code);
+      }
+
+      if (isFirebaseConfigured() && navigator.onLine) {
+        const remoteCodes = await cloudReadJson("codes");
+        if (Array.isArray(remoteCodes) && remoteCodes.length > 0) {
+          pool = remoteCodes.filter((item) => item && item.code);
+          try {
+            localStorage.setItem(CLIENT_CODES_STORAGE_KEY, JSON.stringify(pool));
+          } catch (e) {}
+          await idbWrite(CLIENT_CODES_STORAGE_KEY, pool);
+          renderClientCodesPoolUI();
+          if (notifyUser) showToast("✓ Codici aggiornati da Firebase");
+          return pool;
+        }
+      }
+
+      renderClientCodesPoolUI();
+      if (notifyUser) showToast("Mostrati codici salvati sul dispositivo");
+      return pool;
     }
 
     function getActiveClientPassword() {
@@ -2127,8 +2166,8 @@
       }).join("");
     }
 
-    function rotateClientPassword() {
-      const pool = loadClientCodesPool();
+    async function rotateClientPassword() {
+      const pool = await syncClientCodesFromCloud(false);
       let code = "";
       let attempts = 0;
       do {
@@ -2137,25 +2176,24 @@
       } while (pool.some((item) => item.code === code) && attempts < 20);
 
       pool.unshift({ code, uses: 0, maxUses: MAX_USES_PER_CODE });
-      saveClientCodesPool(pool);
       renderClientCodesPoolUI();
-      showToast("Nuovo codice aggiunto (max 3 accessi): " + code);
+      await saveClientCodesPool(pool, true);
     }
 
-    function resetClientCodeUses(code) {
-      const pool = loadClientCodesPool().map((item) =>
+    async function resetClientCodeUses(code) {
+      const currentPool = await syncClientCodesFromCloud(false);
+      const pool = currentPool.map((item) =>
         item.code === code ? { ...item, uses: 0, maxUses: MAX_USES_PER_CODE } : item
       );
-      saveClientCodesPool(pool);
       renderClientCodesPoolUI();
-      showToast("Accessi azzerati (0/3) per " + code);
+      await saveClientCodesPool(pool, true);
     }
 
-    function revokeClientCode(code) {
-      const pool = loadClientCodesPool().filter((item) => item.code !== code);
-      saveClientCodesPool(pool);
+    async function revokeClientCode(code) {
+      const currentPool = await syncClientCodesFromCloud(false);
+      const pool = currentPool.filter((item) => item.code !== code);
       renderClientCodesPoolUI();
-      showToast("Codice revocato: " + code);
+      await saveClientCodesPool(pool, true);
     }
 
     async function submitAccessPassword() {
@@ -2172,17 +2210,12 @@
       if (val === OWNER_PASSWORD) {
         isOwner = true;
         errEl.classList.add("hidden");
-        unlockApplication();
+        await syncClientCodesFromCloud(false);
+        await unlockApplication();
         return;
       }
 
-      if (isFirebaseConfigured() && navigator.onLine) {
-        const remoteCodes = await cloudReadJson("codes");
-        if (Array.isArray(remoteCodes) && remoteCodes.length > 0) {
-          try { localStorage.setItem(CLIENT_CODES_STORAGE_KEY, JSON.stringify(remoteCodes)); } catch (e) {}
-        }
-      }
-      const pool = loadClientCodesPool();
+      const pool = await syncClientCodesFromCloud(false);
       const matchIdx = pool.findIndex((item) => item.code.toUpperCase() === val);
 
       if (matchIdx === -1) {
@@ -2202,11 +2235,11 @@
       }
 
       pool[matchIdx] = { ...target, uses: currentUses + 1, maxUses };
-      saveClientCodesPool(pool);
+      await saveClientCodesPool(pool, false);
       renderClientCodesPoolUI();
       isOwner = false;
       errEl.classList.add("hidden");
-      unlockApplication();
+      await unlockApplication();
     }
 
     /* ================= APP SHELL & NAVIGATION ================= */
@@ -2286,7 +2319,7 @@
       document.getElementById("access-password-input").value = "";
     }
 
-    function switchTab(tabName) {
+    async function switchTab(tabName) {
       if ((tabName === "manager" || tabName === "tours") && !isOwner) return;
       document.querySelectorAll(".tab-panel").forEach((p) => p.classList.add("hidden"));
       document.getElementById("tab-" + tabName).classList.remove("hidden");
@@ -2304,6 +2337,9 @@
       }
       if (tabName === "tours" && isOwner) {
         renderToursManagerList();
+      }
+      if (tabName === "manager" && isOwner) {
+        await syncClientCodesFromCloud(false);
       }
     }
 
@@ -2741,7 +2777,6 @@
     async function fetchOpenMtbTrailRoute(startPt, endPt) {
       if (!navigator.onLine) return null;
 
-      // 1. BRouter OpenStreetMap / OpenMTBMap routing (supporta sentieri, singletrack, sterrati e carrarecce)
       try {
         const brouterUrl = `https://brouter.de/brouter?lonlats=${startPt[1]},${startPt[0]}|${endPt[1]},${endPt[0]}&profile=mtb&alternativeidx=0&format=geojson`;
         const ctrl = new AbortController();
@@ -2768,7 +2803,6 @@
         }
       } catch (e) {}
 
-      // 2. Fallback online su OSRM bicycle routing
       try {
         const osrmUrl = `https://router.project-osrm.org/route/v1/bicycle/${startPt[1]},${startPt[0]};${endPt[1]},${endPt[0]}?overview=full&geometries=geojson`;
         const ctrl = new AbortController();
@@ -2797,7 +2831,6 @@
       const activeRoute = getRouteById(activeRouteId);
       const rCoords = activeRoute?.coords;
 
-      // Se c'è una traccia attiva con punti vicino a partenza/arrivo, segue il sentiero della traccia invece della linea retta
       if (Array.isArray(rCoords) && rCoords.length > 2) {
         let bestStartIdx = 0;
         let bestStartDist = Infinity;
@@ -3399,6 +3432,19 @@
       showToast("✓ " + name);
     }
 
+    async function movePoiRank(index, delta) {
+      if (!isOwner) return;
+      const targetIdx = index + delta;
+      if (targetIdx < 0 || targetIdx >= POIS.length) return;
+      const temp = POIS[index];
+      POIS[index] = POIS[targetIdx];
+      POIS[targetIdx] = temp;
+
+      await persistPoisList(true);
+      renderPoiList();
+      renderPoiMarkersOnMap();
+    }
+
     async function deletePoiById(poiId) {
       if (!isOwner || POIS.length <= 1) return;
       POIS = POIS.filter((p) => p.id !== poiId);
@@ -3427,7 +3473,7 @@
       const container = document.getElementById("poi-list");
       if (!container) return;
       const t = I18N[currentLang] || I18N.it;
-      container.innerHTML = POIS.map((poi) => {
+      container.innerHTML = POIS.map((poi, idx) => {
         const meta = getPoiTypeMeta(poi.type);
         const locName = getLocalizedPoiField(poi, "name");
         const locNote = getLocalizedPoiField(poi, "note");
@@ -3439,6 +3485,7 @@
           <div class="p-3 rounded-xl border border-stone-200 bg-stone-50 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
             <div class="space-y-0.5">
               <div class="flex flex-wrap items-center gap-2">
+                <span class="text-[11px] font-extrabold text-stone-400">#${idx + 1}</span>
                 <span class="text-xs font-bold text-stone-600">${meta.badge}</span>
                 ${coordsText ? `<span class="text-[11px] text-stone-400">${coordsText}</span>` : ""}
               </div>
@@ -3451,6 +3498,14 @@
                 ${t.guideOnMap}
               </button>
               ${isOwner ? `
+                <button onclick="movePoiRank(${idx}, -1)" ${idx === 0 ? "disabled" : ""}
+                  class="px-2.5 py-1.5 rounded-lg border border-stone-300 bg-white hover:bg-stone-100 disabled:opacity-35 text-xs font-bold cursor-pointer">
+                  ${t.rankUpBtn}
+                </button>
+                <button onclick="movePoiRank(${idx}, 1)" ${idx === POIS.length - 1 ? "disabled" : ""}
+                  class="px-2.5 py-1.5 rounded-lg border border-stone-300 bg-white hover:bg-stone-100 disabled:opacity-35 text-xs font-bold cursor-pointer">
+                  ${t.rankDownBtn}
+                </button>
                 <button onclick="editPoiInForm('${poi.id}')"
                   class="px-3 py-1.5 rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-900 text-xs font-semibold cursor-pointer">
                   ${t.editBtn}
