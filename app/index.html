@@ -15,6 +15,20 @@
       background-color: #f4f4f2;
       color: #141413;
     }
+    .brand-logo-img {
+      height: 36px;
+      max-width: 190px;
+      width: auto;
+      object-fit: contain;
+      display: block;
+    }
+    .brand-logo-auth {
+      height: 46px;
+      max-width: 240px;
+      width: auto;
+      object-fit: contain;
+      display: block;
+    }
     #map-container {
       height: 440px;
       width: 100%;
@@ -64,7 +78,10 @@
   <!-- Schermata iniziale autorizzazioni GPS & Rete Web -->
   <div id="startup-permissions-modal" class="fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-stone-200">
-      <div class="text-xs uppercase tracking-widest text-stone-500 font-semibold mb-1">Magona Bike Garage · Bibbona</div>
+      <div class="mb-2 flex items-center gap-2">
+        <img src="logo.png" alt="Magona Bike Garage" class="brand-logo-img" onerror="this.style.display='none'; document.getElementById('perm-fallback-brand').classList.remove('hidden');" />
+        <span id="perm-fallback-brand" class="hidden text-xs uppercase tracking-widest text-stone-500 font-semibold">Magona Bike Garage · Bibbona</span>
+      </div>
       <h2 id="perm-title" class="text-xl font-bold text-stone-900 mb-2">Autorizzazioni GPS e Rete Web</h2>
       <p id="perm-desc" class="text-sm text-stone-600 mb-4">
         Per mostrare la tua posizione sul sentiero, calcolare distanza e dislivello rimanenti e salvare le mappe offline, abilita il GPS e la connessione web.
@@ -96,7 +113,10 @@
       <div class="flex items-center justify-between mb-4">
         <div>
           <div class="text-[11px] uppercase tracking-widest text-stone-500 font-semibold">Bibbona · Val di Cecina</div>
-          <h1 class="text-2xl font-extrabold text-stone-900">Magona Bike Garage</h1>
+          <div class="mt-0.5">
+            <img src="logo.png" alt="Magona Bike Garage" class="brand-logo-auth" onerror="this.style.display='none'; document.getElementById('auth-fallback-title').classList.remove('hidden');" />
+            <h1 id="auth-fallback-title" class="hidden text-2xl font-extrabold text-stone-900">Magona Bike Garage</h1>
+          </div>
         </div>
         <select id="lang-select" onchange="changeLanguage(this.value)" class="border border-stone-300 rounded-lg px-2.5 py-1.5 text-xs font-semibold bg-stone-50">
           <option value="it">IT</option>
@@ -114,6 +134,7 @@
         Codice Accesso / Password
       </label>
       <input id="access-password-input" type="password" autocomplete="off" placeholder="Inserisci codice di accesso"
+        onkeydown="if(event.key==='Enter') submitAccessPassword()"
         class="w-full border border-stone-300 rounded-xl px-3.5 py-2.5 text-sm mb-3 focus:outline-none focus:border-stone-900" />
 
       <div id="auth-error" class="hidden text-xs text-red-600 font-medium mb-3"></div>
@@ -134,7 +155,8 @@
     <!-- Intestazione -->
     <header id="app-header" class="bg-white border-b border-stone-200 px-4 py-3 flex items-center justify-between gap-2">
       <div class="flex items-center gap-2.5">
-        <span class="font-extrabold text-base tracking-tight text-stone-900">Magona Bike Garage</span>
+        <img src="logo.png" alt="Magona Bike Garage" class="brand-logo-img" onerror="this.style.display='none'; document.getElementById('app-fallback-title').classList.remove('hidden');" />
+        <span id="app-fallback-title" class="hidden font-extrabold text-base tracking-tight text-stone-900">Magona Bike Garage</span>
         <span id="role-badge" class="hidden text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-stone-900 text-white">GESTORE</span>
         <span id="offline-cache-badge" class="hidden text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">OFFLINE PRONTO</span>
       </div>
@@ -156,6 +178,7 @@
       <button data-tab="map" onclick="switchTab('map')" class="nav-tab py-3 border-b-2 border-stone-900 text-stone-900 whitespace-nowrap cursor-pointer">Mappa</button>
       <button data-tab="pois" onclick="switchTab('pois')" class="nav-tab py-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 whitespace-nowrap cursor-pointer">Punti Utili</button>
       <button data-tab="support" onclick="switchTab('support')" class="nav-tab py-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 whitespace-nowrap cursor-pointer">Assistenza</button>
+      <button id="nav-tours-tab" data-tab="tours" onclick="switchTab('tours')" class="nav-tab hidden py-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 whitespace-nowrap cursor-pointer">Gestione Tour</button>
       <button id="nav-manager-tab" data-tab="manager" onclick="switchTab('manager')" class="nav-tab hidden py-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 whitespace-nowrap cursor-pointer">Gestore & Cache</button>
     </nav>
 
@@ -164,11 +187,7 @@
       <div class="bg-white rounded-2xl border border-stone-200 p-4 space-y-3">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div class="flex flex-wrap gap-2">
-            <select id="route-select" onchange="selectRoute(this.value)" class="border border-stone-300 rounded-xl px-3 py-2 text-sm font-semibold bg-stone-50">
-              <option value="magona-loop">Anello Macchia della Magona (MTB)</option>
-              <option value="bolgheri-gravel">Strada del Vino & Bolgheri (Gravel)</option>
-              <option value="riparbella-trail">Riparbella & Acquerta (Enduro)</option>
-            </select>
+            <select id="route-select" onchange="selectRoute(this.value)" class="border border-stone-300 rounded-xl px-3 py-2 text-sm font-semibold bg-stone-50"></select>
             <select id="category-filter" onchange="applyRouteFilters()" class="border border-stone-300 rounded-xl px-3 py-2 text-xs font-semibold bg-stone-50">
               <option value="all">Tutte le bici</option>
               <option value="mtb">MTB / E-MTB</option>
@@ -176,10 +195,10 @@
             </select>
             <select id="difficulty-filter" onchange="applyRouteFilters()" class="border border-stone-300 rounded-xl px-3 py-2 text-xs font-semibold bg-stone-50">
               <option value="all">Tutte le difficoltà</option>
-              <option value="green">Verde</option>
-              <option value="blue">Blu</option>
-              <option value="red">Rosso</option>
-              <option value="black">Nero</option>
+              <option value="green">Verde (Facile)</option>
+              <option value="blue">Blu (Intermedio)</option>
+              <option value="red">Rosso (Impegnativo)</option>
+              <option value="black">Nero (Esperto)</option>
             </select>
           </div>
 
@@ -196,6 +215,19 @@
             <button onclick="toggleMapFullscreen()" class="px-3.5 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold cursor-pointer">
               Schermo Intero
             </button>
+          </div>
+        </div>
+
+        <!-- Scheda dettagliata del tour attivo (difficoltà, disciplina MTB/Gravel, terreno, tempo stimato, note) -->
+        <div id="active-route-info-card" class="bg-stone-50 border border-stone-200/90 rounded-xl p-3 flex flex-wrap items-center justify-between gap-2 text-xs">
+          <div class="space-y-1">
+            <div class="flex flex-wrap items-center gap-2">
+              <span id="route-diff-badge" class="px-2 py-0.5 rounded font-bold text-[11px] bg-blue-100 text-blue-800">Blu · Intermedio</span>
+              <span id="route-cat-badge" class="px-2 py-0.5 rounded font-semibold text-[11px] bg-stone-200 text-stone-800">MTB</span>
+              <span id="route-duration-text" class="text-stone-600 font-semibold">⏱ ~2h 15m</span>
+              <span id="route-surface-text" class="text-stone-600">· Fondo: Bosco & Singletrack</span>
+            </div>
+            <p id="route-description-text" class="text-stone-700 leading-snug"></p>
           </div>
         </div>
 
@@ -332,6 +364,106 @@
       </div>
     </section>
 
+    <!-- Scheda Gestione Tour (Solo Gestore) -->
+    <section id="tab-tours" class="tab-panel hidden flex-1 p-4 max-w-5xl w-full mx-auto space-y-4">
+      <div class="bg-white rounded-2xl border border-stone-200 p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 id="tour-form-title" class="text-base font-bold text-stone-900">Aggiungi Nuovo Tour o Modifica Esistente</h2>
+            <p class="text-xs text-stone-500">Indica se il tour è <strong>MTB</strong> o <strong>Gravel</strong> per mostrarlo ai clienti, carica il GPX e imposta difficoltà, distanza, dislivello e descrizione.</p>
+          </div>
+          <button id="btn-reset-tour-form" onclick="resetTourForm()" class="hidden px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
+            Annulla Modifica (Nuovo Tour)
+          </button>
+        </div>
+
+        <input type="hidden" id="edit-tour-id" value="" />
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+          <div>
+            <label class="block font-semibold text-stone-700 mb-1">Nome del Tour *</label>
+            <input id="tour-name-input" type="text" placeholder="Es. Anello della Magona & Campo di Sasso"
+              class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900" />
+          </div>
+
+          <div>
+            <label class="block font-semibold text-stone-700 mb-1">Disciplina Tour (MTB / Gravel) *</label>
+            <select id="tour-cat-input" class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm font-bold bg-stone-50">
+              <option value="mtb">MTB</option>
+              <option value="gravel">Gravel</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-semibold text-stone-700 mb-1">Difficoltà</label>
+            <select id="tour-diff-input" class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm bg-stone-50">
+              <option value="green">Verde — Facile / Famiglie</option>
+              <option value="blue" selected>Blu — Intermedio</option>
+              <option value="red">Rosso — Impegnativo / Enduro</option>
+              <option value="black">Nero — Esperto / Tecnico</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-semibold text-stone-700 mb-1">Distanza (km)</label>
+            <input id="tour-dist-input" type="number" step="0.1" min="0.1" placeholder="24.8"
+              class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900" />
+          </div>
+
+          <div>
+            <label class="block font-semibold text-stone-700 mb-1">Dislivello + (m)</label>
+            <input id="tour-elev-input" type="number" step="10" min="0" placeholder="640"
+              class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900" />
+          </div>
+
+          <div>
+            <label class="block font-semibold text-stone-700 mb-1">Tempo Stimato</label>
+            <input id="tour-duration-input" type="text" placeholder="Es. 2h 15m"
+              class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900" />
+          </div>
+
+          <div>
+            <label class="block font-semibold text-stone-700 mb-1">Fondo / Terreno</label>
+            <input id="tour-surface-input" type="text" placeholder="Es. Bosco, singletrack e carrarecce"
+              class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900" />
+          </div>
+
+          <div class="sm:col-span-2">
+            <label class="block font-semibold text-stone-700 mb-1">File Traccia GPX (opzionale in modifica, consigliato per nuovo tour)</label>
+            <input type="file" id="tour-gpx-file" accept=".gpx" onchange="previewGpxMetricsOnForm(event)"
+              class="w-full border border-stone-300 rounded-xl px-3 py-1.5 text-xs bg-stone-50" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-stone-700 mb-1">Descrizione & Note Tecniche per il Cliente</label>
+          <textarea id="tour-desc-input" rows="2" placeholder="Inserisci punti di interesse, consigli sulla batteria e-bike, passaggi tecnici o fontanelle lungo il giro..."
+            class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900"></textarea>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2.5">
+          <button onclick="saveTourFromForm()" class="px-5 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold cursor-pointer">
+            Salva Tour nella Lista
+          </button>
+          <span id="gpx-parse-feedback" class="text-xs text-emerald-700 font-semibold"></span>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-stone-200 p-5 space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h3 class="text-base font-bold text-stone-900">Classifica e Ordine dei Tour</h3>
+            <p class="text-xs text-stone-500">Imposta se ogni tour è <strong>MTB</strong> o <strong>Gravel</strong> per i clienti, spostalo in classifica con Su/Giù o numero di posizione, oppure eliminalo.</p>
+          </div>
+          <button onclick="restoreDefaultRoutes()" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold cursor-pointer">
+            Ripristina Tour Predefiniti
+          </button>
+        </div>
+
+        <div id="tours-manager-list" class="space-y-2.5"></div>
+      </div>
+    </section>
+
     <!-- Scheda Gestore & Cache -->
     <section id="tab-manager" class="tab-panel hidden flex-1 p-4 max-w-4xl w-full mx-auto space-y-4">
       <div class="bg-white rounded-2xl border border-stone-200 p-4 space-y-3">
@@ -349,10 +481,9 @@
           <button onclick="saveOfflineForUser()" class="px-4 py-2 rounded-xl bg-stone-900 text-white text-xs font-semibold cursor-pointer">
             Pre-Scarica Mappa Magona Offline
           </button>
-        </div>
-        <div class="pt-2">
-          <label class="block text-xs font-semibold text-stone-700 mb-1">Carica Tracciato GPX</label>
-          <input type="file" id="gpx-file-input" accept=".gpx" onchange="handleGpxUpload(event)" class="text-xs" />
+          <button onclick="switchTab('tours')" class="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold cursor-pointer">
+            Vai a Gestione Tour
+          </button>
         </div>
       </div>
     </section>
@@ -366,6 +497,7 @@
     const BASE_COORDS = [43.2742, 10.6018]; // Via del Mandorlo 1, Bibbona
     const NAV_ZOOM_LEVEL = 17;
     const OFFLINE_CACHE_NAME = "magona-offline-v1";
+    const ROUTES_STORAGE_KEY = "magona_offline_routes_v2";
 
     const I18N = {
       it: {
@@ -430,13 +562,24 @@
       }
     };
 
-    const DEFAULT_ROUTES = {
-      "magona-loop": {
+    const DIFFICULTY_META = {
+      green: { label: "Verde · Facile", badgeClass: "bg-emerald-100 text-emerald-800" },
+      blue: { label: "Blu · Intermedio", badgeClass: "bg-blue-100 text-blue-800" },
+      red: { label: "Rosso · Impegnativo", badgeClass: "bg-red-100 text-red-800" },
+      black: { label: "Nero · Esperto", badgeClass: "bg-stone-900 text-white" }
+    };
+
+    const DEFAULT_ROUTES = [
+      {
+        id: "magona-loop",
         name: "Anello Macchia della Magona",
         category: "mtb",
         difficulty: "blue",
         distanceKm: 24.8,
         elevationGainM: 640,
+        duration: "2h 15m",
+        surface: "Bosco, singletrack e carrarecce",
+        description: "Giro classico nella Macchia della Magona tra sugherete, leccete e punti panoramici verso il mare.",
         coords: [
           [43.2742, 10.6018],
           [43.2685, 10.6240],
@@ -446,12 +589,16 @@
           [43.2742, 10.6018]
         ]
       },
-      "bolgheri-gravel": {
+      {
+        id: "bolgheri-gravel",
         name: "Strada del Vino & Bolgheri",
         category: "gravel",
         difficulty: "green",
         distanceKm: 36.4,
         elevationGainM: 420,
+        duration: "2h 30m",
+        surface: "Strade bianche e asfalto secondario",
+        description: "Percorso scorrevole tra vigneti, oliveti e il Viale dei Cipressi di Bolgheri, ideale per gravel ed e-bike.",
         coords: [
           [43.2742, 10.6018],
           [43.2550, 10.5820],
@@ -460,12 +607,16 @@
           [43.2742, 10.6018]
         ]
       },
-      "riparbella-trail": {
+      {
+        id: "riparbella-trail",
         name: "Riparbella & Acquerta",
         category: "mtb",
         difficulty: "red",
         distanceKm: 29.2,
         elevationGainM: 890,
+        duration: "3h 00m",
+        surface: "Trail tecnici, radici e pietraia",
+        description: "Itinerario enduro/all-mountain verso il Giardino di Riparbella e il torrente Acquerta con discese guidate.",
         coords: [
           [43.2742, 10.6018],
           [43.3020, 10.6180],
@@ -474,22 +625,32 @@
           [43.2742, 10.6018]
         ]
       }
-    };
+    ];
 
-    function loadStoredRoutes() {
+    function loadStoredRoutesList() {
       try {
-        const raw = localStorage.getItem("magona_offline_routes_v1");
+        const raw = localStorage.getItem(ROUTES_STORAGE_KEY);
         if (raw) {
           const parsed = JSON.parse(raw);
-          if (parsed && typeof parsed === "object" && Object.keys(parsed).length > 0) {
-            return { ...DEFAULT_ROUTES, ...parsed };
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            return parsed;
           }
         }
       } catch (e) {}
-      return { ...DEFAULT_ROUTES };
+      return JSON.parse(JSON.stringify(DEFAULT_ROUTES));
     }
 
-    let ROUTES = loadStoredRoutes();
+    let ROUTES_LIST = loadStoredRoutesList();
+
+    function persistRoutesList() {
+      try {
+        localStorage.setItem(ROUTES_STORAGE_KEY, JSON.stringify(ROUTES_LIST));
+      } catch (e) {}
+    }
+
+    function getRouteById(id) {
+      return ROUTES_LIST.find((r) => r.id === id) || ROUTES_LIST[0] || DEFAULT_ROUTES[0];
+    }
 
     const POIS = [
       { id: "f1", type: "water", name: "Fontana Campo di Sasso", coords: [43.2610, 10.6360] },
@@ -508,8 +669,9 @@
     let followUserCenter = true;
     let hasInitialNavZoomed = false;
     let userCoords = null;
-    let activeRouteId = "magona-loop";
+    let activeRouteId = ROUTES_LIST[0]?.id || "magona-loop";
     let simulatedProgressRatio = 0;
+    let pendingFormCoords = null;
 
     function showToast(msg) {
       const el = document.getElementById("toast-msg");
@@ -634,13 +796,14 @@
     function rebuildRouteSelector() {
       const sel = document.getElementById("route-select");
       if (!sel) return;
-      sel.innerHTML = Object.entries(ROUTES).map(([id, r]) => {
+      sel.innerHTML = ROUTES_LIST.map((r, idx) => {
         const tag = r.category === "gravel" ? "Gravel" : "MTB";
-        return `<option value="${id}">${r.name} (${tag})</option>`;
+        return `<option value="${r.id}">#${idx + 1} · ${r.name} (${tag})</option>`;
       }).join("");
-      if (ROUTES[activeRouteId]) {
-        sel.value = activeRouteId;
+      if (!ROUTES_LIST.some((r) => r.id === activeRouteId) && ROUTES_LIST.length > 0) {
+        activeRouteId = ROUTES_LIST[0].id;
       }
+      sel.value = activeRouteId;
     }
 
     function unlockApplication() {
@@ -648,10 +811,15 @@
       document.getElementById("app-shell").classList.remove("hidden");
       document.getElementById("role-badge").classList.toggle("hidden", !isOwner);
       document.getElementById("nav-manager-tab").classList.toggle("hidden", !isOwner);
+      document.getElementById("nav-tours-tab").classList.toggle("hidden", !isOwner);
       document.getElementById("active-client-password").textContent = getActiveClientPassword();
 
       if (localStorage.getItem("magona_offline_ready") === "1") {
         document.getElementById("offline-cache-badge").classList.remove("hidden");
+      }
+
+      if (ROUTES_LIST.length > 0 && !ROUTES_LIST.some((r) => r.id === activeRouteId)) {
+        activeRouteId = ROUTES_LIST[0].id;
       }
 
       rebuildRouteSelector();
@@ -659,6 +827,9 @@
       selectRoute(activeRouteId);
       renderPoiList();
       renderTroubleshooting();
+      if (isOwner) {
+        renderToursManagerList();
+      }
       setTimeout(() => {
         if (map) map.invalidateSize();
       }, 120);
@@ -677,7 +848,7 @@
     }
 
     function switchTab(tabName) {
-      if (tabName === "manager" && !isOwner) return;
+      if ((tabName === "manager" || tabName === "tours") && !isOwner) return;
       document.querySelectorAll(".tab-panel").forEach((p) => p.classList.add("hidden"));
       document.getElementById("tab-" + tabName).classList.remove("hidden");
 
@@ -691,6 +862,9 @@
 
       if (tabName === "map" && map) {
         setTimeout(() => map.invalidateSize(), 100);
+      }
+      if (tabName === "tours" && isOwner) {
+        renderToursManagerList();
       }
     }
 
@@ -729,10 +903,27 @@
       });
     }
 
+    function updateRouteInfoCard(route) {
+      if (!route) return;
+      const meta = DIFFICULTY_META[route.difficulty] || DIFFICULTY_META.blue;
+      const diffBadge = document.getElementById("route-diff-badge");
+      diffBadge.textContent = meta.label;
+      diffBadge.className = "px-2 py-0.5 rounded font-bold text-[11px] " + meta.badgeClass;
+
+      document.getElementById("route-cat-badge").textContent = route.category === "gravel" ? "Gravel" : "MTB";
+      document.getElementById("route-duration-text").textContent = route.duration ? "⏱ " + route.duration : "";
+      document.getElementById("route-surface-text").textContent = route.surface ? "· Fondo: " + route.surface : "";
+      document.getElementById("route-description-text").textContent = route.description || "";
+    }
+
     function selectRoute(routeId) {
-      const route = ROUTES[routeId] || ROUTES["magona-loop"];
-      activeRouteId = routeId;
-      document.getElementById("route-select").value = activeRouteId;
+      const route = getRouteById(routeId);
+      if (!route) return;
+      activeRouteId = route.id;
+      const sel = document.getElementById("route-select");
+      if (sel) sel.value = activeRouteId;
+
+      updateRouteInfoCard(route);
 
       if (map) {
         if (routePolyline) map.removeLayer(routePolyline);
@@ -744,7 +935,7 @@
 
         if (liveNavActive) {
           recenterNavigator(true);
-        } else {
+        } else if (route.coords && route.coords.length > 0) {
           map.fitBounds(routePolyline.getBounds(), { padding: [24, 24] });
         }
       }
@@ -754,14 +945,12 @@
     function applyRouteFilters() {
       const cat = document.getElementById("category-filter").value;
       const diff = document.getElementById("difficulty-filter").value;
-      const select = document.getElementById("route-select");
-      const matches = Object.entries(ROUTES).filter(([, r]) =>
+      const matches = ROUTES_LIST.filter((r) =>
         (cat === "all" || r.category === cat) &&
         (diff === "all" || r.difficulty === diff)
       );
       if (matches.length > 0) {
-        selectRoute(matches[0][0]);
-        select.value = matches[0][0];
+        selectRoute(matches[0].id);
       } else {
         showToast("Nessun percorso con questi filtri");
       }
@@ -801,15 +990,16 @@
     }
 
     function updateRouteProgressMetrics() {
-      const route = ROUTES[activeRouteId] || ROUTES["magona-loop"];
+      const route = getRouteById(activeRouteId);
+      if (!route) return;
       const gpsRatio = userCoords ? computeProgressFromGps(userCoords, route.coords) : null;
       const ratio = gpsRatio !== null ? gpsRatio : Math.min(1, Math.max(0, simulatedProgressRatio));
 
-      const totalKm = route.distanceKm;
+      const totalKm = Number(route.distanceKm) || 0;
       const doneKm = +(totalKm * ratio).toFixed(1);
       const remKm = +(totalKm - doneKm).toFixed(1);
 
-      const totalElev = route.elevationGainM;
+      const totalElev = Number(route.elevationGainM) || 0;
       const doneElev = Math.round(totalElev * ratio);
       const remElev = Math.max(0, totalElev - doneElev);
       const pct = Math.round(ratio * 100);
@@ -908,12 +1098,13 @@
       const statusText = document.getElementById("nav-status-text");
       const btn = document.getElementById("btn-live-nav");
       const fsBtn = document.getElementById("fs-btn-live-nav");
+      const activeRoute = getRouteById(activeRouteId);
 
       if (liveNavActive) {
         followUserCenter = true;
         hasInitialNavZoomed = false;
         banner.classList.remove("hidden");
-        statusText.textContent = "Navigazione GPS live attiva — " + (ROUTES[activeRouteId]?.name || "");
+        statusText.textContent = "Navigazione GPS live attiva — " + (activeRoute?.name || "");
         btn.textContent = "Ferma GPS Live";
         btn.className = "px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer";
         if (fsBtn) {
@@ -921,7 +1112,7 @@
           fsBtn.className = "px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer";
         }
 
-        const routeStart = ROUTES[activeRouteId]?.coords?.[0] || BASE_COORDS;
+        const routeStart = activeRoute?.coords?.[0] || BASE_COORDS;
         const targetStart = userCoords || routeStart;
         if (map) {
           map.setView(targetStart, NAV_ZOOM_LEVEL, { animate: true });
@@ -945,7 +1136,7 @@
     function recenterNavigator(forceZoom = true) {
       if (!map) return;
       followUserCenter = true;
-      const routeStart = ROUTES[activeRouteId]?.coords?.[0] || BASE_COORDS;
+      const routeStart = getRouteById(activeRouteId)?.coords?.[0] || BASE_COORDS;
       const target = userCoords || routeStart;
       if (forceZoom) {
         map.setView(target, NAV_ZOOM_LEVEL, { animate: true });
@@ -1004,16 +1195,14 @@
       const labelEl = document.getElementById("offline-download-label");
       box.classList.remove("hidden");
 
-      // 1. Salva tutti i percorsi e punti utili nello storage locale protetto dell'app
+      persistRoutesList();
       try {
-        localStorage.setItem("magona_offline_routes_v1", JSON.stringify(ROUTES));
         localStorage.setItem("magona_offline_pois_v1", JSON.stringify(POIS));
       } catch (e) {}
 
-      // 2. Calcola i riquadri mappa (zoom 13-15) attorno ai percorsi e alla Macchia della Magona
       const tileUrls = new Set();
       const allCoords = [BASE_COORDS];
-      Object.values(ROUTES).forEach((r) => {
+      ROUTES_LIST.forEach((r) => {
         (r.coords || []).forEach((c) => allCoords.push(c));
       });
 
@@ -1057,6 +1246,305 @@
       showToast("Mappa e tour salvati offline sul telefono");
     }
 
+    function parseGpxText(xmlText) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(xmlText, "application/xml");
+      const trkpts = Array.from(doc.querySelectorAll("trkpt, rtept"));
+      const coords = [];
+      let totalMeters = 0;
+      let elevGain = 0;
+      let prevEle = null;
+
+      trkpts.forEach((pt) => {
+        const lat = parseFloat(pt.getAttribute("lat"));
+        const lon = parseFloat(pt.getAttribute("lon"));
+        if (!Number.isNaN(lat) && !Number.isNaN(lon)) {
+          const cur = [lat, lon];
+          if (coords.length > 0) {
+            totalMeters += haversineMeters(coords[coords.length - 1], cur);
+          }
+          coords.push(cur);
+
+          const eleNode = pt.querySelector("ele");
+          if (eleNode) {
+            const ele = parseFloat(eleNode.textContent);
+            if (!Number.isNaN(ele)) {
+              if (prevEle !== null && ele > prevEle) {
+                elevGain += (ele - prevEle);
+              }
+              prevEle = ele;
+            }
+          }
+        }
+      });
+
+      return {
+        coords,
+        distanceKm: +(totalMeters / 1000).toFixed(1),
+        elevationGainM: Math.round(elevGain)
+      };
+    }
+
+    function previewGpxMetricsOnForm(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const parsed = parseGpxText(e.target.result || "");
+        if (parsed.coords.length > 1) {
+          pendingFormCoords = parsed.coords;
+          const nameInput = document.getElementById("tour-name-input");
+          if (!nameInput.value.trim()) {
+            nameInput.value = file.name.replace(/\.gpx$/i, "").replace(/[-_]+/g, " ");
+          }
+          if (parsed.distanceKm > 0) {
+            document.getElementById("tour-dist-input").value = parsed.distanceKm;
+          }
+          if (parsed.elevationGainM > 0) {
+            document.getElementById("tour-elev-input").value = parsed.elevationGainM;
+          }
+          document.getElementById("gpx-parse-feedback").textContent =
+            `GPX letto: ${parsed.coords.length} punti · ${parsed.distanceKm} km · +${parsed.elevationGainM} m`;
+        } else {
+          pendingFormCoords = null;
+          document.getElementById("gpx-parse-feedback").textContent = "Nessun punto valido nel GPX";
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function resetTourForm() {
+      document.getElementById("edit-tour-id").value = "";
+      document.getElementById("tour-form-title").textContent = "Aggiungi Nuovo Tour o Modifica Esistente";
+      document.getElementById("btn-reset-tour-form").classList.add("hidden");
+      document.getElementById("tour-name-input").value = "";
+      document.getElementById("tour-cat-input").value = "mtb";
+      document.getElementById("tour-diff-input").value = "blue";
+      document.getElementById("tour-dist-input").value = "";
+      document.getElementById("tour-elev-input").value = "";
+      document.getElementById("tour-duration-input").value = "";
+      document.getElementById("tour-surface-input").value = "";
+      document.getElementById("tour-desc-input").value = "";
+      document.getElementById("tour-gpx-file").value = "";
+      document.getElementById("gpx-parse-feedback").textContent = "";
+      pendingFormCoords = null;
+    }
+
+    function editTourInForm(tourId) {
+      const route = getRouteById(tourId);
+      if (!route) return;
+      document.getElementById("edit-tour-id").value = route.id;
+      document.getElementById("tour-form-title").textContent = "Modifica Tour: " + route.name;
+      document.getElementById("btn-reset-tour-form").classList.remove("hidden");
+      document.getElementById("tour-name-input").value = route.name || "";
+      document.getElementById("tour-cat-input").value = route.category || "mtb";
+      document.getElementById("tour-diff-input").value = route.difficulty || "blue";
+      document.getElementById("tour-dist-input").value = route.distanceKm || "";
+      document.getElementById("tour-elev-input").value = route.elevationGainM || "";
+      document.getElementById("tour-duration-input").value = route.duration || "";
+      document.getElementById("tour-surface-input").value = route.surface || "";
+      document.getElementById("tour-desc-input").value = route.description || "";
+      document.getElementById("tour-gpx-file").value = "";
+      document.getElementById("gpx-parse-feedback").textContent = "Traccia GPS esistente mantenuta (carica un nuovo GPX solo se vuoi sostituirla)";
+      pendingFormCoords = null;
+      document.getElementById("tab-tours").scrollIntoView({ behavior: "smooth" });
+    }
+
+    function saveTourFromForm() {
+      if (!isOwner) return;
+      const editId = document.getElementById("edit-tour-id").value.trim();
+      const name = document.getElementById("tour-name-input").value.trim();
+      if (!name) {
+        showToast("Inserisci almeno il nome del tour");
+        return;
+      }
+
+      const category = document.getElementById("tour-cat-input").value;
+      const difficulty = document.getElementById("tour-diff-input").value;
+      const distanceKm = parseFloat(document.getElementById("tour-dist-input").value) || 15.0;
+      const elevationGainM = parseInt(document.getElementById("tour-elev-input").value, 10) || 350;
+      const duration = document.getElementById("tour-duration-input").value.trim();
+      const surface = document.getElementById("tour-surface-input").value.trim();
+      const description = document.getElementById("tour-desc-input").value.trim();
+
+      if (editId) {
+        const idx = ROUTES_LIST.findIndex((r) => r.id === editId);
+        if (idx !== -1) {
+          ROUTES_LIST[idx] = {
+            ...ROUTES_LIST[idx],
+            name,
+            category,
+            difficulty,
+            distanceKm,
+            elevationGainM,
+            duration,
+            surface,
+            description,
+            coords: pendingFormCoords || ROUTES_LIST[idx].coords
+          };
+          showToast("Tour aggiornato: " + name);
+        }
+      } else {
+        const newId = "tour-" + Date.now();
+        const coords = pendingFormCoords || [
+          BASE_COORDS,
+          [43.2660, 10.6210],
+          [43.2570, 10.6350],
+          BASE_COORDS
+        ];
+        ROUTES_LIST.push({
+          id: newId,
+          name,
+          category,
+          difficulty,
+          distanceKm,
+          elevationGainM,
+          duration,
+          surface,
+          description,
+          coords
+        });
+        activeRouteId = newId;
+        showToast("Nuovo tour aggiunto: " + name);
+      }
+
+      persistRoutesList();
+      rebuildRouteSelector();
+      selectRoute(activeRouteId);
+      renderToursManagerList();
+      resetTourForm();
+    }
+
+    function updateTourCategoryInline(index, newCategory) {
+      if (!isOwner || !ROUTES_LIST[index]) return;
+      ROUTES_LIST[index].category = newCategory === "gravel" ? "gravel" : "mtb";
+      persistRoutesList();
+      rebuildRouteSelector();
+      if (ROUTES_LIST[index].id === activeRouteId) {
+        updateRouteInfoCard(ROUTES_LIST[index]);
+      }
+      renderToursManagerList();
+      const label = ROUTES_LIST[index].category === "gravel" ? "Gravel" : "MTB";
+      showToast(`"${ROUTES_LIST[index].name}" impostato come ${label}`);
+    }
+
+    function moveTourRank(index, delta) {
+      if (!isOwner) return;
+      const targetIdx = index + delta;
+      if (targetIdx < 0 || targetIdx >= ROUTES_LIST.length) return;
+      const temp = ROUTES_LIST[index];
+      ROUTES_LIST[index] = ROUTES_LIST[targetIdx];
+      ROUTES_LIST[targetIdx] = temp;
+
+      persistRoutesList();
+      rebuildRouteSelector();
+      renderToursManagerList();
+      showToast(`Posizione aggiornata: #${targetIdx + 1} ${ROUTES_LIST[targetIdx].name}`);
+    }
+
+    function setTourRankExact(index, newRankValue) {
+      if (!isOwner) return;
+      const parsedRank = parseInt(newRankValue, 10);
+      if (Number.isNaN(parsedRank)) return;
+      const targetIdx = Math.min(ROUTES_LIST.length - 1, Math.max(0, parsedRank - 1));
+      if (targetIdx === index) return;
+
+      const [moved] = ROUTES_LIST.splice(index, 1);
+      ROUTES_LIST.splice(targetIdx, 0, moved);
+
+      persistRoutesList();
+      rebuildRouteSelector();
+      renderToursManagerList();
+      showToast(`Spostato alla posizione #${targetIdx + 1}`);
+    }
+
+    function deleteTourById(tourId) {
+      if (!isOwner) return;
+      if (ROUTES_LIST.length <= 1) {
+        showToast("Deve rimanere almeno un tour nella lista");
+        return;
+      }
+      const route = getRouteById(tourId);
+      ROUTES_LIST = ROUTES_LIST.filter((r) => r.id !== tourId);
+      if (activeRouteId === tourId) {
+        activeRouteId = ROUTES_LIST[0].id;
+      }
+      persistRoutesList();
+      rebuildRouteSelector();
+      selectRoute(activeRouteId);
+      renderToursManagerList();
+      showToast("Tour eliminato: " + (route?.name || ""));
+    }
+
+    function restoreDefaultRoutes() {
+      if (!isOwner) return;
+      ROUTES_LIST = JSON.parse(JSON.stringify(DEFAULT_ROUTES));
+      activeRouteId = ROUTES_LIST[0].id;
+      persistRoutesList();
+      rebuildRouteSelector();
+      selectRoute(activeRouteId);
+      renderToursManagerList();
+      showToast("Tour predefiniti ripristinati");
+    }
+
+    function renderToursManagerList() {
+      const container = document.getElementById("tours-manager-list");
+      if (!container) return;
+
+      container.innerHTML = ROUTES_LIST.map((r, idx) => {
+        const meta = DIFFICULTY_META[r.difficulty] || DIFFICULTY_META.blue;
+        return `
+          <div class="p-3.5 rounded-xl border border-stone-200 bg-stone-50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex items-start gap-3">
+              <div class="flex flex-col items-center gap-1">
+                <label class="text-[10px] font-bold uppercase text-stone-400">Pos.</label>
+                <input type="number" min="1" max="${ROUTES_LIST.length}" value="${idx + 1}"
+                  onchange="setTourRankExact(${idx}, this.value)"
+                  class="w-12 text-center font-extrabold text-sm border border-stone-300 rounded-lg py-1 bg-white" />
+              </div>
+              <div class="space-y-1">
+                <div class="flex flex-wrap items-center gap-1.5">
+                  <span class="text-sm font-extrabold text-stone-900">${r.name}</span>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold ${meta.badgeClass}">${meta.label}</span>
+                  <select aria-label="Disciplina tour per clienti"
+                    onchange="updateTourCategoryInline(${idx}, this.value)"
+                    class="px-2 py-0.5 rounded text-[11px] font-bold border border-stone-300 bg-white text-stone-900 cursor-pointer">
+                    <option value="mtb" ${r.category !== "gravel" ? "selected" : ""}>MTB</option>
+                    <option value="gravel" ${r.category === "gravel" ? "selected" : ""}>Gravel</option>
+                  </select>
+                </div>
+                <div class="text-xs text-stone-600 font-medium">
+                  ${Number(r.distanceKm).toFixed(1)} km · +${r.elevationGainM} m ${r.duration ? "· ⏱ " + r.duration : ""} ${r.surface ? "· " + r.surface : ""}
+                </div>
+                ${r.description ? `<p class="text-xs text-stone-500">${r.description}</p>` : ""}
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-1.5 self-end sm:self-center">
+              <button onclick="moveTourRank(${idx}, -1)" ${idx === 0 ? "disabled" : ""}
+                title="Sposta su in classifica"
+                class="px-2.5 py-1.5 rounded-lg border border-stone-300 bg-white hover:bg-stone-100 disabled:opacity-35 text-xs font-bold cursor-pointer">
+                ↑ Su
+              </button>
+              <button onclick="moveTourRank(${idx}, 1)" ${idx === ROUTES_LIST.length - 1 ? "disabled" : ""}
+                title="Sposta giù in classifica"
+                class="px-2.5 py-1.5 rounded-lg border border-stone-300 bg-white hover:bg-stone-100 disabled:opacity-35 text-xs font-bold cursor-pointer">
+                ↓ Giù
+              </button>
+              <button onclick="editTourInForm('${r.id}')"
+                class="px-3 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold cursor-pointer">
+                Modifica
+              </button>
+              <button onclick="deleteTourById('${r.id}')"
+                class="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-semibold cursor-pointer">
+                Elimina
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
     function renderPoiList() {
       const container = document.getElementById("poi-list");
       container.innerHTML = POIS.map((poi) => {
@@ -1067,7 +1555,7 @@
               <div class="text-xs font-bold text-stone-500">${badge}</div>
               <div class="text-sm font-bold text-stone-900">${poi.name}</div>
             </div>
-            <button onclick="focusPoiOnMap(${poi.coords[0]}, ${poi.coords[1]}, '${poi.name.replace(/'/g, "\'")}')"
+            <button onclick="focusPoiOnMap(${poi.coords[0]}, ${poi.coords[1]}, '${poi.name.replace(/'/g, "\\'")}')"
               class="px-3 py-1.5 rounded-lg bg-stone-900 text-white text-xs font-semibold cursor-pointer">
               Guida sulla Mappa
             </button>
@@ -1101,47 +1589,12 @@
     }
 
     function sendWhatsAppLocation() {
-      const routeName = ROUTES[activeRouteId]?.name || "Percorso";
+      const routeName = getRouteById(activeRouteId)?.name || "Percorso";
       const locText = userCoords
         ? `Lat ${userCoords[0].toFixed(5)}, Lng ${userCoords[1].toFixed(5)}`
         : "Posizione GPS non disponibile";
       const msg = encodeURIComponent(`Ciao Magona Bike Garage, chiedo assistenza. Tracciato: ${routeName}. ${locText}`);
       window.open(`https://wa.me/393313453207?text=${msg}`, "_blank", "noopener");
-    }
-
-    function handleGpxUpload(event) {
-      const file = event.target.files?.[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const xmlText = e.target.result || "";
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(xmlText, "application/xml");
-        const pts = Array.from(doc.querySelectorAll("trkpt")).map((pt) => [
-          parseFloat(pt.getAttribute("lat")),
-          parseFloat(pt.getAttribute("lon"))
-        ]).filter((c) => !Number.isNaN(c[0]) && !Number.isNaN(c[1]));
-
-        if (pts.length > 1) {
-          const id = "custom-" + Date.now();
-          ROUTES[id] = {
-            name: file.name.replace(/\.gpx$/i, ""),
-            category: "mtb",
-            difficulty: "blue",
-            distanceKm: 20.0,
-            elevationGainM: 500,
-            coords: pts
-          };
-          localStorage.setItem("magona_offline_routes_v1", JSON.stringify(ROUTES));
-          rebuildRouteSelector();
-          switchTab("map");
-          selectRoute(id);
-          showToast("Tracciato caricato: " + ROUTES[id].name);
-        } else {
-          showToast("File GPX senza punti traccia validi");
-        }
-      };
-      reader.readAsText(file);
     }
 
     window.addEventListener("online", updateNetworkStatusUI);
