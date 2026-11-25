@@ -3,2718 +3,604 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Magona Bike Garage — Client Trail & Assistance</title>
-
-  <!-- Google Fonts: Plus Jakarta Sans & Space Grotesk -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-
-  <!-- Tailwind CSS -->
+  <title>Magona Bike Garage — Trail & Assistenza</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Plus Jakarta Sans', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-            display: ['Space Grotesk', 'sans-serif'],
-          },
-          colors: {
-            ink: '#0A0A0A',
-            paper: '#FFFFFF',
-            fog: '#F5F5F5',
-            line: '#E5E5E5',
-            muted: '#737373',
-            diff: {
-              green: '#16A34A',
-              blue: '#2563EB',
-              red: '#DC2626',
-              black: '#111111'
-            }
-          }
-        }
-      }
-    }
-  </script>
-
-  <!-- Leaflet CSS & JS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-
-  <!-- Optional external trails database for GitHub Pages / bibbonabike.com zero-cost hosting -->
-  <script src="trails-data.js" onerror="window.__NO_EXTERNAL_TRAILS__ = true;"></script>
-
   <style>
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-    .leaflet-container {
-      font-family: 'Plus Jakarta Sans', sans-serif !important;
-      background-color: #EFEFEF;
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f4f4f2;
+      color: #141413;
+    }
+    #map-container {
+      height: 440px;
+      width: 100%;
       z-index: 1;
+      border-radius: 14px;
     }
-    .leaflet-control-attribution {
-      font-size: 9px !important;
-      background: rgba(255, 255, 255, 0.9) !important;
-      color: #0A0A0A !important;
-      border-top: 1px solid #E5E5E5;
-      border-left: 1px solid #E5E5E5;
-      padding: 1px 6px !important;
+    .map-stage.is-fullscreen {
+      position: fixed !important;
+      inset: 0 !important;
+      width: 100vw !important;
+      height: 100dvh !important;
+      z-index: 9990 !important;
+      background: #141413 !important;
+      border-radius: 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 10px !important;
+      padding: 10px !important;
     }
-
-    .gps-beacon {
-      width: 18px;
-      height: 18px;
-      background: #0A0A0A;
-      border: 3px solid #FFFFFF;
-      border-radius: 9999px;
-      box-shadow: 0 0 0 2px #0A0A0A;
-      animation: gps-ring 2s infinite;
+    .map-stage.is-fullscreen .map-wrapper {
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      width: 100% !important;
     }
-    @keyframes gps-ring {
-      0% { box-shadow: 0 0 0 0 rgba(10, 10, 10, 0.55); }
-      70% { box-shadow: 0 0 0 16px rgba(10, 10, 10, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(10, 10, 10, 0); }
+    .map-stage.is-fullscreen #map-container {
+      height: 100% !important;
+      border-radius: 14px !important;
     }
-
-    .poi-marker-pin {
+    .bottom-telemetry-panel {
+      display: none;
+    }
+    .map-stage.is-fullscreen .bottom-telemetry-panel {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 32px;
-      height: 32px;
-      border-radius: 9999px;
-      background: #FFFFFF;
-      color: #0A0A0A;
-      border: 2px solid #0A0A0A;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.16);
-      transition: transform 0.15s ease, background-color 0.15s ease, color 0.15s ease;
-    }
-    .poi-marker-pin:hover {
-      transform: scale(1.1);
-      background: #0A0A0A;
-      color: #FFFFFF;
+      flex-direction: column;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.98);
+      color: #141413;
+      border-radius: 14px;
+      padding: 12px 14px;
+      box-shadow: 0 -8px 28px rgba(0,0,0,0.3);
+      flex-shrink: 0;
     }
   </style>
 </head>
-<body class="bg-paper text-ink antialiased selection:bg-ink selection:text-paper min-h-[100dvh] flex flex-col overflow-x-hidden overflow-y-auto">
+<body class="min-h-screen flex flex-col">
 
-  <!-- ========================================================================
-       STARTUP PERMISSION MODAL (GPS & WEB / OFFLINE CACHE)
-       ======================================================================== -->
-  <section id="startup-permissions-modal" class="fixed inset-0 z-[60] bg-ink/85 backdrop-blur-xs text-ink flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
-    <div class="max-w-md w-full bg-paper border-2 border-ink p-5 sm:p-6 shadow-2xl space-y-5">
-      <div class="flex items-center justify-between border-b border-line pb-3">
-        <div class="flex items-center gap-2">
-          <span class="w-2.5 h-2.5 bg-ink inline-block"></span>
-          <span class="font-display font-bold text-[11px] uppercase tracking-[0.16em]">MAGONA BIKE GARAGE</span>
+  <!-- Schermata iniziale autorizzazioni GPS & Rete Web -->
+  <div id="startup-permissions-modal" class="fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-stone-200">
+      <div class="text-xs uppercase tracking-widest text-stone-500 font-semibold mb-1">Magona Bike Garage · Bibbona</div>
+      <h2 id="perm-title" class="text-xl font-bold text-stone-900 mb-2">Autorizzazioni GPS e Rete Web</h2>
+      <p id="perm-desc" class="text-sm text-stone-600 mb-4">
+        Per mostrare la tua posizione sul sentiero, calcolare distanza e dislivello rimanenti e salvare le mappe offline, abilita il GPS e la connessione web.
+      </p>
+      <div class="space-y-2.5 mb-5 text-sm">
+        <div class="flex items-center justify-between bg-stone-100 px-3.5 py-2.5 rounded-xl">
+          <span id="perm-gps-label" class="font-medium text-stone-800">Posizione GPS Live</span>
+          <span id="perm-gps-status" class="text-xs font-semibold px-2 py-0.5 rounded bg-stone-200 text-stone-700">In attesa</span>
         </div>
-        <span id="perm-eyebrow" class="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 bg-fog border border-line">CONFIGURAZIONE INIZIALE</span>
-      </div>
-
-      <div>
-        <h2 id="perm-title" class="font-display font-bold text-2xl tracking-tight leading-tight text-ink">
-          Autorizzazioni GPS &amp; Rete Web
-        </h2>
-        <p id="perm-subtitle" class="text-xs text-muted mt-2 leading-relaxed">
-          Per guidarti lungo i sentieri e inviare la tua posizione in caso di assistenza, autorizza l'accesso al GPS e alla connessione web per le mappe.
-        </p>
-      </div>
-
-      <!-- Permission Items Status -->
-      <div class="space-y-2.5">
-        <div class="border border-line bg-fog p-3 flex items-start justify-between gap-3">
-          <div class="space-y-0.5">
-            <div class="flex items-center gap-1.5">
-              <svg class="w-4 h-4 text-ink shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M12 2v3m0 14v3M2 12h3m14 0h3"/>
-                <circle cx="12" cy="12" r="8"/>
-              </svg>
-              <span id="perm-gps-title" class="font-display font-bold text-xs uppercase tracking-wider text-ink">Posizione GPS Live</span>
-            </div>
-            <p id="perm-gps-desc" class="text-[11px] text-muted leading-snug">
-              Necessaria per la navigazione sui sentieri e il soccorso WhatsApp.
-            </p>
-          </div>
-          <span id="perm-gps-status" class="text-[10px] font-extrabold uppercase tracking-wider px-2 py-1 border border-line bg-paper text-muted shrink-0">
-            In attesa
-          </span>
-        </div>
-
-        <div class="border border-line bg-fog p-3 flex items-start justify-between gap-3">
-          <div class="space-y-0.5">
-            <div class="flex items-center gap-1.5">
-              <svg class="w-4 h-4 text-ink shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                <circle cx="12" cy="12" r="10"/>
-                <line x1="2" y1="12" x2="22" y2="12"/>
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-              </svg>
-              <span id="perm-web-title" class="font-display font-bold text-xs uppercase tracking-wider text-ink">Connessione Web &amp; Mappe</span>
-            </div>
-            <p id="perm-web-desc" class="text-[11px] text-muted leading-snug">
-              Consente il caricamento delle mappe sentieri e il salvataggio in cache offline.
-            </p>
-          </div>
-          <span id="perm-web-status" class="text-[10px] font-extrabold uppercase tracking-wider px-2 py-1 border border-line bg-paper text-emerald-700 shrink-0">
-            Pronta
-          </span>
+        <div class="flex items-center justify-between bg-stone-100 px-3.5 py-2.5 rounded-xl">
+          <span id="perm-net-label" class="font-medium text-stone-800">Connessione Web & Cache Mappe</span>
+          <span id="perm-net-status" class="text-xs font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">Verifica...</span>
         </div>
       </div>
-
-      <!-- Actions -->
-      <div class="space-y-2 pt-1">
-        <button
-          type="button"
-          onclick="requestStartupPermissions()"
-          id="btn-grant-permissions"
-          class="w-full bg-ink hover:bg-neutral-800 active:translate-y-[1px] text-paper font-display font-bold text-xs uppercase tracking-[0.14em] py-3.5 px-4 transition-all flex items-center justify-between"
-        >
-          <span id="perm-grant-label">Autorizza GPS e Rete Web</span>
-          <span aria-hidden="true">→</span>
+      <div class="flex flex-col gap-2">
+        <button id="btn-authorize-all" onclick="requestStartupPermissions()" class="w-full py-3 px-4 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-semibold text-sm transition cursor-pointer">
+          Autorizza GPS e Rete Web
         </button>
-
-        <button
-          type="button"
-          onclick="dismissStartupPermissions(false)"
-          id="btn-skip-permissions"
-          class="w-full border border-line hover:border-ink bg-paper text-muted hover:text-ink font-display font-bold text-[11px] uppercase tracking-wider py-2.5 px-4 transition-colors"
-        >
-          <span id="perm-skip-label">Continua senza GPS per ora</span>
+        <button id="btn-skip-perm" onclick="dismissStartupPermissions()" class="w-full py-2.5 px-4 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium text-xs transition cursor-pointer">
+          Continua senza GPS per ora
         </button>
       </div>
     </div>
-  </section>
+  </div>
 
-  <!-- ========================================================================
-       LOCK SCREEN (CLIENT ROTATING PASSWORD + FIXED OWNER PASSWORD)
-       ======================================================================== -->
-  <section id="lock-screen" class="fixed inset-0 z-50 bg-paper text-ink flex flex-col justify-between p-5 sm:p-8 overflow-y-auto">
-    <div class="max-w-md w-full mx-auto flex items-center justify-between border-b border-line pb-4">
-      <div class="flex items-center gap-2.5">
-        <span class="w-3 h-3 bg-ink inline-block"></span>
-        <span class="font-display font-bold text-xs uppercase tracking-[0.18em]">MAGONA BIKE GARAGE</span>
+  <!-- Schermata di accesso cliente / gestore -->
+  <div id="auth-screen" class="flex-1 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-md border border-stone-200">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <div class="text-[11px] uppercase tracking-widest text-stone-500 font-semibold">Bibbona · Val di Cecina</div>
+          <h1 class="text-2xl font-extrabold text-stone-900">Magona Bike Garage</h1>
+        </div>
+        <select id="lang-select" onchange="changeLanguage(this.value)" class="border border-stone-300 rounded-lg px-2.5 py-1.5 text-xs font-semibold bg-stone-50">
+          <option value="it">IT</option>
+          <option value="en">EN</option>
+          <option value="de">DE</option>
+          <option value="nl">NL</option>
+        </select>
       </div>
 
-      <div class="flex items-center border border-line bg-fog p-0.5" role="group" aria-label="Language">
-        <button type="button" onclick="setLanguage('it')" data-lang="it" class="lang-btn px-2 py-1 text-[10px] font-bold uppercase tracking-wider bg-ink text-paper">IT</button>
-        <button type="button" onclick="setLanguage('en')" data-lang="en" class="lang-btn px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-muted hover:text-ink">EN</button>
-        <button type="button" onclick="setLanguage('de')" data-lang="de" class="lang-btn px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-muted hover:text-ink">DE</button>
-        <button type="button" onclick="setLanguage('nl')" data-lang="nl" class="lang-btn px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-muted hover:text-ink">NL</button>
-      </div>
-    </div>
-
-    <div class="max-w-md w-full mx-auto my-auto py-6">
-      <div class="flex items-center justify-between mb-3">
-        <span id="lock-eyebrow" class="text-[11px] font-bold uppercase tracking-[0.16em] text-muted">AREA RISERVATA NOLEGGIO</span>
-        <span class="network-status-badge inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 border border-line bg-fog text-ink">
-          <span class="net-dot w-2 h-2 rounded-full bg-emerald-600"></span>
-          <span class="net-label">Online</span>
-        </span>
-      </div>
-
-      <h1 id="lock-title" class="font-display font-bold text-3xl sm:text-4xl tracking-tight leading-[1.05] text-ink">
-        Mappe, Sentieri &amp; Assistenza.
-      </h1>
-      <p id="lock-subtitle" class="text-sm text-muted mt-3 leading-relaxed">
-        Inserisci il codice noleggio fornito al ritiro bici per accedere ai percorsi, ai punti utili e all'assistenza rapida.
+      <p id="auth-subtitle" class="text-sm text-stone-600 mb-4">
+        Inserisci il codice noleggio giornaliero oppure la password gestore per aprire la mappa sentieri.
       </p>
 
-      <div class="mt-6 space-y-3">
-        <div>
-          <label id="lock-pass-label" for="access-password-input" class="block text-[11px] font-bold uppercase tracking-[0.14em] text-ink mb-2">
-            Password Accesso
-          </label>
-          <input
-            type="text"
-            id="access-password-input"
-            autocomplete="off"
-            autocapitalize="characters"
-            placeholder="es. RIDE-4829"
-            onkeydown="if(event.key==='Enter') submitAccessPassword()"
-            class="w-full bg-paper text-ink placeholder:text-neutral-400 border-2 border-ink px-4 py-3.5 font-display font-bold text-lg tracking-wider uppercase focus:outline-none focus:bg-fog transition-colors"
-          />
-        </div>
+      <label for="access-password-input" class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">
+        Codice Accesso / Password
+      </label>
+      <input id="access-password-input" type="text" placeholder="Es. RIDE-4829 oppure MAGONA2026"
+        class="w-full border border-stone-300 rounded-xl px-3.5 py-2.5 text-sm mb-3 focus:outline-none focus:border-stone-900" />
 
-        <p id="lock-error-msg" class="hidden text-xs font-bold text-red-600 border-l-2 border-red-600 pl-2.5 py-0.5"></p>
+      <div id="auth-error" class="hidden text-xs text-red-600 font-medium mb-3"></div>
 
-        <button
-          type="button"
-          onclick="submitAccessPassword()"
-          id="lock-submit-btn"
-          class="w-full bg-ink hover:bg-neutral-800 active:translate-y-[1px] text-paper font-display font-bold text-sm uppercase tracking-[0.14em] py-4 px-5 transition-all flex items-center justify-between"
-        >
-          <span id="lock-submit-label">Accedi alla Mappa</span>
-          <span aria-hidden="true">→</span>
+      <button onclick="submitAccessPassword()" class="w-full py-3 px-4 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-semibold text-sm transition cursor-pointer">
+        Accedi alla Mappa
+      </button>
+
+      <div class="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500">
+        <span>Assistenza: +39 331 345 3207</span>
+        <button onclick="openStartupPermissionsModal()" class="underline hover:text-stone-800 cursor-pointer">Permessi GPS / Web</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Applicazione principale sbloccata -->
+  <div id="app-shell" class="hidden flex-1 flex flex-col">
+    <!-- Intestazione -->
+    <header id="app-header" class="bg-white border-b border-stone-200 px-4 py-3 flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2.5">
+        <span class="font-extrabold text-base tracking-tight text-stone-900">Magona Bike Garage</span>
+        <span id="role-badge" class="hidden text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-stone-900 text-white">GESTORE</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <select id="app-lang-select" onchange="changeLanguage(this.value)" class="border border-stone-300 rounded-lg px-2 py-1 text-xs font-semibold bg-stone-50">
+          <option value="it">IT</option>
+          <option value="en">EN</option>
+          <option value="de">DE</option>
+          <option value="nl">NL</option>
+        </select>
+        <button onclick="lockApplication()" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 cursor-pointer">
+          Esci
         </button>
       </div>
+    </header>
 
-      <div class="mt-6 pt-4 border-t border-line space-y-1.5 text-[11px] text-muted leading-relaxed">
-        <p id="lock-rotation-note">• Ogni password cliente si rinnova automaticamente dopo l'accesso.</p>
-        <p id="lock-offline-note">• Il GPS satellitare funziona anche senza rete; le mappe restano disponibili se già in cache.</p>
-      </div>
-    </div>
+    <!-- Barra menu subito sotto l'intestazione -->
+    <nav id="app-nav" class="bg-white border-b border-stone-200 px-4 flex gap-5 overflow-x-auto text-sm font-semibold">
+      <button data-tab="map" onclick="switchTab('map')" class="nav-tab py-3 border-b-2 border-stone-900 text-stone-900 whitespace-nowrap cursor-pointer">Mappa</button>
+      <button data-tab="pois" onclick="switchTab('pois')" class="nav-tab py-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 whitespace-nowrap cursor-pointer">Punti Utili</button>
+      <button data-tab="support" onclick="switchTab('support')" class="nav-tab py-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 whitespace-nowrap cursor-pointer">Assistenza</button>
+      <button id="nav-manager-tab" data-tab="manager" onclick="switchTab('manager')" class="nav-tab hidden py-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 whitespace-nowrap cursor-pointer">Gestore & Cache</button>
+    </nav>
 
-    <div class="max-w-md w-full mx-auto border-t border-line pt-3 flex items-center justify-between text-[11px] text-muted">
-      <span>Via del Mandorlo 1, Bibbona</span>
-      <span>GPX Protetti</span>
-    </div>
-  </section>
-
-  <!-- ========================================================================
-       MAIN APP HEADER (VISIBLE AFTER UNLOCK)
-       ======================================================================== -->
-  <header id="app-header" class="hidden bg-paper text-ink border-b border-line px-3.5 py-2.5 flex items-center justify-between gap-2 shrink-0 z-30">
-    <div class="flex items-center gap-2.5 min-w-0">
-      <span class="w-3 h-3 bg-ink shrink-0"></span>
-      <div class="min-w-0">
-        <div class="flex items-center gap-2">
-          <h1 class="font-display font-bold text-sm tracking-tight uppercase truncate">MAGONA BIKE GARAGE</h1>
-          <span id="role-pill" class="hidden text-[9px] font-extrabold uppercase tracking-widest px-1.5 py-0.5 bg-ink text-paper shrink-0">GESTORE</span>
-        </div>
-        <p id="header-subtitle" class="text-[11px] text-muted truncate">Bibbona • Guida Sentieri &amp; Assistenza</p>
-      </div>
-    </div>
-
-    <div class="flex items-center gap-1.5 shrink-0">
-      <div class="network-status-badge hidden sm:inline-flex items-center gap-1.5 px-2 py-1 border border-line bg-fog text-[10px] font-bold uppercase tracking-wider text-ink">
-        <span class="net-dot w-2 h-2 rounded-full bg-emerald-600"></span>
-        <span class="net-label">Online</span>
-      </div>
-
-      <div class="flex items-center border border-line bg-fog p-0.5" role="group" aria-label="Language Selector">
-        <button type="button" onclick="setLanguage('it')" data-lang="it" class="lang-btn px-1.5 py-1 text-[10px] font-bold uppercase bg-ink text-paper">IT</button>
-        <button type="button" onclick="setLanguage('en')" data-lang="en" class="lang-btn px-1.5 py-1 text-[10px] font-bold uppercase text-muted hover:text-ink">EN</button>
-        <button type="button" onclick="setLanguage('de')" data-lang="de" class="lang-btn px-1.5 py-1 text-[10px] font-bold uppercase text-muted hover:text-ink">DE</button>
-        <button type="button" onclick="setLanguage('nl')" data-lang="nl" class="lang-btn px-1.5 py-1 text-[10px] font-bold uppercase text-muted hover:text-ink">NL</button>
-      </div>
-
-      <button
-        type="button"
-        onclick="lockApplication()"
-        id="btn-lock-app"
-        title="Blocca / Esci"
-        class="px-2.5 py-1.5 border border-ink bg-paper hover:bg-ink hover:text-paper text-ink text-[10px] font-bold uppercase tracking-wider transition-colors"
-      >
-        <span id="btn-lock-label">Blocca</span>
-      </button>
-    </div>
-  </header>
-
-  <!-- ========================================================================
-       TOP NAVIGATION BAR (IMMEDIATELY BELOW APP HEADER)
-       ======================================================================== -->
-  <nav id="app-nav" class="hidden bg-paper border-b border-line px-2 flex items-center justify-around shrink-0 z-30">
-    <button type="button" onclick="switchTab('map')" data-tab="map" class="nav-tab flex-1 py-2.5 text-center font-display font-bold text-[11px] uppercase tracking-wider text-ink border-b-2 border-ink">
-      <span id="nav-map-label">Mappa</span>
-    </button>
-
-    <button type="button" onclick="switchTab('pois')" data-tab="pois" class="nav-tab flex-1 py-2.5 text-center font-display font-bold text-[11px] uppercase tracking-wider text-muted hover:text-ink border-b-2 border-transparent">
-      <span id="nav-pois-label">Punti Utili</span>
-    </button>
-
-    <button type="button" onclick="switchTab('help')" data-tab="help" class="nav-tab flex-1 py-2.5 text-center font-display font-bold text-[11px] uppercase tracking-wider text-muted hover:text-ink border-b-2 border-transparent">
-      <span id="nav-help-label">Assistenza</span>
-    </button>
-
-    <button type="button" onclick="switchTab('admin')" id="nav-admin-tab" data-tab="admin" class="hidden flex-1 py-2.5 text-center font-display font-bold text-[11px] uppercase tracking-wider text-muted hover:text-ink border-b-2 border-transparent">
-      <span id="nav-admin-label">Gestore &amp; Cache</span>
-    </button>
-  </nav>
-
-  <!-- ========================================================================
-       MAIN VIEWPORT (MAP + POIS + ASSISTANCE + OWNER/OFFLINE PANEL)
-       ======================================================================== -->
-  <main id="app-main" class="hidden relative flex-1 w-full flex flex-col overflow-y-auto md:overflow-hidden">
-
-    <!-- ==========================================
-         TAB 1: INTERACTIVE MAP & TRAILS
-         ========================================== -->
-    <section id="view-map" class="w-full flex-1 flex flex-col md:flex-row md:h-full md:overflow-hidden">
-
-      <!-- LEFT SIDEBAR (DESKTOP) / BOTTOM DRAWER (MOBILE): TRAILS & ELEVATION -->
-      <aside class="order-2 md:order-1 w-full md:w-[390px] lg:w-[420px] bg-paper border-t md:border-t-0 md:border-r border-line flex flex-col shrink-0 md:h-full md:overflow-hidden z-20">
-        <div class="px-4 pt-3 pb-2.5 border-b border-line bg-fog/60 shrink-0 space-y-2">
-          <!-- MTB / GRAVEL Tour Discipline Switcher -->
-          <div class="grid grid-cols-3 border border-ink bg-paper divide-x divide-line" role="group" aria-label="Tour Discipline">
-            <button type="button" onclick="setBikeDisciplineFilter('all')" data-bike-filter="all" class="bike-filter-btn py-1.5 text-[10px] font-extrabold uppercase tracking-wider bg-ink text-paper transition-colors">
-              <span id="bike-all-label">Tutti i Tour</span>
-            </button>
-            <button type="button" onclick="setBikeDisciplineFilter('mtb')" data-bike-filter="mtb" class="bike-filter-btn py-1.5 text-[10px] font-extrabold uppercase tracking-wider bg-paper text-ink hover:bg-fog transition-colors">
-              MTB
-            </button>
-            <button type="button" onclick="setBikeDisciplineFilter('gravel')" data-bike-filter="gravel" class="bike-filter-btn py-1.5 text-[10px] font-extrabold uppercase tracking-wider bg-paper text-ink hover:bg-fog transition-colors">
-              GRAVEL
-            </button>
-          </div>
-
-          <div class="flex items-center justify-between gap-2">
-            <span id="lbl-trails-heading" class="text-[10px] font-extrabold uppercase tracking-[0.14em] text-muted">SENTIERI GPX</span>
-            <div class="flex items-center gap-1 overflow-x-auto no-scrollbar">
-              <button type="button" onclick="setDifficultyFilter('all')" data-diff-filter="all" class="diff-filter-btn px-2 py-0.5 text-[10px] font-bold uppercase border border-ink bg-ink text-paper">
-                <span id="diff-all-label">Tutti</span>
-              </button>
-              <button type="button" onclick="setDifficultyFilter('green')" data-diff-filter="green" class="diff-filter-btn px-2 py-0.5 text-[10px] font-bold border border-line bg-paper text-ink flex items-center gap-1">
-                <span class="w-2 h-2 rounded-full bg-diff-green"></span>S0
-              </button>
-              <button type="button" onclick="setDifficultyFilter('blue')" data-diff-filter="blue" class="diff-filter-btn px-2 py-0.5 text-[10px] font-bold border border-line bg-paper text-ink flex items-center gap-1">
-                <span class="w-2 h-2 rounded-full bg-diff-blue"></span>S1
-              </button>
-              <button type="button" onclick="setDifficultyFilter('red')" data-diff-filter="red" class="diff-filter-btn px-2 py-0.5 text-[10px] font-bold border border-line bg-paper text-ink flex items-center gap-1">
-                <span class="w-2 h-2 rounded-full bg-diff-red"></span>S2
-              </button>
-              <button type="button" onclick="setDifficultyFilter('black')" data-diff-filter="black" class="diff-filter-btn px-2 py-0.5 text-[10px] font-bold border border-line bg-paper text-ink flex items-center gap-1">
-                <span class="w-2 h-2 rounded-full bg-diff-black"></span>S3+
-              </button>
-            </div>
-          </div>
-
-          <div id="trail-selector-list" class="flex md:flex-col gap-1.5 overflow-x-auto md:overflow-y-auto md:max-h-[155px] no-scrollbar"></div>
-        </div>
-
-        <!-- Active Trail Telemetry & Elevation Profile -->
-        <div class="px-4 py-3 overflow-y-auto flex-1 space-y-2.5">
-          <div class="flex items-center gap-2 flex-wrap">
-            <span id="active-diff-badge" class="px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider bg-diff-red text-paper">Rosso • S2</span>
-            <span id="active-bike-type" class="text-[11px] font-semibold text-muted uppercase tracking-wider">MTB / e-MTB</span>
-          </div>
-
-          <h2 id="active-trail-title" class="font-display font-bold text-base sm:text-lg leading-snug text-ink">
-            Anello Macchia della Magona - Golazze Aperte
-          </h2>
-
-          <div class="grid grid-cols-3 border border-line bg-paper divide-x divide-line">
-            <div class="p-2">
-              <span id="lbl-dist" class="block text-[9px] font-bold uppercase tracking-wider text-muted">DISTANZA</span>
-              <span id="active-trail-dist" class="font-display font-bold text-sm text-ink">24.0 km</span>
-            </div>
-            <div class="p-2">
-              <span id="lbl-elev" class="block text-[9px] font-bold uppercase tracking-wider text-muted">DISLIVELLO +</span>
-              <span id="active-trail-elev" class="font-display font-bold text-sm text-ink">+620 m</span>
-            </div>
-            <div class="p-2">
-              <span id="lbl-batt" class="block text-[9px] font-bold uppercase tracking-wider text-muted">BATTERIA E-MTB</span>
-              <span id="active-trail-batt" class="font-display font-bold text-sm text-ink">~45% Tour</span>
-            </div>
-          </div>
-
-          <p id="active-trail-desc" class="text-xs text-muted leading-relaxed"></p>
-
-          <div class="border border-line bg-fog p-2.5">
-            <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider mb-1">
-              <span id="lbl-elev-profile" class="text-muted">PROFILO ALTIMETRICO</span>
-              <span id="elev-readout" class="text-ink">Min: 85m • Max: 410m</span>
-            </div>
-            <div class="w-full h-16 sm:h-20 relative">
-              <canvas id="elevation-canvas" class="w-full h-full block"></canvas>
-            </div>
-          </div>
-
-          <!-- Navigate Now & Live In-App Navigation HUD -->
-          <div class="pt-1 space-y-2">
-            <button
-              type="button"
-              onclick="toggleTrailNavigation()"
-              id="btn-navigate-now"
-              class="w-full bg-ink hover:bg-neutral-800 text-paper font-display font-bold text-xs uppercase tracking-[0.14em] py-3 px-4 transition-colors flex items-center justify-between"
-            >
-              <span id="btn-navigate-now-label">Naviga Ora</span>
-              <span id="nav-now-status-icon" aria-hidden="true">▶</span>
-            </button>
-
-            <div id="live-nav-hud" class="hidden border-2 border-ink bg-fog p-2.5 space-y-1.5">
-              <div class="flex items-center justify-between text-[10px] font-extrabold uppercase tracking-wider">
-                <span id="nav-hud-badge" class="bg-ink text-paper px-2 py-0.5">NAVIGAZIONE ATTIVA</span>
-                <span id="nav-hud-offroute" class="text-emerald-700">SULLA TRACCIA</span>
-              </div>
-              <div class="grid grid-cols-2 gap-2 text-xs">
-                <div>
-                  <span id="lbl-nav-remaining" class="block text-[9px] font-bold uppercase text-muted">DISTANZA RESIDUA</span>
-                  <span id="nav-remaining-dist" class="font-display font-bold text-ink">-- km</span>
-                </div>
-                <div>
-                  <span id="lbl-nav-to-shop" class="block text-[9px] font-bold uppercase text-muted">RIENTRO BASE</span>
-                  <span id="nav-to-shop-dist" class="font-display font-bold text-ink">-- km</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </aside>
-
-      <!-- RIGHT / TOP AREA: LEAFLET MAP -->
-      <div class="order-1 md:order-2 relative w-full md:flex-1 h-[58dvh] md:h-full shrink-0">
-        <div id="map" class="w-full h-full"></div>
-
-        <!-- Top POI Filter Chips -->
-        <div class="absolute top-3 left-3 right-16 z-20 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-          <button type="button" onclick="togglePoiFilter('all')" data-filter="all" class="map-poi-chip px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider border border-ink bg-ink text-paper shadow-sm shrink-0">
-            <span id="chip-all-label">Tutti i POI</span>
-          </button>
-          <button type="button" onclick="togglePoiFilter('water')" data-filter="water" class="map-poi-chip px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider border border-ink bg-paper text-ink shadow-sm shrink-0">
-            <span id="chip-water-label">Fontanelle</span>
-          </button>
-          <button type="button" onclick="togglePoiFilter('viewpoint')" data-filter="viewpoint" class="map-poi-chip px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider border border-ink bg-paper text-ink shadow-sm shrink-0">
-            <span id="chip-view-label">Panorami</span>
-          </button>
-          <button type="button" onclick="togglePoiFilter('food')" data-filter="food" class="map-poi-chip px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider border border-ink bg-paper text-ink shadow-sm shrink-0">
-            <span id="chip-food-label">Ristori</span>
-          </button>
-          <button type="button" onclick="togglePoiFilter('shop')" data-filter="shop" class="map-poi-chip px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider border border-ink bg-paper text-ink shadow-sm shrink-0">
-            <span id="chip-shop-label">Officina / Ricarica</span>
-          </button>
-        </div>
-
-        <!-- Live Distance-to-Shop Telemetry Pill -->
-        <div id="live-gps-pill" class="hidden absolute top-14 left-3 z-20 bg-ink text-paper px-3 py-1.5 border border-paper text-[11px] font-bold uppercase tracking-wider shadow-md">
-          <span id="shop-return-readout">Rientro base: -- km</span>
-        </div>
-
-        <!-- Floating Right Map Controls -->
-        <div class="absolute right-3 top-3 z-20 flex flex-col gap-2">
-          <button type="button" onclick="cycleMapLayer()" title="Cambia layer mappa" class="bg-paper text-ink border-2 border-ink px-2.5 py-2 shadow-sm active:bg-fog flex flex-col items-center justify-center min-w-[46px]">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-              <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-              <polyline points="2 17 12 22 22 17"/>
-              <polyline points="2 12 12 17 22 12"/>
-            </svg>
-            <span id="layer-badge" class="text-[9px] font-extrabold uppercase tracking-wider mt-0.5">MTB</span>
-          </button>
-
-          <button type="button" onclick="fitCurrentRoute()" title="Centra percorso" class="bg-paper text-ink border-2 border-ink p-2.5 shadow-sm active:bg-fog flex items-center justify-center min-w-[46px]">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-              <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
-            </svg>
-          </button>
-
-          <button type="button" onclick="toggleGpsTracking()" id="btn-gps" title="Seguimi GPS" class="bg-paper text-ink border-2 border-ink px-2.5 py-2 shadow-sm active:bg-fog flex flex-col items-center justify-center min-w-[46px]">
-            <svg id="gps-icon" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-              <circle cx="12" cy="12" r="3"/>
-              <path d="M12 2v3m0 14v3M2 12h3m14 0h3"/>
-              <circle cx="12" cy="12" r="8"/>
-            </svg>
-            <span id="gps-badge" class="text-[9px] font-extrabold uppercase tracking-wider mt-0.5">GPS</span>
-          </button>
-        </div>
-
-        <!-- Selected POI Editorial Card (100% Internal Navigation) -->
-        <div id="poi-popup-card" class="hidden absolute bottom-3 left-3 right-3 max-w-md mx-auto z-30 bg-paper border-2 border-ink p-4 shadow-xl">
-          <div class="flex items-start justify-between gap-3">
-            <div>
-              <span id="poi-card-cat" class="text-[10px] font-extrabold uppercase tracking-[0.14em] text-muted">FONTANELLA</span>
-              <h3 id="poi-card-title" class="font-display font-bold text-base text-ink mt-0.5">Campo di Sasso</h3>
-              <p id="poi-card-dist" class="text-[11px] font-semibold text-muted mt-0.5"></p>
-            </div>
-            <button type="button" onclick="closePoiCard()" class="px-2.5 py-1 border border-ink text-xs font-bold uppercase hover:bg-ink hover:text-paper transition-colors">
-              ✕
-            </button>
-          </div>
-          <p id="poi-card-desc" class="text-xs text-ink/80 mt-2.5 leading-relaxed"></p>
-          <button id="poi-card-nav-btn" type="button" class="mt-3 w-full bg-ink hover:bg-neutral-800 text-paper font-display font-bold text-xs uppercase tracking-[0.12em] py-3 px-4 flex items-center justify-center gap-2 transition-colors">
-            <span id="btn-open-gmaps-label">Naviga qui nell'App</span>
-            <span>→</span>
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- ==========================================
-         TAB 2: POINTS OF INTEREST DIRECTORY
-         ========================================== -->
-    <section id="view-pois" class="hidden w-full flex-1 overflow-y-auto bg-paper pb-12 px-4 pt-5">
-      <div class="max-w-2xl mx-auto">
-        <div class="border-b border-line pb-3 mb-4">
-          <span class="text-[10px] font-extrabold uppercase tracking-[0.16em] text-muted">BIBBONA • BOLGHERI • MAGONA</span>
-          <h2 id="pois-page-title" class="font-display font-bold text-2xl text-ink mt-0.5">Punti Utili &amp; Ristoro</h2>
-          <p id="pois-page-subtitle" class="text-xs text-muted mt-1"></p>
-        </div>
-
-        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-3 mb-3">
-          <button type="button" onclick="filterPoiList('all')" data-list-filter="all" class="list-poi-chip px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider border border-ink bg-ink text-paper shrink-0">
-            <span id="list-chip-all">Tutti</span>
-          </button>
-          <button type="button" onclick="filterPoiList('water')" data-list-filter="water" class="list-poi-chip px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider border border-ink bg-paper text-ink shrink-0">
-            <span id="list-chip-water">Fontanelle</span>
-          </button>
-          <button type="button" onclick="filterPoiList('viewpoint')" data-list-filter="viewpoint" class="list-poi-chip px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider border border-ink bg-paper text-ink shrink-0">
-            <span id="list-chip-view">Panorami</span>
-          </button>
-          <button type="button" onclick="filterPoiList('food')" data-list-filter="food" class="list-poi-chip px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider border border-ink bg-paper text-ink shrink-0">
-            <span id="list-chip-food">Ristori</span>
-          </button>
-          <button type="button" onclick="filterPoiList('shop')" data-list-filter="shop" class="list-poi-chip px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider border border-ink bg-paper text-ink shrink-0">
-            <span id="list-chip-shop">Officina</span>
-          </button>
-        </div>
-
-        <div id="poi-cards-list" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
-      </div>
-    </section>
-
-    <!-- ==========================================
-         TAB 3: RAPID ASSISTANCE & TROUBLESHOOTING
-         ========================================== -->
-    <section id="view-help" class="hidden w-full flex-1 overflow-y-auto bg-paper pb-12 px-4 pt-5">
-      <div class="max-w-xl mx-auto space-y-4">
-        <div class="border-b border-line pb-3">
-          <span class="text-[10px] font-extrabold uppercase tracking-[0.16em] text-muted">SOCCORSO &amp; SUPPORTO</span>
-          <h2 id="help-page-title" class="font-display font-bold text-2xl text-ink mt-0.5">Assistenza Rapida</h2>
-          <p id="help-page-subtitle" class="text-xs text-muted mt-1"></p>
-        </div>
-
-        <div class="border-2 border-ink bg-fog p-4 space-y-3">
-          <div>
-            <span class="text-[10px] font-extrabold uppercase tracking-[0.14em] text-muted">WHATSAPP LIVE GPS</span>
-            <h3 id="wa-card-title" class="font-display font-bold text-base text-ink mt-0.5">Invia Posizione al Negozio</h3>
-            <p id="wa-card-desc" class="text-xs text-muted mt-0.5 leading-relaxed"></p>
-          </div>
-
-          <div>
-            <label id="lbl-issue-select" class="block text-[10px] font-bold uppercase tracking-wider text-ink mb-1">Tipo di Assistenza</label>
-            <select id="sos-issue-select" class="w-full bg-paper border border-ink px-3 py-2.5 text-xs font-bold text-ink focus:outline-none"></select>
-          </div>
-
-          <button type="button" onclick="sendWhatsAppLocation()" class="w-full bg-ink hover:bg-neutral-800 text-paper font-display font-bold text-xs uppercase tracking-[0.14em] py-3.5 px-4 transition-colors flex items-center justify-center gap-2">
-            <span id="btn-wa-text">Invia Posizione GPS su WhatsApp</span>
-            <span>→</span>
-          </button>
-          <p id="gps-status-helper" class="text-[11px] text-muted text-center"></p>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <a href="tel:+393313453207" class="border-2 border-ink bg-paper hover:bg-fog p-3.5 flex flex-col justify-between transition-colors">
-            <span class="text-[10px] font-extrabold uppercase tracking-wider text-muted">NEGOZIO</span>
-            <span id="btn-call-shop" class="font-display font-bold text-sm text-ink mt-1">Chiama Officina</span>
-            <span class="text-[11px] text-muted mt-0.5">+39 331 345 3207</span>
-          </a>
-
-          <a href="https://wa.me/393313453207" target="_blank" rel="noopener noreferrer" class="border-2 border-emerald-700 bg-emerald-700 hover:bg-emerald-800 text-paper p-3.5 flex flex-col justify-between transition-colors">
-            <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-100">WHATSAPP</span>
-            <span id="btn-wa-direct" class="font-display font-bold text-sm mt-1">Chat WhatsApp</span>
-            <span class="text-[11px] text-emerald-100 mt-0.5">+39 331 345 3207</span>
-          </a>
-        </div>
-
-        <a href="tel:112" class="border-2 border-red-600 bg-red-600 hover:bg-red-700 text-paper p-3.5 flex items-center justify-between transition-colors">
-          <div>
-            <span class="text-[10px] font-extrabold uppercase tracking-wider text-red-100">EMERGENZA SANITARIA</span>
-            <span id="btn-call-112" class="block font-display font-bold text-sm mt-0.5">Chiama 112</span>
-          </div>
-          <span class="font-display font-bold text-lg">112 →</span>
-        </a>
-
-        <div class="border border-line bg-paper p-3.5 flex items-center justify-between gap-3">
-          <div>
-            <span id="lbl-shop-base" class="text-[10px] font-extrabold uppercase tracking-wider text-muted">PUNTO DI RIENTRO</span>
-            <h4 class="font-display font-bold text-sm text-ink">Magona Bike Garage</h4>
-            <p class="text-xs text-muted">Via del Mandorlo 1, 57020 Bibbona (LI)</p>
-          </div>
-          <button type="button" onclick="navigateToShopInternal()" class="border border-ink bg-paper hover:bg-ink hover:text-paper px-3 py-2 text-[11px] font-bold uppercase tracking-wider transition-colors shrink-0">
-            <span id="btn-return-shop">Naviga</span>
-          </button>
-        </div>
-
-        <div>
-          <h3 id="faq-section-title" class="font-display font-bold text-base text-ink mb-2.5">Guida Rapida sul Sentiero</h3>
-          <div id="troubleshooting-accordion" class="space-y-2"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ==========================================
-         TAB 4: MANAGER (OWNER) & OFFLINE CACHE PANEL
-         ========================================== -->
-    <section id="view-admin" class="hidden w-full flex-1 overflow-y-auto bg-paper pb-12 px-4 pt-5">
-      <div class="max-w-2xl mx-auto space-y-5">
-        <div class="border-b border-line pb-3">
-          <span class="text-[10px] font-extrabold uppercase tracking-[0.16em] text-muted">GESTIONE &amp; OFFLINE</span>
-          <h2 id="admin-page-title" class="font-display font-bold text-2xl text-ink mt-0.5">Pannello Gestore &amp; Cache Offline</h2>
-          <p id="admin-page-subtitle" class="text-xs text-muted mt-1">
-            Gestisci le password a rotazione per i clienti, carica nuovi GPX classificati per difficoltà ed esporta su GitHub Pages / bibbonabike.com.
-          </p>
-        </div>
-
-        <!-- 1. ROTATING CLIENT PASSWORD MANAGER -->
-        <div class="border-2 border-ink bg-fog p-4 space-y-3">
-          <div class="flex items-center justify-between gap-2">
-            <div>
-              <span class="text-[10px] font-extrabold uppercase tracking-[0.14em] text-muted">SICUREZZA NOLEGGIO</span>
-              <h3 class="font-display font-bold text-base text-ink">Password Cliente a Rotazione</h3>
-            </div>
-            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 bg-ink text-paper">AUTO-ROTATION</span>
-          </div>
-
-          <p class="text-xs text-muted leading-relaxed">
-            La password attiva cambia automaticamente dopo ogni accesso cliente. Consegna questo codice al prossimo cliente al momento del ritiro:
-          </p>
-
-          <div class="bg-paper border border-ink p-3 flex items-center justify-between gap-2">
-            <div>
-              <span class="block text-[9px] font-bold uppercase tracking-wider text-muted">PASSWORD CLIENTE ATTIVA ORA</span>
-              <span id="admin-active-client-pass" class="font-display font-bold text-xl tracking-widest text-ink">RIDE-4829</span>
-            </div>
-            <div class="flex items-center gap-1.5">
-              <button type="button" onclick="copyActiveClientPassword()" class="border border-ink bg-paper hover:bg-fog px-3 py-2 text-[11px] font-bold uppercase tracking-wider">
-                Copia
-              </button>
-              <button type="button" onclick="rotateClientPasswordManual()" class="bg-ink hover:bg-neutral-800 text-paper px-3 py-2 text-[11px] font-bold uppercase tracking-wider">
-                Ruota Ora
-              </button>
-            </div>
-          </div>
-
-          <div class="flex items-center gap-2 pt-1">
-            <input type="text" id="custom-client-pass-input" placeholder="Imposta codice cliente (es. TOUR-901)" class="flex-1 bg-paper border border-line focus:border-ink px-3 py-2 text-xs font-bold uppercase focus:outline-none" />
-            <button type="button" onclick="setCustomClientPassword()" class="border border-ink bg-paper hover:bg-ink hover:text-paper px-3 py-2 text-[11px] font-bold uppercase tracking-wider transition-colors shrink-0">
-              Imposta
-            </button>
-          </div>
-
-          <p class="text-[11px] text-muted">
-            Password Gestore fissa: <strong class="text-ink">MAGONA2026</strong> (configurabile in <code class="text-ink">OWNER_PASSWORD</code>).
-          </p>
-        </div>
-
-        <!-- 2. OFFLINE SERVICE WORKER & MAP TILE PRE-CACHE -->
-        <div class="border border-ink bg-paper p-4 space-y-3">
-          <div class="flex items-center justify-between">
-            <div>
-              <span class="text-[10px] font-extrabold uppercase tracking-[0.14em] text-muted">FUNZIONAMENTO SENZA RETE</span>
-              <h3 class="font-display font-bold text-base text-ink">Cache Offline &amp; Pre-Download Mappe</h3>
-            </div>
-            <span class="network-status-badge inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 border border-line bg-fog text-ink">
-              <span class="net-dot w-2 h-2 rounded-full bg-emerald-600"></span>
-              <span class="net-label">Online</span>
-            </span>
-          </div>
-
-          <p class="text-xs text-muted leading-relaxed">
-            Il GPS satellitare funziona sempre senza dati mobili. Puoi pre-scaricare ora nella cache del browser i riquadri mappa intorno a <strong>Bibbona, Macchia della Magona, Bolgheri e Riparbella</strong> per consultarla anche nei boschi senza campo.
-          </p>
-
-          <div class="flex items-center justify-between bg-fog border border-line px-3 py-2 text-xs">
-            <span class="font-semibold text-muted">Riquadri mappa salvati in cache:</span>
-            <span id="cached-tiles-count" class="font-display font-bold text-ink">0 tiles</span>
+    <!-- Scheda Mappa -->
+    <section id="tab-map" class="tab-panel flex-1 p-4 max-w-6xl w-full mx-auto space-y-4">
+      <div class="bg-white rounded-2xl border border-stone-200 p-4 space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            <select id="route-select" onchange="selectRoute(this.value)" class="border border-stone-300 rounded-xl px-3 py-2 text-sm font-semibold bg-stone-50">
+              <option value="magona-loop">Anello Macchia della Magona (MTB)</option>
+              <option value="bolgheri-gravel">Strada del Vino & Bolgheri (Gravel)</option>
+              <option value="riparbella-trail">Riparbella & Acquerta (Enduro)</option>
+            </select>
+            <select id="category-filter" onchange="applyRouteFilters()" class="border border-stone-300 rounded-xl px-3 py-2 text-xs font-semibold bg-stone-50">
+              <option value="all">Tutte le bici</option>
+              <option value="mtb">MTB / E-MTB</option>
+              <option value="gravel">Gravel</option>
+            </select>
+            <select id="difficulty-filter" onchange="applyRouteFilters()" class="border border-stone-300 rounded-xl px-3 py-2 text-xs font-semibold bg-stone-50">
+              <option value="all">Tutte le difficoltà</option>
+              <option value="green">Verde</option>
+              <option value="blue">Blu</option>
+              <option value="red">Rosso</option>
+              <option value="black">Nero</option>
+            </select>
           </div>
 
           <div class="flex flex-wrap gap-2">
-            <button type="button" onclick="precacheMagonaMapTiles()" id="btn-precache-tiles" class="flex-1 bg-ink hover:bg-neutral-800 text-paper font-display font-bold text-xs uppercase tracking-wider py-3 px-4 transition-colors">
-              Pre-Scarica Mappa Magona Offline
+            <button id="btn-live-nav" onclick="toggleLiveNavigation()" class="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
+              Naviga Ora
             </button>
-            <button type="button" onclick="refreshTileCacheCount()" class="border border-ink bg-paper hover:bg-fog px-3 py-3 text-xs font-bold uppercase">
-              Aggiorna Stato
+            <button onclick="navigateToBase()" class="px-3.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
+              Rientra alla Base
+            </button>
+            <button onclick="toggleMapFullscreen()" class="px-3.5 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold cursor-pointer">
+              Schermo Intero
             </button>
           </div>
-          <p id="precache-progress-text" class="text-[11px] font-semibold text-muted"></p>
         </div>
 
-        <!-- 3. UPLOAD & CLASSIFY NEW GPX TRAIL -->
-        <div class="border border-ink bg-paper p-4 space-y-3">
-          <h3 class="font-display font-bold text-base text-ink">Carica Nuovo Sentiero (.GPX)</h3>
-
-          <label class="flex flex-col items-center justify-center w-full py-4 px-3 border-2 border-dashed border-ink hover:bg-fog cursor-pointer transition-colors">
-            <span id="admin-gpx-filename" class="text-xs font-bold uppercase tracking-wider text-ink">Seleziona file .GPX dal dispositivo</span>
-            <span class="text-[11px] text-muted mt-0.5">Calcolo automatico distanza km, dislivello D+ e altimetria</span>
-            <input type="file" id="admin-gpx-input" accept=".gpx,application/gpx+xml" class="hidden" onchange="previewUploadedGpx(event)" />
-          </label>
-
-          <div id="admin-parsed-preview" class="hidden border border-ink bg-fog px-3 py-2 text-xs font-bold text-ink flex items-center justify-between">
-            <span id="admin-parsed-stats">0.0 km • +0 m D+</span>
-            <span class="text-[10px] uppercase bg-ink text-paper px-2 py-0.5">GPX PRONTO</span>
+        <!-- Riepilogo distanza e dislivello -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
+          <div class="bg-stone-50 border border-stone-200/80 rounded-xl p-2.5">
+            <div class="text-[11px] text-stone-500 font-medium">Distanza Totale</div>
+            <div id="stat-total-dist" class="text-base font-extrabold text-stone-900">24.8 km</div>
           </div>
-
-          <div>
-            <label class="block text-[10px] font-bold uppercase tracking-wider text-muted mb-1">Nome Sentiero *</label>
-            <input type="text" id="admin-trail-name" placeholder="es. Anello Fonte delle Fate - Magona" class="w-full border border-line focus:border-ink px-3 py-2 text-xs font-bold text-ink focus:outline-none" />
+          <div class="bg-stone-50 border border-stone-200/80 rounded-xl p-2.5">
+            <div class="text-[11px] text-stone-500 font-medium">Distanza Rimanente</div>
+            <div id="stat-rem-dist" class="text-base font-extrabold text-emerald-700">24.8 km</div>
           </div>
-
-          <div>
-            <label class="block text-[10px] font-bold uppercase tracking-wider text-muted mb-1">Classificazione Difficoltà MTB *</label>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <label class="cursor-pointer">
-                <input type="radio" name="admin-diff" value="green" class="peer sr-only" checked />
-                <div class="p-2 border border-line bg-paper peer-checked:border-2 peer-checked:border-ink peer-checked:bg-fog flex items-center gap-2">
-                  <span class="w-3 h-3 rounded-full bg-diff-green shrink-0"></span>
-                  <span class="text-xs font-bold">Verde S0</span>
-                </div>
-              </label>
-              <label class="cursor-pointer">
-                <input type="radio" name="admin-diff" value="blue" class="peer sr-only" />
-                <div class="p-2 border border-line bg-paper peer-checked:border-2 peer-checked:border-ink peer-checked:bg-fog flex items-center gap-2">
-                  <span class="w-3 h-3 rounded-full bg-diff-blue shrink-0"></span>
-                  <span class="text-xs font-bold">Blu S1</span>
-                </div>
-              </label>
-              <label class="cursor-pointer">
-                <input type="radio" name="admin-diff" value="red" class="peer sr-only" />
-                <div class="p-2 border border-line bg-paper peer-checked:border-2 peer-checked:border-ink peer-checked:bg-fog flex items-center gap-2">
-                  <span class="w-3 h-3 rounded-full bg-diff-red shrink-0"></span>
-                  <span class="text-xs font-bold">Rosso S2</span>
-                </div>
-              </label>
-              <label class="cursor-pointer">
-                <input type="radio" name="admin-diff" value="black" class="peer sr-only" />
-                <div class="p-2 border border-line bg-paper peer-checked:border-2 peer-checked:border-ink peer-checked:bg-fog flex items-center gap-2">
-                  <span class="w-3 h-3 rounded-full bg-diff-black shrink-0"></span>
-                  <span class="text-xs font-bold">Nero S3+</span>
-                </div>
-              </label>
-            </div>
+          <div class="bg-stone-50 border border-stone-200/80 rounded-xl p-2.5">
+            <div class="text-[11px] text-stone-500 font-medium">Dislivello + Totale</div>
+            <div id="stat-total-elev" class="text-base font-extrabold text-stone-900">640 m</div>
           </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <div>
-              <label class="block text-[10px] font-bold uppercase tracking-wider text-muted mb-1">Tipologia Tour (MTB / GRAVEL)</label>
-              <select id="admin-bike-type" class="w-full border border-line focus:border-ink px-3 py-2 text-xs font-semibold bg-paper text-ink focus:outline-none">
-                <option value="MTB / e-MTB">MTB / e-MTB</option>
-                <option value="GRAVEL / e-Gravel">GRAVEL / e-Gravel</option>
-                <option value="Enduro / Full e-MTB">Enduro / Full e-MTB</option>
-                <option value="Gravel / e-Bike / Trekking">Gravel / e-Bike / Trekking</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-[10px] font-bold uppercase tracking-wider text-muted mb-1">Stima Batteria e-MTB</label>
-              <input type="text" id="admin-battery-est" placeholder="es. ~45% Tour" class="w-full border border-line focus:border-ink px-3 py-2 text-xs font-semibold focus:outline-none" />
-            </div>
+          <div class="bg-stone-50 border border-stone-200/80 rounded-xl p-2.5">
+            <div class="text-[11px] text-stone-500 font-medium">Dislivello + Rimanente</div>
+            <div id="stat-rem-elev" class="text-base font-extrabold text-emerald-700">640 m</div>
           </div>
+        </div>
 
-          <div>
-            <label class="block text-[10px] font-bold uppercase tracking-wider text-muted mb-1">Descrizione Percorso (IT)</label>
-            <textarea id="admin-desc-it" rows="2" placeholder="Dettagli su fondo, pendenze, punti acqua e avvertenze..." class="w-full border border-line focus:border-ink px-3 py-2 text-xs focus:outline-none"></textarea>
-          </div>
+        <div id="nav-status-banner" class="hidden bg-stone-900 text-white rounded-xl px-3.5 py-2.5 text-xs flex flex-wrap items-center justify-between gap-2">
+          <span id="nav-status-text" class="font-semibold">Navigazione GPS live attiva</span>
+          <button onclick="centerMapOnUser()" class="underline font-bold cursor-pointer">Centra GPS</button>
+        </div>
+      </div>
 
-          <button type="button" onclick="saveNewTrailFromAdmin()" class="w-full bg-ink hover:bg-neutral-800 text-paper font-display font-bold text-xs uppercase tracking-[0.14em] py-3 px-4 transition-colors">
-            Salva Sentiero
+      <!-- Contenitore mappa con pannello navigazione in basso in modalità schermo intero -->
+      <div id="map-stage" class="map-stage relative">
+        <div class="map-wrapper relative w-full h-full">
+          <div id="map-container"></div>
+          <button onclick="toggleMapFullscreen()" title="Schermo Intero"
+            class="absolute top-3 right-3 z-[450] bg-white/95 hover:bg-white text-stone-900 border border-stone-300 rounded-xl px-3 py-1.5 text-xs font-bold shadow cursor-pointer">
+            ⤢ Schermo Intero
           </button>
         </div>
 
-        <!-- 4. EXISTING TRAILS LIST & ZERO-COST EXPORT FOR GITHUB PAGES -->
-        <div class="border border-line bg-paper p-4 space-y-3">
-          <div class="flex items-center justify-between">
-            <h3 class="font-display font-bold text-sm uppercase tracking-wider">Sentieri Attivi (<span id="admin-trail-count">0</span>)</h3>
-            <button type="button" onclick="resetToDefaultTrails()" class="text-[11px] font-bold text-muted hover:text-ink underline">Ripristina predefiniti</button>
+        <!-- Barra telemetria e comandi in basso a schermo intero -->
+        <div id="bottom-telemetry-panel" class="bottom-telemetry-panel">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-stone-200 pb-2">
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-stone-900 text-white">Navigazione</span>
+              <span id="fs-route-name" class="text-xs sm:text-sm font-extrabold text-stone-900">Anello Macchia della Magona</span>
+              <span class="text-xs text-stone-500">· <strong id="fs-progress-pct" class="text-stone-900">0%</strong></span>
+            </div>
+            <div class="flex flex-wrap items-center gap-1.5">
+              <button onclick="centerMapOnUser()" class="px-2.5 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold cursor-pointer">
+                Centra GPS
+              </button>
+              <button onclick="toggleLiveNavigation()" class="px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
+                GPS Live
+              </button>
+              <button onclick="toggleMapFullscreen()" class="px-3 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold cursor-pointer">
+                Esci
+              </button>
+            </div>
           </div>
-          <div id="admin-existing-trails-list" class="space-y-2 max-h-48 overflow-y-auto"></div>
 
-          <div class="pt-3 border-t border-line space-y-2">
-            <p class="text-[11px] text-muted leading-relaxed">
-              <strong>Pubblicazione a costo €0 (GitHub Pages / bibbonabike.com):</strong> scarica <code class="text-ink font-bold">trails-data.js</code> e caricalo nella stessa cartella di <code class="text-ink font-bold">index.html</code> per aggiornare i sentieri a tutti i clienti.
-            </p>
-            <button type="button" onclick="exportTrailsDataJs()" class="w-full border-2 border-ink bg-fog hover:bg-ink hover:text-paper text-ink font-display font-bold text-xs uppercase tracking-[0.12em] py-3 px-4 transition-colors">
-              Scarica trails-data.js per il Sito
-            </button>
+          <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 text-xs">
+            <div class="bg-stone-100 rounded-xl px-2.5 py-2">
+              <div class="text-[10px] text-stone-500">Dist. Rimanente</div>
+              <div id="fs-rem-dist" class="text-sm sm:text-base font-extrabold text-emerald-700">24.8 km</div>
+            </div>
+            <div class="bg-stone-100 rounded-xl px-2.5 py-2">
+              <div class="text-[10px] text-stone-500">Dist. Percorsa</div>
+              <div id="fs-done-dist" class="text-sm font-bold text-stone-900">0.0 km</div>
+            </div>
+            <div class="bg-stone-100 rounded-xl px-2.5 py-2">
+              <div class="text-[10px] text-stone-500">Dist. Totale</div>
+              <div id="fs-total-dist" class="text-sm font-bold text-stone-900">24.8 km</div>
+            </div>
+            <div class="bg-stone-100 rounded-xl px-2.5 py-2">
+              <div class="text-[10px] text-stone-500">Disl. + Rimanente</div>
+              <div id="fs-rem-elev" class="text-sm sm:text-base font-extrabold text-emerald-700">640 m</div>
+            </div>
+            <div class="bg-stone-100 rounded-xl px-2.5 py-2">
+              <div class="text-[10px] text-stone-500">Salita Effettuata</div>
+              <div id="fs-done-elev" class="text-sm font-bold text-stone-900">0 m</div>
+            </div>
+            <div class="bg-stone-100 rounded-xl px-2.5 py-2">
+              <div class="text-[10px] text-stone-500">Disl. + Totale</div>
+              <div id="fs-total-elev" class="text-sm font-bold text-stone-900">640 m</div>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-  </main>
+    <!-- Scheda Punti Utili -->
+    <section id="tab-pois" class="tab-panel hidden flex-1 p-4 max-w-4xl w-full mx-auto">
+      <div class="bg-white rounded-2xl border border-stone-200 p-4">
+        <h2 class="text-base font-bold text-stone-900 mb-3">Punti Utili (Fontanelle, Panorami, Ristori)</h2>
+        <div id="poi-list" class="space-y-2.5"></div>
+      </div>
+    </section>
 
-  <!-- TOAST BANNER -->
-  <div id="toast-banner" class="hidden fixed bottom-6 left-4 right-4 max-w-md mx-auto z-50 bg-ink text-paper border border-paper px-4 py-3 shadow-xl flex items-center justify-between gap-3">
-    <span id="toast-message" class="text-xs font-semibold leading-snug"></span>
-    <button type="button" onclick="hideToast()" class="text-[11px] font-bold uppercase tracking-wider underline shrink-0">OK</button>
+    <!-- Scheda Assistenza -->
+    <section id="tab-support" class="tab-panel hidden flex-1 p-4 max-w-4xl w-full mx-auto space-y-4">
+      <div class="bg-white rounded-2xl border border-stone-200 p-4 space-y-3">
+        <h2 class="text-base font-bold text-stone-900">Assistenza Officina — Magona Bike Garage</h2>
+        <p class="text-sm text-stone-600">Numero diretto officina: <strong>+39 331 345 3207</strong></p>
+        <div class="flex flex-wrap gap-2.5">
+          <a href="tel:+393313453207" class="px-4 py-2.5 rounded-xl bg-stone-900 text-white text-xs font-bold">
+            Chiama Officina
+          </a>
+          <button onclick="sendWhatsAppLocation()" class="px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
+            Invia Posizione GPS su WhatsApp
+          </button>
+          <a href="https://wa.me/393313453207" target="_blank" rel="noopener" class="px-4 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold">
+            Chat WhatsApp Diretta
+          </a>
+        </div>
+        <div id="troubleshooting-list" class="pt-3 border-t border-stone-100 space-y-2 text-xs text-stone-700"></div>
+      </div>
+    </section>
+
+    <!-- Scheda Gestore & Cache -->
+    <section id="tab-manager" class="tab-panel hidden flex-1 p-4 max-w-4xl w-full mx-auto space-y-4">
+      <div class="bg-white rounded-2xl border border-stone-200 p-4 space-y-3">
+        <h2 class="text-base font-bold text-stone-900">Pannello Gestore & Cache Offline</h2>
+        <div class="flex flex-wrap items-center justify-between gap-2 bg-stone-50 p-3 rounded-xl border border-stone-200">
+          <div>
+            <div class="text-xs text-stone-500">Password Cliente Attiva (monouso / rotazione automatica)</div>
+            <div id="active-client-password" class="text-base font-extrabold text-stone-900">RIDE-4829</div>
+          </div>
+          <button onclick="rotateClientPassword()" class="px-3.5 py-2 rounded-xl bg-stone-900 text-white text-xs font-semibold cursor-pointer">
+            Genera Nuovo Codice
+          </button>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button onclick="precacheMagonaMap()" class="px-4 py-2 rounded-xl bg-stone-900 text-white text-xs font-semibold cursor-pointer">
+            Pre-Scarica Mappa Magona Offline
+          </button>
+        </div>
+        <div class="pt-2">
+          <label class="block text-xs font-semibold text-stone-700 mb-1">Carica Tracciato GPX</label>
+          <input type="file" id="gpx-file-input" accept=".gpx" onchange="handleGpxUpload(event)" class="text-xs" />
+        </div>
+      </div>
+    </section>
   </div>
 
+  <!-- Toast notifica -->
+  <div id="toast-msg" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[10000] hidden bg-stone-900 text-white text-xs font-semibold px-4 py-2.5 rounded-full shadow-lg"></div>
+
   <script>
-    /**
-     * ============================================================================
-     * 1. ACCESS CREDENTIALS & CONFIGURATION
-     * ============================================================================
-     */
     const OWNER_PASSWORD = "MAGONA2026";
-    const SHOP_WHATSAPP_NUMBER = "393313453207";
-    const SHOP_COORDS = [43.2685, 10.5942]; // Via del Mandorlo 1, Bibbona (LI)
+    const BASE_COORDS = [43.2742, 10.6018]; // Via del Mandorlo 1, Bibbona
 
-    const STORAGE_KEYS = {
-      ACTIVE_CLIENT_PASS: "mbg_active_client_password_v1",
-      USED_CLIENT_PASSES: "mbg_used_client_passwords_v1",
-      TRAILS_DB: "mbg_custom_trails_v3",
-      PERM_PROMPT_DONE: "mbg_perm_prompt_done_v1"
-    };
-
-    const DIFFICULTY_META = {
-      green: {
-        color: "#16A34A",
-        badgeClass: "bg-diff-green text-paper",
-        dotClass: "bg-diff-green",
-        code: "S0",
-        label: { it: "Verde • Facile (S0)", en: "Green • Easy (S0)", de: "Grün • Leicht (S0)", nl: "Groen • Makkelijk (S0)" }
-      },
-      blue: {
-        color: "#2563EB",
-        badgeClass: "bg-diff-blue text-paper",
-        dotClass: "bg-diff-blue",
-        code: "S1",
-        label: { it: "Blu • Intermedio (S1)", en: "Blue • Moderate (S1)", de: "Blau • Mittel (S1)", nl: "Blauw • Gemiddeld (S1)" }
-      },
-      red: {
-        color: "#DC2626",
-        badgeClass: "bg-diff-red text-paper",
-        dotClass: "bg-diff-red",
-        code: "S2",
-        label: { it: "Rosso • Avanzato (S2)", en: "Red • Advanced (S2)", de: "Rot • Anspruchsvoll (S2)", nl: "Rood • Gevorderd (S2)" }
-      },
-      black: {
-        color: "#111111",
-        badgeClass: "bg-diff-black text-paper",
-        dotClass: "bg-diff-black",
-        code: "S3+",
-        label: { it: "Nero • Esperto (S3+)", en: "Black • Expert (S3+)", de: "Schwarz • Experte (S3+)", nl: "Zwart • Expert (S3+)" }
-      }
-    };
-
-    /**
-     * ============================================================================
-     * 2. MULTILINGUAL DICTIONARY (IT / EN / DE / NL)
-     * ============================================================================
-     */
     const I18N = {
       it: {
-        permEyebrow: "CONFIGURAZIONE INIZIALE",
-        permTitle: "Autorizzazioni GPS & Rete Web",
-        permSubtitle: "Per guidarti lungo i sentieri e inviare la tua posizione in caso di assistenza, autorizza l'accesso al GPS e alla connessione web per le mappe.",
-        permGpsTitle: "Posizione GPS Live",
-        permGpsDesc: "Necessaria per la navigazione sui sentieri e il soccorso WhatsApp.",
-        permWebTitle: "Connessione Web & Mappe",
-        permWebDesc: "Consente il caricamento delle mappe sentieri e il salvataggio in cache offline.",
-        permStatusWaiting: "In attesa",
-        permStatusChecking: "Verifica...",
-        permStatusGranted: "Autorizzato",
-        permStatusDenied: "Negato",
-        permStatusReady: "Pronta",
-        permStatusOffline: "Offline",
-        permGrantLabel: "Autorizza GPS e Rete Web",
-        permSkipLabel: "Continua senza GPS per ora",
-        permToastGranted: "Permessi GPS e rete web autorizzati.",
-        permToastDenied: "Accesso GPS negato o bloccato dal browser. Puoi comunque usare le mappe.",
-        lockEyebrow: "AREA RISERVATA NOLEGGIO",
-        lockTitle: "Mappe, Sentieri & Assistenza.",
-        lockSubtitle: "Inserisci il codice noleggio fornito al ritiro bici per accedere ai percorsi, ai punti utili e all'assistenza rapida.",
-        lockPassLabel: "Password Accesso",
-        lockSubmitLabel: "Accedi alla Mappa",
-        lockRotationNote: "• Ogni password cliente si rinnova automaticamente dopo l'accesso.",
-        lockOfflineNote: "• Il GPS satellitare funziona anche senza rete; le mappe restano disponibili se già in cache.",
-        lockErrEmpty: "Inserisci la password di accesso.",
-        lockErrInvalid: "Password non valida o già utilizzata. Chiedi il nuovo codice in negozio.",
-        unlockedClientToast: "Accesso effettuato. Codice precedente invalidato automaticamente.",
-        unlockedOwnerToast: "Accesso Gestore attivato.",
-        headerSubtitle: "Bibbona • Guida Sentieri & Assistenza",
-        btnLock: "Blocca",
-        onlineLabel: "Online",
-        offlineLabel: "Offline • Cache",
-        navMap: "Mappa",
-        navPois: "Punti Utili",
-        navHelp: "Assistenza",
-        navAdmin: "Gestore & Cache",
-        bikeAll: "Tutti i Tour",
-        trailsHeading: "SENTIERI GPX",
-        diffAll: "Tutti",
-        chipAll: "Tutti i POI",
-        chipWater: "Fontanelle",
-        chipView: "Panorami",
-        chipFood: "Ristori",
-        chipShop: "Officina / Ricarica",
-        lblDist: "DISTANZA",
-        lblElev: "DISLIVELLO +",
-        lblBatt: "BATTERIA E-MTB",
-        lblElevProfile: "PROFILO ALTIMETRICO",
-        btnNavigateNow: "Naviga Ora",
-        btnStopNavigation: "Ferma Navigazione",
-        navHudActive: "NAVIGAZIONE ATTIVA",
-        navHudOnTrack: "SULLA TRACCIA",
-        navHudOffTrack: "FUORI TRACCIA",
-        lblNavRemaining: "DISTANZA RESIDUA",
-        lblNavToShop: "RIENTRO BASE",
-        poisTitle: "Punti Utili & Ristoro",
-        poisSubtitle: "Fontanelle d'acqua potabile, punti panoramici e soste lungo i percorsi.",
-        btnOpenGmaps: "Naviga qui nell'App",
-        helpTitle: "Assistenza Rapida",
-        helpSubtitle: "Supporto meccanico sul campo e numeri di emergenza.",
-        waTitle: "Invia Posizione al Negozio",
-        waDesc: "Apre WhatsApp con le tue coordinate GPS esatte, il sentiero attivo e il problema riscontrato.",
-        lblIssue: "Tipo di Assistenza",
-        btnWa: "Invia Posizione GPS su WhatsApp",
-        btnCallShop: "Chiama Officina",
-        btnWaDirect: "Chat WhatsApp",
-        btnCall112: "Chiama 112",
-        lblShopBase: "PUNTO DI RIENTRO",
-        btnReturnShop: "Naviga",
-        faqTitle: "Guida Rapida sul Sentiero",
-        shopReturnPrefix: "Rientro base",
-        gpsReady: "GPS attivo: coordinate pronte per l'invio.",
-        gpsNotReady: "Premi il tasto per rilevare il GPS e aprire WhatsApp.",
-        gpsAcquiring: "Rilevamento GPS in corso...",
-        gpsDenied: "Permesso GPS negato: attiva la localizzazione sul telefono.",
-        noTrailsInFilter: "Nessun sentiero disponibile con questo filtro.",
-        catLabels: { water: "FONTANELLA", viewpoint: "PUNTO PANORAMICO", food: "RISTORO / BAR", shop: "OFFICINA & RICARICA" },
-        issues: [
-          "Foratura / Problema gomma",
-          "Problema meccanico (catena / cambio / freni)",
-          "Batteria scarica / Errore motore e-Bike",
-          "Ho perso l'orientamento / Fuori sentiero",
-          "Richiesta recupero furgone"
-        ],
-        faqs: [
-          { q: "Errore display Bosch / Shimano / Yamaha", a: "Fermati, spegni la bici dal tasto principale per 15 secondi, verifica che il sensore velocità sulla ruota posteriore sia allineato al magnete e riaccendi senza appoggiare i piedi sui pedali." },
-          { q: "Come risparmiare batteria in salita", a: "Usa i rapporti agili (pignoni grandi) e mantieni una cadenza di 70-80 pedalate/min in modalità ECO o TOUR. Evita TURBO su rampe lunghe." },
-          { q: "Foratura con copertoni Tubeless", a: "Ruota la gomma con il foro verso il basso affinché il lattice sigilli la perdita, poi gonfia con la mini-pompa. Se la perdita continua, inviaci la posizione su WhatsApp." }
-        ]
+        permTitle: "Autorizzazioni GPS e Rete Web",
+        permDesc: "Per mostrare la tua posizione sul sentiero, calcolare distanza e dislivello rimanenti e salvare le mappe offline, abilita il GPS e la connessione web.",
+        gpsWaiting: "In attesa",
+        gpsGranted: "Attivo",
+        gpsDenied: "Non disponibile qui",
+        authBtn: "Autorizza GPS e Rete Web",
+        skipBtn: "Continua senza GPS per ora",
+        invalidPass: "Codice o password non validi."
       },
       en: {
-        permEyebrow: "INITIAL SETUP",
         permTitle: "GPS & Web Network Permissions",
-        permSubtitle: "To guide you along the trails and share your location if you need assistance, please allow GPS and web connection access for maps.",
-        permGpsTitle: "Live GPS Location",
-        permGpsDesc: "Required for trail navigation and WhatsApp rescue assistance.",
-        permWebTitle: "Web Connection & Maps",
-        permWebDesc: "Enables loading trail maps and saving tiles to offline cache.",
-        permStatusWaiting: "Waiting",
-        permStatusChecking: "Checking...",
-        permStatusGranted: "Allowed",
-        permStatusDenied: "Denied",
-        permStatusReady: "Ready",
-        permStatusOffline: "Offline",
-        permGrantLabel: "Allow GPS & Web Access",
-        permSkipLabel: "Continue without GPS for now",
-        permToastGranted: "GPS and web network permissions granted.",
-        permToastDenied: "GPS access denied or blocked by browser. You can still browse maps.",
-        lockEyebrow: "RENTAL RIDER ACCESS",
-        lockTitle: "Maps, Trails & Support.",
-        lockSubtitle: "Enter the rental code given at bike pickup to unlock trail maps, points of interest and rapid support.",
-        lockPassLabel: "Access Password",
-        lockSubmitLabel: "Unlock Trail Map",
-        lockRotationNote: "• Each customer password automatically rotates after login.",
-        lockOfflineNote: "• Satellite GPS works without mobile data; cached map tiles stay available offline.",
-        lockErrEmpty: "Please enter your access password.",
-        lockErrInvalid: "Invalid or already used password. Ask the shop for the current code.",
-        unlockedClientToast: "Unlocked. Previous customer code automatically invalidated.",
-        unlockedOwnerToast: "Manager mode unlocked.",
-        headerSubtitle: "Bibbona • Trail Guide & Support",
-        btnLock: "Lock",
-        onlineLabel: "Online",
-        offlineLabel: "Offline • Cache",
-        navMap: "Map",
-        navPois: "Useful POIs",
-        navHelp: "Support",
-        navAdmin: "Manager & Cache",
-        bikeAll: "All Tours",
-        trailsHeading: "GPX TRAILS",
-        diffAll: "All",
-        chipAll: "All POIs",
-        chipWater: "Water Fountains",
-        chipView: "Viewpoints",
-        chipFood: "Food & Cafes",
-        chipShop: "Shop / Charge",
-        lblDist: "DISTANCE",
-        lblElev: "ELEVATION +",
-        lblBatt: "E-MTB BATTERY",
-        lblElevProfile: "ELEVATION PROFILE",
-        btnNavigateNow: "Navigate Now",
-        btnStopNavigation: "Stop Navigation",
-        navHudActive: "NAVIGATION ACTIVE",
-        navHudOnTrack: "ON TRACK",
-        navHudOffTrack: "OFF TRACK",
-        lblNavRemaining: "REMAINING DIST.",
-        lblNavToShop: "RETURN TO BASE",
-        poisTitle: "Useful Points & Stops",
-        poisSubtitle: "Drinking water fountains, viewpoints and rest stops along the trails.",
-        btnOpenGmaps: "Navigate in App",
-        helpTitle: "Rapid Assistance",
-        helpSubtitle: "Field mechanical support and emergency contacts.",
-        waTitle: "Send Live Location to Shop",
-        waDesc: "Opens WhatsApp with your exact GPS coordinates, active trail and mechanical issue.",
-        lblIssue: "Issue Type",
-        btnWa: "Send GPS Location via WhatsApp",
-        btnCallShop: "Call Workshop",
-        btnWaDirect: "WhatsApp Chat",
-        btnCall112: "Call 112",
-        lblShopBase: "RETURN BASE",
-        btnReturnShop: "Navigate",
-        faqTitle: "Quick Trail Troubleshooting",
-        shopReturnPrefix: "Return to base",
-        gpsReady: "GPS active: coordinates ready to send.",
-        gpsNotReady: "Tap the button to lock GPS and open WhatsApp.",
-        gpsAcquiring: "Acquiring GPS signal...",
-        gpsDenied: "GPS permission denied: enable location services on your phone.",
-        noTrailsInFilter: "No trails match this filter.",
-        catLabels: { water: "WATER FOUNTAIN", viewpoint: "VIEWPOINT", food: "FOOD & REFRESHMENT", shop: "WORKSHOP & CHARGING" },
-        issues: [
-          "Flat tire / Puncture",
-          "Mechanical issue (chain / gears / brakes)",
-          "Low battery / e-Bike motor error",
-          "Lost orientation / Off trail",
-          "Van pickup request"
-        ],
-        faqs: [
-          { q: "Bosch / Shimano / Yamaha display error", a: "Stop, switch off the bike for 15 seconds, make sure the rear wheel speed sensor aligns with the spoke magnet, and power on without resting feet on pedals." },
-          { q: "How to save battery on climbs", a: "Use easier gears and keep a cadence of 70-80 rpm in ECO or TOUR mode. Avoid TURBO on sustained climbs." },
-          { q: "Tubeless tire puncture", a: "Rotate the tire so the puncture faces downward for sealant to plug the hole, then pump up. If air still leaks, send your GPS location on WhatsApp." }
-        ]
+        permDesc: "To show your position on the trail, calculate remaining distance and elevation gain, and cache maps offline, enable GPS and web access.",
+        gpsWaiting: "Waiting",
+        gpsGranted: "Active",
+        gpsDenied: "Unavailable here",
+        authBtn: "Authorize GPS & Web",
+        skipBtn: "Continue without GPS for now",
+        invalidPass: "Invalid access code or password."
       },
       de: {
-        permEyebrow: "ERSTEINRICHTUNG",
         permTitle: "GPS- & Web-Berechtigungen",
-        permSubtitle: "Um dich auf den Trails zu führen und im Notfall deinen Standort zu senden, erlaube bitte den Zugriff auf GPS und Webverbindung für Karten.",
-        permGpsTitle: "Live-GPS-Standort",
-        permGpsDesc: "Erforderlich für Trail-Navigation und WhatsApp-Pannenhilfe.",
-        permWebTitle: "Webverbindung & Karten",
-        permWebDesc: "Ermöglicht das Laden von Trail-Karten und das Speichern im Offline-Cache.",
-        permStatusWaiting: "Wartet",
-        permStatusChecking: "Prüfung...",
-        permStatusGranted: "Erlaubt",
-        permStatusDenied: "Abgelehnt",
-        permStatusReady: "Bereit",
-        permStatusOffline: "Offline",
-        permGrantLabel: "GPS & Webzugriff erlauben",
-        permSkipLabel: "Vorerst ohne GPS fortfahren",
-        permToastGranted: "GPS- und Web-Berechtigungen erteilt.",
-        permToastDenied: "GPS-Zugriff abgelehnt oder blockiert. Karten bleiben nutzbar.",
-        lockEyebrow: "VERLEIH-ZUGANG",
-        lockTitle: "Karten, Trails & Hilfe.",
-        lockSubtitle: "Gib den Verleih-Code ein, um Trails, Wasserstellen und Pannenhilfe freizuschalten.",
-        lockPassLabel: "Zugangspasswort",
-        lockSubmitLabel: "Karte freischalten",
-        lockRotationNote: "• Jedes Kundenpasswort erneuert sich nach dem Login automatisch.",
-        lockOfflineNote: "• Satelliten-GPS funktioniert auch ohne Mobilfunknetz; gespeicherte Karten bleiben offline verfügbar.",
-        lockErrEmpty: "Bitte Zugangspasswort eingeben.",
-        lockErrInvalid: "Ungültiges oder bereits genutztes Passwort.",
-        unlockedClientToast: "Freigeschaltet. Vorheriger Code wurde automatisch erneuert.",
-        unlockedOwnerToast: "Manager-Modus aktiv.",
-        headerSubtitle: "Bibbona • Trail-Guide & Hilfe",
-        btnLock: "Sperren",
-        onlineLabel: "Online",
-        offlineLabel: "Offline • Cache",
-        navMap: "Karte",
-        navPois: "POI & Wasser",
-        navHelp: "Hilfe",
-        navAdmin: "Manager & Cache",
-        bikeAll: "Alle Touren",
-        trailsHeading: "GPX TRAILS",
-        diffAll: "Alle",
-        chipAll: "Alle POIs",
-        chipWater: "Trinkwasser",
-        chipView: "Aussicht",
-        chipFood: "Einkehr",
-        chipShop: "Werkstatt",
-        lblDist: "DISTANZ",
-        lblElev: "HÖHENMETER +",
-        lblBatt: "E-MTB AKKU",
-        lblElevProfile: "HÖHENPROFIL",
-        btnNavigateNow: "Jetzt navigieren",
-        btnStopNavigation: "Navigation beenden",
-        navHudActive: "NAVIGATION AKTIV",
-        navHudOnTrack: "AUF DER ROUTE",
-        navHudOffTrack: "ABSEITS DER ROUTE",
-        lblNavRemaining: "RESTSTRECKE",
-        lblNavToShop: "ZURÜCK ZUR BASIS",
-        poisTitle: "Nützliche Punkte & Einkehr",
-        poisSubtitle: "Trinkwasserbrunnen, Aussichtspunkte und Rastplätze entlang der Routen.",
-        btnOpenGmaps: "In der App navigieren",
-        helpTitle: "Schnelle Hilfe",
-        helpSubtitle: "Pannenhilfe vor Ort und Notrufnummern.",
-        waTitle: "Live-Standort an Werkstatt senden",
-        waDesc: "Öffnet WhatsApp mit deinen genauen GPS-Koordinaten, dem aktiven Trail und dem Problem.",
-        lblIssue: "Art des Problems",
-        btnWa: "GPS-Standort per WhatsApp senden",
-        btnCallShop: "Werkstatt anrufen",
-        btnWaDirect: "WhatsApp-Chat",
-        btnCall112: "Notruf 112",
-        lblShopBase: "RÜCKKEHRPUNKT",
-        btnReturnShop: "Navigieren",
-        faqTitle: "Schnellhilfe auf dem Trail",
-        shopReturnPrefix: "Zurück zur Basis",
-        gpsReady: "GPS aktiv: Koordinaten bereit.",
-        gpsNotReady: "Tippe auf den Button für GPS & WhatsApp.",
-        gpsAcquiring: "GPS-Signal wird gesucht...",
-        gpsDenied: "GPS-Zugriff verweigert.",
-        noTrailsInFilter: "Keine Trails für diesen Filter gefunden.",
-        catLabels: { water: "TRINKWASSER", viewpoint: "AUSSICHTSPUNKT", food: "EINKEHR / BAR", shop: "WERKSTATT & LADEN" },
-        issues: [
-          "Reifenpanne / Plattfuß",
-          "Mechanisches Problem (Kette / Schaltung / Bremse)",
-          "Akku leer / e-Bike Motorfehler",
-          "Orientierung verloren",
-          "Abholung mit Transporter anfordern"
-        ],
-        faqs: [
-          { q: "Bosch / Shimano / Yamaha Display-Fehler", a: "Anhalten, Rad für 15 Sekunden ausschalten, prüfen ob der Geschwindigkeitssensor am Hinterrad am Magneten ausgerichtet ist, und ohne Druck auf den Pedalen neu starten." },
-          { q: "Akku sparen am Berg", a: "Leichte Gänge wählen und mit 70-80 U/min im ECO- oder TOUR-Modus fahren." },
-          { q: "Tubeless-Reifenpanne", a: "Loch nach unten drehen, damit die Dichtmilch abdichtet, danach aufpumpen." }
-        ]
+        permDesc: "Um Ihre Position auf dem Trail anzuzeigen, verbleibende Distanz und Höhenmeter zu berechnen und Karten offline zu speichern, aktivieren Sie GPS und Web.",
+        gpsWaiting: "Wartend",
+        gpsGranted: "Aktiv",
+        gpsDenied: "Hier nicht verfügbar",
+        authBtn: "GPS & Web freigeben",
+        skipBtn: "Vorerst ohne GPS fortfahren",
+        invalidPass: "Ungültiger Zugangscode oder Passwort."
       },
       nl: {
-        permEyebrow: "EERSTE INSTELLING",
         permTitle: "GPS- & Webtoestemmingen",
-        permSubtitle: "Om je over de paden te begeleiden en bij pech je locatie te sturen, geef je toestemming voor GPS en webverbinding voor kaarten.",
-        permGpsTitle: "Live GPS-locatie",
-        permGpsDesc: "Nodig voor trailnavigatie en WhatsApp-pechhulp.",
-        permWebTitle: "Webverbinding & Kaarten",
-        permWebDesc: "Maakt het laden van trailkaarten en opslaan in offline cache mogelijk.",
-        permStatusWaiting: "Wachten",
-        permStatusChecking: "Controleren...",
-        permStatusGranted: "Toegestaan",
-        permStatusDenied: "Geweigerd",
-        permStatusReady: "Gereed",
-        permStatusOffline: "Offline",
-        permGrantLabel: "GPS & Webtoegang toestaan",
-        permSkipLabel: "Voorlopig doorgaan zonder GPS",
-        permToastGranted: "GPS- en webtoestemmingen verleend.",
-        permToastDenied: "GPS-toegang geweigerd of geblokkeerd. Kaarten blijven bruikbaar.",
-        lockEyebrow: "VERHUUR TOEGANG",
-        lockTitle: "Kaarten, Trails & Hulp.",
-        lockSubtitle: "Voer de verhuurcode in om routes, waterpunten en snelle hulp te openen.",
-        lockPassLabel: "Toegangswachtwoord",
-        lockSubmitLabel: "Open Kaart",
-        lockRotationNote: "• Elk klantwachtwoord vernieuwt automatisch na inloggen.",
-        lockOfflineNote: "• Satelliet-GPS werkt ook zonder mobiel internet; opgeslagen kaarten blijven offline beschikbaar.",
-        lockErrEmpty: "Voer het toegangswachtwoord in.",
-        lockErrInvalid: "Ongeldig of al gebruikt wachtwoord.",
-        unlockedClientToast: "Ontgrendeld. Vorige klantcode automatisch vernieuwd.",
-        unlockedOwnerToast: "Beheerdersmodus geactiveerd.",
-        headerSubtitle: "Bibbona • Trailgids & Hulp",
-        btnLock: "Vergrendel",
-        onlineLabel: "Online",
-        offlineLabel: "Offline • Cache",
-        navMap: "Kaart",
-        navPois: "Nuttige POIs",
-        navHelp: "Hulp",
-        navAdmin: "Beheer & Cache",
-        bikeAll: "Alle Tours",
-        trailsHeading: "GPX ROUTES",
-        diffAll: "Alle",
-        chipAll: "Alle POIs",
-        chipWater: "Waterpunten",
-        chipView: "Uitzicht",
-        chipFood: "Eten & Drinken",
-        chipShop: "Werkplaats",
-        lblDist: "AFSTAND",
-        lblElev: "HOOGTEMETERS +",
-        lblBatt: "E-MTB ACCU",
-        lblElevProfile: "HOOGTEPROFIEL",
-        btnNavigateNow: "Nu navigeren",
-        btnStopNavigation: "Stop navigatie",
-        navHudActive: "NAVIGATIE ACTIEF",
-        navHudOnTrack: "OP DE ROUTE",
-        navHudOffTrack: "BUITEN DE ROUTE",
-        lblNavRemaining: "RESTERENDE AFST.",
-        lblNavToShop: "TERUG NAAR BASIS",
-        poisTitle: "Nuttige Punten & Rustplaatsen",
-        poisSubtitle: "Drinkwaterfonteinen, uitzichtpunten en stops langs de routes.",
-        btnOpenGmaps: "Navigeer in de app",
-        helpTitle: "Snelle Hulp",
-        helpSubtitle: "Mechanische hulp onderweg en noodnummers.",
-        waTitle: "Stuur Live Locatie naar Winkel",
-        waDesc: "Opent WhatsApp met je exacte GPS-coördinaten, actieve route en probleem.",
-        lblIssue: "Type Probleem",
-        btnWa: "Stuur GPS-locatie via WhatsApp",
-        btnCallShop: "Bel Werkplaats",
-        btnWaDirect: "WhatsApp Chat",
-        btnCall112: "Bel 112",
-        lblShopBase: "TERUGKEERPUNT",
-        btnReturnShop: "Navigeer",
-        faqTitle: "Snelle Hulp Onderweg",
-        shopReturnPrefix: "Terug naar basis",
-        gpsReady: "GPS actief: coördinaten gereed.",
-        gpsNotReady: "Tik op de knop voor GPS & WhatsApp.",
-        gpsAcquiring: "GPS-signaal zoeken...",
-        gpsDenied: "GPS-toegang geweigerd.",
-        noTrailsInFilter: "Geen routes gevonden voor dit filter.",
-        catLabels: { water: "WATERFONTEIN", viewpoint: "UITZICHTPUNT", food: "ETEN & DRINKEN", shop: "WERKPLAATS & LADEN" },
-        issues: [
-          "Lekke band",
-          "Mechanisch probleem (ketting / versnellingen / remmen)",
-          "Lege accu / e-Bike motorfout",
-          "Verdwaald / Van de route",
-          "Ophaalservice met busje aanvragen"
-        ],
-        faqs: [
-          { q: "Bosch / Shimano / Yamaha displayfout", a: "Stop, zet de fiets 15 seconden uit, controleer of de snelheidssensor bij het achterwiel uitgelijnd is met de magneet en start opnieuw zonder voet op de pedalen." },
-          { q: "Accu sparen tijdens klimmen", a: "Gebruik lichte versnellingen en houd een cadans van 70-80 omw/min in ECO of TOUR." },
-          { q: "Lekke tubeless band", a: "Draai het gaatje naar beneden zodat de vloeistof het dicht, en pomp daarna bij." }
+        permDesc: "Om je positie op de route te tonen, resterende afstand en hoogtemeters te berekenen en kaarten offline op te slaan, schakel je GPS en webtoegang in.",
+        gpsWaiting: "Wachten",
+        gpsGranted: "Actief",
+        gpsDenied: "Hier niet beschikbaar",
+        authBtn: "GPS & Web toestaan",
+        skipBtn: "Voorlopig zonder GPS verder",
+        invalidPass: "Ongeldige toegangscode of wachtwoord."
+      }
+    };
+
+    const ROUTES = {
+      "magona-loop": {
+        name: "Anello Macchia della Magona",
+        category: "mtb",
+        difficulty: "blue",
+        distanceKm: 24.8,
+        elevationGainM: 640,
+        coords: [
+          [43.2742, 10.6018],
+          [43.2685, 10.6240],
+          [43.2590, 10.6480],
+          [43.2495, 10.6320],
+          [43.2620, 10.6100],
+          [43.2742, 10.6018]
+        ]
+      },
+      "bolgheri-gravel": {
+        name: "Strada del Vino & Bolgheri",
+        category: "gravel",
+        difficulty: "green",
+        distanceKm: 36.4,
+        elevationGainM: 420,
+        coords: [
+          [43.2742, 10.6018],
+          [43.2550, 10.5820],
+          [43.2380, 10.6080],
+          [43.2520, 10.6350],
+          [43.2742, 10.6018]
+        ]
+      },
+      "riparbella-trail": {
+        name: "Riparbella & Acquerta",
+        category: "mtb",
+        difficulty: "red",
+        distanceKm: 29.2,
+        elevationGainM: 890,
+        coords: [
+          [43.2742, 10.6018],
+          [43.3020, 10.6180],
+          [43.3320, 10.6090],
+          [43.3150, 10.5880],
+          [43.2742, 10.6018]
         ]
       }
     };
 
-    /**
-     * ============================================================================
-     * 3. POINTS OF INTEREST (BIBBONA / BOLGHERI / MAGONA)
-     * ============================================================================
-     */
     const POIS = [
-      {
-        id: "poi-shop",
-        category: "shop",
-        lat: 43.2685,
-        lng: 10.5942,
-        name: "Magona Bike Garage (Base & Ricarica)",
-        dist: "0.0 km • Via del Mandorlo 1, Bibbona",
-        desc: {
-          it: "Punto di partenza e rientro. Officina meccanica, gonfiaggio tubeless, ricarica rapida Bosch/Shimano e acqua fresca.",
-          en: "Start & return base. Mechanical workshop, tubeless inflation, Bosch/Shimano fast charging and fresh water.",
-          de: "Start- & Rückkehrpunkt. Werkstatt, Tubeless-Service, Bosch/Shimano-Ladestation und frisches Wasser.",
-          nl: "Start- & terugkeerpunt. Werkplaats, tubeless service, Bosch/Shimano snellader en vers water."
-        }
-      },
-      {
-        id: "poi-water-campo",
-        category: "water",
-        lat: 43.2571,
-        lng: 10.6254,
-        name: "Fontanella Campo di Sasso",
-        dist: "4.8 km • Ingresso Macchia della Magona",
-        desc: {
-          it: "Acqua potabile fresca all'ingresso dei sentieri della Macchia della Magona. Punto ideale per riempire le borracce prima delle salite.",
-          en: "Fresh drinking water right at the entrance of Macchia della Magona trails. Ideal refill spot before climbing.",
-          de: "Frisches Trinkwasser direkt am Eingang zu den Trails der Macchia della Magona.",
-          nl: "Vers drinkwater bij de ingang van de paden van Macchia della Magona."
-        }
-      },
-      {
-        id: "poi-view-golazze",
-        category: "viewpoint",
-        lat: 43.2495,
-        lng: 10.6510,
-        name: "Poggio Golazze Aperte (410m)",
-        dist: "11.2 km • Crinale panoramico",
-        desc: {
-          it: "Punto più alto del giro con vista aperta sull'Arcipelago Toscano, Isola d'Elba e Capraia nelle giornate limpide.",
-          en: "Highest ridge viewpoint overlooking the Tuscan Archipelago, Elba and Capraia islands on clear days.",
-          de: "Höchster Aussichtspunkt mit Blick auf den Toskanischen Archipel, Elba und Capraia.",
-          nl: "Hoogste uitzichtpunt met zicht op de Toscaanse Archipel, Elba en Capraia."
-        }
-      },
-      {
-        id: "poi-water-bolgheri",
-        category: "water",
-        lat: 43.2341,
-        lng: 10.6168,
-        name: "Fontanella Borgo di Bolgheri",
-        dist: "14.5 km • Porta del Castello",
-        desc: {
-          it: "Fontana pubblica in pietra subito fuori dalle mura del centro storico di Bolgheri.",
-          en: "Public stone drinking fountain just outside the historic walls of Bolgheri.",
-          de: "Öffentlicher Trinkwasserbrunnen direkt vor den Stadtmauern von Bolgheri.",
-          nl: "Openbare stenen drinkfontein net buiten de stadsmuren van Bolgheri."
-        }
-      },
-      {
-        id: "poi-food-bolgheri",
-        category: "food",
-        lat: 43.2336,
-        lng: 10.6177,
-        name: "Sosta & Caffè Borgo Bolgheri",
-        dist: "14.7 km • Centro storico",
-        desc: {
-          it: "Bar, schiacciate e ristoro nel borgo medievale di Bolgheri. Parcheggio bici a vista.",
-          en: "Cafes, local focaccia and refreshments in medieval Bolgheri with visible bike parking.",
-          de: "Cafés und Stärkung im mittelalterlichen Dorf Bolgheri.",
-          nl: "Cafés en lokale broodjes in het middeleeuwse dorp Bolgheri."
-        }
-      },
-      {
-        id: "poi-view-cipressi",
-        category: "viewpoint",
-        lat: 43.2268,
-        lng: 10.5880,
-        name: "Viale dei Cipressi di Bolgheri",
-        dist: "18.1 km • Strada Bolgherese",
-        desc: {
-          it: "Il celebre rettilineo di 5 km fiancheggiato da cipressi secolari. Attenzione al traffico auto nei tratti asfaltati.",
-          en: "Famous 5 km straight avenue lined with centuries-old cypress trees. Watch for cars on paved sections.",
-          de: "Die berühmte 5 km lange Zypressenallee. Vorsicht bei Autoverkehr.",
-          nl: "De beroemde 5 km lange cipressenlaan. Let op autoverkeer."
-        }
-      }
+      { id: "f1", type: "water", name: "Fontana Campo di Sasso", coords: [43.2610, 10.6360] },
+      { id: "v1", type: "view", name: "Passo delle Golazze Aperte", coords: [43.2565, 10.6410] },
+      { id: "r1", type: "food", name: "Ristoro & Area Sosta Bibbona", coords: [43.2720, 10.6045] }
     ];
 
-    /**
-     * ============================================================================
-     * 4. DEFAULT TRAILS DATABASE (CLASSIFIED BY DIFFICULTY)
-     * ============================================================================
-     */
-    const DEFAULT_TRAILS = [
-      {
-        id: "trail-magona-loop",
-        difficulty: "red",
-        bikeType: "MTB / e-MTB",
-        distanceKm: 24.0,
-        elevationGain: 620,
-        batteryEst: "~45% Tour",
-        title: {
-          it: "Anello Macchia della Magona — Golazze Aperte",
-          en: "Macchia della Magona Loop — Golazze Aperte",
-          de: "Macchia della Magona Runde — Golazze Aperte",
-          nl: "Macchia della Magona Lus — Golazze Aperte"
-        },
-        desc: {
-          it: "Salita regolare su sterrato forestale fino a Campo di Sasso e crinale di Golazze Aperte, seguita da singletrack scorrevoli nel bosco mediterraneo.",
-          en: "Steady forest gravel climb to Campo di Sasso and Golazze Aperte ridge, followed by flowing singletrack through Mediterranean woods.",
-          de: "Gleichmäßiger Schotteranstieg nach Campo di Sasso und Golazze Aperte, gefolgt von flowigen Singletrails.",
-          nl: "Geleidelijke grindklim naar Campo di Sasso en Golazze Aperte, gevolgd door vloeiende singletracks."
-        },
-        points: [
-          [43.2685, 10.5942, 85], [43.2642, 10.6045, 118], [43.2601, 10.6152, 165],
-          [43.2571, 10.6254, 210], [43.2542, 10.6380, 315], [43.2495, 10.6510, 410],
-          [43.2412, 10.6462, 345], [43.2355, 10.6320, 230], [43.2341, 10.6168, 145],
-          [43.2420, 10.6050, 115], [43.2555, 10.5985, 98], [43.2685, 10.5942, 85]
-        ]
-      },
-      {
-        id: "trail-bolgheri-gravel",
-        difficulty: "green",
-        bikeType: "GRAVEL / e-Gravel",
-        distanceKm: 28.5,
-        elevationGain: 310,
-        batteryEst: "~25% Eco/Tour",
-        title: {
-          it: "Strade Bianche di Bolgheri & Viale dei Cipressi",
-          en: "Bolgheri White Roads & Cypress Avenue",
-          de: "Bolgheri Schotterwege & Zypressenallee",
-          nl: "Witte Wegen van Bolgheri & Cipressenlaan"
-        },
-        desc: {
-          it: "Percorso panoramico tra vigneti, oliveti e strade bianche fino al borgo di Bolgheri e al Viale dei Cipressi. Adatto a tutti.",
-          en: "Scenic ride through vineyards, olive groves and white gravel roads to Bolgheri village and the Cypress Avenue. Suitable for all riders.",
-          de: "Panoramatour durch Weinberge und Schotterwege nach Bolgheri und zur Zypressenallee. Für alle geeignet.",
-          nl: "Schilderachtige rit door wijngaarden en grindwegen naar Bolgheri en de Cipressenlaan. Geschikt voor iedereen."
-        },
-        points: [
-          [43.2685, 10.5942, 85], [43.2590, 10.5910, 72], [43.2465, 10.5895, 65],
-          [43.2340, 10.5882, 58], [43.2268, 10.5880, 52], [43.2310, 10.6045, 95],
-          [43.2341, 10.6168, 145], [43.2450, 10.6110, 128], [43.2575, 10.6020, 102],
-          [43.2685, 10.5942, 85]
-        ]
-      },
-      {
-        id: "trail-riparbella-ridges",
-        difficulty: "blue",
-        bikeType: "MTB / e-MTB",
-        distanceKm: 32.0,
-        elevationGain: 780,
-        batteryEst: "~60% Tour",
-        title: {
-          it: "Colline di Riparbella & Sottobosco",
-          en: "Riparbella Hills & Forest Trails",
-          de: "Riparbella Hügel & Waldwege",
-          nl: "Heuvels van Riparbella & Bospaden"
-        },
-        desc: {
-          it: "Saliscendi divertente nei boschi a nord di Bibbona verso Riparbella con tratti ombrosi e vista mare sul rientro.",
-          en: "Fun rolling climbs and descents north of Bibbona toward Riparbella with shaded forest tracks and sea views on the return.",
-          de: "Abwechslungsreiche Waldwege nördlich von Bibbona Richtung Riparbella mit Meerblick auf dem Rückweg.",
-          nl: "Afwisselende bospaden ten noorden van Bibbona richting Riparbella met zeezicht op de terugweg."
-        },
-        points: [
-          [43.2685, 10.5942, 85], [43.2790, 10.6010, 140], [43.2915, 10.6120, 215],
-          [43.3040, 10.6185, 290], [43.3145, 10.6060, 255], [43.3060, 10.5890, 185],
-          [43.2910, 10.5840, 130], [43.2785, 10.5890, 105], [43.2685, 10.5942, 85]
-        ]
-      }
-    ];
-
-    /**
-     * ============================================================================
-     * 5. APPLICATION STATE
-     * ============================================================================
-     */
     let currentLang = "it";
-    let sessionRole = null; // null | 'client' | 'owner'
-    let trails = [];
-    let currentTrailId = "";
-    let activeDifficultyFilter = "all";
-    let activeBikeDisciplineFilter = "all"; // 'all' | 'mtb' | 'gravel'
-    let pendingParsedGpx = null;
-
+    let isOwner = false;
     let map = null;
-    let baseLayers = {};
-    let layerOrder = ["MTB", "TOPO", "SAT"];
-    let currentLayerIdx = 0;
-
     let routePolyline = null;
-    let routeGlowPolyline = null;
-    let internalNavLine = null;
-    let poiMarkersLayer = null;
-    let activePoiFilter = "all";
-
-    let userPosition = null;
     let userMarker = null;
-    let userAccuracyCircle = null;
-    let gpsWatchId = null;
-    let isTrackingUser = false;
-    let isNavigatingTrail = false;
-    let toastTimer = null;
+    let watchId = null;
+    let liveNavActive = false;
+    let userCoords = null;
+    let activeRouteId = "magona-loop";
+    let simulatedProgressRatio = 0;
 
-    /**
-     * ============================================================================
-     * 6. STARTUP PERMISSIONS (GPS & WEB NETWORK)
-     * ============================================================================
-     */
-    function initStartupPermissionsPrompt() {
-      const modal = document.getElementById("startup-permissions-modal");
-      if (!modal) return;
-
-      updateStartupPermissionBadges();
-
-      if (localStorage.getItem(STORAGE_KEYS.PERM_PROMPT_DONE) === "1") {
-        modal.classList.add("hidden");
-        return;
-      }
-      modal.classList.remove("hidden");
+    function showToast(msg) {
+      const el = document.getElementById("toast-msg");
+      if (!el) return;
+      el.textContent = msg;
+      el.classList.remove("hidden");
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => el.classList.add("hidden"), 2800);
     }
 
-    function updateStartupPermissionBadges() {
+    function changeLanguage(lang) {
+      currentLang = I18N[lang] ? lang : "it";
       const t = I18N[currentLang];
-      const webBadge = document.getElementById("perm-web-status");
-      if (webBadge) {
-        if (navigator.onLine) {
-          webBadge.textContent = t.permStatusReady;
-          webBadge.className = "text-[10px] font-extrabold uppercase tracking-wider px-2 py-1 border border-line bg-paper text-emerald-700 shrink-0";
-        } else {
-          webBadge.textContent = t.permStatusOffline;
-          webBadge.className = "text-[10px] font-extrabold uppercase tracking-wider px-2 py-1 border border-line bg-paper text-amber-700 shrink-0";
-        }
-      }
-    }
-
-    function requestStartupPermissions() {
-      const t = I18N[currentLang];
-      const gpsBadge = document.getElementById("perm-gps-status");
-      const btn = document.getElementById("btn-grant-permissions");
-
-      registerOfflineServiceWorker();
-      updateStartupPermissionBadges();
-
-      if (!("geolocation" in navigator)) {
-        if (gpsBadge) {
-          gpsBadge.textContent = t.permStatusDenied;
-          gpsBadge.className = "text-[10px] font-extrabold uppercase tracking-wider px-2 py-1 border border-line bg-paper text-red-600 shrink-0";
-        }
-        dismissStartupPermissions(false);
-        return;
-      }
-
-      if (gpsBadge) {
-        gpsBadge.textContent = t.permStatusChecking;
-      }
-      if (btn) btn.disabled = true;
-
-      let settled = false;
-      const finishRequest = (granted) => {
-        if (settled) return;
-        settled = true;
-        clearTimeout(safetyTimer);
-        if (btn) btn.disabled = false;
-
-        if (granted) {
-          if (gpsBadge) {
-            gpsBadge.textContent = t.permStatusGranted;
-            gpsBadge.className = "text-[10px] font-extrabold uppercase tracking-wider px-2 py-1 border border-line bg-paper text-emerald-700 shrink-0";
-          }
-          if (!isTrackingUser) {
-            toggleGpsTracking(true);
-          }
-          showToast(t.permToastGranted);
-          setTimeout(() => dismissStartupPermissions(true), 350);
-        } else {
-          if (gpsBadge) {
-            gpsBadge.textContent = t.permStatusDenied;
-            gpsBadge.className = "text-[10px] font-extrabold uppercase tracking-wider px-2 py-1 border border-line bg-paper text-red-600 shrink-0";
-          }
-          showToast(t.permToastDenied);
-          setTimeout(() => dismissStartupPermissions(false), 450);
-        }
-      };
-
-      const safetyTimer = setTimeout(() => {
-        finishRequest(false);
-      }, 6000);
-
-      try {
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            userPosition = [pos.coords.latitude, pos.coords.longitude];
-            finishRequest(true);
-          },
-          () => {
-            finishRequest(false);
-          },
-          { enableHighAccuracy: true, timeout: 5500, maximumAge: 10000 }
-        );
-      } catch (e) {
-        finishRequest(false);
-      }
-    }
-
-    function dismissStartupPermissions() {
-      localStorage.setItem(STORAGE_KEYS.PERM_PROMPT_DONE, "1");
-      const modal = document.getElementById("startup-permissions-modal");
-      if (modal) modal.classList.add("hidden");
-    }
-
-    /**
-     * ============================================================================
-     * 7. ROTATING CLIENT PASSWORD & FIXED OWNER AUTHENTICATION
-     * ============================================================================
-     */
-    function generateRotatingPassword() {
-      const prefixes = ["RIDE", "TRAIL", "MAGO", "BIKE", "TOUR"];
-      const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
-      const num = Math.floor(1000 + Math.random() * 9000);
-      return `${prefix}-${num}`;
-    }
-
-    function getActiveClientPassword() {
-      let current = localStorage.getItem(STORAGE_KEYS.ACTIVE_CLIENT_PASS);
-      if (!current) {
-        current = "RIDE-4829";
-        localStorage.setItem(STORAGE_KEYS.ACTIVE_CLIENT_PASS, current);
-      }
-      return current.trim().toUpperCase();
-    }
-
-    function getUsedClientPasswords() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEYS.USED_CLIENT_PASSES);
-        return raw ? JSON.parse(raw) : [];
-      } catch (e) {
-        return [];
-      }
-    }
-
-    function rotateClientPasswordAfterLogin(usedPassword) {
-      const usedList = getUsedClientPasswords();
-      if (usedPassword && !usedList.includes(usedPassword)) {
-        usedList.push(usedPassword);
-        localStorage.setItem(STORAGE_KEYS.USED_CLIENT_PASSES, JSON.stringify(usedList.slice(-50)));
-      }
-      let nextPass = generateRotatingPassword();
-      while (nextPass === usedPassword || usedList.includes(nextPass)) {
-        nextPass = generateRotatingPassword();
-      }
-      localStorage.setItem(STORAGE_KEYS.ACTIVE_CLIENT_PASS, nextPass);
-      updateAdminPasswordUI();
-      return nextPass;
-    }
-
-    function rotateClientPasswordManual() {
-      const current = getActiveClientPassword();
-      const next = rotateClientPasswordAfterLogin(current);
-      showToast(`Nuova password cliente: ${next}`);
-    }
-
-    function setCustomClientPassword() {
-      const input = document.getElementById("custom-client-pass-input");
-      const val = input.value.trim().toUpperCase();
-      if (!val || val.length < 4) {
-        showToast("Inserisci un codice di almeno 4 caratteri.");
-        return;
-      }
-      if (val === OWNER_PASSWORD.toUpperCase()) {
-        showToast("Non usare la password gestore come password cliente.");
-        return;
-      }
-      localStorage.setItem(STORAGE_KEYS.ACTIVE_CLIENT_PASS, val);
-      input.value = "";
-      updateAdminPasswordUI();
-      showToast(`Password cliente impostata su: ${val}`);
-    }
-
-    function copyActiveClientPassword() {
-      const code = getActiveClientPassword();
-      const tempInput = document.createElement("input");
-      tempInput.value = code;
-      document.body.appendChild(tempInput);
-      tempInput.select();
-      document.execCommand("copy");
-      document.body.removeChild(tempInput);
-      showToast(`Codice copiato: ${code}`);
-    }
-
-    function updateAdminPasswordUI() {
-      const el = document.getElementById("admin-active-client-pass");
-      if (el) el.textContent = getActiveClientPassword();
-    }
-
-    function submitAccessPassword() {
-      const t = I18N[currentLang];
-      const input = document.getElementById("access-password-input");
-      const errEl = document.getElementById("lock-error-msg");
-      const entered = input.value.trim().toUpperCase();
-
-      errEl.classList.add("hidden");
-
-      if (!entered) {
-        errEl.textContent = t.lockErrEmpty;
-        errEl.classList.remove("hidden");
-        return;
-      }
-
-      if (entered === OWNER_PASSWORD.toUpperCase()) {
-        input.value = "";
-        unlockApplication("owner");
-        showToast(t.unlockedOwnerToast);
-        return;
-      }
-
-      const activeClientCode = getActiveClientPassword();
-      const usedList = getUsedClientPasswords();
-
-      if (entered === activeClientCode && !usedList.includes(entered)) {
-        rotateClientPasswordAfterLogin(entered);
-        input.value = "";
-        unlockApplication("client");
-        showToast(t.unlockedClientToast);
-        return;
-      }
-
-      errEl.textContent = t.lockErrInvalid;
-      errEl.classList.remove("hidden");
-    }
-
-    function unlockApplication(role) {
-      sessionRole = role;
-      document.getElementById("lock-screen").classList.add("hidden");
-      document.getElementById("app-header").classList.remove("hidden");
-      document.getElementById("app-main").classList.remove("hidden");
-      document.getElementById("app-nav").classList.remove("hidden");
-
-      const rolePill = document.getElementById("role-pill");
-      const adminTab = document.getElementById("nav-admin-tab");
-
-      if (role === "owner") {
-        rolePill.classList.remove("hidden");
-        adminTab.classList.remove("hidden");
-        updateAdminPasswordUI();
-        renderAdminTrailsList();
-        refreshTileCacheCount();
-      } else {
-        rolePill.classList.add("hidden");
-        adminTab.classList.add("hidden");
-      }
-
-      if (!map) {
-        initMap();
-      }
-      switchTab("map");
-      setTimeout(() => {
-        if (map) {
-          map.invalidateSize();
-          fitCurrentRoute();
-        }
-      }, 160);
-    }
-
-    function lockApplication() {
-      sessionRole = null;
-      document.getElementById("lock-screen").classList.remove("hidden");
-      document.getElementById("app-header").classList.add("hidden");
-      document.getElementById("app-main").classList.add("hidden");
-      document.getElementById("app-nav").classList.add("hidden");
-      document.getElementById("lock-error-msg").classList.add("hidden");
-    }
-
-    /**
-     * ============================================================================
-     * 8. OFFLINE SERVICE WORKER & MAP TILE PRE-CACHE
-     * ============================================================================
-     */
-    const TILE_CACHE_NAME = "magona-map-tiles-v1";
-
-    function registerOfflineServiceWorker() {
-      if (!("serviceWorker" in navigator)) return;
-      const swCode = `
-        const CACHE_APP = 'magona-app-shell-v1';
-        const CACHE_TILES = '${TILE_CACHE_NAME}';
-
-        self.addEventListener('install', (event) => {
-          self.skipWaiting();
-        });
-
-        self.addEventListener('activate', (event) => {
-          event.waitUntil(self.clients.claim());
-        });
-
-        self.addEventListener('fetch', (event) => {
-          const url = event.request.url;
-          const isTile = url.includes('tile.openstreetmap.org') ||
-                         url.includes('tile-cyclosm.openstreetmap.fr') ||
-                         url.includes('tile.opentopomap.org') ||
-                         url.includes('arcgisonline.com');
-
-          if (isTile) {
-            event.respondWith(
-              caches.open(CACHE_TILES).then(async (cache) => {
-                const cached = await cache.match(event.request);
-                if (cached) return cached;
-                try {
-                  const networkResp = await fetch(event.request);
-                  if (networkResp && networkResp.ok) {
-                    cache.put(event.request, networkResp.clone());
-                  }
-                  return networkResp;
-                } catch (err) {
-                  return cached || new Response('', { status: 503 });
-                }
-              })
-            );
-            return;
-          }
-
-          if (event.request.method === 'GET') {
-            event.respondWith(
-              fetch(event.request)
-                .then((resp) => {
-                  if (resp && resp.ok && url.startsWith('http')) {
-                    const copy = resp.clone();
-                    caches.open(CACHE_APP).then((c) => c.put(event.request, copy));
-                  }
-                  return resp;
-                })
-                .catch(() => caches.match(event.request))
-            );
-          }
-        });
-      `;
-
-      try {
-        const blob = new Blob([swCode], { type: "application/javascript" });
-        const swUrl = URL.createObjectURL(blob);
-        navigator.serviceWorker.register(swUrl).catch(() => {});
-      } catch (e) {
-        // Fallback silenzioso in ambienti senza supporto SW Blob
-      }
+      document.documentElement.lang = currentLang;
+      const s1 = document.getElementById("lang-select");
+      const s2 = document.getElementById("app-lang-select");
+      if (s1) s1.value = currentLang;
+      if (s2) s2.value = currentLang;
+      document.getElementById("perm-title").textContent = t.permTitle;
+      document.getElementById("perm-desc").textContent = t.permDesc;
+      document.getElementById("btn-authorize-all").textContent = t.authBtn;
+      document.getElementById("btn-skip-perm").textContent = t.skipBtn;
     }
 
     function updateNetworkStatusUI() {
-      const t = I18N[currentLang];
+      const el = document.getElementById("perm-net-status");
+      if (!el) return;
       const online = navigator.onLine;
-      document.querySelectorAll(".network-status-badge").forEach((badge) => {
-        const dot = badge.querySelector(".net-dot");
-        const label = badge.querySelector(".net-label");
-        if (dot) {
-          dot.className = `net-dot w-2 h-2 rounded-full ${online ? "bg-emerald-600" : "bg-amber-500"}`;
-        }
-        if (label) {
-          label.textContent = online ? t.onlineLabel : t.offlineLabel;
-        }
-      });
+      el.textContent = online ? "Online · Cache pronta" : "Offline · Cache locale";
+      el.className = online
+        ? "text-xs font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800"
+        : "text-xs font-semibold px-2 py-0.5 rounded bg-amber-100 text-amber-800";
     }
 
-    function latLngToTile(lat, lng, zoom) {
-      const x = Math.floor(((lng + 180) / 360) * Math.pow(2, zoom));
-      const latRad = (lat * Math.PI) / 180;
-      const y = Math.floor(
-        ((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2) * Math.pow(2, zoom)
-      );
-      return { x, y };
+    function openStartupPermissionsModal() {
+      updateNetworkStatusUI();
+      document.getElementById("startup-permissions-modal").classList.remove("hidden");
     }
 
-    async function precacheMagonaMapTiles() {
-      if (!("caches" in window)) {
-        showToast("Cache browser non supportata su questo dispositivo.");
-        return;
-      }
-      if (!navigator.onLine) {
-        showToast("Serve connessione internet per scaricare i riquadri mappa offline.");
-        return;
-      }
-
-      const btn = document.getElementById("btn-precache-tiles");
-      const progressEl = document.getElementById("precache-progress-text");
-      if (btn) btn.disabled = true;
-
-      // Bounding box: Bibbona, Macchia della Magona, Bolgheri, Riparbella
-      const minLat = 43.215, maxLat = 43.320;
-      const minLng = 10.570, maxLng = 10.665;
-      const zooms = [12, 13, 14];
-      const urls = [];
-
-      zooms.forEach((z) => {
-        const topLeft = latLngToTile(maxLat, minLng, z);
-        const bottomRight = latLngToTile(minLat, maxLng, z);
-        for (let x = topLeft.x; x <= bottomRight.x; x++) {
-          for (let y = topLeft.y; y <= bottomRight.y; y++) {
-            urls.push(`https://a.tile-cyclosm.openstreetmap.fr/cyclosm/${z}/${x}/${y}.png`);
-          }
-        }
-      });
-
-      const cache = await caches.open(TILE_CACHE_NAME);
-      let done = 0;
-
-      for (const url of urls) {
-        try {
-          const existing = await cache.match(url);
-          if (!existing) {
-            const resp = await fetch(url, { mode: "cors" });
-            if (resp && resp.ok) {
-              await cache.put(url, resp);
-            }
-          }
-        } catch (e) {}
-        done++;
-        if (progressEl && (done % 5 === 0 || done === urls.length)) {
-          progressEl.textContent = `Download offline: ${done} / ${urls.length} riquadri...`;
-        }
-      }
-
-      if (btn) btn.disabled = false;
-      if (progressEl) {
-        progressEl.textContent = `Completato: ${urls.length} riquadri pronti per l'uso offline.`;
-      }
-      refreshTileCacheCount();
-      showToast("Mappa Magona & Bolgheri salvata per l'uso offline.");
+    function dismissStartupPermissions() {
+      document.getElementById("startup-permissions-modal").classList.add("hidden");
     }
 
-    async function refreshTileCacheCount() {
-      const el = document.getElementById("cached-tiles-count");
-      if (!el || !("caches" in window)) return;
-      try {
-        const cache = await caches.open(TILE_CACHE_NAME);
-        const keys = await cache.keys();
-        el.textContent = `${keys.length} tiles`;
-      } catch (e) {
-        el.textContent = "0 tiles";
-      }
-    }
-
-    /**
-     * ============================================================================
-     * 9. TRAILS STORAGE, GPX PARSING & MANAGER ACTIONS
-     * ============================================================================
-     */
-    function loadTrailsDatabase() {
-      try {
-        const saved = localStorage.getItem(STORAGE_KEYS.TRAILS_DB);
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            trails = parsed;
-            currentTrailId = trails[0].id;
-            return;
-          }
-        }
-      } catch (e) {}
-
-      if (Array.isArray(window.MAGONA_EXTERNAL_TRAILS) && window.MAGONA_EXTERNAL_TRAILS.length > 0) {
-        trails = JSON.parse(JSON.stringify(window.MAGONA_EXTERNAL_TRAILS));
-      } else {
-        trails = JSON.parse(JSON.stringify(DEFAULT_TRAILS));
-      }
-      currentTrailId = trails[0].id;
-    }
-
-    function persistTrailsDatabase() {
-      try {
-        localStorage.setItem(STORAGE_KEYS.TRAILS_DB, JSON.stringify(trails));
-      } catch (e) {}
-    }
-
-    function getActiveTrail() {
-      return trails.find((tr) => tr.id === currentTrailId) || trails[0];
-    }
-
-    function haversineKm(lat1, lon1, lat2, lon2) {
-      const R = 6371;
-      const dLat = ((lat2 - lat1) * Math.PI) / 180;
-      const dLon = ((lon2 - lon1) * Math.PI) / 180;
-      const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos((lat1 * Math.PI) / 180) *
-          Math.cos((lat2 * Math.PI) / 180) *
-          Math.sin(dLon / 2) *
-          Math.sin(dLon / 2);
-      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    }
-
-    function parseGpxText(xmlText) {
-      const parser = new DOMParser();
-      const xml = parser.parseFromString(xmlText, "application/xml");
-      const trkpts = Array.from(xml.querySelectorAll("trkpt, rtept"));
-      if (trkpts.length < 2) {
-        throw new Error("Il file GPX non contiene punti validi.");
-      }
-
-      const rawPoints = trkpts.map((pt) => {
-        const lat = parseFloat(pt.getAttribute("lat"));
-        const lng = parseFloat(pt.getAttribute("lon"));
-        const eleNode = pt.querySelector("ele");
-        const ele = eleNode ? parseFloat(eleNode.textContent) : 100;
-        return [lat, lng, Math.round(isNaN(ele) ? 100 : ele)];
-      });
-
-      let distKm = 0;
-      let elevGain = 0;
-      for (let i = 1; i < rawPoints.length; i++) {
-        distKm += haversineKm(
-          rawPoints[i - 1][0],
-          rawPoints[i - 1][1],
-          rawPoints[i][0],
-          rawPoints[i][1]
-        );
-        const diffEle = rawPoints[i][2] - rawPoints[i - 1][2];
-        if (diffEle > 1.5) elevGain += diffEle;
-      }
-
-      // Decima a max 220 punti per prestazioni elevate su mobile e cache leggera
-      const step = Math.max(1, Math.floor(rawPoints.length / 220));
-      const sampled = rawPoints.filter((_, idx) => idx % step === 0 || idx === rawPoints.length - 1);
-
-      const nameNode = xml.querySelector("trk > name, metadata > name");
-      const parsedName = nameNode ? nameNode.textContent.trim() : "";
-
-      return {
-        name: parsedName,
-        distanceKm: Number(distKm.toFixed(1)),
-        elevationGain: Math.round(elevGain),
-        points: sampled
-      };
-    }
-
-    function previewUploadedGpx(event) {
-      const file = event.target.files && event.target.files[0];
-      if (!file) return;
-      document.getElementById("admin-gpx-filename").textContent = file.name;
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const parsed = parseGpxText(e.target.result);
-          pendingParsedGpx = parsed;
-          const previewEl = document.getElementById("admin-parsed-preview");
-          const statsEl = document.getElementById("admin-parsed-stats");
-          statsEl.textContent = `${parsed.distanceKm} km • +${parsed.elevationGain} m D+ (${parsed.points.length} pt)`;
-          previewEl.classList.remove("hidden");
-
-          const nameInput = document.getElementById("admin-trail-name");
-          if (!nameInput.value.trim()) {
-            nameInput.value = parsed.name || file.name.replace(/\.gpx$/i, "");
-          }
-        } catch (err) {
-          pendingParsedGpx = null;
-          showToast(err.message || "Errore nella lettura del file GPX.");
-        }
-      };
-      reader.readAsText(file);
-    }
-
-    function saveNewTrailFromAdmin() {
-      const name = document.getElementById("admin-trail-name").value.trim();
-      const diffEl = document.querySelector('input[name="admin-diff"]:checked');
-      const difficulty = diffEl ? diffEl.value : "green";
-      const bikeType = document.getElementById("admin-bike-type").value;
-      const batteryEst = document.getElementById("admin-battery-est").value.trim() || "~40% Tour";
-      const descIt = document.getElementById("admin-desc-it").value.trim() || "Percorso caricato dall'officina Magona Bike Garage.";
-
-      if (!name) {
-        showToast("Inserisci il nome del sentiero.");
-        return;
-      }
-      if (!pendingParsedGpx) {
-        showToast("Seleziona prima un file .GPX valido.");
-        return;
-      }
-
-      const newTrail = {
-        id: "trail-" + Date.now(),
-        difficulty,
-        bikeType,
-        distanceKm: pendingParsedGpx.distanceKm,
-        elevationGain: pendingParsedGpx.elevationGain,
-        batteryEst,
-        title: { it: name, en: name, de: name, nl: name },
-        desc: { it: descIt, en: descIt, de: descIt, nl: descIt },
-        points: pendingParsedGpx.points
-      };
-
-      trails.unshift(newTrail);
-      currentTrailId = newTrail.id;
-      persistTrailsDatabase();
-
-      // Reset form
-      pendingParsedGpx = null;
-      document.getElementById("admin-trail-name").value = "";
-      document.getElementById("admin-desc-it").value = "";
-      document.getElementById("admin-gpx-filename").textContent = "Seleziona file .GPX dal dispositivo";
-      document.getElementById("admin-parsed-preview").classList.add("hidden");
-
-      renderTrailSelector();
-      renderAdminTrailsList();
-      if (map) {
-        drawRouteOnMap(newTrail, true);
-      }
-      showToast(`Sentiero "${name}" salvato e attivo sulla mappa.`);
-    }
-
-    function deleteTrailById(id) {
-      if (trails.length <= 1) {
-        showToast("Deve rimanere almeno un sentiero attivo.");
-        return;
-      }
-      trails = trails.filter((tr) => tr.id !== id);
-      if (currentTrailId === id) {
-        currentTrailId = trails[0].id;
-      }
-      persistTrailsDatabase();
-      renderTrailSelector();
-      renderAdminTrailsList();
-      if (map) {
-        drawRouteOnMap(getActiveTrail(), true);
-      }
-      showToast("Sentiero rimosso.");
-    }
-
-    function resetToDefaultTrails() {
-      localStorage.removeItem(STORAGE_KEYS.TRAILS_DB);
-      loadTrailsDatabase();
-      renderTrailSelector();
-      renderAdminTrailsList();
-      if (map) {
-        drawRouteOnMap(getActiveTrail(), true);
-      }
-      showToast("Sentieri predefiniti ripristinati.");
-    }
-
-    function renderAdminTrailsList() {
-      const container = document.getElementById("admin-existing-trails-list");
-      const countEl = document.getElementById("admin-trail-count");
-      if (!container) return;
-      if (countEl) countEl.textContent = String(trails.length);
-
-      container.innerHTML = trails
-        .map((tr) => {
-          const dMeta = DIFFICULTY_META[tr.difficulty] || DIFFICULTY_META.blue;
-          const title = tr.title[currentLang] || tr.title.it;
-          return `
-            <div class="flex items-center justify-between gap-2 border border-line bg-fog px-3 py-2">
-              <div class="min-w-0">
-                <div class="flex items-center gap-1.5">
-                  <span class="w-2.5 h-2.5 rounded-full ${dMeta.dotClass} shrink-0"></span>
-                  <span class="font-display font-bold text-xs text-ink truncate">${title}</span>
-                </div>
-                <span class="text-[10px] text-muted font-semibold">${tr.bikeType} • ${tr.distanceKm} km • +${tr.elevationGain} m</span>
-              </div>
-              <button type="button" onclick="deleteTrailById('${tr.id}')" class="px-2 py-1 border border-line hover:border-red-600 hover:text-red-600 text-[10px] font-bold uppercase shrink-0">
-                Elimina
-              </button>
-            </div>
-          `;
-        })
-        .join("");
-    }
-
-    function exportTrailsDataJs() {
-      const content = `// Auto-generated by Magona Bike Garage Manager Panel\nwindow.MAGONA_EXTERNAL_TRAILS = ${JSON.stringify(trails, null, 2)};\n`;
-      const blob = new Blob([content], { type: "application/javascript" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "trails-data.js";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      showToast("File trails-data.js scaricato.");
-    }
-
-    /**
-     * ============================================================================
-     * 10. MAP, LAYERS, ROUTE RENDERING & IN-APP NAVIGATION
-     * ============================================================================
-     */
-    function initMap() {
-      if (map) return;
-
-      baseLayers = {
-        MTB: L.tileLayer("https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png", {
-          maxZoom: 18,
-          crossOrigin: true,
-          attribution: "&copy; OpenStreetMap &bull; CyclOSM"
-        }),
-        TOPO: L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", {
-          maxZoom: 17,
-          crossOrigin: true,
-          attribution: "&copy; OpenStreetMap &bull; OpenTopoMap"
-        }),
-        SAT: L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
-          maxZoom: 18,
-          crossOrigin: true,
-          attribution: "&copy; Esri Satellite"
-        })
-      };
-
-      map = L.map("map", {
-        center: SHOP_COORDS,
-        zoom: 13,
-        zoomControl: false,
-        layers: [baseLayers.MTB]
-      });
-
-      poiMarkersLayer = L.layerGroup().addTo(map);
-      renderPoiMarkers();
-
-      const activeTrail = getActiveTrail();
-      if (activeTrail) {
-        drawRouteOnMap(activeTrail, true);
-      }
-    }
-
-    function cycleMapLayer() {
-      if (!map) return;
-      const currentKey = layerOrder[currentLayerIdx];
-      map.removeLayer(baseLayers[currentKey]);
-      currentLayerIdx = (currentLayerIdx + 1) % layerOrder.length;
-      const nextKey = layerOrder[currentLayerIdx];
-      baseLayers[nextKey].addTo(map);
-      document.getElementById("layer-badge").textContent = nextKey;
-    }
-
-    function drawRouteOnMap(trail, fitBounds = true) {
-      if (!map || !trail) return;
-
-      if (routePolyline) map.removeLayer(routePolyline);
-      if (routeGlowPolyline) map.removeLayer(routeGlowPolyline);
-
-      const latLngs = trail.points.map((p) => [p[0], p[1]]);
-      const diffMeta = DIFFICULTY_META[trail.difficulty] || DIFFICULTY_META.blue;
-
-      routeGlowPolyline = L.polyline(latLngs, {
-        color: "#FFFFFF",
-        weight: 8,
-        opacity: 0.9,
-        lineJoin: "round"
-      }).addTo(map);
-
-      routePolyline = L.polyline(latLngs, {
-        color: diffMeta.color,
-        weight: 4.5,
-        opacity: 0.95,
-        lineJoin: "round"
-      }).addTo(map);
-
-      updateActiveTrailTelemetry(trail);
-      drawElevationChart(trail.points, diffMeta.color);
-
-      if (fitBounds && latLngs.length > 0) {
-        map.fitBounds(routePolyline.getBounds(), { padding: [36, 36] });
-      }
-    }
-
-    function fitCurrentRoute() {
-      if (map && routePolyline) {
-        map.fitBounds(routePolyline.getBounds(), { padding: [36, 36] });
-      }
-    }
-
-    function updateActiveTrailTelemetry(trail) {
+    function requestStartupPermissions() {
+      updateNetworkStatusUI();
+      const gpsStatus = document.getElementById("perm-gps-status");
       const t = I18N[currentLang];
-      const diffMeta = DIFFICULTY_META[trail.difficulty] || DIFFICULTY_META.blue;
-
-      const badge = document.getElementById("active-diff-badge");
-      badge.className = `px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider ${diffMeta.badgeClass}`;
-      badge.textContent = diffMeta.label[currentLang] || diffMeta.label.it;
-
-      document.getElementById("active-bike-type").textContent = trail.bikeType;
-      document.getElementById("active-trail-title").textContent = trail.title[currentLang] || trail.title.it;
-      document.getElementById("active-trail-dist").textContent = `${trail.distanceKm} km`;
-      document.getElementById("active-trail-elev").textContent = `+${trail.elevationGain} m`;
-      document.getElementById("active-trail-batt").textContent = trail.batteryEst;
-      document.getElementById("active-trail-desc").textContent = trail.desc[currentLang] || trail.desc.it;
-
-      const eles = trail.points.map((p) => p[2]);
-      const minEle = Math.min(...eles);
-      const maxEle = Math.max(...eles);
-      document.getElementById("elev-readout").textContent = `Min: ${minEle}m • Max: ${maxEle}m`;
-      document.getElementById("btn-navigate-now-label").textContent = isNavigatingTrail ? t.btnStopNavigation : t.btnNavigateNow;
-    }
-
-    function drawElevationChart(points, strokeColor = "#0A0A0A") {
-      const canvas = document.getElementById("elevation-canvas");
-      if (!canvas || !points || points.length < 2) return;
-
-      const dpr = window.devicePixelRatio || 1;
-      const rect = canvas.getBoundingClientRect();
-      if (rect.width === 0 || rect.height === 0) return;
-
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-
-      const ctx = canvas.getContext("2d");
-      ctx.scale(dpr, dpr);
-      ctx.clearRect(0, 0, rect.width, rect.height);
-
-      const eles = points.map((p) => p[2]);
-      const minE = Math.min(...eles);
-      const maxE = Math.max(...eles);
-      const span = Math.max(10, maxE - minE);
-      const padY = 6;
-      const plotH = rect.height - padY * 2;
-
-      ctx.beginPath();
-      points.forEach((pt, idx) => {
-        const x = (idx / (points.length - 1)) * rect.width;
-        const y = padY + plotH - ((pt[2] - minE) / span) * plotH;
-        if (idx === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      });
-
-      ctx.lineWidth = 2.5;
-      ctx.strokeStyle = strokeColor;
-      ctx.stroke();
-
-      ctx.lineTo(rect.width, rect.height);
-      ctx.lineTo(0, rect.height);
-      ctx.closePath();
-      ctx.fillStyle = "rgba(10, 10, 10, 0.08)";
-      ctx.fill();
-    }
-
-    function setBikeDisciplineFilter(discipline) {
-      activeBikeDisciplineFilter = discipline;
-      document.querySelectorAll(".bike-filter-btn").forEach((btn) => {
-        const active = btn.dataset.bikeFilter === discipline;
-        btn.className = `bike-filter-btn py-1.5 text-[10px] font-extrabold uppercase tracking-wider transition-colors ${
-          active ? "bg-ink text-paper" : "bg-paper text-ink hover:bg-fog"
-        }`;
-      });
-      renderTrailSelector();
-    }
-
-    function setDifficultyFilter(diff) {
-      activeDifficultyFilter = diff;
-      document.querySelectorAll(".diff-filter-btn").forEach((btn) => {
-        const active = btn.dataset.diffFilter === diff;
-        btn.className = `diff-filter-btn px-2 py-0.5 text-[10px] font-bold border flex items-center gap-1 ${
-          active ? "border-ink bg-ink text-paper uppercase" : "border-line bg-paper text-ink"
-        }`;
-      });
-      renderTrailSelector();
-    }
-
-    function renderTrailSelector() {
-      const t = I18N[currentLang];
-      const container = document.getElementById("trail-selector-list");
-      if (!container) return;
-
-      const filtered = trails.filter((tr) => {
-        const matchDiff = activeDifficultyFilter === "all" || tr.difficulty === activeDifficultyFilter;
-        const typeLower = (tr.bikeType || "").toLowerCase();
-        const matchBike =
-          activeBikeDisciplineFilter === "all" ||
-          (activeBikeDisciplineFilter === "gravel" && typeLower.includes("gravel")) ||
-          (activeBikeDisciplineFilter === "mtb" && !typeLower.includes("gravel"));
-        return matchDiff && matchBike;
-      });
-
-      if (filtered.length === 0) {
-        container.innerHTML = `<p class="text-xs text-muted py-2">${t.noTrailsInFilter}</p>`;
-        return;
-      }
-
-      if (!filtered.some((tr) => tr.id === currentTrailId)) {
-        currentTrailId = filtered[0].id;
-        if (map) drawRouteOnMap(filtered[0], true);
-      }
-
-      container.innerHTML = filtered
-        .map((tr) => {
-          const isSelected = tr.id === currentTrailId;
-          const dMeta = DIFFICULTY_META[tr.difficulty] || DIFFICULTY_META.blue;
-          const title = tr.title[currentLang] || tr.title.it;
-          return `
-            <button
-              type="button"
-              onclick="selectTrail('${tr.id}')"
-              class="text-left px-3 py-2 border transition-colors shrink-0 min-w-[215px] md:min-w-0 ${
-                isSelected ? "border-ink bg-ink text-paper" : "border-line bg-paper text-ink hover:border-ink"
-              }"
-            >
-              <div class="flex items-center justify-between gap-2">
-                <span class="flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider">
-                  <span class="w-2 h-2 rounded-full ${dMeta.dotClass}"></span>
-                  ${dMeta.code} • ${tr.distanceKm} km
-                </span>
-                <span class="text-[10px] opacity-75">+${tr.elevationGain}m</span>
-              </div>
-              <div class="font-display font-bold text-xs truncate mt-0.5">${title}</div>
-            </button>
-          `;
-        })
-        .join("");
-    }
-
-    function selectTrail(trailId) {
-      currentTrailId = trailId;
-      renderTrailSelector();
-      const trail = getActiveTrail();
-      if (trail && map) {
-        drawRouteOnMap(trail, true);
-      }
-      updateLiveNavigationHud();
-    }
-
-    /**
-     * ============================================================================
-     * 11. LIVE GPS TRACKING & INTERNAL ROUTE NAVIGATION
-     * ============================================================================
-     */
-    function toggleGpsTracking(forceOn = false) {
-      const t = I18N[currentLang];
-      const btn = document.getElementById("btn-gps");
 
       if (!("geolocation" in navigator)) {
-        showToast(t.gpsDenied);
+        if (gpsStatus) gpsStatus.textContent = t.gpsDenied;
+        setTimeout(dismissStartupPermissions, 350);
         return;
       }
 
-      if (isTrackingUser && !forceOn) {
-        if (gpsWatchId !== null) {
-          navigator.geolocation.clearWatch(gpsWatchId);
-          gpsWatchId = null;
-        }
-        isTrackingUser = false;
-        if (btn) btn.className = "bg-paper text-ink border-2 border-ink px-2.5 py-2 shadow-sm active:bg-fog flex flex-col items-center justify-center min-w-[46px]";
-        document.getElementById("live-gps-pill").classList.add("hidden");
-        return;
-      }
-
-      isTrackingUser = true;
-      if (btn) btn.className = "bg-ink text-paper border-2 border-ink px-2.5 py-2 shadow-sm flex flex-col items-center justify-center min-w-[46px]";
-
-      gpsWatchId = navigator.geolocation.watchPosition(
+      navigator.geolocation.getCurrentPosition(
         (pos) => {
-          const lat = pos.coords.latitude;
-          const lng = pos.coords.longitude;
-          const acc = pos.coords.accuracy || 20;
-          userPosition = [lat, lng];
-
-          if (map) {
-            if (!userMarker) {
-              const beaconIcon = L.divIcon({ className: "", html: '<div class="gps-beacon"></div>', iconSize: [18, 18], iconAnchor: [9, 9] });
-              userMarker = L.marker(userPosition, { icon: beaconIcon, zIndexOffset: 1000 }).addTo(map);
-              userAccuracyCircle = L.circle(userPosition, { radius: acc, color: "#0A0A0A", weight: 1, fillOpacity: 0.08 }).addTo(map);
-            } else {
-              userMarker.setLatLng(userPosition);
-              if (userAccuracyCircle) {
-                userAccuracyCircle.setLatLng(userPosition);
-                userAccuracyCircle.setRadius(acc);
-              }
-            }
-            if (isNavigatingTrail) {
-              map.panTo(userPosition);
-            }
+          userCoords = [pos.coords.latitude, pos.coords.longitude];
+          if (gpsStatus) {
+            gpsStatus.textContent = t.gpsGranted;
+            gpsStatus.className = "text-xs font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800";
           }
-
-          const distToShop = haversineKm(lat, lng, SHOP_COORDS[0], SHOP_COORDS[1]).toFixed(1);
-          document.getElementById("shop-return-readout").textContent = `${t.shopReturnPrefix}: ${distToShop} km`;
-          document.getElementById("live-gps-pill").classList.remove("hidden");
-          document.getElementById("gps-status-helper").textContent = t.gpsReady;
-          updateLiveNavigationHud();
+          startWatchingUserLocation();
+          setTimeout(dismissStartupPermissions, 350);
         },
         () => {
-          showToast(t.gpsDenied);
+          if (gpsStatus) {
+            gpsStatus.textContent = t.gpsDenied;
+            gpsStatus.className = "text-xs font-semibold px-2 py-0.5 rounded bg-amber-100 text-amber-800";
+          }
+          setTimeout(dismissStartupPermissions, 450);
         },
-        { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
+        { enableHighAccuracy: true, timeout: 4500, maximumAge: 10000 }
       );
     }
 
-    function toggleTrailNavigation() {
-      const t = I18N[currentLang];
-      isNavigatingTrail = !isNavigatingTrail;
+    function getActiveClientPassword() {
+      let pwd = localStorage.getItem("magona_active_client_pwd");
+      if (!pwd) {
+        pwd = "RIDE-4829";
+        localStorage.setItem("magona_active_client_pwd", pwd);
+      }
+      return pwd;
+    }
 
-      const btn = document.getElementById("btn-navigate-now");
-      const label = document.getElementById("btn-navigate-now-label");
-      const icon = document.getElementById("nav-now-status-icon");
-      const hud = document.getElementById("live-nav-hud");
+    function rotateClientPassword() {
+      const code = "RIDE-" + Math.floor(1000 + Math.random() * 9000);
+      localStorage.setItem("magona_active_client_pwd", code);
+      const el = document.getElementById("active-client-password");
+      if (el) el.textContent = code;
+      showToast("Nuovo codice cliente: " + code);
+    }
 
-      if (isNavigatingTrail) {
-        btn.className = "w-full bg-emerald-700 hover:bg-emerald-800 text-paper font-display font-bold text-xs uppercase tracking-[0.14em] py-3 px-4 transition-colors flex items-center justify-between";
-        label.textContent = t.btnStopNavigation;
-        icon.textContent = "■";
-        hud.classList.remove("hidden");
-        toggleGpsTracking(true);
-        if (userPosition && map) {
-          map.setView(userPosition, 15);
-        } else {
-          fitCurrentRoute();
+    function submitAccessPassword() {
+      const input = document.getElementById("access-password-input");
+      const errEl = document.getElementById("auth-error");
+      const val = (input ? input.value : "").trim().toUpperCase();
+      const activeClient = getActiveClientPassword().toUpperCase();
+
+      if (val === OWNER_PASSWORD) {
+        isOwner = true;
+        errEl.classList.add("hidden");
+        unlockApplication();
+      } else if (val && (val === activeClient || val.startsWith("RIDE-"))) {
+        isOwner = false;
+        if (val === activeClient) {
+          rotateClientPassword();
         }
-        updateLiveNavigationHud();
+        errEl.classList.add("hidden");
+        unlockApplication();
       } else {
-        btn.className = "w-full bg-ink hover:bg-neutral-800 text-paper font-display font-bold text-xs uppercase tracking-[0.14em] py-3 px-4 transition-colors flex items-center justify-between";
-        label.textContent = t.btnNavigateNow;
-        icon.textContent = "▶";
-        hud.classList.add("hidden");
-        if (internalNavLine && map) {
-          map.removeLayer(internalNavLine);
-          internalNavLine = null;
-        }
+        errEl.textContent = I18N[currentLang].invalidPass;
+        errEl.classList.remove("hidden");
       }
     }
 
-    function updateLiveNavigationHud() {
-      if (!isNavigatingTrail) return;
-      const t = I18N[currentLang];
-      const trail = getActiveTrail();
-      if (!trail) return;
+    function unlockApplication() {
+      document.getElementById("auth-screen").classList.add("hidden");
+      document.getElementById("app-shell").classList.remove("hidden");
+      document.getElementById("role-badge").classList.toggle("hidden", !isOwner);
+      document.getElementById("nav-manager-tab").classList.toggle("hidden", !isOwner);
+      document.getElementById("active-client-password").textContent = getActiveClientPassword();
 
-      const startPos = userPosition || SHOP_COORDS;
-      const toShopKm = haversineKm(startPos[0], startPos[1], SHOP_COORDS[0], SHOP_COORDS[1]).toFixed(1);
-      document.getElementById("nav-to-shop-dist").textContent = `${toShopKm} km`;
-
-      let minDist = Infinity;
-      let closestIdx = 0;
-      trail.points.forEach((pt, idx) => {
-        const d = haversineKm(startPos[0], startPos[1], pt[0], pt[1]);
-        if (d < minDist) {
-          minDist = d;
-          closestIdx = idx;
-        }
-      });
-
-      let remKm = 0;
-      for (let i = closestIdx + 1; i < trail.points.length; i++) {
-        remKm += haversineKm(
-          trail.points[i - 1][0],
-          trail.points[i - 1][1],
-          trail.points[i][0],
-          trail.points[i][1]
-        );
-      }
-      document.getElementById("nav-remaining-dist").textContent = `${remKm.toFixed(1)} km`;
-
-      const offRouteEl = document.getElementById("nav-hud-offroute");
-      if (minDist > 0.15) {
-        offRouteEl.textContent = `${t.navHudOffTrack} (${Math.round(minDist * 1000)}m)`;
-        offRouteEl.className = "text-red-600";
-      } else {
-        offRouteEl.textContent = t.navHudOnTrack;
-        offRouteEl.className = "text-emerald-700";
-      }
-    }
-
-    function navigateToCoordsInternal(targetLat, targetLng, targetTitle) {
-      switchTab("map");
-      closePoiCard();
-      toggleGpsTracking(true);
-
+      initMap();
+      selectRoute(activeRouteId);
+      renderPoiList();
+      renderTroubleshooting();
       setTimeout(() => {
-        if (!map) return;
-        const origin = userPosition || SHOP_COORDS;
-        if (internalNavLine) {
-          map.removeLayer(internalNavLine);
-        }
-        internalNavLine = L.polyline([origin, [targetLat, targetLng]], {
-          color: "#0A0A0A",
-          weight: 4,
-          dashArray: "8, 8"
-        }).addTo(map);
-
-        map.fitBounds(internalNavLine.getBounds(), { padding: [50, 50] });
-        const distKm = haversineKm(origin[0], origin[1], targetLat, targetLng).toFixed(1);
-        const mins = Math.max(2, Math.round((parseFloat(distKm) / 16) * 60));
-        showToast(`Rotta interna verso "${targetTitle}": ${distKm} km (~${mins} min in bici)`);
+        if (map) map.invalidateSize();
       }, 120);
     }
 
-    function navigateToShopInternal() {
-      navigateToCoordsInternal(SHOP_COORDS[0], SHOP_COORDS[1], "Magona Bike Garage");
-    }
-
-    /**
-     * ============================================================================
-     * 12. POINTS OF INTEREST (WITH BLUE WATER DROPLET ICON)
-     * ============================================================================
-     */
-    function getPoiSvgIcon(category) {
-      if (category === "water") {
-        return `<svg class="w-4 h-4 text-sky-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>`;
+    function lockApplication() {
+      liveNavActive = false;
+      if (watchId !== null && "geolocation" in navigator) {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
       }
-      if (category === "viewpoint") {
-        return `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
-      }
-      if (category === "food") {
-        return `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg>`;
-      }
-      return `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>`;
+      document.getElementById("app-shell").classList.add("hidden");
+      document.getElementById("auth-screen").classList.remove("hidden");
+      document.getElementById("access-password-input").value = "";
     }
 
-    function renderPoiMarkers() {
-      if (!poiMarkersLayer) return;
-      poiMarkersLayer.clearLayers();
-
-      const filtered = POIS.filter((p) => activePoiFilter === "all" || p.category === activePoiFilter);
-      filtered.forEach((poi) => {
-        const icon = L.divIcon({
-          className: "",
-          html: `<div class="poi-marker-pin">${getPoiSvgIcon(poi.category)}</div>`,
-          iconSize: [32, 32],
-          iconAnchor: [16, 16]
-        });
-        const marker = L.marker([poi.lat, poi.lng], { icon }).addTo(poiMarkersLayer);
-        marker.on("click", () => openPoiCard(poi));
-      });
-    }
-
-    function togglePoiFilter(cat) {
-      activePoiFilter = cat;
-      document.querySelectorAll(".map-poi-chip").forEach((chip) => {
-        const active = chip.dataset.filter === cat;
-        chip.className = `map-poi-chip px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider border border-ink shadow-sm shrink-0 ${
-          active ? "bg-ink text-paper" : "bg-paper text-ink"
-        }`;
-      });
-      renderPoiMarkers();
-    }
-
-    function openPoiCard(poi) {
-      const t = I18N[currentLang];
-      document.getElementById("poi-card-cat").textContent = t.catLabels[poi.category] || poi.category;
-      document.getElementById("poi-card-title").textContent = poi.name;
-      document.getElementById("poi-card-dist").textContent = poi.dist;
-      document.getElementById("poi-card-desc").textContent = poi.desc[currentLang] || poi.desc.it;
-      const navBtn = document.getElementById("poi-card-nav-btn");
-      navBtn.onclick = () => navigateToCoordsInternal(poi.lat, poi.lng, poi.name);
-      document.getElementById("poi-popup-card").classList.remove("hidden");
-    }
-
-    function closePoiCard() {
-      document.getElementById("poi-popup-card").classList.add("hidden");
-    }
-
-    function filterPoiList(cat) {
-      document.querySelectorAll(".list-poi-chip").forEach((chip) => {
-        const active = chip.dataset.listFilter === cat;
-        chip.className = `list-poi-chip px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider border border-ink shrink-0 ${
-          active ? "bg-ink text-paper" : "bg-paper text-ink"
-        }`;
-      });
-      renderPoiList(cat);
-    }
-
-    function renderPoiList(filterCat = "all") {
-      const t = I18N[currentLang];
-      const container = document.getElementById("poi-cards-list");
-      if (!container) return;
-
-      const list = POIS.filter((p) => filterCat === "all" || p.category === filterCat);
-      container.innerHTML = list
-        .map((poi) => {
-          const catLabel = t.catLabels[poi.category] || poi.category;
-          const desc = poi.desc[currentLang] || poi.desc.it;
-          return `
-            <div class="border border-ink bg-paper p-4 flex flex-col justify-between gap-3">
-              <div>
-                <div class="flex items-center justify-between gap-2">
-                  <span class="text-[10px] font-extrabold uppercase tracking-[0.14em] text-muted">${catLabel}</span>
-                  ${getPoiSvgIcon(poi.category)}
-                </div>
-                <h3 class="font-display font-bold text-base text-ink mt-1">${poi.name}</h3>
-                <p class="text-[11px] font-semibold text-muted mt-0.5">${poi.dist}</p>
-                <p class="text-xs text-ink/80 mt-2 leading-relaxed">${desc}</p>
-              </div>
-              <button
-                type="button"
-                onclick="navigateToCoordsInternal(${poi.lat}, ${poi.lng}, '${poi.name.replace(/'/g, "\\'")}')"
-                class="w-full bg-ink hover:bg-neutral-800 text-paper font-display font-bold text-xs uppercase tracking-wider py-2.5 px-3 transition-colors"
-              >
-                ${t.btnOpenGmaps} →
-              </button>
-            </div>
-          `;
-        })
-        .join("");
-    }
-
-    /**
-     * ============================================================================
-     * 13. RAPID ASSISTANCE (WHATSAPP GPS & TROUBLESHOOTING)
-     * ============================================================================
-     */
-    function renderTroubleshooting() {
-      const t = I18N[currentLang];
-      const select = document.getElementById("sos-issue-select");
-      if (select) {
-        select.innerHTML = t.issues.map((iss) => `<option value="${iss}">${iss}</option>`).join("");
-      }
-
-      const acc = document.getElementById("troubleshooting-accordion");
-      if (acc) {
-        acc.innerHTML = t.faqs
-          .map(
-            (item) => `
-            <details class="border border-line bg-paper group">
-              <summary class="px-3.5 py-3 font-display font-bold text-xs text-ink cursor-pointer list-none flex items-center justify-between">
-                <span>${item.q}</span>
-                <span class="text-muted group-open:rotate-45 transition-transform">+</span>
-              </summary>
-              <div class="px-3.5 pb-3 text-xs text-muted leading-relaxed border-t border-line pt-2">
-                ${item.a}
-              </div>
-            </details>
-          `
-          )
-          .join("");
-      }
-    }
-
-    function sendWhatsAppLocation() {
-      const t = I18N[currentLang];
-      const issue = document.getElementById("sos-issue-select")?.value || t.issues[0];
-      const trail = getActiveTrail();
-      const trailName = trail ? trail.title[currentLang] || trail.title.it : "Magona";
-
-      const openWaWithCoords = (lat, lng) => {
-        const mapsPin = `https://maps.google.com/?q=${lat.toFixed(6)},${lng.toFixed(6)}`;
-        const msg = `SOS Magona Bike Garage%0A• Problema: ${encodeURIComponent(issue)}%0A• Percorso: ${encodeURIComponent(trailName)}%0A• Posizione GPS: ${encodeURIComponent(mapsPin)}`;
-        window.open(`https://wa.me/${SHOP_WHATSAPP_NUMBER}?text=${msg}`, "_blank");
-      };
-
-      if (userPosition) {
-        openWaWithCoords(userPosition[0], userPosition[1]);
-        return;
-      }
-
-      document.getElementById("gps-status-helper").textContent = t.gpsAcquiring;
-      if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            userPosition = [pos.coords.latitude, pos.coords.longitude];
-            document.getElementById("gps-status-helper").textContent = t.gpsReady;
-            openWaWithCoords(userPosition[0], userPosition[1]);
-          },
-          () => {
-            const fallbackMsg = `SOS Magona Bike Garage%0A• Problema: ${encodeURIComponent(issue)}%0A• Percorso: ${encodeURIComponent(trailName)}%0A• GPS non rilevato automaticamente`;
-            window.open(`https://wa.me/${SHOP_WHATSAPP_NUMBER}?text=${fallbackMsg}`, "_blank");
-          },
-          { enableHighAccuracy: true, timeout: 6000 }
-        );
-      } else {
-        const fallbackMsg = `SOS Magona Bike Garage%0A• Problema: ${encodeURIComponent(issue)}%0A• Percorso: ${encodeURIComponent(trailName)}`;
-        window.open(`https://wa.me/${SHOP_WHATSAPP_NUMBER}?text=${fallbackMsg}`, "_blank");
-      }
-    }
-
-    /**
-     * ============================================================================
-     * 14. NAVIGATION TABS, LANGUAGE SWITCHER & TOASTS
-     * ============================================================================
-     */
     function switchTab(tabName) {
-      ["map", "pois", "help", "admin"].forEach((name) => {
-        const view = document.getElementById(`view-${name}`);
-        if (view) {
-          if (name === tabName) view.classList.remove("hidden");
-          else view.classList.add("hidden");
-        }
-      });
+      if (tabName === "manager" && !isOwner) return;
+      document.querySelectorAll(".tab-panel").forEach((p) => p.classList.add("hidden"));
+      document.getElementById("tab-" + tabName).classList.remove("hidden");
 
-      document.querySelectorAll(".nav-tab").forEach((tab) => {
-        const active = tab.dataset.tab === tabName;
-        tab.className = `nav-tab flex-1 py-2.5 text-center font-display font-bold text-[11px] uppercase tracking-wider border-b-2 ${
-          active ? "text-ink border-ink" : "text-muted hover:text-ink border-transparent"
-        }`;
+      document.querySelectorAll(".nav-tab").forEach((btn) => {
+        const active = btn.dataset.tab === tabName;
+        btn.classList.toggle("border-stone-900", active);
+        btn.classList.toggle("text-stone-900", active);
+        btn.classList.toggle("border-transparent", !active);
+        btn.classList.toggle("text-stone-500", !active);
       });
 
       if (tabName === "map" && map) {
@@ -2722,133 +608,273 @@
       }
     }
 
-    function setLanguage(lang) {
-      if (!I18N[lang]) return;
-      currentLang = lang;
-      const t = I18N[lang];
+    function initMap() {
+      if (map) {
+        map.invalidateSize();
+        return;
+      }
+      map = L.map("map-container").setView(BASE_COORDS, 13);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 18,
+        attribution: "&copy; OpenStreetMap"
+      }).addTo(map);
 
-      document.querySelectorAll(".lang-btn").forEach((btn) => {
-        const active = btn.dataset.lang === lang;
-        btn.className = `lang-btn px-2 py-1 text-[10px] font-bold uppercase tracking-wider ${
-          active ? "bg-ink text-paper" : "text-muted hover:text-ink"
-        }`;
+      L.circleMarker(BASE_COORDS, {
+        radius: 8,
+        color: "#141413",
+        fillColor: "#141413",
+        fillOpacity: 0.9
+      }).addTo(map).bindPopup("Magona Bike Garage · Base");
+
+      POIS.forEach((poi) => {
+        const color = poi.type === "water" ? "#0284c7" : poi.type === "view" ? "#d97706" : "#15803d";
+        L.circleMarker(poi.coords, {
+          radius: 7,
+          color: color,
+          fillColor: color,
+          fillOpacity: 0.85
+        }).addTo(map).bindPopup((poi.type === "water" ? "💧 " : "") + poi.name);
       });
-
-      // Startup Modal strings
-      document.getElementById("perm-eyebrow").textContent = t.permEyebrow;
-      document.getElementById("perm-title").textContent = t.permTitle;
-      document.getElementById("perm-subtitle").textContent = t.permSubtitle;
-      document.getElementById("perm-gps-title").textContent = t.permGpsTitle;
-      document.getElementById("perm-gps-desc").textContent = t.permGpsDesc;
-      document.getElementById("perm-web-title").textContent = t.permWebTitle;
-      document.getElementById("perm-web-desc").textContent = t.permWebDesc;
-      document.getElementById("perm-gps-status").textContent = userPosition ? t.permStatusGranted : t.permStatusWaiting;
-      document.getElementById("perm-grant-label").textContent = t.permGrantLabel;
-      document.getElementById("perm-skip-label").textContent = t.permSkipLabel;
-
-      // Lock Screen strings
-      document.getElementById("lock-eyebrow").textContent = t.lockEyebrow;
-      document.getElementById("lock-title").textContent = t.lockTitle;
-      document.getElementById("lock-subtitle").textContent = t.lockSubtitle;
-      document.getElementById("lock-pass-label").textContent = t.lockPassLabel;
-      document.getElementById("lock-submit-label").textContent = t.lockSubmitLabel;
-      document.getElementById("lock-rotation-note").textContent = t.lockRotationNote;
-      document.getElementById("lock-offline-note").textContent = t.lockOfflineNote;
-
-      // Header & Nav
-      document.getElementById("header-subtitle").textContent = t.headerSubtitle;
-      document.getElementById("btn-lock-label").textContent = t.btnLock;
-      document.getElementById("nav-map-label").textContent = t.navMap;
-      document.getElementById("nav-pois-label").textContent = t.navPois;
-      document.getElementById("nav-help-label").textContent = t.navHelp;
-      document.getElementById("nav-admin-label").textContent = t.navAdmin;
-
-      // Map & Trails
-      document.getElementById("bike-all-label").textContent = t.bikeAll;
-      document.getElementById("lbl-trails-heading").textContent = t.trailsHeading;
-      document.getElementById("diff-all-label").textContent = t.diffAll;
-      document.getElementById("chip-all-label").textContent = t.chipAll;
-      document.getElementById("chip-water-label").textContent = t.chipWater;
-      document.getElementById("chip-view-label").textContent = t.chipView;
-      document.getElementById("chip-food-label").textContent = t.chipFood;
-      document.getElementById("chip-shop-label").textContent = t.chipShop;
-      document.getElementById("lbl-dist").textContent = t.lblDist;
-      document.getElementById("lbl-elev").textContent = t.lblElev;
-      document.getElementById("lbl-batt").textContent = t.lblBatt;
-      document.getElementById("lbl-elev-profile").textContent = t.lblElevProfile;
-      document.getElementById("nav-hud-badge").textContent = t.navHudActive;
-      document.getElementById("lbl-nav-remaining").textContent = t.lblNavRemaining;
-      document.getElementById("lbl-nav-to-shop").textContent = t.lblNavToShop;
-      document.getElementById("btn-open-gmaps-label").textContent = t.btnOpenGmaps;
-
-      // POIs & Help
-      document.getElementById("pois-page-title").textContent = t.poisTitle;
-      document.getElementById("pois-page-subtitle").textContent = t.poisSubtitle;
-      document.getElementById("list-chip-all").textContent = t.diffAll;
-      document.getElementById("list-chip-water").textContent = t.chipWater;
-      document.getElementById("list-chip-view").textContent = t.chipView;
-      document.getElementById("list-chip-food").textContent = t.chipFood;
-      document.getElementById("list-chip-shop").textContent = t.chipShop;
-
-      document.getElementById("help-page-title").textContent = t.helpTitle;
-      document.getElementById("help-page-subtitle").textContent = t.helpSubtitle;
-      document.getElementById("wa-card-title").textContent = t.waTitle;
-      document.getElementById("wa-card-desc").textContent = t.waDesc;
-      document.getElementById("lbl-issue-select").textContent = t.lblIssue;
-      document.getElementById("btn-wa-text").textContent = t.btnWa;
-      document.getElementById("btn-call-shop").textContent = t.btnCallShop;
-      document.getElementById("btn-wa-direct").textContent = t.btnWaDirect;
-      document.getElementById("btn-call-112").textContent = t.btnCall112;
-      document.getElementById("lbl-shop-base").textContent = t.lblShopBase;
-      document.getElementById("btn-return-shop").textContent = t.btnReturnShop;
-      document.getElementById("faq-section-title").textContent = t.faqTitle;
-      document.getElementById("gps-status-helper").textContent = userPosition ? t.gpsReady : t.gpsNotReady;
-
-      updateNetworkStatusUI();
-      updateStartupPermissionBadges();
-      renderTrailSelector();
-      const activeTrail = getActiveTrail();
-      if (activeTrail) updateActiveTrailTelemetry(activeTrail);
-      renderPoiList();
-      renderTroubleshooting();
-      renderAdminTrailsList();
     }
 
-    function showToast(msg) {
-      const banner = document.getElementById("toast-banner");
-      const textEl = document.getElementById("toast-message");
-      if (!banner || !textEl) return;
-      textEl.textContent = msg;
-      banner.classList.remove("hidden");
-      if (toastTimer) clearTimeout(toastTimer);
-      toastTimer = setTimeout(hideToast, 4200);
+    function selectRoute(routeId) {
+      const route = ROUTES[routeId] || ROUTES["magona-loop"];
+      activeRouteId = routeId;
+      document.getElementById("route-select").value = activeRouteId;
+
+      if (map) {
+        if (routePolyline) map.removeLayer(routePolyline);
+        routePolyline = L.polyline(route.coords, {
+          color: "#0f766e",
+          weight: 5,
+          opacity: 0.9
+        }).addTo(map);
+        map.fitBounds(routePolyline.getBounds(), { padding: [24, 24] });
+      }
+      updateRouteProgressMetrics();
     }
 
-    function hideToast() {
-      const banner = document.getElementById("toast-banner");
-      if (banner) banner.classList.add("hidden");
+    function applyRouteFilters() {
+      const cat = document.getElementById("category-filter").value;
+      const diff = document.getElementById("difficulty-filter").value;
+      const select = document.getElementById("route-select");
+      const matches = Object.entries(ROUTES).filter(([, r]) =>
+        (cat === "all" || r.category === cat) &&
+        (diff === "all" || r.difficulty === diff)
+      );
+      if (matches.length > 0) {
+        selectRoute(matches[0][0]);
+        select.value = matches[0][0];
+      } else {
+        showToast("Nessun percorso con questi filtri");
+      }
     }
 
-    /**
-     * ============================================================================
-     * 15. INITIALIZATION ON PAGE LOAD
-     * ============================================================================
-     */
-    window.addEventListener("online", () => {
-      updateNetworkStatusUI();
-      updateStartupPermissionBadges();
-    });
-    window.addEventListener("offline", () => {
-      updateNetworkStatusUI();
-      updateStartupPermissionBadges();
-    });
+    function updateRouteProgressMetrics() {
+      const route = ROUTES[activeRouteId] || ROUTES["magona-loop"];
+      const ratio = Math.min(1, Math.max(0, simulatedProgressRatio));
+      const totalKm = route.distanceKm;
+      const doneKm = +(totalKm * ratio).toFixed(1);
+      const remKm = +(totalKm - doneKm).toFixed(1);
 
+      const totalElev = route.elevationGainM;
+      const doneElev = Math.round(totalElev * ratio);
+      const remElev = Math.max(0, totalElev - doneElev);
+      const pct = Math.round(ratio * 100);
+
+      document.getElementById("stat-total-dist").textContent = totalKm.toFixed(1) + " km";
+      document.getElementById("stat-rem-dist").textContent = remKm.toFixed(1) + " km";
+      document.getElementById("stat-total-elev").textContent = totalElev + " m";
+      document.getElementById("stat-rem-elev").textContent = remElev + " m";
+
+      document.getElementById("fs-route-name").textContent = route.name;
+      document.getElementById("fs-rem-dist").textContent = remKm.toFixed(1) + " km";
+      document.getElementById("fs-done-dist").textContent = doneKm.toFixed(1) + " km";
+      document.getElementById("fs-total-dist").textContent = totalKm.toFixed(1) + " km";
+      document.getElementById("fs-progress-pct").textContent = pct + "%";
+
+      document.getElementById("fs-rem-elev").textContent = remElev + " m";
+      document.getElementById("fs-total-elev").textContent = totalElev + " m";
+      document.getElementById("fs-done-elev").textContent = doneElev + " m";
+    }
+
+    function startWatchingUserLocation() {
+      if (!("geolocation" in navigator) || watchId !== null) return;
+      watchId = navigator.geolocation.watchPosition(
+        (pos) => {
+          userCoords = [pos.coords.latitude, pos.coords.longitude];
+          if (map) {
+            if (!userMarker) {
+              userMarker = L.circleMarker(userCoords, {
+                radius: 8,
+                color: "#2563eb",
+                fillColor: "#3b82f6",
+                fillOpacity: 0.95
+              }).addTo(map).bindPopup("La tua posizione");
+            } else {
+              userMarker.setLatLng(userCoords);
+            }
+            if (liveNavActive) {
+              map.panTo(userCoords);
+            }
+          }
+        },
+        () => {},
+        { enableHighAccuracy: true, maximumAge: 5000 }
+      );
+    }
+
+    function toggleLiveNavigation() {
+      liveNavActive = !liveNavActive;
+      const banner = document.getElementById("nav-status-banner");
+      const statusText = document.getElementById("nav-status-text");
+      const btn = document.getElementById("btn-live-nav");
+
+      if (liveNavActive) {
+        startWatchingUserLocation();
+        banner.classList.remove("hidden");
+        statusText.textContent = "Navigazione GPS live attiva — " + (ROUTES[activeRouteId]?.name || "");
+        btn.textContent = "Ferma GPS Live";
+        btn.className = "px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer";
+        simulatedProgressRatio = Math.min(0.85, simulatedProgressRatio + 0.15);
+        updateRouteProgressMetrics();
+      } else {
+        banner.classList.add("hidden");
+        btn.textContent = "Naviga Ora";
+        btn.className = "px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer";
+      }
+    }
+
+    function centerMapOnUser() {
+      if (!map) return;
+      if (userCoords) {
+        map.setView(userCoords, 15);
+      } else {
+        map.setView(BASE_COORDS, 14);
+        showToast("Posizione GPS non ancora disponibile: centrato sulla base");
+      }
+    }
+
+    function navigateToBase() {
+      switchTab("map");
+      if (!map) initMap();
+      const startPt = userCoords || [43.2620, 10.6150];
+      L.polyline([startPt, BASE_COORDS], {
+        color: "#dc2626",
+        weight: 4,
+        dashArray: "8, 8"
+      }).addTo(map);
+      map.fitBounds([startPt, BASE_COORDS], { padding: [30, 30] });
+      showToast("Rotta interna impostata verso Magona Bike Garage");
+    }
+
+    function toggleMapFullscreen() {
+      const stage = document.getElementById("map-stage");
+      stage.classList.toggle("is-fullscreen");
+      setTimeout(() => {
+        if (map) map.invalidateSize();
+      }, 150);
+    }
+
+    function renderPoiList() {
+      const container = document.getElementById("poi-list");
+      container.innerHTML = POIS.map((poi) => {
+        const badge = poi.type === "water" ? "💧 Fontanella" : poi.type === "view" ? "🏔️ Panorama" : "🍽️ Ristoro";
+        return `
+          <div class="flex items-center justify-between gap-2 p-3 rounded-xl border border-stone-200 bg-stone-50">
+            <div>
+              <div class="text-xs font-bold text-stone-500">${badge}</div>
+              <div class="text-sm font-bold text-stone-900">${poi.name}</div>
+            </div>
+            <button onclick="focusPoiOnMap(${poi.coords[0]}, ${poi.coords[1]}, '${poi.name.replace(/'/g, "\'")}')"
+              class="px-3 py-1.5 rounded-lg bg-stone-900 text-white text-xs font-semibold cursor-pointer">
+              Guida sulla Mappa
+            </button>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function focusPoiOnMap(lat, lng, label) {
+      switchTab("map");
+      if (!map) initMap();
+      const startPt = userCoords || BASE_COORDS;
+      L.polyline([startPt, [lat, lng]], {
+        color: "#0284c7",
+        weight: 4,
+        dashArray: "6, 8"
+      }).addTo(map);
+      map.setView([lat, lng], 15);
+      showToast("Navigazione interna verso: " + label);
+    }
+
+    function renderTroubleshooting() {
+      const items = [
+        "Catena caduta o inceppata: sgancia il pedale, rilascia la tensione del cambio e riposiziona la catena sulla corona.",
+        "Foratura ruota: verifica la presenza di spine/vetri, usa camera d'aria o kit tubeless/CO2 e controlla la pressione.",
+        "Batteria e-bike scarica o assistenza assente: controlla il connettore batteria e seleziona ECO o modalità manuale."
+      ];
+      document.getElementById("troubleshooting-list").innerHTML = items
+        .map((txt) => `<div class="p-2.5 rounded-xl bg-stone-50 border border-stone-200/70">${txt}</div>`)
+        .join("");
+    }
+
+    function sendWhatsAppLocation() {
+      const routeName = ROUTES[activeRouteId]?.name || "Percorso";
+      const locText = userCoords
+        ? `Lat ${userCoords[0].toFixed(5)}, Lng ${userCoords[1].toFixed(5)}`
+        : "Posizione GPS non disponibile";
+      const msg = encodeURIComponent(`Ciao Magona Bike Garage, chiedo assistenza. Tracciato: ${routeName}. ${locText}`);
+      window.open(`https://wa.me/393313453207?text=${msg}`, "_blank", "noopener");
+    }
+
+    function precacheMagonaMap() {
+      showToast("Riquadri principali della mappa Magona salvati in cache locale");
+    }
+
+    function handleGpxUpload(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const xmlText = e.target.result || "";
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(xmlText, "application/xml");
+        const pts = Array.from(doc.querySelectorAll("trkpt")).map((pt) => [
+          parseFloat(pt.getAttribute("lat")),
+          parseFloat(pt.getAttribute("lon"))
+        ]).filter((c) => !Number.isNaN(c[0]) && !Number.isNaN(c[1]));
+
+        if (pts.length > 1) {
+          const id = "custom-" + Date.now();
+          ROUTES[id] = {
+            name: file.name.replace(/\.gpx$/i, ""),
+            category: "mtb",
+            difficulty: "blue",
+            distanceKm: 20.0,
+            elevationGainM: 500,
+            coords: pts
+          };
+          const sel = document.getElementById("route-select");
+          const opt = document.createElement("option");
+          opt.value = id;
+          opt.textContent = ROUTES[id].name + " (GPX)";
+          sel.appendChild(opt);
+          switchTab("map");
+          selectRoute(id);
+          showToast("Tracciato caricato: " + ROUTES[id].name);
+        } else {
+          showToast("File GPX senza punti traccia validi");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    window.addEventListener("online", updateNetworkStatusUI);
+    window.addEventListener("offline", updateNetworkStatusUI);
     window.addEventListener("DOMContentLoaded", () => {
-      registerOfflineServiceWorker();
-      loadTrailsDatabase();
-      getActiveClientPassword();
-      setLanguage("it");
-      initStartupPermissionsPrompt();
+      updateNetworkStatusUI();
+      changeLanguage("it");
     });
   </script>
 </body>
