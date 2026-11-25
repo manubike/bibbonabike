@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Magona Bike Garage — Tour & Assistenza</title>
+  <title>Magona Bike Garage — Trail & Assistenza</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -28,26 +28,6 @@
       width: auto;
       object-fit: contain;
       display: block;
-    }
-    .water-drop-marker {
-      width: 28px;
-      height: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.32));
-    }
-    .charge-bolt-marker {
-      width: 28px;
-      height: 28px;
-      border-radius: 9999px;
-      background: #facc15;
-      border: 2px solid #141413;
-      color: #141413;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.32);
     }
     #map-container {
       height: 440px;
@@ -390,7 +370,6 @@
               <option value="water">💧 Fontanella / Acqua</option>
               <option value="view">🏔️ Panorama / Punto Foto</option>
               <option value="food">🍽️ Ristoro / Bar / Area Sosta</option>
-              <option value="charge">⚡ Stazione di Ricarica</option>
               <option value="service">🔧 Assistenza Officina</option>
             </select>
           </div>
@@ -837,7 +816,7 @@
           const raw = localStorage.getItem(key);
           if (raw) {
             const parsed = JSON.parse(raw);
-            if (Array.isArray(parsed) && parsed.length > 0) {
+            if (Array.isArray(parsed) && parsed.length >= 25) {
               return parsed;
             }
           }
@@ -935,18 +914,54 @@
 
     const POIS_STORAGE_KEY = "magona_offline_pois_v2";
     const POI_TYPE_META = {
-      water: { badge: "💧 Fontanella Acqua", color: "#0284c7" },
-      charge: { badge: "⚡ Stazione di Ricarica", color: "#eab308" },
-      view: { badge: "🏔️ Panorama", color: "#d97706" },
-      food: { badge: "🍽️ Ristoro", color: "#15803d" },
-      service: { badge: "🔧 Assistenza", color: "#7c3aed" }
+      water: { badge: "Fontanella Acqua", color: "#2563eb" },
+      view: { badge: "Panorama", color: "#d97706" },
+      food: { badge: "Ristoro", color: "#15803d" },
+      service: { badge: "Assistenza", color: "#7c3aed" }
     };
 
     const DEFAULT_POIS = [
-      { id: "f1", type: "water", name: "Fontana Campo di Sasso", note: "Fontanella acqua potabile lungo il percorso nella Macchia della Magona", coords: [43.2610, 10.6360] },
-      { id: "c1", type: "charge", name: "Stazione Ricarica E-Bike Bibbona", note: "Punto di ricarica per biciclette elettriche", coords: [43.2742, 10.6018] },
-      { id: "v1", type: "view", name: "Passo delle Golazze Aperte", note: "Vista panoramica sulla Val di Cecina e la costa", coords: [43.2565, 10.6410] },
-      { id: "r1", type: "food", name: "Ristoro & Area Sosta Bibbona", note: "Area sosta e ristoro nei pressi di Bibbona", coords: [43.2720, 10.6045] }
+      { id: "f-li-bibbona-statuto", type: "water", name: "Fontanella Via dello Statuto 1-3 (Bibbona - LI)", note: "Fontanella segnalata · Centro storico Bibbona", coords: [43.2745, 10.5985] },
+      { id: "f-li-bibbona-magona-campo-sasso", type: "water", name: "Fontanella Campo di Sasso / Macchia della Magona (Bibbona - LI)", note: "Punto acqua segnalato area Macchia della Magona", coords: [43.261, 10.636] },
+      { id: "f-li-marina-bibbona-cavalleggeri", type: "water", name: "Fontanella Via dei Cavalleggeri Nord 5 (Marina di Bibbona - LI)", note: "Fontanella segnalata · Marina di Bibbona", coords: [43.2572, 10.5318] },
+      { id: "f-li-bolgheri-centro", type: "water", name: "Fontanella Pubblica Bolgheri (Castagneto Carducci - LI)", note: "Fontanella censita · Area Bolgheri", coords: [43.2376, 10.6084] },
+      { id: "f-li-castagneto-carducci", type: "water", name: "Fontanella Pubblica Castagneto Carducci (LI)", note: "Fontanella censita · Centro Castagneto Carducci", coords: [43.1628, 10.6085] },
+      { id: "f-li-donoratico", type: "water", name: "Fontanella Pubblica Donoratico (Castagneto Carducci - LI)", note: "Fontanella censita · Donoratico", coords: [43.1852, 10.5582] },
+      { id: "f-li-cecina-carducci", type: "water", name: "Fontanella Pubblica Piazza Carducci (Cecina - LI)", note: "Fontanella pubblica censita · Centro Cecina", coords: [43.3118, 10.5256] },
+      { id: "f-li-cecina-parco-pineta", type: "water", name: "Fontanella Parco / Pineta Sud (Cecina - LI)", note: "Fontanella segnalata · Zona Cecina", coords: [43.3065, 10.519] },
+      { id: "f-li-marina-cecina-gagliano", type: "water", name: "Fontanella Acqua Alta Qualità Viale Gagliano (Marina di Cecina - LI)", note: "Fontanella pubblica censita · Marina di Cecina", coords: [43.3032, 10.5115] },
+      { id: "f-li-rosignano-solvay", type: "water", name: "Fontanella Pubblica Rosignano Solvay (Rosignano Marittimo - LI)", note: "Fontanella censita · Rosignano Solvay", coords: [43.3932, 10.4276] },
+      { id: "f-li-rosignano-marittimo", type: "water", name: "Fontanella Pubblica Rosignano Marittimo (LI)", note: "Fontanella censita · Centro Rosignano Marittimo", coords: [43.4005, 10.4728] },
+      { id: "f-li-castiglioncello", type: "water", name: "Fontanella Pubblica Castiglioncello (Rosignano Marittimo - LI)", note: "Fontanella censita · Castiglioncello", coords: [43.4038, 10.4152] },
+      { id: "f-li-vada", type: "water", name: "Fontanella Pubblica Vada (Rosignano Marittimo - LI)", note: "Fontanella censita · Vada", coords: [43.3532, 10.4538] },
+      { id: "f-li-livorno-ardenza", type: "water", name: "Fontanella Pubblica Ardenza (Livorno - LI)", note: "Fontanella censita · Lungomare / Ardenza Livorno", coords: [43.5245, 10.3125] },
+      { id: "f-li-livorno-montenero", type: "water", name: "Fontanella Pubblica Montenero (Livorno - LI)", note: "Fontanella censita · Colline di Montenero (LI)", coords: [43.4945, 10.3352] },
+      { id: "f-li-livorno-centro", type: "water", name: "Fontanella Pubblica Livorno Centro (LI)", note: "Fontanella censita · Città di Livorno", coords: [43.5485, 10.3106] },
+      { id: "f-li-collesalvetti", type: "water", name: "Fontanella Pubblica Collesalvetti (LI)", note: "Fontanella censita · Collesalvetti", coords: [43.5932, 10.4835] },
+      { id: "f-li-suvereto", type: "water", name: "Fontanella Pubblica Suvereto (LI)", note: "Fontanella censita · Borgo e colline di Suvereto", coords: [43.0752, 10.6845] },
+      { id: "f-li-campiglia-marittima", type: "water", name: "Fontanella Pubblica Campiglia Marittima (LI)", note: "Fontanella censita · Campiglia Marittima", coords: [43.0685, 10.6238] },
+      { id: "f-li-venturina-terme", type: "water", name: "Fontanella Pubblica Venturina Terme (Campiglia Marittima - LI)", note: "Fontanella censita · Venturina Terme", coords: [43.0285, 10.5985] },
+      { id: "f-li-piombino", type: "water", name: "Fontanella Pubblica Piombino (LI)", note: "Fontanella censita · Piombino", coords: [42.9235, 10.5265] },
+      { id: "f-li-portoferraio-elba", type: "water", name: "Fontanella Pubblica Portoferraio (Isola d'Elba - LI)", note: "Fontanella censita · Isola d'Elba", coords: [42.8115, 10.3158] },
+      { id: "f-pi-riparbella-mattatoio", type: "water", name: "Fontanella Pubblica Via del Mattatoio (Riparbella - PI)", note: "Fontanella pubblica censita · Riparbella (PI)", coords: [43.3568, 10.5975] },
+      { id: "f-pi-montescudaio-centro", type: "water", name: "Fontanella Pubblica Montescudaio (PI)", note: "Fontanella censita · Montescudaio (PI)", coords: [43.3264, 10.6352] },
+      { id: "f-pi-guardistallo-centro", type: "water", name: "Fontanella Pubblica Guardistallo (PI)", note: "Fontanella censita · Guardistallo (PI)", coords: [43.3189, 10.6461] },
+      { id: "f-pi-casale-marittimo", type: "water", name: "Fontanella Pubblica Casale Marittimo (PI)", note: "Fontanella censita · Casale Marittimo (PI)", coords: [43.2962, 10.6258] },
+      { id: "f-pi-montecatini-vdc", type: "water", name: "Fontanella Pubblica Montecatini Val di Cecina (PI)", note: "Fontanella censita · Montecatini Val di Cecina (PI)", coords: [43.3936, 10.7422] },
+      { id: "f-pi-saline-volterra", type: "water", name: "Fontanella Pubblica Saline di Volterra (Volterra - PI)", note: "Fontanella censita · Saline di Volterra (PI)", coords: [43.3682, 10.8225] },
+      { id: "f-pi-volterra-centro", type: "water", name: "Fontanella Pubblica Volterra (PI)", note: "Fontanella censita · Volterra (PI)", coords: [43.4008, 10.8617] },
+      { id: "f-pi-pomarance-centro", type: "water", name: "Fontanella Pubblica Pomarance (PI)", note: "Fontanella censita · Pomarance (PI)", coords: [43.2995, 10.8752] },
+      { id: "f-pi-castelnuovo-vdc", type: "water", name: "Fontanella Pubblica Castelnuovo di Val di Cecina (PI)", note: "Fontanella censita · Castelnuovo di Val di Cecina (PI)", coords: [43.2268, 10.9035] },
+      { id: "f-pi-larderello", type: "water", name: "Fontanella Pubblica Larderello (Pomarance - PI)", note: "Fontanella censita · Larderello (PI)", coords: [43.2462, 10.8835] },
+      { id: "f-pi-pisa-centro", type: "water", name: "Fontanella Pubblica Pisa Centro (PI)", note: "Fontanella censita · Città di Pisa", coords: [43.7228, 10.4017] },
+      { id: "f-pi-marina-di-pisa", type: "water", name: "Fontanella Pubblica Marina di Pisa (PI)", note: "Fontanella censita · Litorale di Pisa", coords: [43.6718, 10.2785] },
+      { id: "f-pi-calci-certosa", type: "water", name: "Fontanella Pubblica Calci / Monte Pisano (PI)", note: "Fontanella censita · Calci / Monte Pisano (PI)", coords: [43.7242, 10.5175] },
+      { id: "f-pi-san-giuliano-terme", type: "water", name: "Fontanella Pubblica San Giuliano Terme (PI)", note: "Fontanella censita · San Giuliano Terme (PI)", coords: [43.7635, 10.4438] },
+      { id: "f-pi-cascina", type: "water", name: "Fontanella Pubblica Cascina (PI)", note: "Fontanella censita · Cascina (PI)", coords: [43.6812, 10.5015] },
+      { id: "f-pi-pontedera", type: "water", name: "Fontanella Pubblica Pontedera (PI)", note: "Fontanella censita · Pontedera (PI)", coords: [43.6615, 10.6338] },
+      { id: "f-pi-lajatico", type: "water", name: "Fontanella Pubblica Lajatico (PI)", note: "Fontanella censita · Colline pisane / Lajatico (PI)", coords: [43.4712, 10.7225] },
+      { id: "f-pi-peccioli", type: "water", name: "Fontanella Pubblica Peccioli (PI)", note: "Fontanella censita · Valdera / Peccioli (PI)", coords: [43.5485, 10.7208] },
+      { id: "f-pi-san-miniato", type: "water", name: "Fontanella Pubblica San Miniato (PI)", note: "Fontanella censita · San Miniato (PI)", coords: [43.6785, 10.8512] }
     ];
 
     function loadStoredPoisSync() {
@@ -955,7 +970,7 @@
           const raw = localStorage.getItem(key);
           if (raw) {
             const parsed = JSON.parse(raw);
-            if (Array.isArray(parsed) && parsed.length > 0) {
+            if (Array.isArray(parsed) && parsed.length >= 25) {
               return parsed;
             }
           }
@@ -1016,7 +1031,7 @@
           req.onsuccess = () => resolve(Array.isArray(req.result) && req.result.length > 0 ? req.result : null);
           req.onerror = () => resolve(null);
         });
-        if (idbPois && idbPois.length > 0) {
+        if (idbPois && idbPois.length >= 25) {
           POIS = idbPois;
           try {
             localStorage.setItem(POIS_STORAGE_KEY, JSON.stringify(POIS));
@@ -2096,35 +2111,7 @@
       }
     }
 
-    function createPoiLeafletIcon(type) {
-      if (type === "water") {
-        return L.divIcon({
-          className: "",
-          html: `<div class="water-drop-marker" title="Fontanella Acqua">
-            <svg width="24" height="28" viewBox="0 0 24 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 1.5C12 1.5 2.5 11.7 2.5 18.2C2.5 23.45 6.75 26.5 12 26.5C17.25 26.5 21.5 23.45 21.5 18.2C21.5 11.7 12 1.5 12 1.5Z" fill="#0ea5e9" stroke="#ffffff" stroke-width="2"/>
-            </svg>
-          </div>`,
-          iconSize: [28, 28],
-          iconAnchor: [14, 24],
-          popupAnchor: [0, -22]
-        });
-      }
-      if (type === "charge" || type === "service") {
-        return L.divIcon({
-          className: "",
-          html: `<div class="charge-bolt-marker" title="Stazione di Ricarica">
-            <svg width="15" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M9.5 1L2.5 9.2H7.8L6.5 15L13.5 6.8H8.2L9.5 1Z" fill="#141413"/>
-            </svg>
-          </div>`,
-          iconSize: [28, 28],
-          iconAnchor: [14, 14],
-          popupAnchor: [0, -14]
-        });
-      }
-      return null;
-    }
+
 
     function renderPoiMarkersOnMap() {
       if (!map) return;
@@ -2135,19 +2122,12 @@
       POIS.forEach((poi) => {
         const meta = POI_TYPE_META[poi.type] || POI_TYPE_META.food;
         const popupLabel = `${meta.badge} · ${poi.name}${poi.note ? "<br><small>" + poi.note + "</small>" : ""}`;
-        const customIcon = createPoiLeafletIcon(poi.type);
-        if (customIcon) {
-          L.marker(poi.coords, { icon: customIcon, zIndexOffset: 250 })
-            .addTo(poiMarkersLayer)
-            .bindPopup(popupLabel);
-        } else {
-          L.circleMarker(poi.coords, {
-            radius: 7,
-            color: meta.color,
-            fillColor: meta.color,
-            fillOpacity: 0.85
-          }).addTo(poiMarkersLayer).bindPopup(popupLabel);
-        }
+        L.circleMarker(poi.coords, {
+          radius: 7,
+          color: meta.color,
+          fillColor: meta.color,
+          fillOpacity: 0.9
+        }).addTo(poiMarkersLayer).bindPopup(popupLabel);
       });
     }
 
