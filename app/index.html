@@ -370,7 +370,7 @@
           </div>
           <div class="flex items-center gap-2">
             <span id="pois-save-status-badge" class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800">
-              ✓ Salvato su questo dispositivo
+              ✓ Salvato
             </span>
             <button id="btn-reset-poi-form" data-i18n="cancelEditBtn" onclick="resetPoiForm()" class="hidden px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
               Annulla Modifica
@@ -438,7 +438,7 @@
             <button data-i18n="saveChangesBtn" onclick="saveAllPoisChanges()" class="px-3.5 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
               Salva Modifiche
             </button>
-            <button data-i18n="restoreDefaultsBtn" onclick="restoreDefaultPois()" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold cursor-pointer">
+            <button data-i18n="restoreDefaultsBtn" onclick="restoreDefaultPois()" class="px-3.5 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold cursor-pointer">
               Ripristina Predefiniti
             </button>
           </div>
@@ -478,7 +478,7 @@
           </div>
           <div class="flex items-center gap-2">
             <span id="tours-save-status-badge" class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800">
-              ✓ Salvato su questo dispositivo
+              ✓ Salvato
             </span>
             <button id="btn-reset-tour-form" data-i18n="cancelEditBtn" onclick="resetTourForm()" class="hidden px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
               Annulla Modifica
@@ -566,7 +566,7 @@
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h3 data-i18n="tourRankTitle" class="text-base font-bold text-stone-900">Classifica e Ordine dei Tour</h3>
-            <p data-i18n="tourRankDesc" class="text-xs text-stone-500">Le modifiche vengono salvate subito in memoria permanente (IndexedDB + LocalStorage). Per renderle visibili anche sui telefoni di tutti i clienti, usa Esporta tours.json e caricalo su GitHub accanto a index.html.</p>
+            <p data-i18n="tourRankDesc" class="text-xs text-stone-500">Le modifiche vengono sincronizzate su Firebase e salvate in memoria locale (IndexedDB + LocalStorage). Puoi anche usare Esporta tours.json per averne una copia di backup.</p>
           </div>
           <div class="flex flex-wrap gap-1.5">
             <button data-i18n="saveChangesBtn" onclick="saveAllToursChanges()" class="px-3.5 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
@@ -626,78 +626,7 @@
     const FIREBASE_RTDB_URL = "https://magonabikegarage-c61b2-default-rtdb.europe-west1.firebasedatabase.app/";
     const FIREBASE_ROOT_PATH = "magona_bike_garage_state";
 
-    function isFirebaseConfigured() {
-      return typeof FIREBASE_RTDB_URL === "string" && /^https:\/\/[a-z0-9-]+\.([a-z0-9-]+\.)?firebasedatabase\.app\/?$/i.test(FIREBASE_RTDB_URL.trim());
-    }
-
-    function getFirebaseEndpoint(subPath) {
-      const cleanBase = FIREBASE_RTDB_URL.trim().replace(/\/+$/, "");
-      const cleanSub = subPath ? "/" + subPath.replace(/^\/+|\/+$/g, "") : "";
-      return `${cleanBase}/${FIREBASE_ROOT_PATH}${cleanSub}.json`;
-    }
-
-    async function cloudReadJson(subPath) {
-      if (!isFirebaseConfigured() || !navigator.onLine) return null;
-      try {
-        const resp = await fetch(getFirebaseEndpoint(subPath) + "?ts=" + Date.now(), { cache: "no-store" });
-        if (!resp.ok) return null;
-        return await resp.json();
-      } catch (e) {
-        return null;
-      }
-    }
-
-    async function cloudWriteJson(subPath, payload) {
-      if (!isFirebaseConfigured() || !navigator.onLine) return false;
-      try {
-        const resp = await fetch(getFirebaseEndpoint(subPath), {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-        return resp.ok;
-      } catch (e) {
-        return false;
-      }
-    }
-
-    async function syncAllCloudStateOnBoot() {
-      if (!isFirebaseConfigured() || !navigator.onLine) return;
-      const cloudData = await cloudReadJson("");
-      if (!cloudData || typeof cloudData !== "object") return;
-
-      if (Array.isArray(cloudData.routes) && cloudData.routes.length > 0) {
-        ROUTES_LIST = cloudData.routes;
-        try { localStorage.setItem(ROUTES_STORAGE_KEY, JSON.stringify(ROUTES_LIST)); } catch (e) {}
-        await saveRoutesToIndexedDB(ROUTES_LIST);
-        if (ROUTES_LIST.length > 0 && !ROUTES_LIST.some((r) => r.id === activeRouteId)) {
-          activeRouteId = ROUTES_LIST[0].id;
-        }
-        rebuildRouteSelector();
-        if (isOwner) renderToursManagerList();
-      }
-
-      if (Array.isArray(cloudData.pois) && cloudData.pois.length > 0) {
-        const cleaned = cloudData.pois.filter((p) => p && p.type !== "water");
-        if (cleaned.length > 0) {
-          POIS = cleaned;
-          try { localStorage.setItem(POIS_STORAGE_KEY, JSON.stringify(POIS)); } catch (e) {}
-          await persistPoisList(false);
-          renderPoiList();
-          renderPoiMarkersOnMap();
-        }
-      }
-
-      if (Array.isArray(cloudData.codes) && cloudData.codes.length > 0) {
-        const validPool = cloudData.codes.filter((item) => item && item.code);
-        if (validPool.length > 0) {
-          try { localStorage.setItem(CLIENT_CODES_STORAGE_KEY, JSON.stringify(validPool)); } catch (e) {}
-          renderClientCodesPoolUI();
-        }
-      }
-    }
-
-    const BASE_COORDS = [43.266028, 10.594667]; // 43°15'57.7"N 10°35'40.8"E · Magona Bike Garage, Via del Mandorlo 1, Bibbona
+    const BASE_COORDS = [43.266028, 10.594667];
     const BASE_ADDRESS_LABEL = "Via del Mandorlo 1 / Piazza delle Querce 5, 57020 Bibbona";
 
     const SAFE_RETURN_GRAPH = {
@@ -734,6 +663,9 @@
     const NAV_ZOOM_LEVEL = 17;
     const OFFLINE_CACHE_NAME = "magona-offline-v1";
     const ROUTES_STORAGE_KEY = "magona_offline_routes_v3";
+    const POIS_STORAGE_KEY = "magona_offline_pois_v2";
+    const CLIENT_CODES_STORAGE_KEY = "magona_client_codes_pool_v1";
+    const MAX_USES_PER_CODE = 3;
     const IDB_NAME = "MagonaBikeGarageDB";
     const IDB_STORE = "appState";
 
@@ -874,7 +806,7 @@
         tourDescPlaceholder: "Inserisci punti di interesse, consigli sulla batteria e-bike, passaggi tecnici o fontanelle lungo il giro...",
         saveTourListBtn: "Salva Tour nella Lista",
         tourRankTitle: "Classifica e Ordine dei Tour",
-        tourRankDesc: "Le modifiche vengono salvate subito in memoria permanente (IndexedDB + LocalStorage). Per renderle visibili anche sui telefoni di tutti i clienti, usa Esporta tours.json e caricalo su GitHub accanto a index.html.",
+        tourRankDesc: "Le modifiche vengono sincronizzate su Firebase e salvate in memoria locale (IndexedDB + LocalStorage). Puoi anche usare Esporta tours.json per averne una copia di backup.",
         exportJsonBtn: "Esporta tours.json",
         rankPosLabel: "Pos.",
         rankUpBtn: "↑ Su",
@@ -1029,7 +961,7 @@
         tourDescPlaceholder: "Enter points of interest, e-bike battery tips, technical sections or water stops along the ride...",
         saveTourListBtn: "Save Tour to List",
         tourRankTitle: "Tour Ranking & Order",
-        tourRankDesc: "Changes are saved immediately in permanent storage (IndexedDB + LocalStorage). To publish them to all riders' phones, use Export tours.json and upload it to GitHub next to index.html.",
+        tourRankDesc: "Changes are synced to Firebase and saved in local storage (IndexedDB + LocalStorage). You can also use Export tours.json for a backup copy.",
         exportJsonBtn: "Export tours.json",
         rankPosLabel: "Pos.",
         rankUpBtn: "↑ Up",
@@ -1184,7 +1116,7 @@
         tourDescPlaceholder: "Sehenswürdigkeiten, Tipps zum E-Bike-Akku, technische Passagen oder Wasserstellen entlang der Tour eingeben...",
         saveTourListBtn: "Tour in Liste speichern",
         tourRankTitle: "Rangfolge und Reihenfolge der Touren",
-        tourRankDesc: "Änderungen werden sofort dauerhaft gespeichert (IndexedDB + LocalStorage). Um sie auf allen Kunden-Smartphones sichtbar zu machen, nutzen Sie tours.json exportieren und laden Sie die Datei neben index.html auf GitHub hoch.",
+        tourRankDesc: "Änderungen werden mit Firebase synchronisiert und lokal gespeichert (IndexedDB + LocalStorage). Sie können auch tours.json als Backup exportieren.",
         exportJsonBtn: "tours.json exportieren",
         rankPosLabel: "Pos.",
         rankUpBtn: "↑ Hoch",
@@ -1339,7 +1271,7 @@
         tourDescPlaceholder: "Voer bezienswaardigheden, e-bike accutips, technische passages of waterpunten langs de rit in...",
         saveTourListBtn: "Route opslaan in lijst",
         tourRankTitle: "Volgorde en Rangschikking van Routes",
-        tourRankDesc: "Wijzigingen worden direct permanent opgeslagen (IndexedDB + LocalStorage). Om ze op alle telefoons van klanten te tonen, gebruik Exporteer tours.json en upload het bestand op GitHub naast index.html.",
+        tourRankDesc: "Wijzigingen worden gesynchroniseerd met Firebase en lokaal opgeslagen (IndexedDB + LocalStorage). Je kunt ook tours.json exporteren als back-up.",
         exportJsonBtn: "Exporteer tours.json",
         rankPosLabel: "Pos.",
         rankUpBtn: "↑ Omhoog",
@@ -1480,54 +1412,6 @@
       ]
     };
 
-    function translateTextFallback(text) {
-      if (!text || currentLang === "it") return text;
-      let out = String(text);
-      const rules = TERM_GLOSSARY[currentLang] || [];
-      rules.forEach(([pattern, rep]) => {
-        out = out.replace(pattern, rep);
-      });
-      return out;
-    }
-
-    function getLocalizedRouteField(route, field) {
-      if (!route) return "";
-      const loc = ROUTE_LOCALIZED_CONTENT[route.id]?.[currentLang];
-      if (loc && loc[field]) return loc[field];
-      if (route.i18n?.[currentLang]?.[field]) return route.i18n[currentLang][field];
-      return translateTextFallback(route[field] || "");
-    }
-
-    function getLocalizedPoiField(poi, field) {
-      if (!poi) return "";
-      const loc = POI_LOCALIZED_CONTENT[poi.id]?.[currentLang];
-      if (loc && loc[field]) return loc[field];
-      if (poi.i18n?.[currentLang]?.[field]) return poi.i18n[currentLang][field];
-      return translateTextFallback(poi[field] || "");
-    }
-
-    function getDifficultyMeta(diffKey) {
-      const t = I18N[currentLang] || I18N.it;
-      const mapDiff = {
-        green: { label: t.diffBadgeGreen, badgeClass: "bg-emerald-100 text-emerald-800" },
-        blue: { label: t.diffBadgeBlue, badgeClass: "bg-blue-100 text-blue-800" },
-        red: { label: t.diffBadgeRed, badgeClass: "bg-red-100 text-red-800" },
-        black: { label: t.diffBadgeBlack, badgeClass: "bg-stone-900 text-white" }
-      };
-      return mapDiff[diffKey] || mapDiff.blue;
-    }
-
-    function getPoiTypeMeta(typeKey) {
-      const t = I18N[currentLang] || I18N.it;
-      const mapPoi = {
-        water: { badge: t.poiBadgeWater, color: "#2563eb" },
-        view: { badge: t.poiBadgeView, color: "#d97706" },
-        food: { badge: t.poiBadgeFood, color: "#15803d" },
-        service: { badge: t.poiBadgeService, color: "#7c3aed" }
-      };
-      return mapPoi[typeKey] || mapPoi.food;
-    }
-
     const DEFAULT_ROUTES = [
       {
         id: "magona-loop",
@@ -1591,7 +1475,62 @@
       { id: "r-bibbona-base", type: "food", name: "Magona Bike Garage · Base", note: "Via del Mandorlo 1 (angolo Piazza delle Querce), 57020 Bibbona", coords: [43.266028, 10.594667] }
     ];
 
-    /* ================= STORAGE PERSISTENTE (IndexedDB + LocalStorage + tours.json) ================= */
+    let currentLang = "it";
+    let isOwner = false;
+    let map = null;
+    let routePolyline = null;
+    let userMarker = null;
+    let userAccuracyCircle = null;
+    let watchId = null;
+    let liveNavActive = false;
+    let followUserCenter = true;
+    let hasInitialNavZoomed = false;
+    let userCoords = null;
+    let simulatedProgressRatio = 0;
+    let pendingFormCoords = null;
+    let poiMarkersLayer = null;
+
+    let screenWakeLock = null;
+    let keepScreenAwakeEnabled = localStorage.getItem("magona_keep_screen_awake") === "1";
+
+    /* ================= FIREBASE RTDB HELPERS ================= */
+
+    function isFirebaseConfigured() {
+      return typeof FIREBASE_RTDB_URL === "string" && /^https:\/\/[a-z0-9-]+\.([a-z0-9-]+\.)?firebasedatabase\.app\/?$/i.test(FIREBASE_RTDB_URL.trim());
+    }
+
+    function getFirebaseEndpoint(subPath) {
+      const cleanBase = FIREBASE_RTDB_URL.trim().replace(/\/+$/, "");
+      const cleanSub = subPath ? "/" + subPath.replace(/^\/+|\/+$/g, "") : "";
+      return `${cleanBase}/${FIREBASE_ROOT_PATH}${cleanSub}.json`;
+    }
+
+    async function cloudReadJson(subPath) {
+      if (!isFirebaseConfigured() || !navigator.onLine) return null;
+      try {
+        const resp = await fetch(getFirebaseEndpoint(subPath) + "?ts=" + Date.now(), { cache: "no-store" });
+        if (!resp.ok) return null;
+        return await resp.json();
+      } catch (e) {
+        return null;
+      }
+    }
+
+    async function cloudWriteJson(subPath, payload) {
+      if (!isFirebaseConfigured() || !navigator.onLine) return false;
+      try {
+        const resp = await fetch(getFirebaseEndpoint(subPath), {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        return resp.ok;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    /* ================= INDEXEDDB + STORAGE ================= */
 
     function openAppIndexedDB() {
       return new Promise((resolve, reject) => {
@@ -1611,12 +1550,12 @@
       });
     }
 
-    async function saveRoutesToIndexedDB(list) {
+    async function idbWrite(key, value) {
       try {
         const db = await openAppIndexedDB();
         await new Promise((resolve, reject) => {
           const tx = db.transaction(IDB_STORE, "readwrite");
-          tx.objectStore(IDB_STORE).put(list, ROUTES_STORAGE_KEY);
+          tx.objectStore(IDB_STORE).put(value, key);
           tx.oncomplete = () => resolve();
           tx.onerror = () => reject(tx.error);
         });
@@ -1626,18 +1565,23 @@
       }
     }
 
-    async function loadRoutesFromIndexedDB() {
+    async function idbRead(key) {
       try {
         const db = await openAppIndexedDB();
         return await new Promise((resolve) => {
           const tx = db.transaction(IDB_STORE, "readonly");
-          const req = tx.objectStore(IDB_STORE).get(ROUTES_STORAGE_KEY);
-          req.onsuccess = () => resolve(Array.isArray(req.result) && req.result.length > 0 ? req.result : null);
+          const req = tx.objectStore(IDB_STORE).get(key);
+          req.onsuccess = () => resolve(req.result ?? null);
           req.onerror = () => resolve(null);
         });
       } catch (e) {
         return null;
       }
+    }
+
+    function sanitizePoisArray(list) {
+      if (!Array.isArray(list)) return [];
+      return list.filter((p) => p && typeof p.name === "string" && Array.isArray(p.coords) && p.coords.length >= 2);
     }
 
     function loadStoredRoutesSync() {
@@ -1646,7 +1590,7 @@
           const raw = localStorage.getItem(key);
           if (raw) {
             const parsed = JSON.parse(raw);
-            if (Array.isArray(parsed) && parsed.length >= 25) {
+            if (Array.isArray(parsed) && parsed.length > 0) {
               return parsed;
             }
           }
@@ -1655,7 +1599,23 @@
       return JSON.parse(JSON.stringify(DEFAULT_ROUTES));
     }
 
+    function loadStoredPoisSync() {
+      for (const key of [POIS_STORAGE_KEY, "magona_offline_pois_v1"]) {
+        try {
+          const raw = localStorage.getItem(key);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            const cleaned = sanitizePoisArray(parsed);
+            if (cleaned.length > 0) return cleaned;
+          }
+        } catch (e) {}
+      }
+      return JSON.parse(JSON.stringify(DEFAULT_POIS));
+    }
+
     let ROUTES_LIST = loadStoredRoutesSync();
+    let POIS = loadStoredPoisSync();
+    let activeRouteId = ROUTES_LIST[0]?.id || "magona-loop";
 
     function setSaveBadgeState(savedOk, detailText) {
       const badge = document.getElementById("tours-save-status-badge");
@@ -1669,7 +1629,19 @@
       }
     }
 
-    async function persistRoutesList() {
+    function setPoisSaveBadgeState(savedOk, detailText) {
+      const badge = document.getElementById("pois-save-status-badge");
+      if (!badge) return;
+      if (savedOk) {
+        badge.textContent = detailText || "✓ Salvato";
+        badge.className = "text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800";
+      } else {
+        badge.textContent = detailText || "⚠ Error";
+        badge.className = "text-[11px] font-bold px-2.5 py-1 rounded-full bg-red-100 text-red-800";
+      }
+    }
+
+    async function persistRoutesList(syncCloud = true) {
       const serialized = JSON.stringify(ROUTES_LIST);
       let lsOk = false;
       try {
@@ -1688,39 +1660,99 @@
         }
       }
 
-      const idbOk = await saveRoutesToIndexedDB(ROUTES_LIST);
-      const cloudOk = await cloudWriteJson("routes", ROUTES_LIST);
+      const idbOk = await idbWrite(ROUTES_STORAGE_KEY, ROUTES_LIST);
+      const cloudOk = syncCloud ? await cloudWriteJson("routes", ROUTES_LIST) : false;
       const ok = idbOk || lsOk || cloudOk;
       setSaveBadgeState(ok, ok ? `✓ (${ROUTES_LIST.length})` : "⚠ Export tours.json");
       return ok;
     }
 
-    async function hydrateRoutesOnBoot() {
-      const idbRoutes = await loadRoutesFromIndexedDB();
-      if (idbRoutes && idbRoutes.length > 0) {
+    async function persistPoisList(syncCloud = true) {
+      POIS = sanitizePoisArray(POIS);
+      let lsOk = false;
+      try {
+        localStorage.setItem(POIS_STORAGE_KEY, JSON.stringify(POIS));
+        lsOk = true;
+      } catch (e) {
+        lsOk = false;
+      }
+
+      const idbOk = await idbWrite(POIS_STORAGE_KEY, POIS);
+      const cloudOk = syncCloud ? await cloudWriteJson("pois", POIS) : false;
+      const ok = idbOk || lsOk || cloudOk;
+      setPoisSaveBadgeState(ok, ok ? `✓ (${POIS.length})` : "⚠ Error");
+      return ok;
+    }
+
+    async function hydrateLocalStateOnBoot() {
+      const idbRoutes = await idbRead(ROUTES_STORAGE_KEY);
+      if (Array.isArray(idbRoutes) && idbRoutes.length > 0) {
         ROUTES_LIST = idbRoutes;
-        try {
-          localStorage.setItem(ROUTES_STORAGE_KEY, JSON.stringify(ROUTES_LIST));
-        } catch (e) {}
-      } else {
-        try {
-          const resp = await fetch("tours.json?ts=" + Date.now(), { cache: "no-store" });
-          if (resp.ok) {
-            const remoteRoutes = await resp.json();
-            if (Array.isArray(remoteRoutes) && remoteRoutes.length > 0) {
-              ROUTES_LIST = remoteRoutes;
-              await persistRoutesList();
-            }
-          }
-        } catch (e) {}
+      }
+
+      const idbPois = await idbRead(POIS_STORAGE_KEY);
+      const cleanedIdbPois = sanitizePoisArray(idbPois);
+      if (cleanedIdbPois.length > 0) {
+        POIS = cleanedIdbPois;
       }
 
       if (ROUTES_LIST.length > 0 && !ROUTES_LIST.some((r) => r.id === activeRouteId)) {
         activeRouteId = ROUTES_LIST[0].id;
       }
+
       rebuildRouteSelector();
+      renderPoiList();
+      if (map) {
+        renderPoiMarkersOnMap();
+        selectRoute(activeRouteId);
+      }
       if (isOwner) {
         renderToursManagerList();
+      }
+    }
+
+    async function syncAllCloudStateOnBoot() {
+      if (!isFirebaseConfigured() || !navigator.onLine) return;
+      const cloudData = await cloudReadJson("");
+      if (!cloudData || typeof cloudData !== "object") return;
+
+      if (Array.isArray(cloudData.routes) && cloudData.routes.length > 0) {
+        ROUTES_LIST = cloudData.routes;
+        try { localStorage.setItem(ROUTES_STORAGE_KEY, JSON.stringify(ROUTES_LIST)); } catch (e) {}
+        await idbWrite(ROUTES_STORAGE_KEY, ROUTES_LIST);
+        if (ROUTES_LIST.length > 0 && !ROUTES_LIST.some((r) => r.id === activeRouteId)) {
+          activeRouteId = ROUTES_LIST[0].id;
+        }
+        rebuildRouteSelector();
+        if (map) {
+          selectRoute(activeRouteId);
+        }
+        if (isOwner) {
+          renderToursManagerList();
+          setSaveBadgeState(true, `✓ (${ROUTES_LIST.length})`);
+        }
+      }
+
+      const cleanedCloudPois = sanitizePoisArray(cloudData.pois);
+      if (cleanedCloudPois.length > 0) {
+        POIS = cleanedCloudPois;
+        try { localStorage.setItem(POIS_STORAGE_KEY, JSON.stringify(POIS)); } catch (e) {}
+        await idbWrite(POIS_STORAGE_KEY, POIS);
+        renderPoiList();
+        if (map) {
+          renderPoiMarkersOnMap();
+        }
+        if (isOwner) {
+          setPoisSaveBadgeState(true, `✓ (${POIS.length})`);
+        }
+      }
+
+      if (Array.isArray(cloudData.codes) && cloudData.codes.length > 0) {
+        const validPool = cloudData.codes.filter((item) => item && item.code);
+        if (validPool.length > 0) {
+          try { localStorage.setItem(CLIENT_CODES_STORAGE_KEY, JSON.stringify(validPool)); } catch (e) {}
+          renderClientCodesPoolUI();
+        }
       }
     }
 
@@ -1741,112 +1773,55 @@
       return ROUTES_LIST.find((r) => r.id === id) || ROUTES_LIST[0] || DEFAULT_ROUTES[0];
     }
 
-    const POIS_STORAGE_KEY = "magona_offline_pois_v2";
+    /* ================= LOCALIZATION ================= */
 
-    function loadStoredPoisSync() {
-      for (const key of [POIS_STORAGE_KEY, "magona_offline_pois_v1"]) {
-        try {
-          const raw = localStorage.getItem(key);
-          if (raw) {
-            const parsed = JSON.parse(raw);
-            if (Array.isArray(parsed)) {
-              const cleaned = parsed.filter((p) => p && p.type !== "water");
-              if (cleaned.length > 0) return cleaned;
-            }
-          }
-        } catch (e) {}
-      }
-      return JSON.parse(JSON.stringify(DEFAULT_POIS));
+    function translateTextFallback(text) {
+      if (!text || currentLang === "it") return text;
+      let out = String(text);
+      const rules = TERM_GLOSSARY[currentLang] || [];
+      rules.forEach(([pattern, rep]) => {
+        out = out.replace(pattern, rep);
+      });
+      return out;
     }
 
-    let POIS = loadStoredPoisSync();
-    let poiMarkersLayer = null;
-
-    function setPoisSaveBadgeState(savedOk, detailText) {
-      const badge = document.getElementById("pois-save-status-badge");
-      if (!badge) return;
-      if (savedOk) {
-        badge.textContent = detailText || "✓ Salvato";
-        badge.className = "text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800";
-      } else {
-        badge.textContent = detailText || "⚠ Error";
-        badge.className = "text-[11px] font-bold px-2.5 py-1 rounded-full bg-red-100 text-red-800";
-      }
+    function getLocalizedRouteField(route, field) {
+      if (!route) return "";
+      const loc = ROUTE_LOCALIZED_CONTENT[route.id]?.[currentLang];
+      if (loc && loc[field]) return loc[field];
+      if (route.i18n?.[currentLang]?.[field]) return route.i18n[currentLang][field];
+      return translateTextFallback(route[field] || "");
     }
 
-    async function persistPoisList(syncCloud = true) {
-      let lsOk = false;
-      try {
-        localStorage.setItem(POIS_STORAGE_KEY, JSON.stringify(POIS));
-        lsOk = true;
-      } catch (e) {
-        lsOk = false;
-      }
-
-      let idbOk = false;
-      try {
-        const db = await openAppIndexedDB();
-        await new Promise((resolve, reject) => {
-          const tx = db.transaction(IDB_STORE, "readwrite");
-          tx.objectStore(IDB_STORE).put(POIS, POIS_STORAGE_KEY);
-          tx.oncomplete = () => resolve();
-          tx.onerror = () => reject(tx.error);
-        });
-        idbOk = true;
-      } catch (e) {
-        idbOk = false;
-      }
-
-      const cloudOk = syncCloud ? await cloudWriteJson("pois", POIS) : false;
-      const ok = idbOk || lsOk || cloudOk;
-      setPoisSaveBadgeState(ok, ok ? `✓ (${POIS.length})` : "⚠ Error");
-      return ok;
+    function getLocalizedPoiField(poi, field) {
+      if (!poi) return "";
+      const loc = POI_LOCALIZED_CONTENT[poi.id]?.[currentLang];
+      if (loc && loc[field]) return loc[field];
+      if (poi.i18n?.[currentLang]?.[field]) return poi.i18n[currentLang][field];
+      return translateTextFallback(poi[field] || "");
     }
 
-    async function hydratePoisOnBoot() {
-      try {
-        const db = await openAppIndexedDB();
-        const idbPois = await new Promise((resolve) => {
-          const tx = db.transaction(IDB_STORE, "readonly");
-          const req = tx.objectStore(IDB_STORE).get(POIS_STORAGE_KEY);
-          req.onsuccess = () => resolve(Array.isArray(req.result) ? req.result : null);
-          req.onerror = () => resolve(null);
-        });
-        if (idbPois) {
-          const cleaned = idbPois.filter((p) => p && p.type !== "water");
-          if (cleaned.length > 0) {
-            POIS = cleaned;
-            try {
-              localStorage.setItem(POIS_STORAGE_KEY, JSON.stringify(POIS));
-            } catch (e) {}
-          }
-        }
-      } catch (e) {}
-      POIS = POIS.filter((p) => p && p.type !== "water");
-      if (POIS.length === 0) {
-        POIS = JSON.parse(JSON.stringify(DEFAULT_POIS));
-      }
-      renderPoiList();
-      renderPoiMarkersOnMap();
+    function getDifficultyMeta(diffKey) {
+      const t = I18N[currentLang] || I18N.it;
+      const mapDiff = {
+        green: { label: t.diffBadgeGreen, badgeClass: "bg-emerald-100 text-emerald-800" },
+        blue: { label: t.diffBadgeBlue, badgeClass: "bg-blue-100 text-blue-800" },
+        red: { label: t.diffBadgeRed, badgeClass: "bg-red-100 text-red-800" },
+        black: { label: t.diffBadgeBlack, badgeClass: "bg-stone-900 text-white" }
+      };
+      return mapDiff[diffKey] || mapDiff.blue;
     }
 
-    let currentLang = "it";
-    let isOwner = false;
-    let map = null;
-    let routePolyline = null;
-    let userMarker = null;
-    let userAccuracyCircle = null;
-    let watchId = null;
-    let liveNavActive = false;
-    let followUserCenter = true;
-    let hasInitialNavZoomed = false;
-    let userCoords = null;
-    let activeRouteId = ROUTES_LIST[0]?.id || "magona-loop";
-    let simulatedProgressRatio = 0;
-    let pendingFormCoords = null;
-
-    let screenWakeLock = null;
-    let keepScreenAwakeEnabled = localStorage.getItem("magona_keep_screen_awake") === "1";
+    function getPoiTypeMeta(typeKey) {
+      const t = I18N[currentLang] || I18N.it;
+      const mapPoi = {
+        water: { badge: t.poiBadgeWater, color: "#2563eb" },
+        view: { badge: t.poiBadgeView, color: "#d97706" },
+        food: { badge: t.poiBadgeFood, color: "#15803d" },
+        service: { badge: t.poiBadgeService, color: "#7c3aed" }
+      };
+      return mapPoi[typeKey] || mapPoi.food;
+    }
 
     function updateWakeLockUI() {
       const t = I18N[currentLang] || I18N.it;
@@ -2045,8 +2020,7 @@
       );
     }
 
-    const CLIENT_CODES_STORAGE_KEY = "magona_client_codes_pool_v1";
-    const MAX_USES_PER_CODE = 3;
+    /* ================= CLIENT ACCESS CODES ================= */
 
     function loadClientCodesPool() {
       try {
@@ -2211,6 +2185,8 @@
       unlockApplication();
     }
 
+    /* ================= APP SHELL & NAVIGATION ================= */
+
     function rebuildRouteSelector() {
       const sel = document.getElementById("route-select");
       if (!sel) return;
@@ -2226,9 +2202,14 @@
     }
 
     async function unlockApplication() {
-      const idbRoutes = await loadRoutesFromIndexedDB();
-      if (idbRoutes && idbRoutes.length > 0) {
+      const idbRoutes = await idbRead(ROUTES_STORAGE_KEY);
+      if (Array.isArray(idbRoutes) && idbRoutes.length > 0) {
         ROUTES_LIST = idbRoutes;
+      }
+
+      const idbPois = sanitizePoisArray(await idbRead(POIS_STORAGE_KEY));
+      if (idbPois.length > 0) {
+        POIS = idbPois;
       }
 
       document.getElementById("auth-screen").classList.add("hidden");
@@ -2250,6 +2231,7 @@
       initMap();
       selectRoute(activeRouteId);
       renderPoiList();
+      renderPoiMarkersOnMap();
       renderTroubleshooting();
       updatePoiOwnerVisibility();
       if (isOwner) {
@@ -2259,6 +2241,9 @@
       }
       updateWakeLockUI();
       if (keepScreenAwakeEnabled) requestScreenWakeLock(false);
+
+      await syncAllCloudStateOnBoot();
+
       setTimeout(() => {
         if (map) map.invalidateSize();
       }, 120);
@@ -2778,10 +2763,8 @@
       box.classList.remove("hidden");
       labelEl.textContent = t.offlineSaving;
 
-      await persistRoutesList();
-      try {
-        await persistPoisList();
-      } catch (e) {}
+      await persistRoutesList(false);
+      await persistPoisList(false);
 
       const tileUrls = new Set();
       const allCoords = [BASE_COORDS];
@@ -2828,6 +2811,8 @@
       labelEl.textContent = t.offlineSaved;
       showToast(t.toastOfflineSaved);
     }
+
+    /* ================= GPX & TOURS MANAGER ================= */
 
     function simplifyCoords(coords, maxPoints = 600) {
       if (!Array.isArray(coords) || coords.length <= maxPoints) return coords;
@@ -3026,7 +3011,7 @@
         activeRouteId = newId;
       }
 
-      await persistRoutesList();
+      await persistRoutesList(true);
       rebuildRouteSelector();
       selectRoute(activeRouteId);
       renderToursManagerList();
@@ -3037,7 +3022,7 @@
     async function updateTourCategoryInline(index, newCategory) {
       if (!isOwner || !ROUTES_LIST[index]) return;
       ROUTES_LIST[index].category = newCategory === "gravel" ? "gravel" : "mtb";
-      await persistRoutesList();
+      await persistRoutesList(true);
       rebuildRouteSelector();
       if (ROUTES_LIST[index].id === activeRouteId) {
         updateRouteInfoCard(ROUTES_LIST[index]);
@@ -3053,7 +3038,7 @@
       ROUTES_LIST[index] = ROUTES_LIST[targetIdx];
       ROUTES_LIST[targetIdx] = temp;
 
-      await persistRoutesList();
+      await persistRoutesList(true);
       rebuildRouteSelector();
       renderToursManagerList();
     }
@@ -3068,7 +3053,7 @@
       const [moved] = ROUTES_LIST.splice(index, 1);
       ROUTES_LIST.splice(targetIdx, 0, moved);
 
-      await persistRoutesList();
+      await persistRoutesList(true);
       rebuildRouteSelector();
       renderToursManagerList();
     }
@@ -3079,7 +3064,7 @@
       if (activeRouteId === tourId) {
         activeRouteId = ROUTES_LIST[0].id;
       }
-      await persistRoutesList();
+      await persistRoutesList(true);
       rebuildRouteSelector();
       selectRoute(activeRouteId);
       renderToursManagerList();
@@ -3089,10 +3074,19 @@
       if (!isOwner) return;
       ROUTES_LIST = JSON.parse(JSON.stringify(DEFAULT_ROUTES));
       activeRouteId = ROUTES_LIST[0].id;
-      await persistRoutesList();
+      await persistRoutesList(true);
       rebuildRouteSelector();
       selectRoute(activeRouteId);
       renderToursManagerList();
+    }
+
+    async function saveAllToursChanges() {
+      if (!isOwner) return;
+      await persistRoutesList(true);
+      rebuildRouteSelector();
+      selectRoute(activeRouteId);
+      renderToursManagerList();
+      showToast("✓");
     }
 
     function renderToursManagerList() {
@@ -3154,6 +3148,8 @@
       }).join("");
     }
 
+    /* ================= POIS MANAGER ================= */
+
     function updatePoiOwnerVisibility() {
       const t = I18N[currentLang] || I18N.it;
       const editor = document.getElementById("poi-owner-editor");
@@ -3173,6 +3169,7 @@
       }
       poiMarkersLayer = L.layerGroup().addTo(map);
       POIS.forEach((poi) => {
+        if (!Array.isArray(poi.coords) || poi.coords.length < 2) return;
         const meta = getPoiTypeMeta(poi.type);
         const locName = getLocalizedPoiField(poi, "name");
         const locNote = getLocalizedPoiField(poi, "note");
@@ -3244,7 +3241,7 @@
         POIS.push({ id: "poi-" + Date.now(), name, type, note, coords: [lat, lng] });
       }
 
-      await persistPoisList();
+      await persistPoisList(true);
       renderPoiList();
       renderPoiMarkersOnMap();
       resetPoiForm();
@@ -3254,7 +3251,7 @@
     async function deletePoiById(poiId) {
       if (!isOwner || POIS.length <= 1) return;
       POIS = POIS.filter((p) => p.id !== poiId);
-      await persistPoisList();
+      await persistPoisList(true);
       renderPoiList();
       renderPoiMarkersOnMap();
     }
@@ -3262,25 +3259,16 @@
     async function restoreDefaultPois() {
       if (!isOwner) return;
       POIS = JSON.parse(JSON.stringify(DEFAULT_POIS));
-      await persistPoisList();
+      await persistPoisList(true);
       renderPoiList();
       renderPoiMarkersOnMap();
     }
 
     async function saveAllPoisChanges() {
       if (!isOwner) return;
-      await persistPoisList();
+      await persistPoisList(true);
       renderPoiList();
       renderPoiMarkersOnMap();
-      showToast("✓");
-    }
-
-    async function saveAllToursChanges() {
-      if (!isOwner) return;
-      await persistRoutesList();
-      rebuildRouteSelector();
-      selectRoute(activeRouteId);
-      renderToursManagerList();
       showToast("✓");
     }
 
@@ -3341,6 +3329,8 @@
       showToast(`${t.toastPoiGuided} ${label}`);
     }
 
+    /* ================= SUPPORT & WHATSAPP ================= */
+
     function renderTroubleshooting() {
       const t = I18N[currentLang] || I18N.it;
       const items = Array.isArray(t.troubleItems) ? t.troubleItems : I18N.it.troubleItems;
@@ -3359,16 +3349,19 @@
       window.open(`https://wa.me/393313453207?text=${msg}`, "_blank", "noopener");
     }
 
-    window.addEventListener("online", updateNetworkStatusUI);
+    /* ================= BOOTSTRAP ================= */
+
+    window.addEventListener("online", () => {
+      updateNetworkStatusUI();
+      syncAllCloudStateOnBoot();
+    });
     window.addEventListener("offline", updateNetworkStatusUI);
-    window.addEventListener("DOMContentLoaded", () => {
+    window.addEventListener("DOMContentLoaded", async () => {
       updateNetworkStatusUI();
       renderClientCodesPoolUI();
       changeLanguage("it");
-      syncAllCloudStateOnBoot().finally(() => {
-        hydrateRoutesOnBoot();
-        hydratePoisOnBoot();
-      });
+      await hydrateLocalStateOnBoot();
+      await syncAllCloudStateOnBoot();
     });
   </script>
 </body>
