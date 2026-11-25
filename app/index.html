@@ -209,9 +209,6 @@
             <button id="btn-user-offline-save" onclick="saveOfflineForUser()" class="px-3.5 py-2 rounded-xl bg-sky-700 hover:bg-sky-800 text-white text-xs font-bold cursor-pointer">
               Salva Offline (Mappa + Tour)
             </button>
-            <button onclick="navigateToBase()" class="px-3.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
-              Rientra alla Base
-            </button>
             <button onclick="toggleMapFullscreen()" class="px-3.5 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold cursor-pointer">
               Schermo Intero
             </button>
@@ -593,40 +590,6 @@
   <script>
     const OWNER_PASSWORD = "MAGONA2026";
     const BASE_COORDS = [43.2742, 10.6018]; // Via del Mandorlo 1, Bibbona
-    const BASE_ADDRESS_LABEL = "Via del Mandorlo 1 / Piazza delle Querce 5, 57020 Bibbona";
-
-    // Nodi di viabilità facile / strade principali attorno a Bibbona e Macchia della Magona (easyScore: 1.0 = strada asfaltata/facile, >1.5 = tratto più ripido/sterrato)
-    const EASY_RETURN_GRAPH = {
-      nodes: {
-        base: { coords: [43.2742, 10.6018], name: "Angolo Via del Mandorlo 1 / Piazza delle Querce 5, 57020 Bibbona" },
-        bibbona_centro: { coords: [43.2725, 10.5965], name: "Centro Bibbona" },
-        via_bolgherese: { coords: [43.2710, 10.5840], name: "Via Bolgherese" },
-        campo_di_sasso: { coords: [43.2610, 10.6360], name: "Campo di Sasso" },
-        magona_ovest: { coords: [43.2650, 10.6180], name: "Ingresso Magona Ovest" },
-        golazze: { coords: [43.2565, 10.6410], name: "Passo delle Golazze Aperte" },
-        bolgheri_nord: { coords: [43.2550, 10.5820], name: "Bivio Bolgheri" },
-        casale_nord: { coords: [43.2520, 10.6350], name: "Direzione Casale / Nord" },
-        riparbella_sud: { coords: [43.3020, 10.6180], name: "Bivio Sud Riparbella" },
-        cecina_sud: { coords: [43.2900, 10.5900], name: "Strada Principale Sud" }
-      },
-      edges: [
-        ["base", "bibbona_centro", 1.0],
-        ["bibbona_centro", "via_bolgherese", 1.0],
-        ["bibbona_centro", "magona_ovest", 1.1],
-        ["magona_ovest", "base", 1.1],
-        ["magona_ovest", "campo_di_sasso", 1.2],
-        ["campo_di_sasso", "golazze", 1.35],
-        ["golazze", "casale_nord", 1.3],
-        ["casale_nord", "campo_di_sasso", 1.25],
-        ["via_bolgherese", "bolgheri_nord", 1.0],
-        ["bolgheri_nord", "casale_nord", 1.15],
-        ["riparbella_sud", "cecina_sud", 1.05],
-        ["cecina_sud", "base", 1.0],
-        ["riparbella_sud", "base", 1.2]
-      ]
-    };
-
-    let returnToBaseLayer = null;
     const NAV_ZOOM_LEVEL = 17;
     const OFFLINE_CACHE_NAME = "magona-offline-v1";
     const ROUTES_STORAGE_KEY = "magona_offline_routes_v3";
@@ -921,47 +884,8 @@
     };
 
     const DEFAULT_POIS = [
-      { id: "f-li-bibbona-statuto", type: "water", name: "Fontanella Via dello Statuto 1-3 (Bibbona - LI)", note: "Fontanella segnalata · Centro storico Bibbona", coords: [43.2745, 10.5985] },
-      { id: "f-li-bibbona-magona-campo-sasso", type: "water", name: "Fontanella Campo di Sasso / Macchia della Magona (Bibbona - LI)", note: "Punto acqua segnalato area Macchia della Magona", coords: [43.261, 10.636] },
-      { id: "f-li-marina-bibbona-cavalleggeri", type: "water", name: "Fontanella Via dei Cavalleggeri Nord 5 (Marina di Bibbona - LI)", note: "Fontanella segnalata · Marina di Bibbona", coords: [43.2572, 10.5318] },
-      { id: "f-li-bolgheri-centro", type: "water", name: "Fontanella Pubblica Bolgheri (Castagneto Carducci - LI)", note: "Fontanella censita · Area Bolgheri", coords: [43.2376, 10.6084] },
-      { id: "f-li-castagneto-carducci", type: "water", name: "Fontanella Pubblica Castagneto Carducci (LI)", note: "Fontanella censita · Centro Castagneto Carducci", coords: [43.1628, 10.6085] },
-      { id: "f-li-donoratico", type: "water", name: "Fontanella Pubblica Donoratico (Castagneto Carducci - LI)", note: "Fontanella censita · Donoratico", coords: [43.1852, 10.5582] },
-      { id: "f-li-cecina-carducci", type: "water", name: "Fontanella Pubblica Piazza Carducci (Cecina - LI)", note: "Fontanella pubblica censita · Centro Cecina", coords: [43.3118, 10.5256] },
-      { id: "f-li-cecina-parco-pineta", type: "water", name: "Fontanella Parco / Pineta Sud (Cecina - LI)", note: "Fontanella segnalata · Zona Cecina", coords: [43.3065, 10.519] },
-      { id: "f-li-marina-cecina-gagliano", type: "water", name: "Fontanella Acqua Alta Qualità Viale Gagliano (Marina di Cecina - LI)", note: "Fontanella pubblica censita · Marina di Cecina", coords: [43.3032, 10.5115] },
-      { id: "f-li-rosignano-solvay", type: "water", name: "Fontanella Pubblica Rosignano Solvay (Rosignano Marittimo - LI)", note: "Fontanella censita · Rosignano Solvay", coords: [43.3932, 10.4276] },
-      { id: "f-li-rosignano-marittimo", type: "water", name: "Fontanella Pubblica Rosignano Marittimo (LI)", note: "Fontanella censita · Centro Rosignano Marittimo", coords: [43.4005, 10.4728] },
-      { id: "f-li-castiglioncello", type: "water", name: "Fontanella Pubblica Castiglioncello (Rosignano Marittimo - LI)", note: "Fontanella censita · Castiglioncello", coords: [43.4038, 10.4152] },
-      { id: "f-li-vada", type: "water", name: "Fontanella Pubblica Vada (Rosignano Marittimo - LI)", note: "Fontanella censita · Vada", coords: [43.3532, 10.4538] },
-      { id: "f-li-livorno-ardenza", type: "water", name: "Fontanella Pubblica Ardenza (Livorno - LI)", note: "Fontanella censita · Lungomare / Ardenza Livorno", coords: [43.5245, 10.3125] },
-      { id: "f-li-livorno-montenero", type: "water", name: "Fontanella Pubblica Montenero (Livorno - LI)", note: "Fontanella censita · Colline di Montenero (LI)", coords: [43.4945, 10.3352] },
-      { id: "f-li-livorno-centro", type: "water", name: "Fontanella Pubblica Livorno Centro (LI)", note: "Fontanella censita · Città di Livorno", coords: [43.5485, 10.3106] },
-      { id: "f-li-collesalvetti", type: "water", name: "Fontanella Pubblica Collesalvetti (LI)", note: "Fontanella censita · Collesalvetti", coords: [43.5932, 10.4835] },
-      { id: "f-li-suvereto", type: "water", name: "Fontanella Pubblica Suvereto (LI)", note: "Fontanella censita · Borgo e colline di Suvereto", coords: [43.0752, 10.6845] },
-      { id: "f-li-campiglia-marittima", type: "water", name: "Fontanella Pubblica Campiglia Marittima (LI)", note: "Fontanella censita · Campiglia Marittima", coords: [43.0685, 10.6238] },
-      { id: "f-li-venturina-terme", type: "water", name: "Fontanella Pubblica Venturina Terme (Campiglia Marittima - LI)", note: "Fontanella censita · Venturina Terme", coords: [43.0285, 10.5985] },
-      { id: "f-li-piombino", type: "water", name: "Fontanella Pubblica Piombino (LI)", note: "Fontanella censita · Piombino", coords: [42.9235, 10.5265] },
-      { id: "f-li-portoferraio-elba", type: "water", name: "Fontanella Pubblica Portoferraio (Isola d'Elba - LI)", note: "Fontanella censita · Isola d'Elba", coords: [42.8115, 10.3158] },
-      { id: "f-pi-riparbella-mattatoio", type: "water", name: "Fontanella Pubblica Via del Mattatoio (Riparbella - PI)", note: "Fontanella pubblica censita · Riparbella (PI)", coords: [43.3568, 10.5975] },
-      { id: "f-pi-montescudaio-centro", type: "water", name: "Fontanella Pubblica Montescudaio (PI)", note: "Fontanella censita · Montescudaio (PI)", coords: [43.3264, 10.6352] },
-      { id: "f-pi-guardistallo-centro", type: "water", name: "Fontanella Pubblica Guardistallo (PI)", note: "Fontanella censita · Guardistallo (PI)", coords: [43.3189, 10.6461] },
-      { id: "f-pi-casale-marittimo", type: "water", name: "Fontanella Pubblica Casale Marittimo (PI)", note: "Fontanella censita · Casale Marittimo (PI)", coords: [43.2962, 10.6258] },
-      { id: "f-pi-montecatini-vdc", type: "water", name: "Fontanella Pubblica Montecatini Val di Cecina (PI)", note: "Fontanella censita · Montecatini Val di Cecina (PI)", coords: [43.3936, 10.7422] },
-      { id: "f-pi-saline-volterra", type: "water", name: "Fontanella Pubblica Saline di Volterra (Volterra - PI)", note: "Fontanella censita · Saline di Volterra (PI)", coords: [43.3682, 10.8225] },
-      { id: "f-pi-volterra-centro", type: "water", name: "Fontanella Pubblica Volterra (PI)", note: "Fontanella censita · Volterra (PI)", coords: [43.4008, 10.8617] },
-      { id: "f-pi-pomarance-centro", type: "water", name: "Fontanella Pubblica Pomarance (PI)", note: "Fontanella censita · Pomarance (PI)", coords: [43.2995, 10.8752] },
-      { id: "f-pi-castelnuovo-vdc", type: "water", name: "Fontanella Pubblica Castelnuovo di Val di Cecina (PI)", note: "Fontanella censita · Castelnuovo di Val di Cecina (PI)", coords: [43.2268, 10.9035] },
-      { id: "f-pi-larderello", type: "water", name: "Fontanella Pubblica Larderello (Pomarance - PI)", note: "Fontanella censita · Larderello (PI)", coords: [43.2462, 10.8835] },
-      { id: "f-pi-pisa-centro", type: "water", name: "Fontanella Pubblica Pisa Centro (PI)", note: "Fontanella censita · Città di Pisa", coords: [43.7228, 10.4017] },
-      { id: "f-pi-marina-di-pisa", type: "water", name: "Fontanella Pubblica Marina di Pisa (PI)", note: "Fontanella censita · Litorale di Pisa", coords: [43.6718, 10.2785] },
-      { id: "f-pi-calci-certosa", type: "water", name: "Fontanella Pubblica Calci / Monte Pisano (PI)", note: "Fontanella censita · Calci / Monte Pisano (PI)", coords: [43.7242, 10.5175] },
-      { id: "f-pi-san-giuliano-terme", type: "water", name: "Fontanella Pubblica San Giuliano Terme (PI)", note: "Fontanella censita · San Giuliano Terme (PI)", coords: [43.7635, 10.4438] },
-      { id: "f-pi-cascina", type: "water", name: "Fontanella Pubblica Cascina (PI)", note: "Fontanella censita · Cascina (PI)", coords: [43.6812, 10.5015] },
-      { id: "f-pi-pontedera", type: "water", name: "Fontanella Pubblica Pontedera (PI)", note: "Fontanella censita · Pontedera (PI)", coords: [43.6615, 10.6338] },
-      { id: "f-pi-lajatico", type: "water", name: "Fontanella Pubblica Lajatico (PI)", note: "Fontanella censita · Colline pisane / Lajatico (PI)", coords: [43.4712, 10.7225] },
-      { id: "f-pi-peccioli", type: "water", name: "Fontanella Pubblica Peccioli (PI)", note: "Fontanella censita · Valdera / Peccioli (PI)", coords: [43.5485, 10.7208] },
-      { id: "f-pi-san-miniato", type: "water", name: "Fontanella Pubblica San Miniato (PI)", note: "Fontanella censita · San Miniato (PI)", coords: [43.6785, 10.8512] }
+      { id: "v-golazze", type: "view", name: "Passo delle Golazze Aperte", note: "Vista panoramica sulla Val di Cecina e la costa", coords: [43.2565, 10.6410] },
+      { id: "r-bibbona-base", type: "food", name: "Magona Bike Garage · Ristoro & Base", note: "Angolo Via del Mandorlo 1 / Piazza delle Querce 5, 57020 Bibbona", coords: [43.2742, 10.6018] }
     ];
 
     function loadStoredPoisSync() {
@@ -970,8 +894,9 @@
           const raw = localStorage.getItem(key);
           if (raw) {
             const parsed = JSON.parse(raw);
-            if (Array.isArray(parsed) && parsed.length >= 25) {
-              return parsed;
+            if (Array.isArray(parsed)) {
+              const cleaned = parsed.filter((p) => p && p.type !== "water");
+              if (cleaned.length > 0) return cleaned;
             }
           }
         } catch (e) {}
@@ -1028,16 +953,23 @@
         const idbPois = await new Promise((resolve) => {
           const tx = db.transaction(IDB_STORE, "readonly");
           const req = tx.objectStore(IDB_STORE).get(POIS_STORAGE_KEY);
-          req.onsuccess = () => resolve(Array.isArray(req.result) && req.result.length > 0 ? req.result : null);
+          req.onsuccess = () => resolve(Array.isArray(req.result) ? req.result : null);
           req.onerror = () => resolve(null);
         });
-        if (idbPois && idbPois.length >= 25) {
-          POIS = idbPois;
-          try {
-            localStorage.setItem(POIS_STORAGE_KEY, JSON.stringify(POIS));
-          } catch (e) {}
+        if (idbPois) {
+          const cleaned = idbPois.filter((p) => p && p.type !== "water");
+          if (cleaned.length > 0) {
+            POIS = cleaned;
+            try {
+              localStorage.setItem(POIS_STORAGE_KEY, JSON.stringify(POIS));
+            } catch (e) {}
+          }
         }
       } catch (e) {}
+      POIS = POIS.filter((p) => p && p.type !== "water");
+      if (POIS.length === 0) {
+        POIS = JSON.parse(JSON.stringify(DEFAULT_POIS));
+      }
       renderPoiList();
       renderPoiMarkersOnMap();
     }
@@ -1534,163 +1466,6 @@
       }
     }
 
-    function findNearestEasyNodeId(pt) {
-      let bestId = "base";
-      let bestDist = Infinity;
-      Object.entries(EASY_RETURN_GRAPH.nodes).forEach(([id, node]) => {
-        const d = haversineMeters(pt, node.coords);
-        if (d < bestDist) {
-          bestDist = d;
-          bestId = id;
-        }
-      });
-      return bestId;
-    }
-
-    function computeShortestEasyBasePath(startPt) {
-      const nodes = EASY_RETURN_GRAPH.nodes;
-      const startNodeId = findNearestEasyNodeId(startPt);
-      const adj = {};
-      Object.keys(nodes).forEach((k) => { adj[k] = []; });
-
-      EASY_RETURN_GRAPH.edges.forEach(([a, b, easeFactor]) => {
-        const distAtoB = haversineMeters(nodes[a].coords, nodes[b].coords);
-        // Peso combinato: distanza breve + penalità su tratti meno facili per favorire strade più scorrevoli/facili
-        const weight = distAtoB * easeFactor;
-        adj[a].push({ to: b, weight, dist: distAtoB });
-        adj[b].push({ to: a, weight, dist: distAtoB });
-      });
-
-      const distCost = {};
-      const prev = {};
-      const visited = new Set();
-      Object.keys(nodes).forEach((k) => { distCost[k] = Infinity; });
-      distCost[startNodeId] = 0;
-
-      while (visited.size < Object.keys(nodes).length) {
-        let curr = null;
-        let best = Infinity;
-        for (const k of Object.keys(nodes)) {
-          if (!visited.has(k) && distCost[k] < best) {
-            best = distCost[k];
-            curr = k;
-          }
-        }
-        if (curr === null || curr === "base") break;
-        visited.add(curr);
-
-        for (const edge of adj[curr]) {
-          if (visited.has(edge.to)) continue;
-          const alt = distCost[curr] + edge.weight;
-          if (alt < distCost[edge.to]) {
-            distCost[edge.to] = alt;
-            prev[edge.to] = curr;
-          }
-        }
-      }
-
-      const nodePathIds = [];
-      let step = "base";
-      const guard = new Set();
-      while (step && !guard.has(step)) {
-        guard.add(step);
-        nodePathIds.unshift(step);
-        if (step === startNodeId) break;
-        step = prev[step];
-      }
-
-      const coords = [startPt];
-      let totalMeters = haversineMeters(startPt, nodes[startNodeId].coords);
-      nodePathIds.forEach((nid) => {
-        const c = nodes[nid].coords;
-        const last = coords[coords.length - 1];
-        totalMeters += haversineMeters(last, c);
-        coords.push(c);
-      });
-      const lastPt = coords[coords.length - 1];
-      if (!lastPt || lastPt[0] !== BASE_COORDS[0] || lastPt[1] !== BASE_COORDS[1]) {
-        if (lastPt) totalMeters += haversineMeters(lastPt, BASE_COORDS);
-        coords.push([...BASE_COORDS]);
-      }
-
-      return {
-        coords,
-        distanceKm: +(totalMeters / 1000).toFixed(1),
-        viaNames: nodePathIds.map((id) => nodes[id].name)
-      };
-    }
-
-    async function fetchRoadEasyReturnIfOnline(startPt) {
-      if (!navigator.onLine) return null;
-      try {
-        const url = `https://router.project-osrm.org/route/v1/bicycle/${startPt[1]},${startPt[0]};${BASE_COORDS[1]},${BASE_COORDS[0]}?overview=full&geometries=geojson`;
-        const ctrl = new AbortController();
-        const timer = setTimeout(() => ctrl.abort(), 3500);
-        const resp = await fetch(url, { signal: ctrl.signal });
-        clearTimeout(timer);
-        if (!resp.ok) return null;
-        const data = await resp.json();
-        const route = data?.routes?.[0];
-        if (!route?.geometry?.coordinates?.length) return null;
-        const latLngs = route.geometry.coordinates.map(([lon, lat]) => [lat, lon]);
-        latLngs.push([...BASE_COORDS]);
-        return {
-          coords: latLngs,
-          distanceKm: +(route.distance / 1000).toFixed(1)
-        };
-      } catch (e) {
-        return null;
-      }
-    }
-
-    async function navigateToBase() {
-      switchTab("map");
-      if (!map) initMap();
-
-      const activeRoute = getRouteById(activeRouteId);
-      const startPt = userCoords || activeRoute?.coords?.[Math.floor((activeRoute?.coords?.length || 2) / 2)] || [43.2620, 10.6150];
-
-      const localEasy = computeShortestEasyBasePath(startPt);
-      let chosenPath = localEasy;
-
-      const roadPath = await fetchRoadEasyReturnIfOnline(startPt);
-      if (roadPath && roadPath.coords.length > 1) {
-        chosenPath = {
-          coords: roadPath.coords,
-          distanceKm: roadPath.distanceKm
-        };
-      }
-
-      if (returnToBaseLayer) {
-        map.removeLayer(returnToBaseLayer);
-      }
-      returnToBaseLayer = L.polyline(chosenPath.coords, {
-        color: "#16a34a",
-        weight: 5,
-        opacity: 0.95,
-        dashArray: "10, 6"
-      }).addTo(map);
-      returnToBaseLayer.bindPopup(`Rientro più breve e facile · ${BASE_ADDRESS_LABEL} (${chosenPath.distanceKm} km)`);
-
-      const destLabel = "Via del Mandorlo 1, Piazza delle Querce 5, 57020 Bibbona";
-      const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destLabel)}&travelmode=bicycling`;
-
-      const banner = document.getElementById("nav-status-banner");
-      const statusText = document.getElementById("nav-status-text");
-      if (banner && statusText) {
-        banner.classList.remove("hidden");
-        statusText.innerHTML = `Rientro verso <strong>${destLabel}</strong> (${chosenPath.distanceKm} km) · <a href="${gmapsUrl}" target="_blank" rel="noopener" class="underline font-bold text-emerald-300">Apri su Google Maps</a>`;
-      }
-
-      if (userCoords) {
-        followUserCenter = true;
-        map.setView(userCoords, NAV_ZOOM_LEVEL, { animate: true });
-      } else {
-        map.fitBounds(returnToBaseLayer.getBounds(), { padding: [30, 30] });
-      }
-      showToast(`Rientro verso ${destLabel} (${chosenPath.distanceKm} km)`);
-    }
-
     function toggleMapFullscreen() {
       const stage = document.getElementById("map-stage");
       stage.classList.toggle("is-fullscreen");
@@ -2121,21 +1896,32 @@
       }
     }
 
+
+
+
     function renderPoiMarkersOnMap() {
       if (!map) return;
       if (poiMarkersLayer) {
         map.removeLayer(poiMarkersLayer);
       }
       poiMarkersLayer = L.layerGroup().addTo(map);
+      const blueDropIcon = createBlueWaterDropIcon();
+
       POIS.forEach((poi) => {
         const meta = POI_TYPE_META[poi.type] || POI_TYPE_META.food;
         const popupLabel = `${meta.badge} · ${poi.name}${poi.note ? "<br><small>" + poi.note + "</small>" : ""}`;
-        L.circleMarker(poi.coords, {
-          radius: 7,
-          color: meta.color,
-          fillColor: meta.color,
-          fillOpacity: 0.9
-        }).addTo(poiMarkersLayer).bindPopup(popupLabel);
+        if (poi.type === "water") {
+          L.marker(poi.coords, { icon: blueDropIcon, zIndexOffset: 300 })
+            .addTo(poiMarkersLayer)
+            .bindPopup(popupLabel);
+        } else {
+          L.circleMarker(poi.coords, {
+            radius: 7,
+            color: meta.color,
+            fillColor: meta.color,
+            fillOpacity: 0.9
+          }).addTo(poiMarkersLayer).bindPopup(popupLabel);
+        }
       });
     }
 
