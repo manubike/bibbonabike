@@ -2326,7 +2326,7 @@
         selectTourOption: "Selecionar rota",
         noToursOption: "Selecionar rota",
         toastNoFilterMatch: "Nenhuma rota com estes filtros",
-        toastGpsAcquiring: "Buscando GPS: centralizado no ponto de partida",
+        toastGpsAcquiring: "Buscando GPS: centrado no ponto de partida",
         toastOfflineSaved: "Mapa e rotas salvos offline no telefone",
         toastWakeOn: "Tela sempre ligada ativada",
         toastWakeOff: "Tela sempre ligada desactivada",
@@ -2831,6 +2831,7 @@
     let userCoords = null;
     let prevGpsCoords = null;
     let currentHeadingDeg = 0;
+    let lastAppliedHeadingDeg = null;
     let compassListenerAttached = false;
     let lastGpsFixTs = 0;
     let simulatedProgressRatio = 0;
@@ -5395,6 +5396,7 @@
       const wasActive = rotatorEl.classList.contains("heading-up-active");
 
       if (!enabled || typeof headingDeg !== "number" || Number.isNaN(headingDeg)) {
+        lastAppliedHeadingDeg = null;
         rotatorEl.classList.remove("heading-up-active");
         rotatorEl.style.removeProperty("--map-rot");
         if (wasActive && map) {
@@ -5403,9 +5405,19 @@
         return;
       }
 
-      currentHeadingDeg = headingDeg;
+      const normalized = ((headingDeg % 360) + 360) % 360;
+      if (lastAppliedHeadingDeg !== null) {
+        const diff = Math.abs(normalized - lastAppliedHeadingDeg);
+        const shortestDiff = diff > 180 ? 360 - diff : diff;
+        if (shortestDiff < 2 && wasActive) {
+          return;
+        }
+      }
+
+      currentHeadingDeg = normalized;
+      lastAppliedHeadingDeg = normalized;
       rotatorEl.classList.add("heading-up-active");
-      rotatorEl.style.setProperty("--map-rot", `${(-headingDeg).toFixed(1)}deg`);
+      rotatorEl.style.setProperty("--map-rot", `${(-normalized).toFixed(1)}deg`);
 
       if (!wasActive && map) {
         setTimeout(() => {
