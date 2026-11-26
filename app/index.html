@@ -790,21 +790,56 @@
 
     <!-- Scheda Gestore & Cache (Super-Gestore & Gestori Partner, ciascuno sul proprio spazio isolato) -->
     <section id="tab-manager" class="tab-panel hidden flex-1 p-4 max-w-4xl w-full mx-auto space-y-4">
+      <!-- Impostazione Base Personalizzata della Struttura (Visibile al Gestore Partner) -->
+      <div id="partner-base-settings-panel" class="hidden bg-white rounded-2xl border border-stone-200 p-4 space-y-3">
+        <div>
+          <h2 class="text-base font-bold text-stone-900">Punto di Rientro alla Base della Tua Struttura</h2>
+          <p class="text-xs text-stone-500">Imposta l'indirizzo e le coordinate GPS della tua struttura: il tasto "Rientra alla Base" e l'avviso automatico entro 1,5 km dei tuoi clienti punteranno esattamente qui.</p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
+          <input id="own-base-address-input" type="text" placeholder="Indirizzo struttura (es. Via Bolgherese 10, Castagneto)"
+            class="border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900" />
+          <input id="own-base-lat-input" type="number" step="0.000001" placeholder="Latitudine (es. 43.238500)"
+            class="border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900" />
+          <input id="own-base-lng-input" type="number" step="0.000001" placeholder="Longitudine (es. 10.608200)"
+            class="border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900" />
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button onclick="fillOwnBaseCoordsFromGps()" class="px-3.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold cursor-pointer">
+            ◎ Usa Posizione GPS Attuale
+          </button>
+          <button onclick="saveOwnPartnerBaseSettings()" class="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
+            Salva Base Struttura
+          </button>
+        </div>
+      </div>
+
       <!-- Sezione Account Partner (Visibile SOLO al Super-Gestore) -->
       <div id="super-partners-panel" class="hidden bg-white rounded-2xl border border-stone-200 p-4 space-y-3">
         <div>
           <h2 class="text-base font-bold text-stone-900">Account Gestori Partner (Esercenti & Strutture)</h2>
-          <p class="text-xs text-stone-500">Crea o revoca le password degli esercenti partner. Ogni gestore può usare i tuoi tour/punti utili e generare i propri codici cliente in totale autonomia.</p>
+          <p class="text-xs text-stone-500">Crea o revoca le password degli esercenti partner e imposta le coordinate della loro base per il rientro personalizzato dei loro clienti.</p>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-xs">
           <input id="partner-name-input" type="text" placeholder="Nome struttura (es. Bike Hotel Bolgheri)"
             class="border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900" />
           <input id="partner-pass-input" type="text" placeholder="Password gestore (es. BOLGHERI26)"
             class="border border-stone-300 rounded-xl px-3 py-2 text-sm uppercase focus:outline-none focus:border-stone-900" />
-          <button onclick="addPartnerAccount()" class="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
-            + Aggiungi Gestore Partner
-          </button>
+          <input id="partner-base-addr-input" type="text" placeholder="Indirizzo base struttura (opzionale)"
+            class="border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900" />
+          <input id="partner-base-lat-input" type="number" step="0.000001" placeholder="Latitudine base (es. 43.238500)"
+            class="border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900" />
+          <input id="partner-base-lng-input" type="number" step="0.000001" placeholder="Longitudine base (es. 10.608200)"
+            class="border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900" />
+          <div class="flex gap-1.5">
+            <button type="button" onclick="fillNewPartnerBaseFromGps()" title="Usa GPS attuale" class="px-3 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold cursor-pointer">
+              ◎ GPS
+            </button>
+            <button type="button" onclick="addPartnerAccount()" class="flex-1 px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
+              + Aggiungi Partner
+            </button>
+          </div>
         </div>
 
         <div id="partners-list" class="space-y-2"></div>
@@ -834,7 +869,7 @@
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h2 class="text-base font-bold text-stone-900">Notifiche Posizione Clienti (Metà Percorso & 1,5 km Base)</h2>
-            <p class="text-xs text-stone-500">Quando un tuo cliente supera il 50% del tour o entra entro 1,5 km dalla base, l'avviso arriva con data, ora e posizione GPS attuale.</p>
+            <p class="text-xs text-stone-500">Quando un tuo cliente supera il 50% del tour o entra entro 1,5 km dalla base della struttura, l'avviso arriva con data, ora e posizione GPS attuale.</p>
           </div>
           <div class="flex items-center gap-1.5">
             <button onclick="requestOwnerNotificationPermissionIfNeeded(true)" class="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold cursor-pointer">
@@ -887,15 +922,19 @@
   <div id="toast-msg" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[10000] hidden bg-stone-900 text-white text-xs font-semibold px-4 py-2.5 rounded-full shadow-lg"></div>
 
   <script>
-    const OWNER_PASSWORD = "MAGONABIKEGARAGE2025";
+    const OWNER_PASSWORD = "MAGONA2026";
     const SUPER_MANAGER_ID = "magona";
     const SUPER_MANAGER_NAME = "Magona Bike Garage";
     const FIREBASE_RTDB_URL = "https://magonabikegarage-c61b2-default-rtdb.europe-west1.firebasedatabase.app/";
     const FIREBASE_ROOT_PATH = "magona_bike_garage_state";
 
-    const BASE_COORDS = [43.266028, 10.594667];
-    const BASE_ADDRESS_LABEL = "Via del Mandorlo 1 / Piazza delle Querce 5, 57020 Bibbona";
+    const DEFAULT_BASE_COORDS = [43.266028, 10.594667];
+    const DEFAULT_BASE_ADDRESS_LABEL = "Via del Mandorlo 1 / Piazza delle Querce 5, 57020 Bibbona";
     const NEAR_BASE_RADIUS_KM = 1.5;
+
+    let activeBaseCoords = [...DEFAULT_BASE_COORDS];
+    let activeBaseLabel = `Magona Bike Garage · ${DEFAULT_BASE_ADDRESS_LABEL}`;
+    let baseLocationMarker = null;
 
     const SAFE_RETURN_GRAPH = {
       nodes: {
@@ -943,6 +982,8 @@
     const SESSION_ROLE_KEY = "magona_session_role_v1";
     const SESSION_MANAGER_ID_KEY = "magona_session_manager_id_v1";
     const SESSION_MANAGER_NAME_KEY = "magona_session_manager_name_v1";
+    const SESSION_BASE_COORDS_KEY = "magona_session_base_coords_v1";
+    const SESSION_BASE_LABEL_KEY = "magona_session_base_label_v1";
     const SESSION_DEPARTURE_ISO_KEY = "magona_session_departure_iso_v1";
     const MAX_USES_PER_CODE = 3;
     const IDB_NAME = "MagonaBikeGarageDB";
@@ -974,7 +1015,7 @@
         netOffline: "Offline · Cache locale",
         authBtn: "Autorizza GPS e Rete Web",
         skipBtn: "Continua senza GPS per ora",
-        authSub: "Inserisci il codice fornito in officina per aprire la mappa sentieri.",
+        authSub: "Inserisci il codice fornito in officina o in struttura per aprire la mappa sentieri.",
         accessLabel: "Codice Accesso / Password",
         accessPlaceholder: "Inserisci codice di accesso",
         loginBtn: "Accedi alla Mappa",
@@ -1146,7 +1187,7 @@
         netOffline: "Offline · Local cache",
         authBtn: "Authorize GPS & Web",
         skipBtn: "Continue without GPS for now",
-        authSub: "Enter the access code provided at the shop to open the trail map.",
+        authSub: "Enter the access code provided at the shop or hotel to open the trail map.",
         accessLabel: "Access Code / Password",
         accessPlaceholder: "Enter access code",
         loginBtn: "Open Trail Map",
@@ -1318,7 +1359,7 @@
         netOffline: "Offline · Lokaler Cache",
         authBtn: "GPS & Web freigeben",
         skipBtn: "Vorerst ohne GPS fortfahren",
-        authSub: "Geben Sie den im Verleih erhaltenen Zugangscode ein, um die Karte zu öffnen.",
+        authSub: "Geben Sie den erhaltenen Zugangscode ein, um die Karte zu öffnen.",
         accessLabel: "Zugangscode / Passwort",
         accessPlaceholder: "Zugangscode eingeben",
         loginBtn: "Karte öffnen",
@@ -1490,7 +1531,7 @@
         netOffline: "Offline · Lokale cache",
         authBtn: "GPS & Web toestaan",
         skipBtn: "Voorlopig zonder GPS verder",
-        authSub: "Voer de toegangscode in die je in de winkel hebt ontvangen.",
+        authSub: "Voer de ontvangen toegangscode in om de kaart te openen.",
         accessLabel: "Toegangscode / Wachtwoord",
         accessPlaceholder: "Voer toegangscode in",
         loginBtn: "Kaart openen",
@@ -1662,7 +1703,7 @@
         netOffline: "Sin conexión · Caché local",
         authBtn: "Autorizar GPS y Red Web",
         skipBtn: "Continuar sin GPS por ahora",
-        authSub: "Introduce el código entregado en el taller para abrir el mapa de rutas.",
+        authSub: "Introduce el código entregado para abrir el mapa de rutas.",
         accessLabel: "Código de Acceso / Contraseña",
         accessPlaceholder: "Introduce código de acceso",
         loginBtn: "Acceder al Mapa",
@@ -1834,7 +1875,7 @@
         netOffline: "Hors ligne · Cache local",
         authBtn: "Autoriser GPS et Web",
         skipBtn: "Continuer sans GPS pour l'instant",
-        authSub: "Saisissez le code fourni à l'atelier pour ouvrir la carte des sentiers.",
+        authSub: "Saisissez le code fourni pour ouvrir la carte des sentiers.",
         accessLabel: "Code d'Accès / Mot de Passe",
         accessPlaceholder: "Saisir le code d'accès",
         loginBtn: "Accéder à la Carte",
@@ -2006,7 +2047,7 @@
         netOffline: "Offline · Cache local",
         authBtn: "Autorizar GPS e Rede Web",
         skipBtn: "Continuar sem GPS por enquanto",
-        authSub: "Insira o código fornecido na oficina para abrir o mapa de trilhas.",
+        authSub: "Insira o código fornecido para abrir o mapa de trilhas.",
         accessLabel: "Código de Acesso / Senha",
         accessPlaceholder: "Insira o código de acesso",
         loginBtn: "Acessar o Mapa",
@@ -2178,7 +2219,7 @@
         netOffline: "离线 · 本地缓存",
         authBtn: "授权 GPS 与网络",
         skipBtn: "暂不使用 GPS 继续",
-        authSub: "请输入车店提供的访问代码以打开林道地图。",
+        authSub: "请输入提供的访问代码以打开林道地图。",
         accessLabel: "访问代码 / 密码",
         accessPlaceholder: "输入访问代码",
         loginBtn: "进入地图",
@@ -2690,6 +2731,49 @@
       }
     }
 
+    function isValidLatLngPair(coords) {
+      if (!Array.isArray(coords) || coords.length < 2) return false;
+      const lat = Number(coords[0]);
+      const lng = Number(coords[1]);
+      return !Number.isNaN(lat) && !Number.isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+    }
+
+    function setActiveBaseLocation(coords, label) {
+      if (isValidLatLngPair(coords)) {
+        activeBaseCoords = [Number(coords[0]), Number(coords[1])];
+      } else {
+        activeBaseCoords = [...DEFAULT_BASE_COORDS];
+      }
+      activeBaseLabel = (label && String(label).trim())
+        ? String(label).trim()
+        : `${SUPER_MANAGER_NAME} · ${DEFAULT_BASE_ADDRESS_LABEL}`;
+
+      SAFE_RETURN_GRAPH.nodes.base = {
+        coords: [...activeBaseCoords],
+        name: activeBaseLabel
+      };
+
+      try {
+        localStorage.setItem(SESSION_BASE_COORDS_KEY, JSON.stringify(activeBaseCoords));
+        localStorage.setItem(SESSION_BASE_LABEL_KEY, activeBaseLabel);
+      } catch (e) {}
+
+      renderBaseMarkerOnMap();
+    }
+
+    function renderBaseMarkerOnMap() {
+      if (!map) return;
+      if (baseLocationMarker) {
+        map.removeLayer(baseLocationMarker);
+      }
+      baseLocationMarker = L.circleMarker(activeBaseCoords, {
+        radius: 8,
+        color: "#141413",
+        fillColor: "#141413",
+        fillOpacity: 0.9
+      }).addTo(map).bindPopup(escapeHtml(activeBaseLabel));
+    }
+
     function getManagerCloudPrefix(managerId = activeManagerId) {
       const cleanId = String(managerId || SUPER_MANAGER_ID).trim().toLowerCase().replace(/[^a-z0-9_-]/g, "") || SUPER_MANAGER_ID;
       return `managers/${cleanId}`;
@@ -2734,7 +2818,7 @@
       } catch (e) {}
     }
 
-    /* ================= PARTNER ACCOUNTS MANAGEMENT (SUPER-GESTORE ONLY) ================= */
+    /* ================= PARTNER ACCOUNTS & CUSTOM BASE MANAGEMENT ================= */
 
     function loadPartnerManagersSync() {
       try {
@@ -2776,15 +2860,98 @@
       }
       partnerManagersList = list;
       if (isSuperManager) renderPartnerManagersUI();
+      if (isManagerUser && !isSuperManager) {
+        const me = partnerManagersList.find((p) => p.id === activeManagerId);
+        if (me) {
+          const coords = isValidLatLngPair(me.baseCoords) ? me.baseCoords : DEFAULT_BASE_COORDS;
+          const label = me.baseAddress ? `${me.name} · ${me.baseAddress}` : me.name;
+          setActiveBaseLocation(coords, label);
+          populateOwnPartnerBaseForm(me);
+        }
+      }
       return partnerManagersList;
+    }
+
+    function fillNewPartnerBaseFromGps() {
+      const target = userCoords || DEFAULT_BASE_COORDS;
+      const latEl = document.getElementById("partner-base-lat-input");
+      const lngEl = document.getElementById("partner-base-lng-input");
+      if (latEl) latEl.value = Number(target[0]).toFixed(6);
+      if (lngEl) lngEl.value = Number(target[1]).toFixed(6);
+    }
+
+    function fillOwnBaseCoordsFromGps() {
+      const target = userCoords || activeBaseCoords || DEFAULT_BASE_COORDS;
+      const latEl = document.getElementById("own-base-lat-input");
+      const lngEl = document.getElementById("own-base-lng-input");
+      if (latEl) latEl.value = Number(target[0]).toFixed(6);
+      if (lngEl) lngEl.value = Number(target[1]).toFixed(6);
+    }
+
+    function populateOwnPartnerBaseForm(partnerObj) {
+      const addrEl = document.getElementById("own-base-address-input");
+      const latEl = document.getElementById("own-base-lat-input");
+      const lngEl = document.getElementById("own-base-lng-input");
+      if (addrEl) addrEl.value = partnerObj?.baseAddress || "";
+      const coords = isValidLatLngPair(partnerObj?.baseCoords) ? partnerObj.baseCoords : activeBaseCoords;
+      if (latEl && coords) latEl.value = Number(coords[0]).toFixed(6);
+      if (lngEl && coords) lngEl.value = Number(coords[1]).toFixed(6);
+    }
+
+    async function saveOwnPartnerBaseSettings() {
+      if (!isManagerUser || isSuperManager) return;
+      const addr = (document.getElementById("own-base-address-input")?.value || "").trim();
+      const lat = parseFloat(document.getElementById("own-base-lat-input")?.value);
+      const lng = parseFloat(document.getElementById("own-base-lng-input")?.value);
+
+      if (Number.isNaN(lat) || Number.isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+        showToast("Inserisci Latitudine e Longitudine valide");
+        return;
+      }
+
+      const partners = await syncPartnerManagersFromCloud();
+      partnerManagersList = partners.map((p) =>
+        p.id === activeManagerId
+          ? { ...p, baseAddress: addr, baseCoords: [lat, lng] }
+          : p
+      );
+      const ok = await persistPartnerManagers(true);
+
+      const newLabel = addr ? `${activeManagerName} · ${addr}` : activeManagerName;
+      setActiveBaseLocation([lat, lng], newLabel);
+
+      // Aggiorna anche l'indice cloud dei codici attivi di questo partner
+      const pool = loadClientCodesPool(activeManagerId);
+      if (isFirebaseConfigured() && navigator.onLine) {
+        for (const item of pool) {
+          if (item && item.code) {
+            await cloudWriteJson(`code_lookup/${item.code}`, {
+              managerId: activeManagerId,
+              managerName: activeManagerName,
+              baseCoords: [lat, lng],
+              baseLabel: newLabel
+            });
+          }
+        }
+      }
+
+      showToast(ok ? "✓ Base struttura salvata" : "Salvato in locale (verifica rete)");
     }
 
     async function addPartnerAccount() {
       if (!isSuperManager) return;
       const nameInput = document.getElementById("partner-name-input");
       const passInput = document.getElementById("partner-pass-input");
+      const addrInput = document.getElementById("partner-base-addr-input");
+      const latInput = document.getElementById("partner-base-lat-input");
+      const lngInput = document.getElementById("partner-base-lng-input");
+
       const name = (nameInput?.value || "").trim();
       const password = (passInput?.value || "").trim().toUpperCase().replace(/\s+/g, "");
+      const baseAddress = (addrInput?.value || "").trim();
+      const latVal = parseFloat(latInput?.value);
+      const lngVal = parseFloat(lngInput?.value);
+      const hasCoords = !Number.isNaN(latVal) && !Number.isNaN(lngVal) && latVal >= -90 && latVal <= 90 && lngVal >= -180 && lngVal <= 180;
 
       if (!name || !password || password.length < 4) {
         showToast("Inserisci nome struttura e password (min. 4 caratteri)");
@@ -2801,6 +2968,8 @@
         id,
         name,
         password,
+        baseAddress,
+        baseCoords: hasCoords ? [latVal, lngVal] : [...DEFAULT_BASE_COORDS],
         active: true,
         createdAt: new Date().toISOString()
       });
@@ -2808,6 +2977,9 @@
       const ok = await persistPartnerManagers(true);
       if (nameInput) nameInput.value = "";
       if (passInput) passInput.value = "";
+      if (addrInput) addrInput.value = "";
+      if (latInput) latInput.value = "";
+      if (lngInput) lngInput.value = "";
       renderPartnerManagersUI();
       showToast(ok ? `✓ Gestore "${name}" creato` : "Salvato in locale (verifica rete)");
     }
@@ -2842,14 +3014,22 @@
       listEl.innerHTML = partnerManagersList.map((p) => {
         const isActive = p.active !== false;
         const safeId = escapeHtml(p.id);
+        const coordsInfo = isValidLatLngPair(p.baseCoords)
+          ? `${Number(p.baseCoords[0]).toFixed(4)}, ${Number(p.baseCoords[1]).toFixed(4)}`
+          : "";
         return `
           <div class="flex flex-wrap items-center justify-between gap-2 bg-stone-50 px-3 py-2 rounded-xl border border-stone-200 text-xs">
-            <div class="flex flex-wrap items-center gap-2">
-              <span class="font-extrabold text-stone-900">${escapeHtml(p.name)}</span>
-              <span class="px-2 py-0.5 rounded font-mono font-bold text-[11px] bg-stone-200 text-stone-900">${escapeHtml(p.password)}</span>
-              <span class="px-2 py-0.5 rounded font-bold text-[11px] ${isActive ? "bg-emerald-100 text-emerald-800" : "bg-red-100 text-red-800"}">
-                ${isActive ? "Attivo" : "Sospeso"}
-              </span>
+            <div class="space-y-0.5">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="font-extrabold text-stone-900">${escapeHtml(p.name)}</span>
+                <span class="px-2 py-0.5 rounded font-mono font-bold text-[11px] bg-stone-200 text-stone-900">${escapeHtml(p.password)}</span>
+                <span class="px-2 py-0.5 rounded font-bold text-[11px] ${isActive ? "bg-emerald-100 text-emerald-800" : "bg-red-100 text-red-800"}">
+                  ${isActive ? "Attivo" : "Sospeso"}
+                </span>
+              </div>
+              <div class="text-[11px] text-stone-500">
+                Base: ${escapeHtml(p.baseAddress || "Predefinita")} ${coordsInfo ? `(${coordsInfo})` : ""}
+              </div>
             </div>
             <div class="flex items-center gap-1.5">
               <button onclick="togglePartnerActive('${safeId}')" class="px-2.5 py-1 rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-900 font-semibold cursor-pointer">
@@ -3068,7 +3248,7 @@
       pendingAlertsQueue = pendingAlertsQueue.map((item) => {
         const finalCoords = freshCoords || item.coords || null;
         const distFromBaseKm = finalCoords
-          ? +(haversineMeters(finalCoords, BASE_COORDS) / 1000).toFixed(1)
+          ? +(haversineMeters(finalCoords, activeBaseCoords) / 1000).toFixed(1)
           : (item.distFromBaseKm ?? null);
         return {
           ...item,
@@ -3111,7 +3291,7 @@
       }
 
       if (Array.isArray(userCoords) && userCoords.length >= 2) {
-        const distKm = haversineMeters(userCoords, BASE_COORDS) / 1000;
+        const distKm = haversineMeters(userCoords, activeBaseCoords) / 1000;
         if (distKm > NEAR_BASE_RADIUS_KM + 0.3) {
           hasLeftBaseArea = true;
         }
@@ -3293,7 +3473,7 @@
         return;
       }
 
-      const [lat, lon] = userCoords || BASE_COORDS;
+      const [lat, lon] = userCoords || activeBaseCoords;
       const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat.toFixed(4)}&longitude=${lon.toFixed(4)}&current=temperature_2m,weather_code,wind_speed_10m&hourly=precipitation_probability&forecast_days=1&timezone=Europe%2FRome`;
 
       try {
@@ -3624,11 +3804,8 @@
         }
       }
 
-      if (isSuperManager) {
-        await syncPartnerManagersFromCloud();
-      }
-
       if (isManagerUser) {
+        await syncPartnerManagersFromCloud();
         await syncClientCodesFromCloud(false);
         await syncRiderAlertsFromCloud(false);
       }
@@ -4095,13 +4272,17 @@
         uses: 0,
         maxUses: MAX_USES_PER_CODE,
         managerId: activeManagerId,
-        managerName: activeManagerName
+        managerName: activeManagerName,
+        baseCoords: [...activeBaseCoords],
+        baseLabel: activeBaseLabel
       });
       renderClientCodesPoolUI();
       await saveClientCodesPool(pool, true, activeManagerId);
       await cloudWriteJson(`code_lookup/${code}`, {
         managerId: activeManagerId,
-        managerName: activeManagerName
+        managerName: activeManagerName,
+        baseCoords: [...activeBaseCoords],
+        baseLabel: activeBaseLabel
       });
     }
 
@@ -4109,13 +4290,17 @@
       if (!isManagerUser) return;
       const currentPool = await syncClientCodesFromCloud(false, activeManagerId);
       const pool = currentPool.map((item) =>
-        item.code === code ? { ...item, uses: 0, maxUses: MAX_USES_PER_CODE } : item
+        item.code === code
+          ? { ...item, uses: 0, maxUses: MAX_USES_PER_CODE, baseCoords: [...activeBaseCoords], baseLabel: activeBaseLabel }
+          : item
       );
       renderClientCodesPoolUI();
       await saveClientCodesPool(pool, true, activeManagerId);
       await cloudWriteJson(`code_lookup/${code}`, {
         managerId: activeManagerId,
-        managerName: activeManagerName
+        managerName: activeManagerName,
+        baseCoords: [...activeBaseCoords],
+        baseLabel: activeBaseLabel
       });
     }
 
@@ -4146,6 +4331,7 @@
         activeManagerId = SUPER_MANAGER_ID;
         activeManagerName = SUPER_MANAGER_NAME;
         activeSessionClientCode = "SUPER-GESTORE";
+        setActiveBaseLocation(DEFAULT_BASE_COORDS, `${SUPER_MANAGER_NAME} · ${DEFAULT_BASE_ADDRESS_LABEL}`);
         try {
           localStorage.setItem(SESSION_ROLE_KEY, "super");
           localStorage.setItem(SESSION_MANAGER_ID_KEY, activeManagerId);
@@ -4172,6 +4358,12 @@
         activeManagerId = matchedPartner.id;
         activeManagerName = matchedPartner.name;
         activeSessionClientCode = "GESTORE";
+
+        const pCoords = isValidLatLngPair(matchedPartner.baseCoords) ? matchedPartner.baseCoords : DEFAULT_BASE_COORDS;
+        const pLabel = matchedPartner.baseAddress ? `${matchedPartner.name} · ${matchedPartner.baseAddress}` : matchedPartner.name;
+        setActiveBaseLocation(pCoords, pLabel);
+        populateOwnPartnerBaseForm(matchedPartner);
+
         try {
           localStorage.setItem(SESSION_ROLE_KEY, "partner");
           localStorage.setItem(SESSION_MANAGER_ID_KEY, activeManagerId);
@@ -4183,12 +4375,14 @@
         return;
       }
 
-      // 3. Accesso Cliente tramite codice (cerca prima nell'indice cloud, poi nei pool locali)
+      // 3. Accesso Cliente tramite codice
       let targetManagerId = null;
+      let lookupData = null;
       if (isFirebaseConfigured() && navigator.onLine) {
         const lookup = await cloudReadJson(`code_lookup/${val}`);
         if (lookup && lookup.managerId) {
           targetManagerId = lookup.managerId;
+          lookupData = lookup;
         }
       }
 
@@ -4234,8 +4428,25 @@
       isSuperManager = false;
       isManagerUser = false;
       activeManagerId = targetManagerId;
-      activeManagerName = target.managerName || SUPER_MANAGER_NAME;
+      activeManagerName = lookupData?.managerName || target.managerName || SUPER_MANAGER_NAME;
       activeSessionClientCode = String(target.code).toUpperCase();
+
+      // Imposta la base personalizzata della struttura collegata al codice
+      const partnerObj = partners.find((p) => p.id === targetManagerId);
+      const resolvedBaseCoords = isValidLatLngPair(lookupData?.baseCoords)
+        ? lookupData.baseCoords
+        : isValidLatLngPair(target.baseCoords)
+          ? target.baseCoords
+          : isValidLatLngPair(partnerObj?.baseCoords)
+            ? partnerObj.baseCoords
+            : DEFAULT_BASE_COORDS;
+
+      const resolvedBaseLabel = lookupData?.baseLabel
+        || target.baseLabel
+        || (partnerObj ? (partnerObj.baseAddress ? `${partnerObj.name} · ${partnerObj.baseAddress}` : partnerObj.name) : `${SUPER_MANAGER_NAME} · ${DEFAULT_BASE_ADDRESS_LABEL}`);
+
+      setActiveBaseLocation(resolvedBaseCoords, resolvedBaseLabel);
+
       errEl.classList.add("hidden");
       recordRiderDeparture("login");
       await unlockApplication();
@@ -4304,6 +4515,8 @@
       document.getElementById("nav-tours-tab").classList.toggle("hidden", !isSuperManager);
       const superPartnersPanel = document.getElementById("super-partners-panel");
       if (superPartnersPanel) superPartnersPanel.classList.toggle("hidden", !isSuperManager);
+      const partnerBasePanel = document.getElementById("partner-base-settings-panel");
+      if (partnerBasePanel) partnerBasePanel.classList.toggle("hidden", !(isManagerUser && !isSuperManager));
       const goToursBtn = document.getElementById("btn-go-tours-manager");
       if (goToursBtn) goToursBtn.classList.toggle("hidden", !isSuperManager);
 
@@ -4317,6 +4530,7 @@
 
       rebuildRouteSelector();
       initMap();
+      renderBaseMarkerOnMap();
       selectRoute(activeRouteId);
       renderPoiList();
       renderPoiMarkersOnMap();
@@ -4358,10 +4572,13 @@
       activeManagerName = SUPER_MANAGER_NAME;
       activeSessionClientCode = "";
       sessionDepartureIso = "";
+      setActiveBaseLocation(DEFAULT_BASE_COORDS, `${SUPER_MANAGER_NAME} · ${DEFAULT_BASE_ADDRESS_LABEL}`);
       try {
         localStorage.removeItem(SESSION_ROLE_KEY);
         localStorage.removeItem(SESSION_MANAGER_ID_KEY);
         localStorage.removeItem(SESSION_MANAGER_NAME_KEY);
+        localStorage.removeItem(SESSION_BASE_COORDS_KEY);
+        localStorage.removeItem(SESSION_BASE_LABEL_KEY);
         localStorage.removeItem(SESSION_DEPARTURE_ISO_KEY);
       } catch (e) {}
       if (ownerAlertsPollTimer) {
@@ -4402,7 +4619,7 @@
         renderToursManagerList();
       }
       if (tabName === "manager" && isManagerUser) {
-        if (isSuperManager) await syncPartnerManagersFromCloud();
+        await syncPartnerManagersFromCloud();
         await syncClientCodesFromCloud(false, activeManagerId);
         await syncRiderAlertsFromCloud(false);
       }
@@ -4434,11 +4651,12 @@
 
     function initMap() {
       if (map) {
+        renderBaseMarkerOnMap();
         renderPoiMarkersOnMap();
         map.invalidateSize();
         return;
       }
-      map = L.map("map-container").setView(BASE_COORDS, 13);
+      map = L.map("map-container").setView(activeBaseCoords, 13);
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 19,
         attribution: "&copy; OpenStreetMap"
@@ -4450,13 +4668,7 @@
         }
       });
 
-      L.circleMarker(BASE_COORDS, {
-        radius: 8,
-        color: "#141413",
-        fillColor: "#141413",
-        fillOpacity: 0.9
-      }).addTo(map).bindPopup(escapeHtml(`Magona Bike Garage · ${BASE_ADDRESS_LABEL}`));
-
+      renderBaseMarkerOnMap();
       renderPoiMarkersOnMap();
     }
 
@@ -4719,7 +4931,7 @@
           fsBtn.className = "px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer";
         }
 
-        const routeStart = activeRoute?.coords?.[0] || BASE_COORDS;
+        const routeStart = activeRoute?.coords?.[0] || activeBaseCoords;
         const targetStart = userCoords || routeStart;
         if (map) {
           map.setView(targetStart, NAV_ZOOM_LEVEL, { animate: false });
@@ -4747,7 +4959,7 @@
       const t = I18N[currentLang] || I18N.it;
       if (!map) return;
       followUserCenter = true;
-      const routeStart = getRouteById(activeRouteId)?.coords?.[0] || BASE_COORDS;
+      const routeStart = getRouteById(activeRouteId)?.coords?.[0] || activeBaseCoords;
       const target = userCoords || routeStart;
       map.setView(target, NAV_ZOOM_LEVEL, { animate: false });
       if (liveNavActive) {
@@ -4860,7 +5072,7 @@
     }
 
     function computeShortestSafeBasePath(startPt) {
-      return computeShortestSafePathBetweenNodes(startPt, BASE_COORDS);
+      return computeShortestSafePathBetweenNodes(startPt, activeBaseCoords);
     }
 
     async function fetchOpenMtbTrailRoute(startPt, endPt) {
@@ -4969,7 +5181,7 @@
     }
 
     async function fetchSafeRoadReturnIfOnline(startPt) {
-      return await fetchOpenMtbTrailRoute(startPt, BASE_COORDS);
+      return await fetchOpenMtbTrailRoute(startPt, activeBaseCoords);
     }
 
     async function navigateToBase() {
@@ -4978,7 +5190,7 @@
       if (!map) initMap();
 
       const activeRoute = getRouteById(activeRouteId);
-      const startPt = userCoords || activeRoute?.coords?.[Math.floor((activeRoute?.coords?.length || 2) / 2)] || [...BASE_COORDS];
+      const startPt = userCoords || activeRoute?.coords?.[Math.floor((activeRoute?.coords?.length || 2) / 2)] || [...activeBaseCoords];
 
       const localSafe = computeShortestSafeBasePath(startPt);
       let chosenPath = localSafe;
@@ -5000,14 +5212,14 @@
         opacity: 0.95,
         dashArray: "10, 6"
       }).addTo(map);
-      returnToBaseLayer.bindPopup(escapeHtml(`${t.returnBasePrefix} · ${BASE_ADDRESS_LABEL} (${chosenPath.distanceKm} km)`));
+      returnToBaseLayer.bindPopup(escapeHtml(`${t.returnBasePrefix} · ${activeBaseLabel} (${chosenPath.distanceKm} km)`));
 
-      const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(BASE_ADDRESS_LABEL)}&travelmode=bicycling`;
+      const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${activeBaseCoords[0]},${activeBaseCoords[1]}&travelmode=bicycling`;
       const banner = document.getElementById("nav-status-banner");
       const statusText = document.getElementById("nav-status-text");
       if (banner && statusText) {
         banner.classList.remove("hidden");
-        statusText.innerHTML = `${escapeHtml(t.returnBasePrefix)} <strong>${escapeHtml(BASE_ADDRESS_LABEL)}</strong> (${chosenPath.distanceKm} km) · <a href="${gmapsUrl}" target="_blank" rel="noopener" class="underline font-bold text-emerald-300">${escapeHtml(t.openGmaps)}</a>`;
+        statusText.innerHTML = `${escapeHtml(t.returnBasePrefix)} <strong>${escapeHtml(activeBaseLabel)}</strong> (${chosenPath.distanceKm} km) · <a href="${gmapsUrl}" target="_blank" rel="noopener" class="underline font-bold text-emerald-300">${escapeHtml(t.openGmaps)}</a>`;
       }
 
       if (userCoords) {
@@ -5016,7 +5228,7 @@
       } else {
         map.fitBounds(returnToBaseLayer.getBounds(), { padding: [30, 30] });
       }
-      showToast(`${t.returnBasePrefix} ${BASE_ADDRESS_LABEL} (${chosenPath.distanceKm} km)`);
+      showToast(`${t.returnBasePrefix} ${activeBaseLabel} (${chosenPath.distanceKm} km)`);
     }
 
     function latLngToTile(lat, lon, zoom) {
@@ -5040,7 +5252,7 @@
       await persistPoisList(false);
 
       const tileUrls = new Set();
-      const allCoords = [BASE_COORDS];
+      const allCoords = [activeBaseCoords, DEFAULT_BASE_COORDS];
       ROUTES_LIST.forEach((r) => {
         (r.coords || []).forEach((c) => allCoords.push(c));
       });
@@ -5273,10 +5485,10 @@
       } else {
         const newId = "tour-" + Date.now();
         const coords = pendingFormCoords || [
-          BASE_COORDS,
+          DEFAULT_BASE_COORDS,
           [43.2660, 10.6210],
           [43.2570, 10.6350],
-          BASE_COORDS
+          DEFAULT_BASE_COORDS
         ];
         ROUTES_LIST.push({
           id: newId,
@@ -5478,7 +5690,7 @@
     }
 
     function getPoiDistanceMeters(poi) {
-      const refPt = Array.isArray(userCoords) && userCoords.length >= 2 ? userCoords : BASE_COORDS;
+      const refPt = Array.isArray(userCoords) && userCoords.length >= 2 ? userCoords : activeBaseCoords;
       if (!Array.isArray(poi?.coords) || poi.coords.length < 2) return Infinity;
       return haversineMeters(refPt, [Number(poi.coords[0]), Number(poi.coords[1])]);
     }
@@ -5520,7 +5732,7 @@
     }
 
     function fillPoiCoordsFromGps() {
-      const target = userCoords || BASE_COORDS;
+      const target = userCoords || activeBaseCoords;
       document.getElementById("poi-lat-input").value = Number(target[0]).toFixed(6);
       document.getElementById("poi-lng-input").value = Number(target[1]).toFixed(6);
     }
@@ -5668,7 +5880,7 @@
       switchTab("map");
       if (!map) initMap();
 
-      const startPt = userCoords || BASE_COORDS;
+      const startPt = userCoords || activeBaseCoords;
       const destPt = [lat, lng];
       showToast(`${t.toastPoiCalc} ${label}`);
 
@@ -5751,6 +5963,7 @@
         activeManagerId = SUPER_MANAGER_ID;
         activeManagerName = SUPER_MANAGER_NAME;
         activeSessionClientCode = "SUPER-GESTORE";
+        setActiveBaseLocation(DEFAULT_BASE_COORDS, `${SUPER_MANAGER_NAME} · ${DEFAULT_BASE_ADDRESS_LABEL}`);
         await unlockApplication();
         return;
       }
@@ -5761,6 +5974,13 @@
         activeManagerId = localStorage.getItem(SESSION_MANAGER_ID_KEY) || "partner";
         activeManagerName = localStorage.getItem(SESSION_MANAGER_NAME_KEY) || "Partner";
         activeSessionClientCode = "GESTORE";
+
+        try {
+          const savedCoords = JSON.parse(localStorage.getItem(SESSION_BASE_COORDS_KEY) || "null");
+          const savedLabel = localStorage.getItem(SESSION_BASE_LABEL_KEY) || activeManagerName;
+          setActiveBaseLocation(savedCoords, savedLabel);
+        } catch (e) {}
+
         await unlockApplication();
         return;
       }
