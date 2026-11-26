@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#141413" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -108,6 +108,12 @@
       flex-shrink: 0;
     }
 
+    #elevation-profile-svg {
+      touch-action: pan-y;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
     /* Dark Mode */
     html.dark-mode,
     html.dark-mode body {
@@ -141,7 +147,8 @@
       border: 1px solid #454d4a !important;
     }
     html.dark-mode button#overlay-center-gps,
-    html.dark-mode button#overlay-fullscreen-btn {
+    html.dark-mode button#overlay-fullscreen-btn,
+    html.dark-mode select#overlay-map-layer-select {
       background-color: #181b1a !important;
       background: #181b1a !important;
       border-color: #525b57 !important;
@@ -253,10 +260,10 @@
         </div>
       </div>
       <div class="flex flex-col gap-2">
-        <button id="btn-authorize-all" data-i18n="authBtn" onclick="requestStartupPermissions()" class="w-full py-3 px-4 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-semibold text-sm transition cursor-pointer">
+        <button id="btn-authorize-all" type="button" data-i18n="authBtn" onclick="requestStartupPermissions()" class="w-full py-3 px-4 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-semibold text-sm transition cursor-pointer">
           Autorizza GPS e Rete
         </button>
-        <button id="btn-skip-perm" data-i18n="skipBtn" onclick="dismissStartupPermissions()" class="w-full py-2.5 px-4 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium text-xs transition cursor-pointer">
+        <button id="btn-skip-perm" type="button" data-i18n="skipBtn" onclick="dismissStartupPermissions()" class="w-full py-2.5 px-4 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium text-xs transition cursor-pointer">
           Continua senza GPS per ora
         </button>
       </div>
@@ -299,13 +306,13 @@
 
       <div id="auth-error" class="hidden text-xs text-red-600 font-medium mb-3"></div>
 
-      <button id="btn-login" data-i18n="loginBtn" onclick="submitAccessPassword()" class="w-full py-3 px-4 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-semibold text-sm transition cursor-pointer">
+      <button id="btn-login" type="button" data-i18n="loginBtn" onclick="submitAccessPassword()" class="w-full py-3 px-4 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-semibold text-sm transition cursor-pointer">
         Accedi alla Mappa
       </button>
 
       <div class="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500">
         <span><span data-i18n="supportShort">Assistenza</span>: +39 331 345 3207</span>
-        <button id="btn-open-perms" data-i18n="openPerms" onclick="openStartupPermissionsModal()" class="underline hover:text-stone-800 cursor-pointer">Permessi GPS / Web</button>
+        <button id="btn-open-perms" type="button" data-i18n="openPerms" onclick="openStartupPermissionsModal()" class="underline hover:text-stone-800 cursor-pointer">Permessi GPS / Web</button>
       </div>
     </div>
   </div>
@@ -329,7 +336,7 @@
         <select id="app-lang-select" onchange="changeLanguage(this.value)" class="border border-stone-300 rounded-lg px-2.5 py-1 text-xs font-semibold bg-stone-50">
           <option value="it">IT</option>
         </select>
-        <button id="btn-logout" data-i18n="logoutBtn" onclick="lockApplication()" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 cursor-pointer">
+        <button id="btn-logout" type="button" data-i18n="logoutBtn" onclick="lockApplication()" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 cursor-pointer">
           Esci
         </button>
       </div>
@@ -337,11 +344,11 @@
 
     <!-- Barra menu subito sotto l'intestazione -->
     <nav id="app-nav" class="bg-white border-b border-stone-200 px-4 flex gap-5 overflow-x-auto text-sm font-semibold">
-      <button data-tab="map" data-i18n="tabMap" onclick="switchTab('map')" class="nav-tab py-3 border-b-2 border-stone-900 text-stone-900 whitespace-nowrap cursor-pointer">Mappa</button>
-      <button data-tab="pois" data-i18n="tabPois" onclick="switchTab('pois')" class="nav-tab py-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 whitespace-nowrap cursor-pointer">Punti Utili</button>
-      <button data-tab="support" data-i18n="tabSupport" onclick="switchTab('support')" class="nav-tab py-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 whitespace-nowrap cursor-pointer">Assistenza</button>
-      <button id="nav-tours-tab" data-tab="tours" data-i18n="tabTours" onclick="switchTab('tours')" class="nav-tab hidden py-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 whitespace-nowrap cursor-pointer">Gestione Tour</button>
-      <button id="nav-manager-tab" data-tab="manager" data-i18n="tabManager" onclick="switchTab('manager')" class="nav-tab hidden py-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 whitespace-nowrap cursor-pointer">
+      <button type="button" data-tab="map" data-i18n="tabMap" onclick="switchTab('map')" class="nav-tab py-3 border-b-2 border-stone-900 text-stone-900 whitespace-nowrap cursor-pointer">Mappa</button>
+      <button type="button" data-tab="pois" data-i18n="tabPois" onclick="switchTab('pois')" class="nav-tab py-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 whitespace-nowrap cursor-pointer">Punti Utili</button>
+      <button type="button" data-tab="support" data-i18n="tabSupport" onclick="switchTab('support')" class="nav-tab py-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 whitespace-nowrap cursor-pointer">Assistenza</button>
+      <button id="nav-tours-tab" type="button" data-tab="tours" data-i18n="tabTours" onclick="switchTab('tours')" class="nav-tab hidden py-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 whitespace-nowrap cursor-pointer">Gestione Tour</button>
+      <button id="nav-manager-tab" type="button" data-tab="manager" data-i18n="tabManager" onclick="switchTab('manager')" class="nav-tab hidden py-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 whitespace-nowrap cursor-pointer">
         <span>Gestore & Cache</span>
         <span id="alerts-nav-badge" class="hidden ml-1.5 px-1.5 py-0.5 text-[10px] font-extrabold rounded-full bg-amber-500 text-white">0</span>
       </button>
@@ -359,7 +366,7 @@
           <span id="weather-rain" class="text-stone-500 hidden sm:inline shrink-0"></span>
         </div>
         <div class="flex flex-nowrap items-center shrink-0">
-          <button onclick="fetchTrailWeather(true)" title="Aggiorna meteo" class="px-2 py-1 rounded-lg bg-stone-200/80 hover:bg-stone-300/80 text-stone-800 font-semibold text-[11px] leading-none cursor-pointer">
+          <button type="button" onclick="fetchTrailWeather(true)" title="Aggiorna meteo" class="px-2 py-1 rounded-lg bg-stone-200/80 hover:bg-stone-300/80 text-stone-800 font-semibold text-[11px] leading-none cursor-pointer">
             ↻
           </button>
         </div>
@@ -390,22 +397,36 @@
           </div>
 
           <div class="flex flex-wrap gap-2">
-            <button id="btn-live-nav" onclick="toggleLiveNavigation()" class="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
+            <button id="btn-live-nav" type="button" onclick="toggleLiveNavigation()" class="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
               Naviga Ora
             </button>
-            <button id="btn-user-offline-save" data-i18n="saveOfflineBtn" onclick="saveOfflineForUser()" class="px-3.5 py-2 rounded-xl bg-sky-700 hover:bg-sky-800 text-white text-xs font-bold cursor-pointer">
+            <button id="btn-user-offline-save" type="button" data-i18n="saveOfflineBtn" onclick="saveOfflineForUser()" class="px-3.5 py-2 rounded-xl bg-sky-700 hover:bg-sky-800 text-white text-xs font-bold cursor-pointer">
               Salva Offline (Mappa + Tour)
             </button>
-            <button id="btn-return-base" data-i18n="returnBaseBtn" onclick="navigateToBase()" class="px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold cursor-pointer">
+            <button id="btn-return-base" type="button" data-i18n="returnBaseBtn" onclick="navigateToBase()" class="px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold cursor-pointer">
               Rientra alla Base
             </button>
-            <button id="btn-wake-lock" onclick="toggleScreenWakeLock()" class="px-3.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
+            <button id="btn-offroute-sound" type="button" onclick="toggleOffRouteSoundAlert()" class="px-3.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
+              Audio Fuori Traccia: ON
+            </button>
+            <button id="btn-wake-lock" type="button" onclick="toggleScreenWakeLock()" class="px-3.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
               Schermo Acceso: OFF
             </button>
-            <button id="btn-fullscreen" data-i18n="fullscreenBtn" onclick="toggleMapFullscreen()" class="px-3.5 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold cursor-pointer">
+            <button id="btn-fullscreen" type="button" data-i18n="fullscreenBtn" onclick="toggleMapFullscreen()" class="px-3.5 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold cursor-pointer">
               Schermo Intero
             </button>
           </div>
+        </div>
+
+        <!-- Avviso fuori traccia GPS (> 80 m dal percorso attivo) -->
+        <div id="off-route-alert-banner" class="hidden bg-red-600 text-white rounded-xl px-3.5 py-2.5 text-xs flex flex-wrap items-center justify-between gap-2 shadow-md">
+          <div class="flex items-center gap-2">
+            <span class="text-base leading-none">⚠️</span>
+            <span id="off-route-alert-text" class="font-extrabold">ATTENZIONE: Sei fuori traccia! Distanza dal sentiero: -- m</span>
+          </div>
+          <button type="button" onclick="recenterNavigator(true)" class="px-2.5 py-1 rounded-lg bg-white text-red-700 font-extrabold text-[11px] cursor-pointer">
+            Mostra Sentiero
+          </button>
         </div>
 
         <!-- Recupero GPS reale quando iOS/Home restituisce Errore 1 -->
@@ -447,6 +468,7 @@
               <span id="route-cat-badge" class="px-2 py-0.5 rounded font-semibold text-[11px] bg-stone-200 text-stone-800">MTB</span>
               <span id="route-duration-text" class="text-stone-600 font-semibold">⏱ ~2h 15m</span>
               <span id="route-surface-text" class="text-stone-600">· Fondo: Bosco & Singletrack</span>
+              <span id="route-altitude-range-text" class="text-stone-600 font-medium"></span>
             </div>
             <p id="route-description-text" class="text-stone-700 leading-snug"></p>
           </div>
@@ -488,7 +510,7 @@
 
         <div id="nav-status-banner" class="hidden bg-stone-900 text-white rounded-xl px-3.5 py-2.5 text-xs flex flex-wrap items-center justify-between gap-2">
           <span id="nav-status-text" class="font-semibold">Navigazione GPS live attiva</span>
-          <button id="recenter-banner-btn" data-i18n="recenterBanner" onclick="recenterNavigator(true)" class="underline font-bold cursor-pointer">Ricentra Navigatore</button>
+          <button id="recenter-banner-btn" type="button" data-i18n="recenterBanner" onclick="recenterNavigator(true)" class="underline font-bold cursor-pointer">Ricentra Navigatore</button>
         </div>
       </div>
 
@@ -496,11 +518,22 @@
       <div id="map-stage" class="map-stage relative">
         <div class="map-wrapper relative w-full h-full">
           <div id="map-container"></div>
-          <button id="overlay-center-gps" data-i18n="overlayCenterGps" onclick="recenterNavigator(true)" title="Centra su GPS"
+
+          <!-- Selettore Layer Mappa (OpenStreetMap / OpenTopoMap / Satellite) -->
+          <div class="absolute top-3 left-12 z-[450]">
+            <select id="overlay-map-layer-select" onchange="setMapBaseLayer(this.value)" title="Stile Mappa"
+              class="bg-white/95 hover:bg-white text-stone-900 border border-stone-300 rounded-xl px-2.5 py-1.5 text-xs font-bold shadow cursor-pointer">
+              <option value="osm">🗺️ OpenStreetMap</option>
+              <option value="topo">⛰️ OpenTopoMap (Sentieri)</option>
+              <option value="satellite">🛰️ Satellite</option>
+            </select>
+          </div>
+
+          <button id="overlay-center-gps" type="button" data-i18n="overlayCenterGps" onclick="recenterNavigator(true)" title="Centra su GPS"
             class="absolute bottom-4 right-3 z-[450] bg-white/95 hover:bg-white text-stone-900 border border-stone-300 rounded-xl px-3 py-2 text-xs font-bold shadow cursor-pointer">
             ◎ Centra GPS
           </button>
-          <button id="overlay-fullscreen-btn" data-i18n="overlayFullscreen" onclick="toggleMapFullscreen()" title="Schermo Intero"
+          <button id="overlay-fullscreen-btn" type="button" data-i18n="overlayFullscreen" onclick="toggleMapFullscreen()" title="Schermo Intero"
             class="absolute top-3 right-3 z-[450] bg-white/95 hover:bg-white text-stone-900 border border-stone-300 rounded-xl px-3 py-1.5 text-xs font-bold shadow cursor-pointer">
             ⤢ Schermo Intero
           </button>
@@ -509,6 +542,10 @@
         <!-- Barra telemetria e comandi in basso a schermo intero -->
         <div id="bottom-telemetry-panel" class="bottom-telemetry-panel">
           <div id="fs-gps-recovery-slot"></div>
+          <div id="fs-off-route-banner" class="hidden bg-red-600 text-white rounded-xl px-3 py-2 text-xs flex items-center justify-between gap-2">
+            <span id="fs-off-route-text" class="font-extrabold">⚠️ Fuori traccia (-- m dal sentiero)</span>
+            <button type="button" onclick="recenterNavigator(true)" class="px-2 py-0.5 rounded bg-white text-red-700 font-bold text-[11px] cursor-pointer">Ricentra</button>
+          </div>
           <div class="flex flex-wrap items-center justify-between gap-2 border-b border-stone-200 pb-2">
             <div class="flex items-center gap-2">
               <span data-i18n="fsBannerLabel" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-stone-900 text-white">Navigazione</span>
@@ -516,16 +553,16 @@
               <span class="text-xs text-stone-500">· <strong id="fs-progress-pct" class="text-stone-900">0%</strong></span>
             </div>
             <div class="flex flex-wrap items-center gap-1.5">
-              <button data-i18n="fsCenterBtn" onclick="recenterNavigator(true)" class="px-2.5 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold cursor-pointer">
+              <button type="button" data-i18n="fsCenterBtn" onclick="recenterNavigator(true)" class="px-2.5 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold cursor-pointer">
                 Centra GPS
               </button>
-              <button id="fs-btn-wake-lock" onclick="toggleScreenWakeLock()" class="px-2.5 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold cursor-pointer">
+              <button id="fs-btn-wake-lock" type="button" onclick="toggleScreenWakeLock()" class="px-2.5 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold cursor-pointer">
                 Schermo: OFF
               </button>
-              <button id="fs-btn-live-nav" onclick="toggleLiveNavigation()" class="px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
+              <button id="fs-btn-live-nav" type="button" onclick="toggleLiveNavigation()" class="px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
                 GPS Live
               </button>
-              <button data-i18n="fsExitBtn" onclick="toggleMapFullscreen()" class="px-3 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold cursor-pointer">
+              <button type="button" data-i18n="fsExitBtn" onclick="toggleMapFullscreen()" class="px-3 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold cursor-pointer">
                 Esci
               </button>
             </div>
@@ -559,6 +596,32 @@
           </div>
         </div>
       </div>
+
+      <!-- Profilo Altimetrico Interattivo sotto la mappa -->
+      <div id="elevation-profile-card" class="bg-white rounded-2xl border border-stone-200 p-4 space-y-2.5">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-stone-900">Profilo Altimetrico</span>
+            <span id="elev-source-badge" class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">GPX</span>
+          </div>
+          <div id="elev-readout" class="text-xs font-semibold text-stone-600">
+            Tocca o scorri sul grafico per ispezionare quota, distanza e pendenza
+          </div>
+        </div>
+
+        <div class="relative w-full">
+          <svg id="elevation-profile-svg" viewBox="0 0 720 155" preserveAspectRatio="none"
+            class="w-full h-36 sm:h-40 rounded-xl bg-stone-50 border border-stone-200/80 cursor-crosshair block"></svg>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-2 text-[11px] text-stone-500">
+          <span>Min: <strong id="elev-min-label" class="text-stone-800">-- m</strong> · Max: <strong id="elev-max-label" class="text-stone-800">-- m</strong></span>
+          <span class="flex items-center gap-3">
+            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-600 inline-block"></span> Posizione GPS</span>
+            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> Punto ispezionato</span>
+          </span>
+        </div>
+      </div>
     </section>
 
     <!-- Scheda Punti Utili -->
@@ -573,7 +636,7 @@
             <span id="pois-save-status-badge" class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800">
               ✓ Salvato
             </span>
-            <button id="btn-reset-poi-form" data-i18n="cancelEditBtn" onclick="resetPoiForm()" class="hidden px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
+            <button id="btn-reset-poi-form" type="button" data-i18n="cancelEditBtn" onclick="resetPoiForm()" class="hidden px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
               Annulla Modifica
             </button>
           </div>
@@ -583,13 +646,13 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
           <div>
-            <label data-i18n="poiNameLabel" class="block font-semibold text-stone-700 mb-1">Nome Punto Utile *</label>
+            <label for="poi-name-input" data-i18n="poiNameLabel" class="block font-semibold text-stone-700 mb-1">Nome Punto Utile *</label>
             <input id="poi-name-input" data-i18n-placeholder="poiNamePlaceholder" type="text" placeholder="Es. Fontana Campo di Sasso"
               class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900" />
           </div>
 
           <div>
-            <label data-i18n="poiTypeLabel" class="block font-semibold text-stone-700 mb-1">Tipologia *</label>
+            <label for="poi-type-input" data-i18n="poiTypeLabel" class="block font-semibold text-stone-700 mb-1">Tipologia *</label>
             <select id="poi-type-input" class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm font-bold bg-stone-50">
               <option value="water" data-i18n="poiOptWater">💧 Fontanella / Acqua</option>
               <option value="view" data-i18n="poiOptView">🏔️ Panorama / Punto Foto</option>
@@ -599,29 +662,29 @@
           </div>
 
           <div>
-            <label data-i18n="latLabel" class="block font-semibold text-stone-700 mb-1">Latitudine *</label>
+            <label for="poi-lat-input" data-i18n="latLabel" class="block font-semibold text-stone-700 mb-1">Latitudine *</label>
             <input id="poi-lat-input" type="number" step="0.000001" min="-90" max="90" placeholder="43.261000"
               class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900" />
           </div>
 
           <div>
-            <label data-i18n="lngLabel" class="block font-semibold text-stone-700 mb-1">Longitudine *</label>
+            <label for="poi-lng-input" data-i18n="lngLabel" class="block font-semibold text-stone-700 mb-1">Longitudine *</label>
             <input id="poi-lng-input" type="number" step="0.000001" min="-180" max="180" placeholder="10.636000"
               class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900" />
           </div>
         </div>
 
         <div>
-          <label data-i18n="poiNoteLabel" class="block text-xs font-semibold text-stone-700 mb-1">Note / Dettagli Utili</label>
+          <label for="poi-note-input" data-i18n="poiNoteLabel" class="block text-xs font-semibold text-stone-700 mb-1">Note / Dettagli Utili</label>
           <input id="poi-note-input" data-i18n-placeholder="poiNotePlaceholder" type="text" placeholder="Es. Acqua fresca potabile sul lato sinistro del sentiero"
             class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900" />
         </div>
 
         <div class="flex flex-wrap items-center gap-2.5">
-          <button data-i18n="useCurrentGpsBtn" onclick="fillPoiCoordsFromGps()" class="px-3.5 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold cursor-pointer">
+          <button type="button" data-i18n="useCurrentGpsBtn" onclick="fillPoiCoordsFromGps()" class="px-3.5 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold cursor-pointer">
             ◎ Usa Posizione GPS Attuale
           </button>
-          <button data-i18n="saveChangesBtn" onclick="savePoiFromForm()" class="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
+          <button type="button" data-i18n="saveChangesBtn" onclick="savePoiFromForm()" class="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
             Salva Modifiche
           </button>
           <span id="poi-form-feedback" class="text-xs text-emerald-700 font-semibold"></span>
@@ -635,10 +698,10 @@
             <p id="poi-list-subtitle" class="text-xs text-stone-500">Seleziona un punto per avviare la guida sulla mappa.</p>
           </div>
           <div id="poi-owner-list-actions" class="hidden flex flex-wrap gap-1.5">
-            <button data-i18n="saveChangesBtn" onclick="saveAllPoisChanges()" class="px-3.5 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
+            <button type="button" data-i18n="saveChangesBtn" onclick="saveAllPoisChanges()" class="px-3.5 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
               Salva Modifiche
             </button>
-            <button data-i18n="restoreDefaultsBtn" onclick="restoreDefaultPois()" class="px-3.5 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold cursor-pointer">
+            <button type="button" data-i18n="restoreDefaultsBtn" onclick="restoreDefaultPois()" class="px-3.5 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold cursor-pointer">
               Ripristina Predefiniti
             </button>
           </div>
@@ -680,10 +743,10 @@
           <a data-i18n="callShop" href="tel:+393313453207" class="px-4 py-2.5 rounded-xl bg-stone-900 text-white text-xs font-bold">
             Chiama Officina
           </a>
-          <button data-i18n="sendWaGps" onclick="sendWhatsAppLocation()" class="px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
+          <button type="button" data-i18n="sendWaGps" onclick="sendWhatsAppLocation()" class="px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
             Invia Posizione GPS su WhatsApp
           </button>
-          <a data-i18n="openWaChat" href="https://wa.me/393313453207" target="_blank" rel="noopener" class="px-4 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold">
+          <a data-i18n="openWaChat" href="https://wa.me/393313453207" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold">
             Chat WhatsApp Diretta
           </a>
         </div>
@@ -703,7 +766,7 @@
             <span id="tours-save-status-badge" class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800">
               ✓ Salvato
             </span>
-            <button id="btn-reset-tour-form" data-i18n="cancelEditBtn" onclick="resetTourForm()" class="hidden px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
+            <button id="btn-reset-tour-form" type="button" data-i18n="cancelEditBtn" onclick="resetTourForm()" class="hidden px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
               Annulla Modifica
             </button>
           </div>
@@ -713,13 +776,13 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
           <div>
-            <label data-i18n="tourNameLabel" class="block font-semibold text-stone-700 mb-1">Nome del Tour *</label>
+            <label for="tour-name-input" data-i18n="tourNameLabel" class="block font-semibold text-stone-700 mb-1">Nome del Tour *</label>
             <input id="tour-name-input" data-i18n-placeholder="tourNamePlaceholder" type="text" placeholder="Es. Anello della Magona & Campo di Sasso"
               class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900" />
           </div>
 
           <div>
-            <label data-i18n="tourDisciplineLabel" class="block font-semibold text-stone-700 mb-1">Disciplina Tour (MTB / Gravel) *</label>
+            <label for="tour-cat-input" data-i18n="tourDisciplineLabel" class="block font-semibold text-stone-700 mb-1">Disciplina Tour (MTB / Gravel) *</label>
             <select id="tour-cat-input" class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm font-bold bg-stone-50">
               <option value="mtb">MTB</option>
               <option value="gravel">Gravel</option>
@@ -727,7 +790,7 @@
           </div>
 
           <div>
-            <label data-i18n="tourDiffLabel" class="block font-semibold text-stone-700 mb-1">Difficoltà</label>
+            <label for="tour-diff-input" data-i18n="tourDiffLabel" class="block font-semibold text-stone-700 mb-1">Difficoltà</label>
             <select id="tour-diff-input" class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm bg-stone-50">
               <option value="green" data-i18n="tourDiffOptGreen">Verde — Facile / Famiglie</option>
               <option value="blue" data-i18n="tourDiffOptBlue" selected>Blu — Intermedio</option>
@@ -737,47 +800,47 @@
           </div>
 
           <div>
-            <label data-i18n="tourDistLabel" class="block font-semibold text-stone-700 mb-1">Distanza (km)</label>
+            <label for="tour-dist-input" data-i18n="tourDistLabel" class="block font-semibold text-stone-700 mb-1">Distanza (km)</label>
             <input id="tour-dist-input" type="number" step="0.1" min="0.1" placeholder="24.8"
               class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900" />
           </div>
 
           <div>
-            <label data-i18n="tourElevLabel" class="block font-semibold text-stone-700 mb-1">Dislivello + (m)</label>
+            <label for="tour-elev-input" data-i18n="tourElevLabel" class="block font-semibold text-stone-700 mb-1">Dislivello + (m)</label>
             <input id="tour-elev-input" type="number" step="10" min="0" placeholder="640"
               class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900" />
           </div>
 
           <div>
-            <label data-i18n="tourDurationLabel" class="block font-semibold text-stone-700 mb-1">Tempo Stimato</label>
+            <label for="tour-duration-input" data-i18n="tourDurationLabel" class="block font-semibold text-stone-700 mb-1">Tempo Stimato</label>
             <input id="tour-duration-input" data-i18n-placeholder="tourDurationPlaceholder" type="text" placeholder="Es. 2h 15m"
               class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900" />
           </div>
 
           <div>
-            <label data-i18n="tourSurfaceLabel" class="block font-semibold text-stone-700 mb-1">Fondo / Terreno</label>
+            <label for="tour-surface-input" data-i18n="tourSurfaceLabel" class="block font-semibold text-stone-700 mb-1">Fondo / Terreno</label>
             <input id="tour-surface-input" data-i18n-placeholder="tourSurfacePlaceholder" type="text" placeholder="Es. Bosco, singletrack e carrarecce"
               class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900" />
           </div>
 
           <div class="sm:col-span-2">
-            <label data-i18n="tourGpxLabel" class="block font-semibold text-stone-700 mb-1">File Traccia GPX (opzionale in modifica, consigliato per nuovo tour)</label>
-            <input type="file" id="tour-gpx-file" accept=".gpx" onchange="previewGpxMetricsOnForm(event)"
+            <label for="tour-gpx-file" data-i18n="tourGpxLabel" class="block font-semibold text-stone-700 mb-1">File Traccia GPX (opzionale in modifica, consigliato per nuovo tour)</label>
+            <input type="file" id="tour-gpx-file" accept=".gpx,application/gpx+xml,text/xml" onchange="previewGpxMetricsOnForm(event)"
               class="w-full border border-stone-300 rounded-xl px-3 py-1.5 text-xs bg-stone-50" />
           </div>
         </div>
 
         <div>
-          <label data-i18n="tourDescLabel" class="block text-xs font-semibold text-stone-700 mb-1">Descrizione & Note Tecniche per il Cliente</label>
+          <label for="tour-desc-input" data-i18n="tourDescLabel" class="block text-xs font-semibold text-stone-700 mb-1">Descrizione & Note Tecniche per il Cliente</label>
           <textarea id="tour-desc-input" data-i18n-placeholder="tourDescPlaceholder" rows="2" placeholder="Inserisci punti di interesse, consigli sulla batteria e-bike, passaggi tecnici o fontanelle lungo il giro..."
             class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900"></textarea>
         </div>
 
         <div class="flex flex-wrap items-center gap-2.5">
-          <button data-i18n="saveTourListBtn" onclick="saveTourFromForm()" class="px-5 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold cursor-pointer">
+          <button type="button" data-i18n="saveTourListBtn" onclick="saveTourFromForm()" class="px-5 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold cursor-pointer">
             Salva Tour nella Lista
           </button>
-          <button data-i18n="saveChangesBtn" onclick="saveAllToursChanges()" class="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
+          <button type="button" data-i18n="saveChangesBtn" onclick="saveAllToursChanges()" class="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
             Salva Modifiche
           </button>
           <span id="gpx-parse-feedback" class="text-xs text-emerald-700 font-semibold"></span>
@@ -791,13 +854,13 @@
             <p data-i18n="tourRankDesc" class="text-xs text-stone-500">Le modifiche vengono sincronizzate su Firebase e salvate in memoria locale (IndexedDB + LocalStorage). Puoi anche usare Esporta tours.json per averne una copia di backup.</p>
           </div>
           <div class="flex flex-wrap gap-1.5">
-            <button data-i18n="saveChangesBtn" onclick="saveAllToursChanges()" class="px-3.5 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
+            <button type="button" data-i18n="saveChangesBtn" onclick="saveAllToursChanges()" class="px-3.5 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
               Salva Modifiche
             </button>
-            <button data-i18n="exportJsonBtn" onclick="exportToursJsonFile()" class="px-3.5 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold cursor-pointer">
+            <button type="button" data-i18n="exportJsonBtn" onclick="exportToursJsonFile()" class="px-3.5 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold cursor-pointer">
               Esporta tours.json
             </button>
-            <button data-i18n="restoreDefaultsBtn" onclick="restoreDefaultRoutes()" class="px-3.5 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold cursor-pointer">
+            <button type="button" data-i18n="restoreDefaultsBtn" onclick="restoreDefaultRoutes()" class="px-3.5 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold cursor-pointer">
               Ripristina Predefiniti
             </button>
           </div>
@@ -823,10 +886,10 @@
             class="border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900" />
         </div>
         <div class="flex flex-wrap gap-2">
-          <button onclick="fillOwnBaseCoordsFromGps()" class="px-3.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold cursor-pointer">
+          <button type="button" onclick="fillOwnBaseCoordsFromGps()" class="px-3.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold cursor-pointer">
             ◎ Usa Posizione GPS Attuale
           </button>
-          <button onclick="saveOwnPartnerBaseSettings()" class="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
+          <button type="button" onclick="saveOwnPartnerBaseSettings()" class="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
             Salva Base Struttura
           </button>
         </div>
@@ -869,10 +932,10 @@
             <p class="text-xs text-stone-500">Registra automaticamente data, ora di partenza e tour scelto dai clienti associati ai tuoi codici.</p>
           </div>
           <div class="flex items-center gap-1.5">
-            <button onclick="syncRiderAlertsFromCloud(true)" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
+            <button type="button" onclick="syncRiderAlertsFromCloud(true)" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
               ↻ Aggiorna
             </button>
-            <button onclick="clearRiderDeparturesHistory()" class="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 text-xs font-semibold cursor-pointer">
+            <button type="button" onclick="clearRiderDeparturesHistory()" class="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 text-xs font-semibold cursor-pointer">
               Svuota Partenze
             </button>
           </div>
@@ -887,10 +950,10 @@
             <p class="text-xs text-stone-500">Quando un tuo cliente supera il 50% del tour o entra entro 1,5 km dalla base della struttura, l'avviso arriva con data, ora e posizione GPS attuale.</p>
           </div>
           <div class="flex items-center gap-1.5">
-            <button onclick="syncRiderAlertsFromCloud(true)" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
+            <button type="button" onclick="syncRiderAlertsFromCloud(true)" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
               ↻ Aggiorna
             </button>
-            <button onclick="clearRiderAlertsHistory()" class="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 text-xs font-semibold cursor-pointer">
+            <button type="button" onclick="clearRiderAlertsHistory()" class="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 text-xs font-semibold cursor-pointer">
               Svuota Avvisi
             </button>
           </div>
@@ -905,10 +968,10 @@
             <p id="codes-pool-desc" class="text-xs text-stone-500">Genera codici dedicati ai tuoi clienti (fino a 3 accessi per codice). Gli altri gestori non possono vedere i tuoi codici né i tuoi clienti.</p>
           </div>
           <div class="flex flex-wrap gap-1.5">
-            <button id="btn-gen-code" onclick="rotateClientPassword()" class="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
+            <button id="btn-gen-code" type="button" onclick="rotateClientPassword()" class="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
               + Genera Codice Utente
             </button>
-            <button id="btn-clear-all-codes" onclick="clearAllClientCodes()" class="px-3.5 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 text-xs font-bold cursor-pointer">
+            <button id="btn-clear-all-codes" type="button" onclick="clearAllClientCodes()" class="px-3.5 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 text-xs font-bold cursor-pointer">
               Cancella Tutti
             </button>
           </div>
@@ -938,10 +1001,39 @@
     const DEFAULT_BASE_COORDS = [43.266028, 10.594667];
     const DEFAULT_BASE_ADDRESS_LABEL = "Via del Mandorlo 1 / Piazza delle Querce 5, 57020 Bibbona";
     const NEAR_BASE_RADIUS_KM = 1.5;
+    const OFF_ROUTE_THRESHOLD_METERS = 80;
+    const OFF_ROUTE_BEEP_COOLDOWN_MS = 25000;
+    const MAX_GPX_FILE_BYTES = 15 * 1024 * 1024;
+    const ELEV_NOISE_THRESHOLD_M = 1.5;
+
+    const MAP_TILE_LAYERS = {
+      osm: {
+        label: "OpenStreetMap",
+        url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        template: "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        maxZoom: 19,
+        attribution: "&copy; OpenStreetMap"
+      },
+      topo: {
+        label: "OpenTopoMap",
+        url: "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+        template: "https://a.tile.opentopomap.org/{z}/{x}/{y}.png",
+        maxZoom: 17,
+        attribution: "&copy; OpenStreetMap, SRTM | &copy; OpenTopoMap"
+      },
+      satellite: {
+        label: "Satellite",
+        url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        template: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        maxZoom: 18,
+        attribution: "&copy; Esri, Maxar, Earthstar Geographics"
+      }
+    };
 
     let activeBaseCoords = [...DEFAULT_BASE_COORDS];
     let activeBaseLabel = `Magona Bike Garage · ${DEFAULT_BASE_ADDRESS_LABEL}`;
     let baseLocationMarker = null;
+    let activeBaseTileLayer = null;
 
     const SAFE_RETURN_GRAPH = {
       nodes: {
@@ -975,6 +1067,7 @@
 
     let returnToBaseLayer = null;
     let poiRouteLayer = null;
+    let elevationHoverMarker = null;
     const NAV_ZOOM_LEVEL = 17;
     const OFFLINE_CACHE_NAME = "magona-offline-v1";
     const ROUTES_STORAGE_KEY = "magona_offline_routes_v3";
@@ -982,11 +1075,14 @@
     const CLIENT_CODES_STORAGE_KEY = "magona_client_codes_pool_v2";
     const PARTNERS_STORAGE_KEY = "magona_partner_managers_v1";
     const THEME_STORAGE_KEY = "magona_theme_mode_v1";
+    const MAP_LAYER_STORAGE_KEY = "magona_map_layer_v1";
+    const OFF_ROUTE_SOUND_STORAGE_KEY = "magona_offroute_sound_v1";
     const PERMISSIONS_PROMPT_KEY = "magona_permissions_prompt_seen_v1";
     const WEATHER_CACHE_KEY = "magona_weather_cache_v1";
     const PENDING_ALERTS_QUEUE_KEY = "magona_pending_rider_alerts_v1";
     const PENDING_DEPARTURES_QUEUE_KEY = "magona_pending_rider_departures_v1";
     const SESSION_ROLE_KEY = "magona_session_role_v1";
+    const SESSION_CLIENT_CODE_KEY = "magona_session_client_code_v1";
     const SESSION_MANAGER_ID_KEY = "magona_session_manager_id_v1";
     const SESSION_MANAGER_NAME_KEY = "magona_session_manager_name_v1";
     const SESSION_BASE_COORDS_KEY = "magona_session_base_coords_v1";
@@ -1211,6 +1307,8 @@
         difficulty: "blue",
         distanceKm: 24.8,
         elevationGainM: 640,
+        minEleM: 45,
+        maxEleM: 410,
         duration: "2h 15m",
         surface: "Bosco, singletrack e carrarecce",
         description: "Giro classico nella Macchia della Magona tra sugherete, leccete e punti panoramici verso il mare.",
@@ -1230,6 +1328,8 @@
         difficulty: "green",
         distanceKm: 36.4,
         elevationGainM: 420,
+        minEleM: 25,
+        maxEleM: 195,
         duration: "2h 30m",
         surface: "Strade bianche e asfalto secondario",
         description: "Percorso scorrevole tra vigneti, oliveti e il Viale dei Cipressi di Bolgheri, ideale per gravel ed e-bike.",
@@ -1248,6 +1348,8 @@
         difficulty: "red",
         distanceKm: 29.2,
         elevationGainM: 890,
+        minEleM: 50,
+        maxEleM: 520,
         duration: "3h 00m",
         surface: "Trail tecnici, radici e pietraia",
         description: "Itinerario enduro/all-mountain verso il Giardino di Riparbella e il torrente Acquerta con discese guidate.",
@@ -1268,6 +1370,10 @@
 
     let currentLang = "it";
     let currentThemeMode = localStorage.getItem(THEME_STORAGE_KEY) || "light";
+    let currentMapLayerKey = localStorage.getItem(MAP_LAYER_STORAGE_KEY) || "osm";
+    let offRouteSoundEnabled = localStorage.getItem(OFF_ROUTE_SOUND_STORAGE_KEY) !== "0";
+    let lastOffRouteBeepTs = 0;
+    let isCurrentlyOffRoute = false;
     let isSuperManager = false;
     let isManagerUser = false;
     let activeManagerId = SUPER_MANAGER_ID;
@@ -1286,11 +1392,16 @@
     let prevGpsCoords = null;
     let currentHeadingDeg = 0;
     let simulatedProgressRatio = 0;
+    let lastRouteProgressRatio = 0;
+    let activeElevationSamples = [];
     let pendingFormCoords = null;
+    let pendingFormAltMetrics = null;
     let poiMarkersLayer = null;
     let activePoiTypeFilter = "all";
     let isLoginBusy = false;
     let isCodeGenBusy = false;
+    let isFlushingAlerts = false;
+    let isFlushingDepartures = false;
 
     let partnerManagersList = [];
     let riderAlertsList = [];
@@ -1359,7 +1470,7 @@
             self.addEventListener("fetch", (event) => {
               if (event.request.method !== "GET") return;
               const url = event.request.url;
-              if (url.includes("tile.openstreetmap.org") || url.includes("unpkg.com") || url.includes("cdn.tailwindcss.com")) {
+              if (url.includes("tile.openstreetmap.org") || url.includes("tile.opentopomap.org") || url.includes("arcgisonline.com") || url.includes("unpkg.com") || url.includes("cdn.tailwindcss.com")) {
                 event.respondWith(
                   caches.open(CACHE_NAME).then((cache) =>
                     cache.match(event.request).then((cached) => {
@@ -1390,6 +1501,13 @@
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#39;");
+    }
+
+    function sanitizeExternalUrl(url) {
+      if (typeof url !== "string") return "";
+      const trimmed = url.trim();
+      if (/^https:\/\//i.test(trimmed)) return trimmed;
+      return "";
     }
 
     function formatDateAndTime(isoStr) {
@@ -1835,14 +1953,14 @@
                 </span>
               </div>
               <div class="text-[11px] text-stone-500">
-                Base: ${escapeHtml(p.baseAddress || "Predefinita")} ${coordsInfo ? `(${coordsInfo})` : ""}
+                Base: ${escapeHtml(p.baseAddress || "Predefinita")} ${coordsInfo ? `(${escapeHtml(coordsInfo)})` : ""}
               </div>
             </div>
             <div class="flex items-center gap-1.5">
-              <button onclick="togglePartnerActive('${safeId}')" class="px-2.5 py-1 rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-900 font-semibold cursor-pointer">
+              <button type="button" onclick="togglePartnerActive('${safeId}')" class="px-2.5 py-1 rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-900 font-semibold cursor-pointer">
                 ${isActive ? "Sospendi" : "Riattiva"}
               </button>
-              <button onclick="deletePartnerAccount('${safeId}')" class="px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 font-semibold cursor-pointer">
+              <button type="button" onclick="deletePartnerAccount('${safeId}')" class="px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 font-semibold cursor-pointer">
                 Elimina
               </button>
             </div>
@@ -1889,7 +2007,7 @@
     function getCurrentRiderIdentifier() {
       if (activeSessionClientCode) return activeSessionClientCode;
       if (isManagerUser) return "GESTORE";
-      return (localStorage.getItem("magona_active_client_pwd") || "CLIENTE").trim().toUpperCase();
+      return (localStorage.getItem(SESSION_CLIENT_CODE_KEY) || localStorage.getItem("magona_active_client_pwd") || "CLIENTE").trim().toUpperCase();
     }
 
     function recordRiderDeparture(reason = "login") {
@@ -1922,34 +2040,46 @@
     }
 
     async function flushPendingRiderDepartures() {
+      if (isFlushingDepartures) return;
       if (!Array.isArray(pendingDeparturesQueue) || pendingDeparturesQueue.length === 0) return;
       if (!isFirebaseConfigured() || !navigator.onLine) return;
 
-      const nowIso = new Date().toISOString();
-      const targetMgrId = pendingDeparturesQueue[0]?.managerId || activeManagerId || SUPER_MANAGER_ID;
-      const cloudPath = `${getManagerCloudPrefix(targetMgrId)}/rider_departures`;
-
-      const stampedQueue = pendingDeparturesQueue.map((item) => ({
-        ...item,
-        updatedAt: nowIso
-      }));
-
-      const existing = await cloudReadJson(cloudPath);
-      const remoteList = Array.isArray(existing) ? existing.filter((x) => x && x.id) : [];
-      const queuedIds = new Set(stampedQueue.map((x) => x.id));
-      const merged = [
-        ...stampedQueue,
-        ...remoteList.filter((x) => !queuedIds.has(x.id))
-      ].slice(0, 60);
-
-      const ok = await cloudWriteJson(cloudPath, merged);
-      if (ok) {
-        pendingDeparturesQueue = [];
-        savePendingDeparturesQueue();
-        if (isManagerUser && activeManagerId === targetMgrId) {
-          riderDeparturesList = merged;
-          renderRiderDeparturesUI();
+      isFlushingDepartures = true;
+      try {
+        const nowIso = new Date().toISOString();
+        const byManager = new Map();
+        for (const item of pendingDeparturesQueue) {
+          const mgrId = item.managerId || activeManagerId || SUPER_MANAGER_ID;
+          if (!byManager.has(mgrId)) byManager.set(mgrId, []);
+          byManager.get(mgrId).push({ ...item, updatedAt: nowIso });
         }
+
+        const unsent = [];
+        for (const [mgrId, mgrItems] of byManager.entries()) {
+          const cloudPath = `${getManagerCloudPrefix(mgrId)}/rider_departures`;
+          const existing = await cloudReadJson(cloudPath);
+          const remoteList = Array.isArray(existing) ? existing.filter((x) => x && x.id) : [];
+          const queuedIds = new Set(mgrItems.map((x) => x.id));
+          const merged = [
+            ...mgrItems,
+            ...remoteList.filter((x) => !queuedIds.has(x.id))
+          ].slice(0, 60);
+
+          const ok = await cloudWriteJson(cloudPath, merged);
+          if (ok) {
+            if (isManagerUser && activeManagerId === mgrId) {
+              riderDeparturesList = merged;
+              renderRiderDeparturesUI();
+            }
+          } else {
+            unsent.push(...mgrItems);
+          }
+        }
+
+        pendingDeparturesQueue = unsent;
+        savePendingDeparturesQueue();
+      } finally {
+        isFlushingDepartures = false;
       }
     }
 
@@ -2042,49 +2172,67 @@
     }
 
     async function flushPendingRiderAlertsWithCurrentCoords() {
+      if (isFlushingAlerts) return;
       if (!Array.isArray(pendingAlertsQueue) || pendingAlertsQueue.length === 0) return;
 
-      const freshCoords = isValidLatLngPair(userCoords)
-        ? [+Number(userCoords[0]).toFixed(6), +Number(userCoords[1]).toFixed(6)]
-        : null;
+      isFlushingAlerts = true;
+      try {
+        const freshCoords = isValidLatLngPair(userCoords)
+          ? [+Number(userCoords[0]).toFixed(6), +Number(userCoords[1]).toFixed(6)]
+          : null;
 
-      const nowIso = new Date().toISOString();
-      const targetMgrId = pendingAlertsQueue[0]?.managerId || activeManagerId || SUPER_MANAGER_ID;
-      const cloudPath = `${getManagerCloudPrefix(targetMgrId)}/rider_alerts`;
+        const nowIso = new Date().toISOString();
 
-      pendingAlertsQueue = pendingAlertsQueue.map((item) => {
-        const finalCoords = freshCoords || item.coords || null;
-        const distFromBaseKm = finalCoords
-          ? +(haversineMeters(finalCoords, activeBaseCoords) / 1000).toFixed(1)
-          : (item.distFromBaseKm ?? null);
-        return {
-          ...item,
-          sentAt: nowIso,
-          coords: finalCoords,
-          distFromBaseKm,
-          mapsUrl: finalCoords ? `https://www.google.com/maps?q=${finalCoords[0]},${finalCoords[1]}` : ""
-        };
-      });
-      savePendingAlertsQueue();
-
-      if (!isFirebaseConfigured() || !navigator.onLine) return;
-
-      const existing = await cloudReadJson(cloudPath);
-      const remoteList = Array.isArray(existing) ? existing.filter((x) => x && x.id) : [];
-      const queuedIds = new Set(pendingAlertsQueue.map((x) => x.id));
-      const merged = [
-        ...pendingAlertsQueue,
-        ...remoteList.filter((x) => !queuedIds.has(x.id))
-      ].slice(0, 60);
-
-      const ok = await cloudWriteJson(cloudPath, merged);
-      if (ok) {
-        pendingAlertsQueue = [];
+        pendingAlertsQueue = pendingAlertsQueue.map((item) => {
+          const finalCoords = freshCoords || (isValidLatLngPair(item.coords) ? item.coords : null);
+          const distFromBaseKm = finalCoords
+            ? +(haversineMeters(finalCoords, activeBaseCoords) / 1000).toFixed(1)
+            : (item.distFromBaseKm ?? null);
+          return {
+            ...item,
+            sentAt: nowIso,
+            coords: finalCoords,
+            distFromBaseKm,
+            mapsUrl: finalCoords ? `https://www.google.com/maps?q=${finalCoords[0]},${finalCoords[1]}` : ""
+          };
+        });
         savePendingAlertsQueue();
-        if (isManagerUser && activeManagerId === targetMgrId) {
-          riderAlertsList = merged;
-          renderRiderAlertsUI(false);
+
+        if (!isFirebaseConfigured() || !navigator.onLine) return;
+
+        const byManager = new Map();
+        for (const item of pendingAlertsQueue) {
+          const mgrId = item.managerId || activeManagerId || SUPER_MANAGER_ID;
+          if (!byManager.has(mgrId)) byManager.set(mgrId, []);
+          byManager.get(mgrId).push(item);
         }
+
+        const unsent = [];
+        for (const [mgrId, mgrItems] of byManager.entries()) {
+          const cloudPath = `${getManagerCloudPrefix(mgrId)}/rider_alerts`;
+          const existing = await cloudReadJson(cloudPath);
+          const remoteList = Array.isArray(existing) ? existing.filter((x) => x && x.id) : [];
+          const queuedIds = new Set(mgrItems.map((x) => x.id));
+          const merged = [
+            ...mgrItems,
+            ...remoteList.filter((x) => !queuedIds.has(x.id))
+          ].slice(0, 60);
+
+          const ok = await cloudWriteJson(cloudPath, merged);
+          if (ok) {
+            if (isManagerUser && activeManagerId === mgrId) {
+              riderAlertsList = merged;
+              renderRiderAlertsUI(false);
+            }
+          } else {
+            unsent.push(...mgrItems);
+          }
+        }
+
+        pendingAlertsQueue = unsent;
+        savePendingAlertsQueue();
+      } finally {
+        isFlushingAlerts = false;
       }
     }
 
@@ -2185,6 +2333,7 @@
         const receivedBadgeText = sent.time
           ? `Arrivo avviso: ${sent.date ? escapeHtml(sent.date) + " " : ""}ore ${escapeHtml(sent.time)}`
           : "";
+        const safeMapsUrl = sanitizeExternalUrl(item.mapsUrl);
 
         return `
           <div class="p-3 rounded-xl bg-white border border-stone-200 flex flex-wrap items-center justify-between gap-2 text-xs">
@@ -2199,8 +2348,8 @@
                 Tour: <strong>${escapeHtml(item.routeName)}</strong> · Posizione attuale all'invio: ${escapeHtml(posText)}
               </div>
             </div>
-            ${item.mapsUrl ? `
-              <a href="${escapeHtml(item.mapsUrl)}" target="_blank" rel="noopener"
+            ${safeMapsUrl ? `
+              <a href="${escapeHtml(safeMapsUrl)}" target="_blank" rel="noopener noreferrer"
                 class="px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-bold">
                 Vedi su Maps ↗
               </a>
@@ -2279,11 +2428,14 @@
         return;
       }
 
-      const [lat, lon] = userCoords || activeBaseCoords;
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat.toFixed(4)}&longitude=${lon.toFixed(4)}&current=temperature_2m,weather_code,wind_speed_10m&hourly=precipitation_probability&forecast_days=1&timezone=Europe%2FRome`;
+      const coords = isValidLatLngPair(userCoords) ? userCoords : activeBaseCoords;
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${Number(coords[0]).toFixed(4)}&longitude=${Number(coords[1]).toFixed(4)}&current=temperature_2m,weather_code,wind_speed_10m&hourly=precipitation_probability&forecast_days=1&timezone=Europe%2FRome`;
 
       try {
-        const resp = await fetch(url, { cache: "no-store" });
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 5000);
+        const resp = await fetch(url, { cache: "no-store", signal: ctrl.signal });
+        clearTimeout(timer);
         if (!resp.ok) return;
         const json = await resp.json();
         const cur = json.current || {};
@@ -2328,6 +2480,10 @@
       const appSel = document.getElementById("app-theme-select");
       if (authSel) authSel.value = currentThemeMode;
       if (appSel) appSel.value = currentThemeMode;
+
+      if (typeof renderElevationProfile === "function") {
+        renderElevationProfile(getRouteById(activeRouteId), lastRouteProgressRatio);
+      }
     }
 
     function changeThemeMode(mode) {
@@ -2358,7 +2514,13 @@
     async function cloudReadJson(subPath) {
       if (!isFirebaseConfigured() || !navigator.onLine) return null;
       try {
-        const resp = await fetch(getFirebaseEndpoint(subPath) + "?ts=" + Date.now(), { cache: "no-store" });
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 6000);
+        const resp = await fetch(getFirebaseEndpoint(subPath) + "?ts=" + Date.now(), {
+          cache: "no-store",
+          signal: ctrl.signal
+        });
+        clearTimeout(timer);
         if (!resp.ok) return null;
         return await resp.json();
       } catch (e) {
@@ -2369,11 +2531,15 @@
     async function cloudWriteJson(subPath, payload) {
       if (!isFirebaseConfigured() || !navigator.onLine) return false;
       try {
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 6000);
         const resp = await fetch(getFirebaseEndpoint(subPath), {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
+          signal: ctrl.signal
         });
+        clearTimeout(timer);
         return resp.ok;
       } catch (e) {
         return false;
@@ -2734,7 +2900,7 @@
     async function releaseScreenWakeLock(notifyUser) {
       const t = I18N[currentLang] || I18N.it;
       keepScreenAwakeEnabled = false;
-      localStorage.setItem("magona_keep_screen_awake", "0");
+      try { localStorage.setItem("magona_keep_screen_awake", "0"); } catch (e) {}
       if (screenWakeLock) {
         try {
           await screenWakeLock.release();
@@ -2750,7 +2916,7 @@
         await releaseScreenWakeLock(true);
       } else {
         keepScreenAwakeEnabled = true;
-        localStorage.setItem("magona_keep_screen_awake", "1");
+        try { localStorage.setItem("magona_keep_screen_awake", "1"); } catch (e) {}
         updateWakeLockUI();
         await requestScreenWakeLock(true);
       }
@@ -2816,6 +2982,7 @@
 
       updateNetworkStatusUI();
       updateWakeLockUI();
+      updateOffRouteSoundUI();
       updatePoiOwnerVisibility();
       rebuildRouteSelector();
       selectRoute(activeRouteId);
@@ -3073,11 +3240,11 @@
             </div>
             <div class="flex items-center gap-1.5">
               ${exhausted ? `
-                <button onclick="resetClientCodeUses('${safeCode}')" class="px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 font-semibold cursor-pointer">
+                <button type="button" onclick="resetClientCodeUses('${safeCode}')" class="px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 font-semibold cursor-pointer">
                   Ripristina 0/3
                 </button>
               ` : ""}
-              <button onclick="revokeClientCode('${safeCode}')" class="px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 font-semibold cursor-pointer">
+              <button type="button" onclick="revokeClientCode('${safeCode}')" class="px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 font-semibold cursor-pointer">
                 Revoca
               </button>
             </div>
@@ -3199,6 +3366,7 @@
             localStorage.setItem(SESSION_ROLE_KEY, "super");
             localStorage.setItem(SESSION_MANAGER_ID_KEY, activeManagerId);
             localStorage.setItem(SESSION_MANAGER_NAME_KEY, activeManagerName);
+            localStorage.removeItem(SESSION_CLIENT_CODE_KEY);
           } catch (e) {}
           errEl.classList.add("hidden");
           await syncPartnerManagersFromCloud();
@@ -3230,6 +3398,7 @@
             localStorage.setItem(SESSION_ROLE_KEY, "partner");
             localStorage.setItem(SESSION_MANAGER_ID_KEY, activeManagerId);
             localStorage.setItem(SESSION_MANAGER_NAME_KEY, activeManagerName);
+            localStorage.removeItem(SESSION_CLIENT_CODE_KEY);
           } catch (e) {}
           errEl.classList.add("hidden");
           await syncClientCodesFromCloud(false, activeManagerId);
@@ -3278,7 +3447,7 @@
         const maxUses = Number(target.maxUses) || MAX_USES_PER_CODE;
 
         if (currentUses >= maxUses) {
-          errEl.textContent = `Codice ${escapeHtml(target.code)}: limite massimo di ${maxUses} accessi raggiunto.`;
+          errEl.textContent = `Codice ${target.code}: limite massimo di ${maxUses} accessi raggiunto.`;
           errEl.classList.remove("hidden");
           return;
         }
@@ -3306,6 +3475,13 @@
           || (partnerObj ? (partnerObj.baseAddress ? `${partnerObj.name} · ${partnerObj.baseAddress}` : partnerObj.name) : `${SUPER_MANAGER_NAME} · ${DEFAULT_BASE_ADDRESS_LABEL}`);
 
         setActiveBaseLocation(resolvedBaseCoords, resolvedBaseLabel);
+
+        try {
+          localStorage.setItem(SESSION_ROLE_KEY, "client");
+          localStorage.setItem(SESSION_CLIENT_CODE_KEY, activeSessionClientCode);
+          localStorage.setItem(SESSION_MANAGER_ID_KEY, activeManagerId);
+          localStorage.setItem(SESSION_MANAGER_NAME_KEY, activeManagerName);
+        } catch (e) {}
 
         errEl.classList.add("hidden");
         recordRiderDeparture("login");
@@ -3415,6 +3591,7 @@
       }
 
       updateWakeLockUI();
+      updateOffRouteSoundUI();
       if (keepScreenAwakeEnabled) requestScreenWakeLock(false);
 
       await syncAllCloudStateOnBoot(true);
@@ -3438,18 +3615,22 @@
       prevGpsCoords = null;
       currentHeadingDeg = 0;
       simulatedProgressRatio = 0;
+      lastRouteProgressRatio = 0;
       hasLeftBaseArea = false;
+      isCurrentlyOffRoute = false;
 
       if (map) {
         if (userMarker) { map.removeLayer(userMarker); userMarker = null; }
         if (userAccuracyCircle) { map.removeLayer(userAccuracyCircle); userAccuracyCircle = null; }
         if (returnToBaseLayer) { map.removeLayer(returnToBaseLayer); returnToBaseLayer = null; }
         if (poiRouteLayer) { map.removeLayer(poiRouteLayer); poiRouteLayer = null; }
+        if (elevationHoverMarker) { map.removeLayer(elevationHoverMarker); elevationHoverMarker = null; }
       }
 
       setActiveBaseLocation(DEFAULT_BASE_COORDS, `${SUPER_MANAGER_NAME} · ${DEFAULT_BASE_ADDRESS_LABEL}`);
       try {
         localStorage.removeItem(SESSION_ROLE_KEY);
+        localStorage.removeItem(SESSION_CLIENT_CODE_KEY);
         localStorage.removeItem(SESSION_MANAGER_ID_KEY);
         localStorage.removeItem(SESSION_MANAGER_NAME_KEY);
         localStorage.removeItem(SESSION_BASE_COORDS_KEY);
@@ -3467,6 +3648,11 @@
       }
       const navBanner = document.getElementById("nav-status-banner");
       if (navBanner) navBanner.classList.add("hidden");
+
+      const offBanner = document.getElementById("off-route-alert-banner");
+      if (offBanner) offBanner.classList.add("hidden");
+      const fsOffBanner = document.getElementById("fs-off-route-banner");
+      if (fsOffBanner) fsOffBanner.classList.add("hidden");
 
       const offlineBox = document.getElementById("offline-download-box");
       if (offlineBox) offlineBox.classList.add("hidden");
@@ -3533,9 +3719,31 @@
         mapEl.style.removeProperty("--map-rot");
         return;
       }
-      currentHeadingDeg = headingDeg;
+      currentHeadingDeg = ((headingDeg % 360) + 360) % 360;
       mapEl.classList.add("heading-up-active");
-      mapEl.style.setProperty("--map-rot", `${(-headingDeg).toFixed(1)}deg`);
+      mapEl.style.setProperty("--map-rot", `${(-currentHeadingDeg).toFixed(1)}deg`);
+    }
+
+    function setMapBaseLayer(layerKey) {
+      const chosenKey = MAP_TILE_LAYERS[layerKey] ? layerKey : "osm";
+      currentMapLayerKey = chosenKey;
+      try {
+        localStorage.setItem(MAP_LAYER_STORAGE_KEY, chosenKey);
+      } catch (e) {}
+
+      const sel = document.getElementById("overlay-map-layer-select");
+      if (sel) sel.value = chosenKey;
+
+      if (!map) return;
+      const cfg = MAP_TILE_LAYERS[chosenKey];
+      if (activeBaseTileLayer) {
+        map.removeLayer(activeBaseTileLayer);
+      }
+      activeBaseTileLayer = L.tileLayer(cfg.url, {
+        maxZoom: cfg.maxZoom,
+        attribution: cfg.attribution
+      }).addTo(map);
+      activeBaseTileLayer.bringToBack();
     }
 
     function initMap() {
@@ -3546,10 +3754,7 @@
         return;
       }
       map = L.map("map-container").setView(activeBaseCoords, 13);
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
-        attribution: "&copy; OpenStreetMap"
-      }).addTo(map);
+      setMapBaseLayer(currentMapLayerKey);
 
       map.on("dragstart", () => {
         if (liveNavActive) {
@@ -3573,6 +3778,14 @@
       document.getElementById("route-duration-text").textContent = route.duration ? "⏱ " + route.duration : "";
       const locSurface = getLocalizedRouteField(route, "surface");
       document.getElementById("route-surface-text").textContent = locSurface ? `· ${t.surfacePrefix}: ${locSurface}` : "";
+
+      const altEl = document.getElementById("route-altitude-range-text");
+      if (altEl) {
+        const minE = Number.isFinite(Number(route.minEleM)) ? Math.round(Number(route.minEleM)) : null;
+        const maxE = Number.isFinite(Number(route.maxEleM)) ? Math.round(Number(route.maxEleM)) : null;
+        altEl.textContent = (minE !== null && maxE !== null) ? `· Quota: ${minE}–${maxE} m` : "";
+      }
+
       document.getElementById("route-description-text").textContent = getLocalizedRouteField(route, "description");
     }
 
@@ -3580,6 +3793,13 @@
       const matches = getFilteredRoutesList();
       if (matches.length === 0) {
         rebuildRouteSelector([]);
+        if (map && routePolyline) {
+          map.removeLayer(routePolyline);
+          routePolyline = null;
+        }
+        clearElevationHoverMarker();
+        const elevCard = document.getElementById("elevation-profile-card");
+        if (elevCard) elevCard.classList.add("hidden");
         return;
       }
 
@@ -3588,6 +3808,7 @@
       const changed = activeRouteId !== route.id;
       activeRouteId = route.id;
       rebuildRouteSelector(matches);
+      clearElevationHoverMarker();
 
       updateRouteInfoCard(route);
 
@@ -3595,7 +3816,7 @@
         recordRiderDeparture("route_select");
       }
 
-      if (map) {
+      if (map && Array.isArray(route.coords) && route.coords.length > 0) {
         if (routePolyline) map.removeLayer(routePolyline);
         routePolyline = L.polyline(route.coords, {
           color: "#0f766e",
@@ -3605,7 +3826,7 @@
 
         if (liveNavActive) {
           recenterNavigator(false);
-        } else if (route.coords && route.coords.length > 0) {
+        } else if (routePolyline.getBounds().isValid()) {
           map.fitBounds(routePolyline.getBounds(), { padding: [24, 24] });
         }
       }
@@ -3621,24 +3842,381 @@
         const nextId = matches.some((r) => r.id === activeRouteId) ? activeRouteId : matches[0].id;
         selectRoute(nextId);
       } else {
+        if (map && routePolyline) {
+          map.removeLayer(routePolyline);
+          routePolyline = null;
+        }
+        clearElevationHoverMarker();
+        const elevCard = document.getElementById("elevation-profile-card");
+        if (elevCard) elevCard.classList.add("hidden");
         showToast(t.toastNoFilterMatch);
       }
     }
 
+    /* ================= INTERACTIVE ELEVATION PROFILE ================= */
+
+    function buildElevationProfileSamples(route) {
+      if (!route) return { samples: [], isRealGpx: false };
+      const totalKm = Math.max(0.1, Number(route.distanceKm) || 10);
+
+      if (Array.isArray(route.elevationProfile) && route.elevationProfile.length >= 2) {
+        const valid = route.elevationProfile
+          .filter((p) => p && Number.isFinite(Number(p.distKm)) && Number.isFinite(Number(p.eleM)))
+          .map((p) => ({
+            distKm: +Number(p.distKm).toFixed(2),
+            eleM: Math.round(Number(p.eleM)),
+            lat: Number.isFinite(Number(p.lat)) ? Number(p.lat) : null,
+            lng: Number.isFinite(Number(p.lng)) ? Number(p.lng) : null
+          }));
+        if (valid.length >= 2) {
+          return { samples: valid, isRealGpx: true };
+        }
+      }
+
+      const coords = Array.isArray(route.coords) ? route.coords.filter(isValidLatLngPair) : [];
+      const minE = Number.isFinite(Number(route.minEleM)) ? Number(route.minEleM) : 40;
+      const gainE = Math.max(20, Number(route.elevationGainM) || 350);
+      const maxE = Number.isFinite(Number(route.maxEleM)) && Number(route.maxEleM) > minE
+        ? Number(route.maxEleM)
+        : Math.round(minE + gainE * 0.65);
+      const span = Math.max(15, maxE - minE);
+
+      const count = 48;
+      const samples = [];
+      for (let i = 0; i < count; i++) {
+        const r = i / (count - 1);
+        const distKm = +(totalKm * r).toFixed(2);
+        const ridge = Math.sin(r * Math.PI);
+        const wave = 0.14 * Math.sin(r * Math.PI * 5) + 0.06 * Math.sin(r * Math.PI * 11);
+        const norm = Math.max(0, Math.min(1, ridge * 0.88 + wave * ridge));
+        const eleM = Math.round(minE + span * norm);
+
+        let lat = null;
+        let lng = null;
+        if (coords.length >= 2) {
+          const idx = Math.min(coords.length - 1, Math.round(r * (coords.length - 1)));
+          lat = Number(coords[idx][0]);
+          lng = Number(coords[idx][1]);
+        }
+        samples.push({ distKm, eleM, lat, lng });
+      }
+      return { samples, isRealGpx: false };
+    }
+
+    function clearElevationHoverMarker() {
+      if (map && elevationHoverMarker) {
+        map.removeLayer(elevationHoverMarker);
+        elevationHoverMarker = null;
+      }
+    }
+
+    function showElevationHoverMarker(sample) {
+      if (!map || !sample || !isValidLatLngPair([sample.lat, sample.lng])) return;
+      const coords = [Number(sample.lat), Number(sample.lng)];
+      if (!elevationHoverMarker) {
+        elevationHoverMarker = L.circleMarker(coords, {
+          radius: 7,
+          color: "#ffffff",
+          weight: 2.5,
+          fillColor: "#f59e0b",
+          fillOpacity: 1
+        }).addTo(map);
+      } else {
+        elevationHoverMarker.setLatLng(coords);
+      }
+    }
+
+    function renderElevationProfile(route, progressRatio = 0) {
+      const card = document.getElementById("elevation-profile-card");
+      const svg = document.getElementById("elevation-profile-svg");
+      if (!card || !svg) return;
+
+      if (!route) {
+        card.classList.add("hidden");
+        return;
+      }
+      card.classList.remove("hidden");
+
+      const { samples, isRealGpx } = buildElevationProfileSamples(route);
+      activeElevationSamples = samples;
+
+      const sourceBadge = document.getElementById("elev-source-badge");
+      if (sourceBadge) {
+        sourceBadge.textContent = isRealGpx ? "GPX Reale" : "Profilo Stimato";
+        sourceBadge.className = isRealGpx
+          ? "text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800"
+          : "text-[10px] font-bold px-2 py-0.5 rounded bg-stone-200 text-stone-800";
+      }
+
+      if (samples.length < 2) {
+        svg.innerHTML = "";
+        return;
+      }
+
+      const eles = samples.map((s) => s.eleM);
+      const rawMin = Math.min(...eles);
+      const rawMax = Math.max(...eles);
+      const padEle = Math.max(10, Math.round((rawMax - rawMin) * 0.12));
+      const minEle = Math.max(0, rawMin - padEle);
+      const maxEle = rawMax + padEle;
+      const eleSpan = Math.max(1, maxEle - minEle);
+      const maxDist = Math.max(0.1, samples[samples.length - 1].distKm || Number(route.distanceKm) || 1);
+
+      const minEl = document.getElementById("elev-min-label");
+      const maxEl = document.getElementById("elev-max-label");
+      if (minEl) minEl.textContent = `${rawMin} m`;
+      if (maxEl) maxEl.textContent = `${rawMax} m`;
+
+      const W = 720;
+      const H = 155;
+      const padL = 38;
+      const padR = 12;
+      const padT = 14;
+      const padB = 22;
+      const plotW = W - padL - padR;
+      const plotH = H - padT - padB;
+
+      const useDark = resolveIsDarkMode(currentThemeMode);
+      const gridColor = useDark ? "#363d3b" : "#e7e5e4";
+      const textColor = useDark ? "#a8a29e" : "#78716c";
+      const strokeColor = "#10b981";
+
+      const pts = samples.map((s, idx) => {
+        const ratioX = samples.length > 1 ? idx / (samples.length - 1) : 0;
+        const x = padL + ratioX * plotW;
+        const y = padT + plotH - ((s.eleM - minEle) / eleSpan) * plotH;
+        return { x, y, sample: s, idx };
+      });
+
+      const linePath = pts.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
+      const areaPath = `${linePath} L${pts[pts.length - 1].x.toFixed(1)},${(padT + plotH).toFixed(1)} L${pts[0].x.toFixed(1)},${(padT + plotH).toFixed(1)} Z`;
+
+      const midEle = Math.round((rawMin + rawMax) / 2);
+      const yTop = padT + 4;
+      const yMid = padT + plotH / 2;
+      const yBot = padT + plotH;
+
+      const clampedProg = Math.max(0, Math.min(1, Number(progressRatio) || 0));
+      const progX = padL + clampedProg * plotW;
+      const progIdx = Math.min(pts.length - 1, Math.round(clampedProg * (pts.length - 1)));
+      const progY = pts[progIdx].y;
+
+      svg.innerHTML = `
+        <defs>
+          <linearGradient id="elevAreaGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#10b981" stop-opacity="0.34" />
+            <stop offset="100%" stop-color="#10b981" stop-opacity="0.03" />
+          </linearGradient>
+        </defs>
+        <line x1="${padL}" y1="${yTop}" x2="${W - padR}" y2="${yTop}" stroke="${gridColor}" stroke-dasharray="3,3" stroke-width="1" />
+        <line x1="${padL}" y1="${yMid}" x2="${W - padR}" y2="${yMid}" stroke="${gridColor}" stroke-dasharray="3,3" stroke-width="1" />
+        <line x1="${padL}" y1="${yBot}" x2="${W - padR}" y2="${yBot}" stroke="${gridColor}" stroke-dasharray="3,3" stroke-width="1" />
+
+        <text x="4" y="${yTop + 3}" fill="${textColor}" font-size="10" font-weight="600">${rawMax}m</text>
+        <text x="4" y="${yMid + 3}" fill="${textColor}" font-size="10">${midEle}m</text>
+        <text x="4" y="${yBot}" fill="${textColor}" font-size="10" font-weight="600">${rawMin}m</text>
+
+        <text x="${padL}" y="${H - 5}" fill="${textColor}" font-size="10">0 km</text>
+        <text x="${(padL + plotW / 2).toFixed(1)}" y="${H - 5}" fill="${textColor}" font-size="10" text-anchor="middle">${(maxDist / 2).toFixed(1)} km</text>
+        <text x="${W - padR}" y="${H - 5}" fill="${textColor}" font-size="10" text-anchor="end">${maxDist.toFixed(1)} km</text>
+
+        <path d="${areaPath}" fill="url(#elevAreaGrad)" />
+        <path d="${linePath}" fill="none" stroke="${strokeColor}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" />
+
+        <line x1="${progX.toFixed(1)}" y1="${padT}" x2="${progX.toFixed(1)}" y2="${yBot}" stroke="#059669" stroke-width="1.5" stroke-dasharray="3,2" />
+        <circle cx="${progX.toFixed(1)}" cy="${progY.toFixed(1)}" r="4.5" fill="#059669" stroke="#ffffff" stroke-width="1.5" />
+
+        <line id="elev-hover-line" x1="0" y1="${padT}" x2="0" y2="${yBot}" stroke="#f59e0b" stroke-width="1.6" visibility="hidden" />
+        <circle id="elev-hover-dot" cx="0" cy="0" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="2" visibility="hidden" />
+      `;
+
+      const readoutEl = document.getElementById("elev-readout");
+      const defaultReadout = "Tocca o scorri sul grafico per ispezionare quota, distanza e pendenza";
+      if (readoutEl) readoutEl.textContent = defaultReadout;
+
+      const handleInspect = (clientX) => {
+        const rect = svg.getBoundingClientRect();
+        if (!rect || rect.width <= 0) return;
+        const svgX = ((clientX - rect.left) / rect.width) * W;
+        const ratio = Math.max(0, Math.min(1, (svgX - padL) / plotW));
+        const idx = Math.min(pts.length - 1, Math.round(ratio * (pts.length - 1)));
+        const pt = pts[idx];
+        const prevPt = pts[Math.max(0, idx - 1)];
+
+        const dKm = pt.sample.distKm - prevPt.sample.distKm;
+        const dEle = pt.sample.eleM - prevPt.sample.eleM;
+        const gradePct = dKm > 0.005 ? Math.round((dEle / (dKm * 1000)) * 100) : 0;
+        const gradeSign = gradePct > 0 ? `+${gradePct}%` : `${gradePct}%`;
+
+        const hLine = svg.getElementById("elev-hover-line");
+        const hDot = svg.getElementById("elev-hover-dot");
+        if (hLine) {
+          hLine.setAttribute("x1", pt.x.toFixed(1));
+          hLine.setAttribute("x2", pt.x.toFixed(1));
+          hLine.setAttribute("visibility", "visible");
+        }
+        if (hDot) {
+          hDot.setAttribute("cx", pt.x.toFixed(1));
+          hDot.setAttribute("cy", pt.y.toFixed(1));
+          hDot.setAttribute("visibility", "visible");
+        }
+
+        if (readoutEl) {
+          readoutEl.innerHTML = `Km <strong>${pt.sample.distKm.toFixed(1)}</strong> · Quota <strong>${pt.sample.eleM} m</strong> · Pendenza <strong>${gradeSign}</strong>`;
+        }
+        showElevationHoverMarker(pt.sample);
+      };
+
+      const handleLeave = () => {
+        const hLine = svg.getElementById("elev-hover-line");
+        const hDot = svg.getElementById("elev-hover-dot");
+        if (hLine) hLine.setAttribute("visibility", "hidden");
+        if (hDot) hDot.setAttribute("visibility", "hidden");
+        if (readoutEl) readoutEl.textContent = defaultReadout;
+        clearElevationHoverMarker();
+      };
+
+      svg.onpointermove = (ev) => handleInspect(ev.clientX);
+      svg.onpointerdown = (ev) => handleInspect(ev.clientX);
+      svg.onpointerleave = handleLeave;
+    }
+
+    /* ================= OFF-ROUTE DETECTION & AUDIO ALERT ================= */
+
+    function updateOffRouteSoundUI() {
+      const btn = document.getElementById("btn-offroute-sound");
+      if (!btn) return;
+      if (offRouteSoundEnabled) {
+        btn.textContent = "Audio Fuori Traccia: ON";
+        btn.className = "px-3.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer";
+      } else {
+        btn.textContent = "Audio Fuori Traccia: OFF";
+        btn.className = "px-3.5 py-2 rounded-xl bg-stone-200/70 text-stone-500 text-xs font-semibold cursor-pointer";
+      }
+    }
+
+    function toggleOffRouteSoundAlert() {
+      offRouteSoundEnabled = !offRouteSoundEnabled;
+      try {
+        localStorage.setItem(OFF_ROUTE_SOUND_STORAGE_KEY, offRouteSoundEnabled ? "1" : "0");
+      } catch (e) {}
+      updateOffRouteSoundUI();
+      if (offRouteSoundEnabled) {
+        playOffRouteAlertTone(true);
+        showToast("Avviso sonoro fuori traccia attivato");
+      } else {
+        showToast("Avviso sonoro fuori traccia disattivato");
+      }
+    }
+
+    function playOffRouteAlertTone(forceNow = false) {
+      if (!offRouteSoundEnabled) return;
+      const now = Date.now();
+      if (!forceNow && now - lastOffRouteBeepTs < OFF_ROUTE_BEEP_COOLDOWN_MS) return;
+      lastOffRouteBeepTs = now;
+
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const playBeep = (delaySec, freq) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(freq, ctx.currentTime + delaySec);
+          gain.gain.setValueAtTime(0.001, ctx.currentTime + delaySec);
+          gain.gain.exponentialRampToValueAtTime(0.18, ctx.currentTime + delaySec + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delaySec + 0.22);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + delaySec);
+          osc.stop(ctx.currentTime + delaySec + 0.24);
+        };
+        playBeep(0, 880);
+        playBeep(0.28, 660);
+        setTimeout(() => { try { ctx.close(); } catch (e) {} }, 900);
+      } catch (e) {}
+    }
+
+    function pointToSegmentMeters(pt, segA, segB) {
+      const refLatRad = ((Number(pt[0]) + Number(segA[0]) + Number(segB[0])) / 3) * (Math.PI / 180);
+      const mPerDegLat = 111132.92;
+      const mPerDegLon = 111412.84 * Math.cos(refLatRad);
+
+      const px = (Number(pt[1]) - Number(segA[1])) * mPerDegLon;
+      const py = (Number(pt[0]) - Number(segA[0])) * mPerDegLat;
+      const bx = (Number(segB[1]) - Number(segA[1])) * mPerDegLon;
+      const by = (Number(segB[0]) - Number(segA[0])) * mPerDegLat;
+
+      const lenSq = bx * bx + by * by;
+      if (lenSq <= 1e-6) return Math.hypot(px, py);
+
+      const t = Math.max(0, Math.min(1, (px * bx + py * by) / lenSq));
+      const projX = t * bx;
+      const projY = t * by;
+      return Math.hypot(px - projX, py - projY);
+    }
+
+    function computeMinDistanceToRouteMeters(coords, routeCoords) {
+      if (!isValidLatLngPair(coords) || !Array.isArray(routeCoords) || routeCoords.length === 0) return Infinity;
+      if (routeCoords.length === 1) return haversineMeters(coords, routeCoords[0]);
+      let minMeters = Infinity;
+      for (let i = 1; i < routeCoords.length; i++) {
+        const d = pointToSegmentMeters(coords, routeCoords[i - 1], routeCoords[i]);
+        if (d < minMeters) minMeters = d;
+      }
+      return minMeters;
+    }
+
+    function evaluateOffRouteStatus(route) {
+      const banner = document.getElementById("off-route-alert-banner");
+      const textEl = document.getElementById("off-route-alert-text");
+      const fsBanner = document.getElementById("fs-off-route-banner");
+      const fsTextEl = document.getElementById("fs-off-route-text");
+
+      if (!liveNavActive || !isValidLatLngPair(userCoords) || !route || !Array.isArray(route.coords) || route.coords.length < 2) {
+        isCurrentlyOffRoute = false;
+        if (banner) banner.classList.add("hidden");
+        if (fsBanner) fsBanner.classList.add("hidden");
+        return;
+      }
+
+      const distMeters = computeMinDistanceToRouteMeters(userCoords, route.coords);
+      if (Number.isFinite(distMeters) && distMeters > OFF_ROUTE_THRESHOLD_METERS) {
+        const rounded = Math.round(distMeters);
+        if (banner) banner.classList.remove("hidden");
+        if (textEl) textEl.textContent = `ATTENZIONE: Sei fuori traccia! Distanza dal sentiero: ${rounded} m`;
+        if (fsBanner) fsBanner.classList.remove("hidden");
+        if (fsTextEl) fsTextEl.textContent = `⚠️ Fuori traccia (${rounded} m dal sentiero)`;
+
+        if (!isCurrentlyOffRoute) {
+          isCurrentlyOffRoute = true;
+          playOffRouteAlertTone(true);
+        } else {
+          playOffRouteAlertTone(false);
+        }
+      } else {
+        isCurrentlyOffRoute = false;
+        if (banner) banner.classList.add("hidden");
+        if (fsBanner) fsBanner.classList.add("hidden");
+      }
+    }
+
     function haversineMeters(c1, c2) {
+      if (!isValidLatLngPair(c1) || !isValidLatLngPair(c2)) return 0;
       const R = 6371000;
       const toRad = (deg) => (deg * Math.PI) / 180;
-      const dLat = toRad(c2[0] - c1[0]);
-      const dLon = toRad(c2[1] - c1[1]);
+      const dLat = toRad(Number(c2[0]) - Number(c1[0]));
+      const dLon = toRad(Number(c2[1]) - Number(c1[1]));
       const a =
         Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(toRad(c1[0])) * Math.cos(toRad(c2[0])) *
+        Math.cos(toRad(Number(c1[0]))) * Math.cos(toRad(Number(c2[0]))) *
         Math.sin(dLon / 2) * Math.sin(dLon / 2);
       return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     }
 
     function computeProgressFromGps(coords, routeCoords) {
-      if (!coords || !routeCoords || routeCoords.length < 2) return null;
+      if (!isValidLatLngPair(coords) || !Array.isArray(routeCoords) || routeCoords.length < 2) return null;
       let cumulative = [0];
       for (let i = 1; i < routeCoords.length; i++) {
         cumulative.push(cumulative[i - 1] + haversineMeters(routeCoords[i - 1], routeCoords[i]));
@@ -3663,6 +4241,7 @@
       if (!route) return;
       const gpsRatio = userCoords ? computeProgressFromGps(userCoords, route.coords) : null;
       const ratio = gpsRatio !== null ? gpsRatio : Math.min(1, Math.max(0, simulatedProgressRatio));
+      lastRouteProgressRatio = ratio;
 
       const totalKm = Number(route.distanceKm) || 0;
       const doneKm = +(totalKm * ratio).toFixed(1);
@@ -3688,11 +4267,14 @@
       document.getElementById("fs-total-elev").textContent = totalElev + " m";
       document.getElementById("fs-done-elev").textContent = doneElev + " m";
 
+      renderElevationProfile(route, ratio);
+      evaluateOffRouteStatus(route);
+
       evaluateRiderProximityAndHalfway(route, pct);
-      if (pendingAlertsQueue.length > 0 && navigator.onLine) {
+      if (pendingAlertsQueue.length > 0 && navigator.onLine && !isFlushingAlerts) {
         flushPendingRiderAlertsWithCurrentCoords();
       }
-      if (pendingDeparturesQueue.length > 0 && navigator.onLine) {
+      if (pendingDeparturesQueue.length > 0 && navigator.onLine && !isFlushingDepartures) {
         flushPendingRiderDepartures();
       }
     }
@@ -3719,7 +4301,7 @@
 
     function renderUserPositionMarker(coords, accuracy) {
       const t = I18N[currentLang] || I18N.it;
-      if (!map || !coords) return;
+      if (!map || !isValidLatLngPair(coords)) return;
       if (!userMarker) {
         userMarker = L.marker(coords, {
           icon: createMiniCyclistIcon(),
@@ -3818,6 +4400,11 @@
         recordRiderDeparture("nav_start");
         updateRouteProgressMetrics();
       } else {
+        isCurrentlyOffRoute = false;
+        const offBanner = document.getElementById("off-route-alert-banner");
+        if (offBanner) offBanner.classList.add("hidden");
+        const fsOffBanner = document.getElementById("fs-off-route-banner");
+        if (fsOffBanner) fsOffBanner.classList.add("hidden");
         applyMapHeadingRotation(0, false);
         banner.classList.add("hidden");
         btn.textContent = t.navStart;
@@ -3926,18 +4513,18 @@
         step = prev[step];
       }
 
-      const coords = [startPt];
+      const coords = [[Number(startPt[0]), Number(startPt[1])]];
       let totalMeters = haversineMeters(startPt, nodes[startNodeId].coords);
       nodePathIds.forEach((nid) => {
         const c = nodes[nid].coords;
         const last = coords[coords.length - 1];
         totalMeters += haversineMeters(last, c);
-        coords.push(c);
+        coords.push([...c]);
       });
       const lastPt = coords[coords.length - 1];
-      if (!lastPt || lastPt[0] !== endPt[0] || lastPt[1] !== endPt[1]) {
+      if (!lastPt || lastPt[0] !== Number(endPt[0]) || lastPt[1] !== Number(endPt[1])) {
         if (lastPt) totalMeters += haversineMeters(lastPt, endPt);
-        coords.push([...endPt]);
+        coords.push([Number(endPt[0]), Number(endPt[1])]);
       }
 
       return {
@@ -3964,8 +4551,8 @@
           const feature = data?.features?.[0];
           const rawCoords = feature?.geometry?.coordinates;
           if (Array.isArray(rawCoords) && rawCoords.length > 1) {
-            const latLngs = rawCoords.map(([lon, lat]) => [lat, lon]);
-            latLngs.push([...endPt]);
+            const latLngs = rawCoords.map(([lon, lat]) => [lat, lon]).filter((pt) => isValidLatLngPair(pt));
+            latLngs.push([Number(endPt[0]), Number(endPt[1])]);
             let totalMeters = 0;
             for (let i = 1; i < latLngs.length; i++) {
               totalMeters += haversineMeters(latLngs[i - 1], latLngs[i]);
@@ -3989,8 +4576,8 @@
           const data = await resp.json();
           const route = data?.routes?.[0];
           if (route?.geometry?.coordinates?.length > 1) {
-            const latLngs = route.geometry.coordinates.map(([lon, lat]) => [lat, lon]);
-            latLngs.push([...endPt]);
+            const latLngs = route.geometry.coordinates.map(([lon, lat]) => [lat, lon]).filter((pt) => isValidLatLngPair(pt));
+            latLngs.push([Number(endPt[0]), Number(endPt[1])]);
             return {
               coords: latLngs,
               distanceKm: +(route.distance / 1000).toFixed(1),
@@ -4027,13 +4614,13 @@
         }
 
         if (bestStartDist < 1200 && bestEndDist < 1200 && bestStartIdx !== bestEndIdx) {
-          const segment = [startPt];
+          const segment = [[Number(startPt[0]), Number(startPt[1])]];
           if (bestStartIdx < bestEndIdx) {
             for (let i = bestStartIdx; i <= bestEndIdx; i++) segment.push(rCoords[i]);
           } else {
             for (let i = bestStartIdx; i >= bestEndIdx; i--) segment.push(rCoords[i]);
           }
-          segment.push(endPt);
+          segment.push([Number(endPt[0]), Number(endPt[1])]);
 
           let meters = 0;
           for (let i = 1; i < segment.length; i++) {
@@ -4089,29 +4676,44 @@
       }).addTo(map);
       returnToBaseLayer.bindPopup(escapeHtml(`${t.returnBasePrefix} · ${activeBaseLabel} (${chosenPath.distanceKm} km)`));
 
-      const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${activeBaseCoords[0]},${activeBaseCoords[1]}&travelmode=bicycling`;
+      const gmapsUrl = sanitizeExternalUrl(`https://www.google.com/maps/dir/?api=1&destination=${Number(activeBaseCoords[0])},${Number(activeBaseCoords[1])}&travelmode=bicycling`);
       const banner = document.getElementById("nav-status-banner");
       const statusText = document.getElementById("nav-status-text");
       if (banner && statusText) {
         banner.classList.remove("hidden");
-        statusText.innerHTML = `${escapeHtml(t.returnBasePrefix)} <strong>${escapeHtml(activeBaseLabel)}</strong> (${chosenPath.distanceKm} km) · <a href="${gmapsUrl}" target="_blank" rel="noopener" class="underline font-bold text-emerald-300">${escapeHtml(t.openGmaps)}</a>`;
+        const gmapsLinkHtml = gmapsUrl
+          ? ` · <a href="${escapeHtml(gmapsUrl)}" target="_blank" rel="noopener noreferrer" class="underline font-bold text-emerald-300">${escapeHtml(t.openGmaps)}</a>`
+          : "";
+        statusText.innerHTML = `${escapeHtml(t.returnBasePrefix)} <strong>${escapeHtml(activeBaseLabel)}</strong> (${escapeHtml(String(chosenPath.distanceKm))} km)${gmapsLinkHtml}`;
       }
 
       if (userCoords) {
         followUserCenter = true;
         map.setView(userCoords, NAV_ZOOM_LEVEL, { animate: false });
-      } else {
+      } else if (returnToBaseLayer.getBounds().isValid()) {
         map.fitBounds(returnToBaseLayer.getBounds(), { padding: [30, 30] });
       }
       showToast(`${t.returnBasePrefix} ${activeBaseLabel} (${chosenPath.distanceKm} km)`);
     }
 
     function latLngToTile(lat, lon, zoom) {
-      const n = Math.pow(2, zoom);
-      const x = Math.floor(((lon + 180) / 360) * n);
-      const latRad = (lat * Math.PI) / 180;
-      const y = Math.floor(((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2) * n);
-      return { x, y };
+      const z = Math.max(0, Math.min(19, Number(zoom) || 14));
+      const n = Math.pow(2, z);
+      const clampedLat = Math.max(-85.05112878, Math.min(85.05112878, Number(lat) || 0));
+      const normLon = ((((Number(lon) || 0) + 180) % 360) + 360) % 360 - 180;
+      const x = Math.floor(((normLon + 180) / 360) * n) % n;
+      const latRad = (clampedLat * Math.PI) / 180;
+      const rawY = Math.floor(((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2) * n);
+      const y = Math.max(0, Math.min(n - 1, rawY));
+      return { x, y, n };
+    }
+
+    function buildTileUrlForLayer(layerKey, z, x, y) {
+      const cfg = MAP_TILE_LAYERS[layerKey] || MAP_TILE_LAYERS.osm;
+      return cfg.template
+        .replace("{z}", String(z))
+        .replace("{x}", String(x))
+        .replace("{y}", String(y));
     }
 
     async function saveOfflineForUser() {
@@ -4122,53 +4724,80 @@
       const labelEl = document.getElementById("offline-download-label");
       box.classList.remove("hidden");
       labelEl.textContent = t.offlineSaving;
+      bar.style.width = "0%";
+      pctEl.textContent = "0%";
 
       await persistRoutesList(false);
       await persistPoisList(false);
 
       const tileUrls = new Set();
       const allCoords = [activeBaseCoords, DEFAULT_BASE_COORDS];
+      if (isValidLatLngPair(userCoords)) allCoords.push(userCoords);
       ROUTES_LIST.forEach((r) => {
-        (r.coords || []).forEach((c) => allCoords.push(c));
+        const sampled = simplifyCoords(r.coords || [], 18);
+        sampled.forEach((c) => {
+          if (isValidLatLngPair(c)) allCoords.push(c);
+        });
       });
 
-      [13, 14, 15].forEach((z) => {
+      const layerCfg = MAP_TILE_LAYERS[currentMapLayerKey] || MAP_TILE_LAYERS.osm;
+      const zooms = [13, 14, 15, 16].filter((z) => z <= layerCfg.maxZoom);
+
+      zooms.forEach((z) => {
+        const radius = z >= 15 ? 0 : 1;
         allCoords.forEach(([lat, lon]) => {
-          const { x, y } = latLngToTile(lat, lon, z);
-          for (let dx = -1; dx <= 1; dx++) {
-            for (let dy = -1; dy <= 1; dy++) {
-              tileUrls.add(`https://a.tile.openstreetmap.org/${z}/${x + dx}/${y + dy}.png`);
+          const { x, y, n } = latLngToTile(lat, lon, z);
+          for (let dx = -radius; dx <= radius; dx++) {
+            for (let dy = -radius; dy <= radius; dy++) {
+              const tx = (((x + dx) % n) + n) % n;
+              const ty = Math.max(0, Math.min(n - 1, y + dy));
+              tileUrls.add(buildTileUrlForLayer(currentMapLayerKey, z, tx, ty));
             }
           }
         });
       });
 
-      const urls = Array.from(tileUrls).slice(0, 75);
+      const urls = Array.from(tileUrls).slice(0, 120);
       let completed = 0;
 
-      if ("caches" in window) {
+      if ("caches" in window && urls.length > 0) {
         try {
           const cache = await caches.open(OFFLINE_CACHE_NAME);
-          for (const url of urls) {
-            try {
-              const req = new Request(url, { mode: "no-cors" });
-              const resp = await fetch(req);
-              if (resp) await cache.put(req, resp);
-            } catch (err) {}
-            completed++;
-            const pct = Math.round((completed / urls.length) * 100);
-            bar.style.width = pct + "%";
-            pctEl.textContent = pct + "%";
+          const concurrency = 6;
+          let cursor = 0;
+
+          async function worker() {
+            while (cursor < urls.length) {
+              const idx = cursor++;
+              const url = urls[idx];
+              try {
+                const req = new Request(url, { mode: "no-cors" });
+                const resp = await fetch(req);
+                if (resp) await cache.put(req, resp);
+              } catch (err) {}
+              completed++;
+              const pct = Math.min(100, Math.round((completed / urls.length) * 100));
+              bar.style.width = pct + "%";
+              pctEl.textContent = pct + "%";
+            }
           }
-        } catch (e) {}
+
+          await Promise.all(Array.from({ length: Math.min(concurrency, urls.length) }, () => worker()));
+        } catch (e) {
+          bar.style.width = "100%";
+          pctEl.textContent = "100%";
+        }
       } else {
         bar.style.width = "100%";
         pctEl.textContent = "100%";
       }
 
-      localStorage.setItem("magona_offline_ready", "1");
+      try {
+        localStorage.setItem("magona_offline_ready", "1");
+        localStorage.setItem("magona_offline_saved_at", new Date().toISOString());
+      } catch (e) {}
       updateNetworkStatusUI();
-      labelEl.textContent = t.offlineSaved;
+      labelEl.textContent = `${t.offlineSaved} (${layerCfg.label} · ${urls.length} tasselli)`;
       showToast(t.toastOfflineSaved);
     }
 
@@ -4187,17 +4816,36 @@
       return out;
     }
 
+    function downsampleElevationSamples(rawSamples, maxSamples = 120) {
+      if (!Array.isArray(rawSamples) || rawSamples.length === 0) return null;
+      if (rawSamples.length <= maxSamples) return rawSamples;
+      const step = (rawSamples.length - 1) / (maxSamples - 1);
+      const out = [];
+      for (let i = 0; i < maxSamples - 1; i++) {
+        out.push(rawSamples[Math.round(i * step)]);
+      }
+      out.push(rawSamples[rawSamples.length - 1]);
+      return out;
+    }
+
     function parseGpxText(xmlText) {
+      if (typeof xmlText !== "string" || !xmlText.trim()) {
+        return { coords: [], originalCount: 0, distanceKm: 0, elevationGainM: 0, minEleM: null, maxEleM: null, elevationProfile: null, invalidXml: true };
+      }
       const parser = new DOMParser();
       const doc = parser.parseFromString(xmlText, "application/xml");
-      if (doc.querySelector("parsererror")) {
-        return { coords: [], originalCount: 0, distanceKm: 0, elevationGainM: 0, invalidXml: true };
+      if (doc.querySelector("parsererror") || !doc.documentElement || !/gpx/i.test(doc.documentElement.tagName)) {
+        return { coords: [], originalCount: 0, distanceKm: 0, elevationGainM: 0, minEleM: null, maxEleM: null, elevationProfile: null, invalidXml: true };
       }
+
       const trkpts = Array.from(doc.querySelectorAll("trkpt, rtept"));
       const rawCoords = [];
+      const rawEleProfile = [];
       let totalMeters = 0;
       let elevGain = 0;
       let prevEle = null;
+      let minEle = Infinity;
+      let maxEle = -Infinity;
 
       trkpts.forEach((pt) => {
         const lat = parseFloat(pt.getAttribute("lat"));
@@ -4205,33 +4853,64 @@
         if (isValidLatLngPair([lat, lon])) {
           const cur = [lat, lon];
           if (rawCoords.length > 0) {
-            totalMeters += haversineMeters(rawCoords[rawCoords.length - 1], cur);
+            const segMeters = haversineMeters(rawCoords[rawCoords.length - 1], cur);
+            if (segMeters < 200000) {
+              totalMeters += segMeters;
+            }
           }
           rawCoords.push(cur);
 
           const eleNode = pt.querySelector("ele");
           if (eleNode) {
             const ele = parseFloat(eleNode.textContent);
-            if (Number.isFinite(ele)) {
-              if (prevEle !== null && ele > prevEle) {
-                elevGain += (ele - prevEle);
+            if (Number.isFinite(ele) && ele >= -500 && ele <= 9000) {
+              if (ele < minEle) minEle = ele;
+              if (ele > maxEle) maxEle = ele;
+              rawEleProfile.push({
+                distKm: +(totalMeters / 1000).toFixed(2),
+                eleM: Math.round(ele),
+                lat: +lat.toFixed(6),
+                lng: +lon.toFixed(6)
+              });
+              if (prevEle !== null) {
+                const diff = ele - prevEle;
+                if (diff >= ELEV_NOISE_THRESHOLD_M) {
+                  elevGain += diff;
+                  prevEle = ele;
+                } else if (diff <= -ELEV_NOISE_THRESHOLD_M) {
+                  prevEle = ele;
+                }
+              } else {
+                prevEle = ele;
               }
-              prevEle = ele;
             }
           }
         }
       });
 
+      const hasEle = Number.isFinite(minEle) && Number.isFinite(maxEle);
+
       return {
         coords: simplifyCoords(rawCoords, 600),
         originalCount: rawCoords.length,
         distanceKm: +(totalMeters / 1000).toFixed(1),
-        elevationGainM: Math.round(elevGain)
+        elevationGainM: Math.round(elevGain),
+        minEleM: hasEle ? Math.round(minEle) : null,
+        maxEleM: hasEle ? Math.round(maxEle) : null,
+        elevationProfile: rawEleProfile.length >= 2 ? downsampleElevationSamples(rawEleProfile, 120) : null
       };
     }
 
     function readFileAsTextAsync(file) {
       return new Promise((resolve, reject) => {
+        if (!file) {
+          reject(new Error("Nessun file"));
+          return;
+        }
+        if (typeof file.size === "number" && file.size > MAX_GPX_FILE_BYTES) {
+          reject(new Error("File GPX troppo grande (max 15 MB)"));
+          return;
+        }
         const reader = new FileReader();
         reader.onload = (e) => resolve(e.target.result || "");
         reader.onerror = () => reject(reader.error);
@@ -4242,11 +4921,25 @@
     async function previewGpxMetricsOnForm(event) {
       const file = event.target.files?.[0];
       if (!file) return;
+
+      if (!/\.gpx$/i.test(file.name || "")) {
+        pendingFormCoords = null;
+        pendingFormAltMetrics = null;
+        document.getElementById("gpx-parse-feedback").textContent = "Formato non valido (richiesto .gpx)";
+        showToast("Seleziona un file con estensione .gpx");
+        return;
+      }
+
       try {
         const text = await readFileAsTextAsync(file);
         const parsed = parseGpxText(text);
-        if (parsed.coords.length > 1) {
+        if (!parsed.invalidXml && parsed.coords.length > 1) {
           pendingFormCoords = parsed.coords;
+          pendingFormAltMetrics = {
+            minEleM: parsed.minEleM,
+            maxEleM: parsed.maxEleM,
+            elevationProfile: parsed.elevationProfile
+          };
           const nameInput = document.getElementById("tour-name-input");
           if (!nameInput.value.trim()) {
             nameInput.value = file.name.replace(/\.gpx$/i, "").replace(/[-_]+/g, " ");
@@ -4257,17 +4950,22 @@
           if (parsed.elevationGainM > 0) {
             document.getElementById("tour-elev-input").value = parsed.elevationGainM;
           }
+          const eleRangeStr = (parsed.minEleM !== null && parsed.maxEleM !== null)
+            ? ` · Quota ${parsed.minEleM}–${parsed.maxEleM} m`
+            : "";
           document.getElementById("gpx-parse-feedback").textContent =
-            `GPX: ${parsed.originalCount} pt · ${parsed.distanceKm} km · +${parsed.elevationGainM} m`;
+            `GPX valido: ${parsed.originalCount} pt · ${parsed.distanceKm} km · +${parsed.elevationGainM} m${eleRangeStr}`;
         } else {
           pendingFormCoords = null;
-          document.getElementById("gpx-parse-feedback").textContent = "GPX error";
+          pendingFormAltMetrics = null;
+          document.getElementById("gpx-parse-feedback").textContent = "GPX non valido o senza punti";
           showToast("File GPX non valido o senza punti traccia");
         }
       } catch (err) {
         pendingFormCoords = null;
-        document.getElementById("gpx-parse-feedback").textContent = "GPX error";
-        showToast("Errore lettura file GPX");
+        pendingFormAltMetrics = null;
+        document.getElementById("gpx-parse-feedback").textContent = "Errore lettura GPX";
+        showToast(err && err.message ? err.message : "Errore lettura file GPX");
       }
     }
 
@@ -4287,6 +4985,7 @@
       document.getElementById("tour-gpx-file").value = "";
       document.getElementById("gpx-parse-feedback").textContent = "";
       pendingFormCoords = null;
+      pendingFormAltMetrics = null;
     }
 
     function editTourInForm(tourId) {
@@ -4308,6 +5007,7 @@
       document.getElementById("tour-gpx-file").value = "";
       document.getElementById("gpx-parse-feedback").textContent = "";
       pendingFormCoords = null;
+      pendingFormAltMetrics = null;
       document.getElementById("tab-tours").scrollIntoView({ behavior: "smooth" });
     }
 
@@ -4325,8 +5025,13 @@
         try {
           const text = await readFileAsTextAsync(fileInput.files[0]);
           const parsed = parseGpxText(text);
-          if (parsed.coords.length > 1) {
+          if (!parsed.invalidXml && parsed.coords.length > 1) {
             pendingFormCoords = parsed.coords;
+            pendingFormAltMetrics = {
+              minEleM: parsed.minEleM,
+              maxEleM: parsed.maxEleM,
+              elevationProfile: parsed.elevationProfile
+            };
           }
         } catch (e) {}
       }
@@ -4351,6 +5056,9 @@
             difficulty,
             distanceKm,
             elevationGainM,
+            minEleM: pendingFormAltMetrics?.minEleM ?? ROUTES_LIST[idx].minEleM ?? null,
+            maxEleM: pendingFormAltMetrics?.maxEleM ?? ROUTES_LIST[idx].maxEleM ?? null,
+            elevationProfile: pendingFormAltMetrics?.elevationProfile ?? ROUTES_LIST[idx].elevationProfile ?? null,
             duration,
             surface,
             description,
@@ -4372,6 +5080,9 @@
           difficulty,
           distanceKm,
           elevationGainM,
+          minEleM: pendingFormAltMetrics?.minEleM ?? null,
+          maxEleM: pendingFormAltMetrics?.maxEleM ?? null,
+          elevationProfile: pendingFormAltMetrics?.elevationProfile ?? null,
           duration,
           surface,
           description,
@@ -4413,7 +5124,7 @@
     }
 
     async function setTourRankExact(index, newRankValue) {
-      if (!isSuperManager) return;
+      if (!isSuperManager || ROUTES_LIST.length === 0) return;
       const parsedRank = parseInt(newRankValue, 10);
       if (Number.isNaN(parsedRank)) return;
       const targetIdx = Math.min(ROUTES_LIST.length - 1, Math.max(0, parsedRank - 1));
@@ -4428,7 +5139,11 @@
     }
 
     async function deleteTourById(tourId) {
-      if (!isSuperManager || ROUTES_LIST.length <= 1) return;
+      if (!isSuperManager) return;
+      if (ROUTES_LIST.length <= 1) {
+        showToast("Deve restare almeno un tour");
+        return;
+      }
       ROUTES_LIST = ROUTES_LIST.filter((r) => r.id !== tourId);
       if (activeRouteId === tourId) {
         activeRouteId = ROUTES_LIST[0].id;
@@ -4437,6 +5152,7 @@
       rebuildRouteSelector();
       selectRoute(activeRouteId);
       renderToursManagerList();
+      showToast("Tour eliminato");
     }
 
     async function restoreDefaultRoutes() {
@@ -4447,6 +5163,7 @@
       rebuildRouteSelector();
       selectRoute(activeRouteId);
       renderToursManagerList();
+      showToast("✓ Tour predefiniti ripristinati");
     }
 
     async function saveAllToursChanges() {
@@ -4496,19 +5213,19 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-1.5 self-end sm:self-center">
-              <button onclick="moveTourRank(${idx}, -1)" ${idx === 0 ? "disabled" : ""}
+              <button type="button" onclick="moveTourRank(${idx}, -1)" ${idx === 0 ? "disabled" : ""}
                 class="px-2.5 py-1.5 rounded-lg border border-stone-300 bg-white hover:bg-stone-100 disabled:opacity-35 text-xs font-bold cursor-pointer">
                 ${escapeHtml(t.rankUpBtn)}
               </button>
-              <button onclick="moveTourRank(${idx}, 1)" ${idx === ROUTES_LIST.length - 1 ? "disabled" : ""}
+              <button type="button" onclick="moveTourRank(${idx}, 1)" ${idx === ROUTES_LIST.length - 1 ? "disabled" : ""}
                 class="px-2.5 py-1.5 rounded-lg border border-stone-300 bg-white hover:bg-stone-100 disabled:opacity-35 text-xs font-bold cursor-pointer">
                 ${escapeHtml(t.rankDownBtn)}
               </button>
-              <button onclick="editTourInForm('${safeId}')"
+              <button type="button" onclick="editTourInForm('${safeId}')"
                 class="px-3 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold cursor-pointer">
                 ${escapeHtml(t.editBtn)}
               </button>
-              <button onclick="deleteTourById('${safeId}')"
+              <button type="button" onclick="deleteTourById('${safeId}')"
                 class="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-semibold cursor-pointer">
                 ${escapeHtml(t.deleteBtn)}
               </button>
@@ -4642,8 +5359,10 @@
       showToast("✓ " + name);
     }
 
-    async function movePoiRank(index, delta) {
-      if (!isSuperManager) return;
+    async function movePoiById(poiId, delta) {
+      if (!isSuperManager || activePoiTypeFilter !== "all") return;
+      const index = POIS.findIndex((p) => p.id === poiId);
+      if (index === -1) return;
       const targetIdx = index + delta;
       if (targetIdx < 0 || targetIdx >= POIS.length) return;
       const temp = POIS[index];
@@ -4656,11 +5375,16 @@
     }
 
     async function deletePoiById(poiId) {
-      if (!isSuperManager || POIS.length <= 1) return;
+      if (!isSuperManager) return;
+      if (POIS.length <= 1) {
+        showToast("Deve restare almeno un punto utile");
+        return;
+      }
       POIS = POIS.filter((p) => p.id !== poiId);
       await persistPoisList(true);
       renderPoiList();
       renderPoiMarkersOnMap();
+      showToast("Punto utile eliminato");
     }
 
     async function restoreDefaultPois() {
@@ -4669,6 +5393,7 @@
       await persistPoisList(true);
       renderPoiList();
       renderPoiMarkersOnMap();
+      showToast("✓ Punti utili predefiniti ripristinati");
     }
 
     async function saveAllPoisChanges() {
@@ -4722,26 +5447,26 @@
               ${locNote ? `<div class="text-xs text-stone-600">${escapeHtml(locNote)}</div>` : ""}
             </div>
             <div class="flex flex-wrap items-center gap-1.5 self-end sm:self-center">
-              <button onclick="focusPoiOnMap(${lat}, ${lng}, decodeURIComponent('${safeName}'))"
+              <button type="button" onclick="focusPoiOnMap(${lat}, ${lng}, decodeURIComponent('${safeName}'))"
                 class="px-3 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold cursor-pointer">
                 ${escapeHtml(t.guideOnMap)}
               </button>
               ${isSuperManager ? `
                 ${activePoiTypeFilter === "all" ? `
-                  <button onclick="movePoiRank(${originalIdx}, -1)" ${originalIdx === 0 ? "disabled" : ""}
+                  <button type="button" onclick="movePoiById('${safeId}', -1)" ${originalIdx === 0 ? "disabled" : ""}
                     class="px-2.5 py-1.5 rounded-lg border border-stone-300 bg-white hover:bg-stone-100 disabled:opacity-35 text-xs font-bold cursor-pointer">
                     ${escapeHtml(t.rankUpBtn)}
                   </button>
-                  <button onclick="movePoiRank(${originalIdx}, 1)" ${originalIdx === POIS.length - 1 ? "disabled" : ""}
+                  <button type="button" onclick="movePoiById('${safeId}', 1)" ${originalIdx === POIS.length - 1 ? "disabled" : ""}
                     class="px-2.5 py-1.5 rounded-lg border border-stone-300 bg-white hover:bg-stone-100 disabled:opacity-35 text-xs font-bold cursor-pointer">
                     ${escapeHtml(t.rankDownBtn)}
                   </button>
                 ` : ""}
-                <button onclick="editPoiInForm('${safeId}')"
+                <button type="button" onclick="editPoiInForm('${safeId}')"
                   class="px-3 py-1.5 rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-900 text-xs font-semibold cursor-pointer">
                   ${escapeHtml(t.editBtn)}
                 </button>
-                <button onclick="deletePoiById('${safeId}')"
+                <button type="button" onclick="deletePoiById('${safeId}')"
                   class="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-semibold cursor-pointer">
                   ${escapeHtml(t.deleteBtn)}
                 </button>
@@ -4754,53 +5479,62 @@
 
     async function focusPoiOnMap(lat, lng, label) {
       const t = I18N[currentLang] || I18N.it;
+      const targetPt = [Number(lat), Number(lng)];
+      if (!isValidLatLngPair(targetPt)) return;
+
       switchTab("map");
       if (!map) initMap();
 
-      const destPt = [Number(lat), Number(lng)];
-      const startPt = userCoords || [...activeBaseCoords];
+      const activeRoute = getRouteById(activeRouteId);
+      const startPt = userCoords || activeRoute?.coords?.[0] || [...activeBaseCoords];
 
-      if (poiRouteLayer) {
-        map.removeLayer(poiRouteLayer);
+      const localFallback = computeOfflineTrailFallbackPath(startPt, targetPt);
+      let chosenPath = localFallback;
+
+      if (map) {
+        if (poiRouteLayer) {
+          map.removeLayer(poiRouteLayer);
+        }
+        poiRouteLayer = L.polyline(chosenPath.coords, {
+          color: "#2563eb",
+          weight: 5,
+          opacity: 0.92,
+          dashArray: "8, 6"
+        }).addTo(map);
+        poiRouteLayer.bindPopup(escapeHtml(`${label} (${chosenPath.distanceKm} km)`));
+        if (poiRouteLayer.getBounds().isValid()) {
+          map.fitBounds(poiRouteLayer.getBounds(), { padding: [32, 32] });
+        }
       }
 
-      const offlineFallback = computeOfflineTrailFallbackPath(startPt, destPt);
-      poiRouteLayer = L.polyline(offlineFallback.coords, {
-        color: "#2563eb",
-        weight: 5,
-        opacity: 0.9,
-        dashArray: "8, 6"
-      }).addTo(map);
-
-      const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${destPt[0]},${destPt[1]}&travelmode=bicycling`;
       const banner = document.getElementById("nav-status-banner");
       const statusText = document.getElementById("nav-status-text");
       if (banner && statusText) {
         banner.classList.remove("hidden");
-        statusText.innerHTML = `${escapeHtml(t.toastPoiCalc)} <strong>${escapeHtml(label)}</strong> (${offlineFallback.distanceKm} km) · <a href="${gmapsUrl}" target="_blank" rel="noopener" class="underline font-bold text-sky-300">${escapeHtml(t.openGmaps)}</a>`;
+        statusText.textContent = `${t.toastPoiCalc} ${label} (${chosenPath.distanceKm} km)`;
       }
+      showToast(`${t.toastPoiCalc} ${label} (${chosenPath.distanceKm} km)`);
 
-      map.fitBounds(poiRouteLayer.getBounds(), { padding: [30, 30] });
-      showToast(`${t.toastPoiCalc} ${label}`);
-
-      const trailRoute = await fetchOpenMtbTrailRoute(startPt, destPt);
-      if (trailRoute && trailRoute.coords.length > 1 && map) {
-        if (poiRouteLayer) {
-          map.removeLayer(poiRouteLayer);
+      const trailPath = await fetchOpenMtbTrailRoute(startPt, targetPt);
+      if (trailPath && trailPath.coords.length > 1) {
+        chosenPath = trailPath;
+        if (map) {
+          if (poiRouteLayer) map.removeLayer(poiRouteLayer);
+          poiRouteLayer = L.polyline(chosenPath.coords, {
+            color: "#2563eb",
+            weight: 5,
+            opacity: 0.92,
+            dashArray: "8, 6"
+          }).addTo(map);
+          poiRouteLayer.bindPopup(escapeHtml(`${label} (${chosenPath.distanceKm} km)`));
+          if (poiRouteLayer.getBounds().isValid()) {
+            map.fitBounds(poiRouteLayer.getBounds(), { padding: [32, 32] });
+          }
         }
-        poiRouteLayer = L.polyline(trailRoute.coords, {
-          color: "#2563eb",
-          weight: 5,
-          opacity: 0.95,
-          dashArray: "8, 6"
-        }).addTo(map);
-        poiRouteLayer.bindPopup(escapeHtml(`${label} (${trailRoute.distanceKm} km · ${trailRoute.source})`));
-
         if (banner && statusText) {
-          banner.classList.remove("hidden");
-          statusText.innerHTML = `${escapeHtml(t.toastPoiGuided)} <strong>${escapeHtml(label)}</strong> (${trailRoute.distanceKm} km) · <a href="${gmapsUrl}" target="_blank" rel="noopener" class="underline font-bold text-sky-300">${escapeHtml(t.openGmaps)}</a>`;
+          statusText.textContent = `${t.toastPoiGuided} ${label} (${chosenPath.distanceKm} km)`;
         }
-        map.fitBounds(poiRouteLayer.getBounds(), { padding: [30, 30] });
+        showToast(`${t.toastPoiGuided} ${label} (${chosenPath.distanceKm} km)`);
       }
     }
 
@@ -4808,44 +5542,117 @@
       const t = I18N[currentLang] || I18N.it;
       const el = document.getElementById("troubleshooting-list");
       if (!el) return;
-      el.innerHTML = (t.troubleItems || []).map((item) => `<div class="p-2.5 rounded-xl bg-stone-50">${escapeHtml(item)}</div>`).join("");
+      el.innerHTML = (t.troubleItems || []).map((item) => `<p>• ${escapeHtml(item)}</p>`).join("");
     }
 
     function sendWhatsAppLocation() {
-      const coords = userCoords || activeBaseCoords;
-      const text = encodeURIComponent(`Richiesta assistenza Magona Bike Garage. Posizione GPS: https://www.google.com/maps?q=${coords[0]},${coords[1]}`);
-      window.open(`https://wa.me/393313453207?text=${text}`, "_blank", "noopener");
+      const coords = isValidLatLngPair(userCoords) ? userCoords : activeBaseCoords;
+      const msg = encodeURIComponent(`Ciao Magona Bike Garage, ho bisogno di assistenza. Posizione: https://www.google.com/maps?q=${Number(coords[0])},${Number(coords[1])}`);
+      window.open(`https://wa.me/393313453207?text=${msg}`, "_blank", "noopener,noreferrer");
     }
+
+    /* ================= INIT ================= */
 
     window.addEventListener("online", () => {
       updateNetworkStatusUI();
       fetchTrailWeather(true);
       flushPendingRiderDepartures();
       flushPendingRiderAlertsWithCurrentCoords();
-      syncAllCloudStateOnBoot(false);
+      if (isManagerUser) syncRiderAlertsFromCloud(false);
     });
     window.addEventListener("offline", updateNetworkStatusUI);
 
-    applyThemeMode(currentThemeMode);
-    setupPwaManifestAndWorker();
-    updateNetworkStatusUI();
-    fetchTrailWeather(false);
-    hydrateLocalStateOnBoot();
-
-    if (localStorage.getItem(PERMISSIONS_PROMPT_KEY) === "1") {
-      const permModal = document.getElementById("startup-permissions-modal");
-      if (permModal) permModal.classList.add("hidden");
-      startWatchingUserLocation();
-    }
-
-    window.addEventListener("DOMContentLoaded", () => {
+    window.addEventListener("DOMContentLoaded", async () => {
+      setupPwaManifestAndWorker();
       applyThemeMode(currentThemeMode);
-      if (localStorage.getItem(PERMISSIONS_PROMPT_KEY) === "1") {
-        const permModal = document.getElementById("startup-permissions-modal");
-        if (permModal) permModal.classList.add("hidden");
+
+      const layerSel = document.getElementById("overlay-map-layer-select");
+      if (layerSel && MAP_TILE_LAYERS[currentMapLayerKey]) {
+        layerSel.value = currentMapLayerKey;
       }
-      if (isFirebaseConfigured() && navigator.onLine) {
-        syncAllCloudStateOnBoot(true);
+
+      try {
+        const savedBaseCoordsRaw = localStorage.getItem(SESSION_BASE_COORDS_KEY);
+        const savedBaseLabel = localStorage.getItem(SESSION_BASE_LABEL_KEY);
+        if (savedBaseCoordsRaw) {
+          const parsedBase = JSON.parse(savedBaseCoordsRaw);
+          if (isValidLatLngPair(parsedBase)) {
+            setActiveBaseLocation(parsedBase, savedBaseLabel || `${SUPER_MANAGER_NAME} · ${DEFAULT_BASE_ADDRESS_LABEL}`);
+          }
+        }
+      } catch (e) {}
+
+      try {
+        const savedGpsRaw = localStorage.getItem(REAL_GPS_CACHE_KEY);
+        if (savedGpsRaw) {
+          const parsedGps = JSON.parse(savedGpsRaw);
+          if (parsedGps && isValidLatLngPair(parsedGps.coords)) {
+            userCoords = [Number(parsedGps.coords[0]), Number(parsedGps.coords[1])];
+          }
+        }
+      } catch (e) {}
+
+      const params = new URLSearchParams(window.location.search);
+      const gpsLat = parseFloat(params.get("gps_lat"));
+      const gpsLng = parseFloat(params.get("gps_lng"));
+      if (isValidLatLngPair([gpsLat, gpsLng])) {
+        applyRealUserPosition([gpsLat, gpsLng], 12, "url_callback");
+      }
+
+      changeLanguage("it");
+      updateNetworkStatusUI();
+      fetchTrailWeather(false);
+
+      const seenPermModal = localStorage.getItem(PERMISSIONS_PROMPT_KEY) === "1";
+      if (seenPermModal) {
+        const modal = document.getElementById("startup-permissions-modal");
+        if (modal) modal.classList.add("hidden");
+        startWatchingUserLocation();
+      }
+
+      await hydrateLocalStateOnBoot();
+      await syncAllCloudStateOnBoot(true);
+
+      const savedRole = localStorage.getItem(SESSION_ROLE_KEY);
+      const savedMgrId = localStorage.getItem(SESSION_MANAGER_ID_KEY);
+      const savedMgrName = localStorage.getItem(SESSION_MANAGER_NAME_KEY);
+      const savedClientCode = localStorage.getItem(SESSION_CLIENT_CODE_KEY);
+
+      if (savedRole === "super") {
+        isSuperManager = true;
+        isManagerUser = true;
+        activeManagerId = SUPER_MANAGER_ID;
+        activeManagerName = SUPER_MANAGER_NAME;
+        activeSessionClientCode = "SUPER-GESTORE";
+        setActiveBaseLocation(DEFAULT_BASE_COORDS, `${SUPER_MANAGER_NAME} · ${DEFAULT_BASE_ADDRESS_LABEL}`);
+        await unlockApplication();
+      } else if (savedRole === "partner" && savedMgrId) {
+        const partners = await syncPartnerManagersFromCloud();
+        const partnerObj = partners.find((p) => p.id === savedMgrId);
+        if (partnerObj && partnerObj.active !== false) {
+          isSuperManager = false;
+          isManagerUser = true;
+          activeManagerId = partnerObj.id;
+          activeManagerName = partnerObj.name || savedMgrName || SUPER_MANAGER_NAME;
+          activeSessionClientCode = "GESTORE";
+          const pCoords = isValidLatLngPair(partnerObj.baseCoords) ? partnerObj.baseCoords : DEFAULT_BASE_COORDS;
+          const pLabel = partnerObj.baseAddress ? `${partnerObj.name} · ${partnerObj.baseAddress}` : partnerObj.name;
+          setActiveBaseLocation(pCoords, pLabel);
+          populateOwnPartnerBaseForm(partnerObj);
+          await unlockApplication();
+        }
+      } else if (savedRole === "client" && savedClientCode && savedMgrId) {
+        const cleanCode = String(savedClientCode).trim().toUpperCase();
+        const pool = await syncClientCodesFromCloud(false, savedMgrId);
+        const match = pool.find((item) => String(item.code).toUpperCase() === cleanCode);
+        if (match) {
+          isSuperManager = false;
+          isManagerUser = false;
+          activeManagerId = savedMgrId;
+          activeManagerName = savedMgrName || match.managerName || SUPER_MANAGER_NAME;
+          activeSessionClientCode = cleanCode;
+          await unlockApplication();
+        }
       }
     });
   </script>
