@@ -84,6 +84,7 @@
       width: 100%;
       height: 440px;
       touch-action: none;
+      background-color: #e5e3df;
     }
     #map-rotator {
       position: relative;
@@ -104,12 +105,16 @@
       width: 100%;
       height: 100%;
       z-index: 1;
-      background-color: #1c1f1e;
+      background-color: #e5e3df;
     }
-    #map-rotator.heading-up-active .leaflet-tile {
-      width: 257px !important;
-      height: 257px !important;
-      margin: -0.5px;
+    #map-rotator.heading-up-active .leaflet-tile-container img.leaflet-tile {
+      width: 257.5px !important;
+      height: 257.5px !important;
+      margin: -0.75px !important;
+      max-width: none !important;
+      max-height: none !important;
+      border: 0 !important;
+      outline: 1px solid transparent;
       -webkit-backface-visibility: hidden;
       backface-visibility: hidden;
     }
@@ -1014,8 +1019,8 @@
 
     const SURFACE_COST_MULTIPLIERS = {
       asphalt: 1.0,
-      track: 1.35,
-      trail: 3.8
+      track: 1.4,
+      trail: 4.5
     };
 
     const SAFE_RETURN_GRAPH = {
@@ -3688,7 +3693,7 @@
       try {
         localStorage.setItem(LANG_STORAGE_KEY, currentLang);
       } catch (e) {}
-      const t = I18N[currentLang];
+      const t = I18N[currentLang] || I18N.it;
       document.documentElement.lang = currentLang;
       const s1 = document.getElementById("lang-select");
       const s2 = document.getElementById("app-lang-select");
@@ -4336,6 +4341,9 @@
         }
         rotatorEl.classList.remove("heading-up-active");
         rotatorEl.style.removeProperty("--map-rot");
+        if (map && map.dragging && !map.dragging.enabled()) {
+          map.dragging.enable();
+        }
         if (wasActive && map) {
           setTimeout(() => map.invalidateSize({ pan: false }), 50);
         }
@@ -4343,6 +4351,10 @@
       }
 
       const normalized = ((headingDeg % 360) + 360) % 360;
+
+      if (map && map.dragging && map.dragging.enabled()) {
+        map.dragging.disable();
+      }
 
       if (!wasActive) {
         smoothedHeadingDeg = normalized;
@@ -4403,6 +4415,7 @@
       wrapperEl.dataset.rotDragBound = "1";
 
       let isDragging = false;
+      let activePointerId = null;
       let lastX = 0;
       let lastY = 0;
 
@@ -4426,29 +4439,32 @@
         if (e.target && e.target.closest("button, select, a, .leaflet-control")) return;
         if (!rotationActiveState) return;
         isDragging = true;
+        activePointerId = e.pointerId;
         lastX = e.clientX;
         lastY = e.clientY;
         pauseAutoFollowTemporarily();
       }, { passive: true });
 
       window.addEventListener("pointermove", (e) => {
-        if (!isDragging || !rotationActiveState || !map) return;
+        if (!isDragging || e.pointerId !== activePointerId || !rotationActiveState || !map) return;
         const dx = e.clientX - lastX;
         const dy = e.clientY - lastY;
         lastX = e.clientX;
         lastY = e.clientY;
 
-        const rad = (smoothedHeadingDeg * Math.PI) / 180;
-        const cosA = Math.cos(rad);
-        const sinA = Math.sin(rad);
-        const rotDx = dx * cosA - dy * sinA;
-        const rotDy = dx * sinA + dy * cosA;
+        const rotRad = ((-smoothedHeadingDeg) * Math.PI) / 180;
+        const cosA = Math.cos(rotRad);
+        const sinA = Math.sin(rotRad);
+        const localDx = dx * cosA + dy * sinA;
+        const localDy = -dx * sinA + dy * cosA;
 
-        map.panBy([-rotDx, -rotDy], { animate: false });
+        map.panBy([-localDx, -localDy], { animate: false });
       }, { passive: true });
 
-      const stopDragging = () => {
+      const stopDragging = (e) => {
+        if (activePointerId !== null && e && e.pointerId !== activePointerId) return;
         isDragging = false;
+        activePointerId = null;
       };
 
       window.addEventListener("pointerup", stopDragging, { passive: true });
@@ -4981,65 +4997,27 @@
       return computeShortestSafePathBetweenNodes(startPt, activeBaseCoords);
     }
 
-    function scoreRouteCandidate(latLngs, fallbackSurface) {
+    function buildCandidateFromLatLngs(latLngs, surface, sourceLabel) {
       let totalMeters = 0;
       for (let i = 1; i < latLngs.length; i++) {
         totalMeters += haversineMeters(latLngs[i - 1], latLngs[i]);
       }
-      const surface = fallbackSurface || classifySegmentSurface(latLngs);
       const factor = getEdgeCostFactor(surface, latLngs);
       return {
         coords: latLngs,
         distanceKm: +(totalMeters / 1000).toFixed(1),
         weightedScore: totalMeters * factor,
-        surface
+        surface,
+        source: sourceLabel
       };
     }
 
     async function fetchOpenMtbTrailRoute(startPt, endPt) {
       if (!navigator.onLine) return null;
 
-      const candidates = [];
+      // PRIORITÀ 1: Asfalto / strade principali (OSRM cycling + BRouter fastbike)
+      const roadCandidates = [];
 
-      // 1) Profilo trekking/strade-carrarecce (priorità ad asfalto e carrarecce)
-      try {
-        const trekUrl = `https://brouter.de/brouter?lonlats=${startPt[1]},${startPt[0]}|${endPt[1]},${endPt[0]}&profile=trekking&alternativeidx=0&format=geojson`;
-        const ctrl = new AbortController();
-        const timer = setTimeout(() => ctrl.abort(), 4500);
-        const resp = await fetch(trekUrl, { signal: ctrl.signal });
-        clearTimeout(timer);
-        if (resp.ok) {
-          const data = await resp.json();
-          const rawCoords = data?.features?.[0]?.geometry?.coordinates;
-          if (Array.isArray(rawCoords) && rawCoords.length > 1) {
-            const latLngs = rawCoords.map(([lon, lat]) => [lat, lon]);
-            latLngs.push([...endPt]);
-            const sc = scoreRouteCandidate(latLngs, "track");
-            candidates.push({ ...sc, source: "Asfalto / Carrareccia" });
-          }
-        }
-      } catch (e) {}
-
-      // 2) Profilo MTB come alternativa solo se necessario (con penalità forte se è sentiero)
-      try {
-        const mtbUrl = `https://brouter.de/brouter?lonlats=${startPt[1]},${startPt[0]}|${endPt[1]},${endPt[0]}&profile=mtb&alternativeidx=0&format=geojson`;
-        const ctrl = new AbortController();
-        const timer = setTimeout(() => ctrl.abort(), 4500);
-        const resp = await fetch(mtbUrl, { signal: ctrl.signal });
-        clearTimeout(timer);
-        if (resp.ok) {
-          const data = await resp.json();
-          const rawCoords = data?.features?.[0]?.geometry?.coordinates;
-          if (Array.isArray(rawCoords) && rawCoords.length > 1) {
-            const latLngs = rawCoords.map(([lon, lat]) => [lat, lon]);
-            latLngs.push([...endPt]);
-            const sc = scoreRouteCandidate(latLngs, "trail");
-            candidates.push({ ...sc, source: sc.surface === "trail" ? "Sentiero (ultima risorsa)" : "Carrareccia / MTB" });
-          }
-        }
-      } catch (e) {}
-
-      // 3) OSRM bicycle per strade asfaltate/ciclabili
       try {
         const osrmUrl = `https://router.project-osrm.org/route/v1/bicycle/${startPt[1]},${startPt[0]};${endPt[1]},${endPt[0]}?overview=full&geometries=geojson`;
         const ctrl = new AbortController();
@@ -5052,26 +5030,77 @@
           if (route?.geometry?.coordinates?.length > 1) {
             const latLngs = route.geometry.coordinates.map(([lon, lat]) => [lat, lon]);
             latLngs.push([...endPt]);
-            const sc = scoreRouteCandidate(latLngs, "asphalt");
-            candidates.push({ ...sc, source: "Asfalto / Ciclabile" });
+            roadCandidates.push(buildCandidateFromLatLngs(latLngs, "asphalt", "Asfalto / Strada"));
           }
         }
       } catch (e) {}
 
-      if (candidates.length === 0) return null;
-
-      // Se esiste un'alternativa su asfalto o carrareccia entro 1.6x della distanza del sentiero, scarta il sentiero
-      const nonTrail = candidates.filter((c) => c.surface !== "trail");
-      const trailOnly = candidates.filter((c) => c.surface === "trail");
-      if (nonTrail.length > 0 && trailOnly.length > 0) {
-        const bestNonTrail = nonTrail.reduce((a, b) => (a.weightedScore < b.weightedScore ? a : b));
-        const bestTrail = trailOnly.reduce((a, b) => (a.weightedScore < b.weightedScore ? a : b));
-        if (bestNonTrail.distanceKm <= bestTrail.distanceKm * 1.65) {
-          return bestNonTrail;
+      try {
+        const fastUrl = `https://brouter.de/brouter?lonlats=${startPt[1]},${startPt[0]}|${endPt[1]},${endPt[0]}&profile=fastbike&alternativeidx=0&format=geojson`;
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 4000);
+        const resp = await fetch(fastUrl, { signal: ctrl.signal });
+        clearTimeout(timer);
+        if (resp.ok) {
+          const data = await resp.json();
+          const rawCoords = data?.features?.[0]?.geometry?.coordinates;
+          if (Array.isArray(rawCoords) && rawCoords.length > 1) {
+            const latLngs = rawCoords.map(([lon, lat]) => [lat, lon]);
+            latLngs.push([...endPt]);
+            roadCandidates.push(buildCandidateFromLatLngs(latLngs, "asphalt", "Asfalto / Strada"));
+          }
         }
+      } catch (e) {}
+
+      if (roadCandidates.length > 0) {
+        return roadCandidates.reduce((a, b) => (a.weightedScore < b.weightedScore ? a : b));
       }
 
-      return candidates.reduce((a, b) => (a.weightedScore < b.weightedScore ? a : b));
+      // PRIORITÀ 2: Carrareccia / strada bianca (BRouter gravel / trekking)
+      const trackCandidates = [];
+
+      for (const prof of ["gravel", "trekking"]) {
+        try {
+          const url = `https://brouter.de/brouter?lonlats=${startPt[1]},${startPt[0]}|${endPt[1]},${endPt[0]}&profile=${prof}&alternativeidx=0&format=geojson`;
+          const ctrl = new AbortController();
+          const timer = setTimeout(() => ctrl.abort(), 4000);
+          const resp = await fetch(url, { signal: ctrl.signal });
+          clearTimeout(timer);
+          if (resp.ok) {
+            const data = await resp.json();
+            const rawCoords = data?.features?.[0]?.geometry?.coordinates;
+            if (Array.isArray(rawCoords) && rawCoords.length > 1) {
+              const latLngs = rawCoords.map(([lon, lat]) => [lat, lon]);
+              latLngs.push([...endPt]);
+              trackCandidates.push(buildCandidateFromLatLngs(latLngs, "track", "Carrareccia"));
+            }
+          }
+        } catch (e) {}
+      }
+
+      if (trackCandidates.length > 0) {
+        return trackCandidates.reduce((a, b) => (a.weightedScore < b.weightedScore ? a : b));
+      }
+
+      // PRIORITÀ 3 (solo se non c'è asfalto né carrareccia): Sentiero (BRouter mtb)
+      try {
+        const mtbUrl = `https://brouter.de/brouter?lonlats=${startPt[1]},${startPt[0]}|${endPt[1]},${endPt[0]}&profile=mtb&alternativeidx=0&format=geojson`;
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 4500);
+        const resp = await fetch(mtbUrl, { signal: ctrl.signal });
+        clearTimeout(timer);
+        if (resp.ok) {
+          const data = await resp.json();
+          const rawCoords = data?.features?.[0]?.geometry?.coordinates;
+          if (Array.isArray(rawCoords) && rawCoords.length > 1) {
+            const latLngs = rawCoords.map(([lon, lat]) => [lat, lon]);
+            latLngs.push([...endPt]);
+            return buildCandidateFromLatLngs(latLngs, "trail", "Sentiero (ultima risorsa)");
+          }
+        }
+      } catch (e) {}
+
+      return null;
     }
 
     function computeOfflineTrailFallbackPath(startPt, endPt) {
