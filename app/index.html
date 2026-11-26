@@ -47,6 +47,36 @@
       height: 24px;
       display: block;
     }
+    .poi-map-pin {
+      width: 30px;
+      height: 30px;
+      border-radius: 9999px;
+      background: #ffffff;
+      border: 2px solid #141413;
+      box-shadow: 0 2px 7px rgba(0, 0, 0, 0.32);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .poi-map-pin.poi-pin-water {
+      border-color: #0284c7;
+      background: #f0f9ff;
+    }
+    .poi-map-pin.poi-pin-osm-water {
+      width: 26px;
+      height: 26px;
+      border-color: #0284c7;
+      background: #e0f2fe;
+    }
+    .poi-map-pin svg {
+      width: 17px;
+      height: 17px;
+      display: block;
+    }
+    .poi-map-pin.poi-pin-osm-water svg {
+      width: 15px;
+      height: 15px;
+    }
     #map-container {
       height: 440px;
       width: 100%;
@@ -62,7 +92,8 @@
     #map-container.heading-up-active {
       transform: rotate(var(--map-rot, 0deg));
     }
-    #map-container.heading-up-active .cyclist-gps-marker {
+    #map-container.heading-up-active .cyclist-gps-marker,
+    #map-container.heading-up-active .poi-map-pin {
       transform: rotate(calc(var(--map-rot, 0deg) * -1));
     }
     #elevation-profile-canvas {
@@ -227,6 +258,9 @@
       border-color: #10b981 !important;
       color: #0f1110 !important;
     }
+    html.dark-mode .poi-type-pill-icon {
+      background-color: #ffffff !important;
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -249,7 +283,7 @@
         </div>
         <div class="flex items-center justify-between bg-stone-100 px-3.5 py-2.5 rounded-xl">
           <span id="perm-net-label" data-i18n="permNetLabel" class="font-medium text-stone-800">Connessione Web & Cache Mappe</span>
-          <span id="perm-net-status" class="text-xs font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">Verifica...</span>
+          <span id="perm-net-status" data-i18n="gpsWaiting" class="text-xs font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">Verifica...</span>
         </div>
       </div>
       <div class="flex flex-col gap-2">
@@ -590,10 +624,10 @@
           <div>
             <label data-i18n="poiTypeLabel" class="block font-semibold text-stone-700 mb-1">Tipologia *</label>
             <select id="poi-type-input" class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm font-bold bg-stone-50">
-              <option value="water" data-i18n="poiOptWater">💧 Fontanella / Acqua</option>
-              <option value="view" data-i18n="poiOptView">🏔️ Panorama / Punto Foto</option>
-              <option value="food" data-i18n="poiOptFood">🍽️ Ristoro / Bar / Area Sosta</option>
-              <option value="service" data-i18n="poiOptService">🔧 Assistenza Officina</option>
+              <option value="water" data-i18n="poiOptWater">Fontanella / Acqua</option>
+              <option value="view" data-i18n="poiOptView">Panorama / Punto Foto</option>
+              <option value="food" data-i18n="poiOptFood">Ristorante / Ristoro</option>
+              <option value="service" data-i18n="poiOptService">Assistenza Officina</option>
             </select>
           </div>
 
@@ -648,21 +682,25 @@
             class="poi-filter-btn px-3 py-1.5 rounded-lg bg-stone-900 text-white text-xs font-bold cursor-pointer">
             Tutti
           </button>
-          <button type="button" data-poi-filter="water" data-i18n="poiOptWater" onclick="setPoiTypeFilter('water')"
-            class="poi-filter-btn px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
-            💧 Fontanella / Acqua
+          <button type="button" data-poi-filter="water" onclick="setPoiTypeFilter('water')"
+            class="poi-filter-btn px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer">
+            <span class="poi-type-pill-icon inline-flex items-center justify-center w-4 h-4 rounded-full bg-white border border-sky-500" id="filter-icon-water"></span>
+            <span data-i18n="poiOptWater">Fontanella / Acqua</span>
           </button>
-          <button type="button" data-poi-filter="view" data-i18n="poiOptView" onclick="setPoiTypeFilter('view')"
-            class="poi-filter-btn px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
-            🏔️ Panorama / Punto Foto
+          <button type="button" data-poi-filter="view" onclick="setPoiTypeFilter('view')"
+            class="poi-filter-btn px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer">
+            <span class="poi-type-pill-icon inline-flex items-center justify-center w-4 h-4 rounded-full bg-white border border-stone-900" id="filter-icon-view"></span>
+            <span data-i18n="poiOptView">Panorama / Punto Foto</span>
           </button>
-          <button type="button" data-poi-filter="food" data-i18n="poiOptFood" onclick="setPoiTypeFilter('food')"
-            class="poi-filter-btn px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
-            🍽️ Ristoro / Bar / Area Sosta
+          <button type="button" data-poi-filter="food" onclick="setPoiTypeFilter('food')"
+            class="poi-filter-btn px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer">
+            <span class="poi-type-pill-icon inline-flex items-center justify-center w-4 h-4 rounded-full bg-white border border-stone-900" id="filter-icon-food"></span>
+            <span data-i18n="poiOptFood">Ristorante / Ristoro</span>
           </button>
-          <button type="button" data-poi-filter="service" data-i18n="poiOptService" onclick="setPoiTypeFilter('service')"
-            class="poi-filter-btn px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
-            🔧 Assistenza Officina
+          <button type="button" data-poi-filter="service" onclick="setPoiTypeFilter('service')"
+            class="poi-filter-btn px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer">
+            <span class="poi-type-pill-icon inline-flex items-center justify-center w-4 h-4 rounded-full bg-white border border-stone-900" id="filter-icon-service"></span>
+            <span data-i18n="poiOptService">Assistenza Officina</span>
           </button>
         </div>
 
@@ -973,6 +1011,8 @@
     const OFFLINE_CACHE_NAME = "magona-offline-v1";
     const ROUTES_STORAGE_KEY = "magona_offline_routes_v3";
     const POIS_STORAGE_KEY = "magona_offline_pois_v2";
+    const OSM_FOUNTAINS_STORAGE_KEY = "magona_osm_fountains_v1";
+    const OSM_FOUNTAINS_TTL_MS = 7 * 24 * 60 * 60 * 1000;
     const ELEV_CACHE_STORAGE_KEY = "magona_elevation_profiles_v1";
     const CLIENT_CODES_STORAGE_KEY = "magona_client_codes_pool_v3";
     const REVOKED_CODES_STORAGE_KEY = "magona_revoked_codes_30d_v1";
@@ -994,6 +1034,55 @@
     const MAX_USES_PER_CODE = 3;
     const IDB_NAME = "MagonaBikeGarageDB";
     const IDB_STORE = "appState";
+
+    /* ================= CUSTOM POI SVG ICONS ================= */
+
+    function getPoiSvgMarkup(typeKey) {
+      if (typeKey === "water") {
+        // Gocciolina azzurra
+        return `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2.4C12 2.4 5.5 9.8 5.5 14.7C5.5 18.45 8.41 21.5 12 21.5C15.59 21.5 18.5 18.45 18.5 14.7C18.5 9.8 12 2.4 12 2.4Z" fill="#0ea5e9" stroke="#0369a1" stroke-width="1.6" stroke-linejoin="round"/>
+          <path d="M9.1 14.8C9.1 16.45 10.25 17.8 11.7 18.1" stroke="#e0f2fe" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>`;
+      }
+      if (typeKey === "service") {
+        // Chiavi inglesi
+        return `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" fill="#141413" stroke="#141413" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>`;
+      }
+      if (typeKey === "food") {
+        // Classico simbolo ristorante nero con piatti e posate
+        return `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4.2 3.5V9.2C4.2 10.3 5.1 11.2 6.2 11.2V20.5M6.2 3.5V8.5M8.2 3.5V9.2C8.2 10.3 7.3 11.2 6.2 11.2" stroke="#141413" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="12.2" cy="12.2" r="4.1" stroke="#141413" stroke-width="1.75"/>
+          <circle cx="12.2" cy="12.2" r="1.9" stroke="#141413" stroke-width="1.1"/>
+          <path d="M19.5 3.5V20.5M19.5 3.5C18.1 5.1 17.7 7.6 17.7 10.5H19.5" stroke="#141413" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>`;
+      }
+      // Punto panoramico / fotografico: macchina fotografica nera
+      return `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 7.5H6.8L8.4 5.2H15.6L17.2 7.5H20C20.83 7.5 21.5 8.17 21.5 9V18.5C21.5 19.33 20.83 20 20 20H4C3.17 20 2.5 19.33 2.5 18.5V9C2.5 8.17 3.17 7.5 4 7.5Z" fill="#141413" stroke="#141413" stroke-width="1.3" stroke-linejoin="round"/>
+        <circle cx="12" cy="13.6" r="3.4" fill="#ffffff" stroke="#141413" stroke-width="1.2"/>
+        <circle cx="12" cy="13.6" r="1.6" fill="#141413"/>
+        <circle cx="18.2" cy="10.1" r="0.9" fill="#ffffff"/>
+      </svg>`;
+    }
+
+    function createPoiLeafletIcon(typeKey, isOsmFountain = false) {
+      const cls = isOsmFountain
+        ? "poi-map-pin poi-pin-osm-water"
+        : (typeKey === "water" ? "poi-map-pin poi-pin-water" : "poi-map-pin");
+      const size = isOsmFountain ? 26 : 30;
+      const half = Math.round(size / 2);
+      return L.divIcon({
+        className: "",
+        html: `<div class="${cls}">${getPoiSvgMarkup(isOsmFountain ? "water" : typeKey)}</div>`,
+        iconSize: [size, size],
+        iconAnchor: [half, half],
+        popupAnchor: [0, -half]
+      });
+    }
 
     const I18N = {
       it: {
@@ -1098,14 +1187,15 @@
         poiNameLabel: "Nome Punto Utile *",
         poiNamePlaceholder: "Es. Fontana Campo di Sasso",
         poiTypeLabel: "Tipologia *",
-        poiOptWater: "💧 Fontanella / Acqua",
-        poiOptView: "🏔️ Panorama / Punto Foto",
-        poiOptFood: "🍽️ Ristoro / Bar / Area Sosta",
-        poiOptService: "🔧 Assistenza Officina",
+        poiOptWater: "Fontanella / Acqua",
+        poiOptView: "Panorama / Punto Foto",
+        poiOptFood: "Ristorante / Ristoro",
+        poiOptService: "Assistenza Officina",
         poiBadgeWater: "Fontanella Acqua",
         poiBadgeView: "Panorama",
-        poiBadgeFood: "Ristoro",
-        poiBadgeService: "Assistenza",
+        poiBadgeFood: "Ristorante / Ristoro",
+        poiBadgeService: "Assistenza Officina",
+        osmFountainLabel: "Fontanella (OpenStreetMap)",
         latLabel: "Latitudine *",
         lngLabel: "Longitudine *",
         poiNoteLabel: "Note / Dettagli Utili",
@@ -1273,14 +1363,15 @@
         poiNameLabel: "Point Name *",
         poiNamePlaceholder: "e.g. Campo di Sasso Fountain",
         poiTypeLabel: "Category *",
-        poiOptWater: "💧 Water Fountain",
-        poiOptView: "🏔️ Viewpoint / Photo Spot",
-        poiOptFood: "🍽️ Rest Stop / Bar / Picnic Area",
-        poiOptService: "🔧 Workshop Support",
+        poiOptWater: "Water Fountain",
+        poiOptView: "Viewpoint / Photo Spot",
+        poiOptFood: "Restaurant / Rest Stop",
+        poiOptService: "Workshop Support",
         poiBadgeWater: "Water Fountain",
         poiBadgeView: "Viewpoint",
-        poiBadgeFood: "Rest Stop",
+        poiBadgeFood: "Restaurant / Rest Stop",
         poiBadgeService: "Workshop Support",
+        osmFountainLabel: "Drinking Fountain (OpenStreetMap)",
         latLabel: "Latitude *",
         lngLabel: "Longitude *",
         poiNoteLabel: "Notes / Useful Details",
@@ -1448,14 +1539,15 @@
         poiNameLabel: "Name des Wegpunkts *",
         poiNamePlaceholder: "z. B. Brunnen Campo di Sasso",
         poiTypeLabel: "Kategorie *",
-        poiOptWater: "💧 Trinkbrunnen / Wasser",
-        poiOptView: "🏔️ Aussichtspunkt / Fotopunkt",
-        poiOptFood: "🍽️ Einkehr / Bar / Rastplatz",
-        poiOptService: "🔧 Werkstatt-Hilfe",
+        poiOptWater: "Trinkbrunnen / Wasser",
+        poiOptView: "Aussichtspunkt / Fotopunkt",
+        poiOptFood: "Restaurant / Einkehr",
+        poiOptService: "Werkstatt-Hilfe",
         poiBadgeWater: "Trinkbrunnen",
         poiBadgeView: "Aussichtspunkt",
-        poiBadgeFood: "Einkehr / Rast",
+        poiBadgeFood: "Restaurant / Einkehr",
         poiBadgeService: "Werkstatt-Hilfe",
+        osmFountainLabel: "Trinkbrunnen (OpenStreetMap)",
         latLabel: "Breitengrad *",
         lngLabel: "Längengrad *",
         poiNoteLabel: "Notizen / Nützliche Hinweise",
@@ -1623,14 +1715,15 @@
         poiNameLabel: "Naam Nuttig Punt *",
         poiNamePlaceholder: "bijv. Waterpunt Campo di Sasso",
         poiTypeLabel: "Categorie *",
-        poiOptWater: "💧 Waterpunt / Kraan",
-        poiOptView: "🏔️ Uitzichtpunt / Fotoplek",
-        poiOptFood: "🍽️ Rustplaats / Bar / Picknick",
-        poiOptService: "🔧 Werkplaatshulp",
+        poiOptWater: "Waterpunt / Kraan",
+        poiOptView: "Uitzichtpunt / Fotoplek",
+        poiOptFood: "Restaurant / Rustplaats",
+        poiOptService: "Werkplaatshulp",
         poiBadgeWater: "Waterpunt",
         poiBadgeView: "Uitzichtpunt",
-        poiBadgeFood: "Rustplaats",
+        poiBadgeFood: "Restaurant / Rustplaats",
         poiBadgeService: "Werkplaatshulp",
+        osmFountainLabel: "Drinkwaterpunt (OpenStreetMap)",
         latLabel: "Breedtegraad *",
         lngLabel: "Lengtegraad *",
         poiNoteLabel: "Notities / Handige Details",
@@ -1798,14 +1891,15 @@
         poiNameLabel: "Nombre del Punto Útil *",
         poiNamePlaceholder: "Ej. Fuente Campo di Sasso",
         poiTypeLabel: "Categoría *",
-        poiOptWater: "💧 Fuente / Agua",
-        poiOptView: "🏔️ Mirador / Punto Foto",
-        poiOptFood: "🍽️ Bar / Área de Descanso",
-        poiOptService: "🔧 Asistencia Taller",
+        poiOptWater: "Fuente / Agua",
+        poiOptView: "Mirador / Punto Foto",
+        poiOptFood: "Restaurante / Área de Descanso",
+        poiOptService: "Asistencia Taller",
         poiBadgeWater: "Fuente de Agua",
         poiBadgeView: "Mirador",
-        poiBadgeFood: "Área de Descanso",
+        poiBadgeFood: "Restaurante / Descanso",
         poiBadgeService: "Asistencia",
+        osmFountainLabel: "Fuente de Agua (OpenStreetMap)",
         latLabel: "Latitud *",
         lngLabel: "Longitud *",
         poiNoteLabel: "Notas / Detalles Útiles",
@@ -1973,14 +2067,15 @@
         poiNameLabel: "Nom du Point Utile *",
         poiNamePlaceholder: "Ex. Fontaine Campo di Sasso",
         poiTypeLabel: "Catégorie *",
-        poiOptWater: "💧 Fontaine / Eau",
-        poiOptView: "🏔️ Panorama / Point Photo",
-        poiOptFood: "🍽️ Bar / Aire de Repos",
-        poiOptService: "🔧 Assistance Atelier",
+        poiOptWater: "Fontaine / Eau",
+        poiOptView: "Panorama / Point Photo",
+        poiOptFood: "Restaurant / Aire de Repos",
+        poiOptService: "Assistance Atelier",
         poiBadgeWater: "Fontaine à Eau",
         poiBadgeView: "Panorama",
-        poiBadgeFood: "Halte / Repos",
+        poiBadgeFood: "Restaurant / Halte",
         poiBadgeService: "Assistance",
+        osmFountainLabel: "Fontaine d'Eau (OpenStreetMap)",
         latLabel: "Latitude *",
         lngLabel: "Longitude *",
         poiNoteLabel: "Notes / Détails Utiles",
@@ -2148,14 +2243,15 @@
         poiNameLabel: "Nome do Ponto Útil *",
         poiNamePlaceholder: "Ex. Fonte Campo di Sasso",
         poiTypeLabel: "Categoria *",
-        poiOptWater: "💧 Fonte / Água",
-        poiOptView: "🏔️ Mirante / Ponto Foto",
-        poiOptFood: "🍽️ Bar / Área de Descanso",
-        poiOptService: "🔧 Assistência Oficina",
+        poiOptWater: "Fonte / Água",
+        poiOptView: "Mirante / Ponto Foto",
+        poiOptFood: "Restaurante / Área de Descanso",
+        poiOptService: "Assistência Oficina",
         poiBadgeWater: "Fonte de Água",
         poiBadgeView: "Mirante",
-        poiBadgeFood: "Área de Descanso",
+        poiBadgeFood: "Restaurante / Descanso",
         poiBadgeService: "Assistência",
+        osmFountainLabel: "Bebedouro / Fonte (OpenStreetMap)",
         latLabel: "Latitude *",
         lngLabel: "Longitude *",
         poiNoteLabel: "Notas / Detalhes Úteis",
@@ -2323,14 +2419,15 @@
         poiNameLabel: "兴趣点名称 *",
         poiNamePlaceholder: "例如：Campo di Sasso 饮水处",
         poiTypeLabel: "类型 *",
-        poiOptWater: "💧 饮水处 / 水源",
-        poiOptView: "🏔️ 观景点 / 拍照点",
-        poiOptFood: "🍽️ 补给站 / 酒吧 / 休息区",
-        poiOptService: "🔧 车店维修支持",
+        poiOptWater: "饮水处 / 水源",
+        poiOptView: "观景点 / 拍照点",
+        poiOptFood: "餐厅 / 补给休息区",
+        poiOptService: "车店维修支持",
         poiBadgeWater: "饮水处",
         poiBadgeView: "观景点",
-        poiBadgeFood: "补给休息区",
+        poiBadgeFood: "餐厅 / 休息区",
         poiBadgeService: "维修支持",
+        osmFountainLabel: "饮水点 (OpenStreetMap)",
         latLabel: "纬度 *",
         lngLabel: "经度 *",
         poiNoteLabel: "备注 / 实用信息",
@@ -2690,7 +2787,7 @@
 
     const DEFAULT_POIS = [
       { id: "v-golazze", type: "view", name: "Passo delle Golazze Aperte", note: "Vista panoramica sulla Val di Cecina e la costa", coords: [43.2565, 10.6410] },
-      { id: "r-bibbona-base", type: "food", name: "Magona Bike Garage · Base", note: "Via del Mandorlo 1 (angolo Piazza delle Querce), 57020 Bibbona", coords: [43.266028, 10.594667] }
+      { id: "r-bibbona-base", type: "service", name: "Magona Bike Garage · Base", note: "Via del Mandorlo 1 (angolo Piazza delle Querce), 57020 Bibbona", coords: [43.266028, 10.594667] }
     ];
 
     let currentLang = localStorage.getItem(LANG_STORAGE_KEY) || "it";
@@ -2716,6 +2813,8 @@
     let simulatedProgressRatio = 0;
     let pendingFormCoords = null;
     let poiMarkersLayer = null;
+    let osmFountainsLayer = null;
+    let osmDrinkingFountains = [];
     let activePoiTypeFilter = "all";
     let elevationProfileCache = {};
     let activeRouteElevations = [];
@@ -2780,6 +2879,142 @@
         data = await resp.json();
       } catch (e) {}
       return { ok: resp.ok, status: resp.status, data };
+    }
+
+    /* ================= OPENSTREETMAP DRINKING FOUNTAINS (OVERPASS) ================= */
+
+    function loadStoredOsmFountainsSync() {
+      try {
+        const raw = localStorage.getItem(OSM_FOUNTAINS_STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && Array.isArray(parsed.items)) {
+            return parsed;
+          }
+        }
+      } catch (e) {}
+      return { ts: 0, items: [] };
+    }
+
+    async function saveStoredOsmFountains(items) {
+      const payload = { ts: Date.now(), items: Array.isArray(items) ? items : [] };
+      try {
+        localStorage.setItem(OSM_FOUNTAINS_STORAGE_KEY, JSON.stringify(payload));
+      } catch (e) {}
+      await idbWrite(OSM_FOUNTAINS_STORAGE_KEY, payload);
+    }
+
+    async function loadOsmDrinkingFountains(forceRefresh = false) {
+      const cachedSync = loadStoredOsmFountainsSync();
+      if (cachedSync.items.length > 0) {
+        osmDrinkingFountains = cachedSync.items;
+        renderOsmFountainsOnMap();
+      } else {
+        const idbCached = await idbRead(OSM_FOUNTAINS_STORAGE_KEY);
+        if (idbCached && Array.isArray(idbCached.items) && idbCached.items.length > 0) {
+          osmDrinkingFountains = idbCached.items;
+          renderOsmFountainsOnMap();
+        }
+      }
+
+      const isFresh = cachedSync.ts && (Date.now() - cachedSync.ts < OSM_FOUNTAINS_TTL_MS);
+      if (!forceRefresh && isFresh && osmDrinkingFountains.length > 0) {
+        return osmDrinkingFountains;
+      }
+
+      if (!navigator.onLine) {
+        return osmDrinkingFountains;
+      }
+
+      // Bounding box: Costa degli Etruschi & Val di Cecina (Bolgheri, Bibbona, Cecina, Casale, Guardistallo, Riparbella, Montescudaio)
+      const overpassQuery = `[out:json][timeout:15];(node["amenity"="drinking_water"](43.18,10.50,43.38,10.74);way["amenity"="drinking_water"](43.18,10.50,43.38,10.74););out center;`;
+      const endpoints = [
+        "https://overpass-api.de/api/interpreter",
+        "https://overpass.kumi.systems/api/interpreter"
+      ];
+
+      for (const endpoint of endpoints) {
+        try {
+          const ctrl = new AbortController();
+          const timer = setTimeout(() => ctrl.abort(), 8000);
+          const resp = await fetch(`${endpoint}?data=${encodeURIComponent(overpassQuery)}`, {
+            signal: ctrl.signal,
+            cache: "no-store"
+          });
+          clearTimeout(timer);
+          if (!resp.ok) continue;
+          const json = await resp.json();
+          const elements = Array.isArray(json?.elements) ? json.elements : [];
+          const parsed = [];
+          elements.forEach((el) => {
+            const lat = Number(el.lat ?? el.center?.lat);
+            const lon = Number(el.lon ?? el.center?.lon);
+            if (!Number.isNaN(lat) && !Number.isNaN(lon)) {
+              const tags = el.tags || {};
+              const customName = tags.name || tags["name:it"] || tags.description || "";
+              const noteParts = [];
+              if (tags.operator) noteParts.push(tags.operator);
+              if (tags.bottle === "yes") noteParts.push("Riempimento borraccia");
+              if (tags.wheelchair === "yes") noteParts.push("Accessibile");
+              parsed.push({
+                id: `osm-water-${el.type}-${el.id}`,
+                name: customName,
+                note: noteParts.join(" · "),
+                coords: [+lat.toFixed(6), +lon.toFixed(6)]
+              });
+            }
+          });
+
+          if (parsed.length > 0) {
+            osmDrinkingFountains = parsed;
+            await saveStoredOsmFountains(parsed);
+            renderOsmFountainsOnMap();
+            break;
+          }
+        } catch (e) {}
+      }
+
+      return osmDrinkingFountains;
+    }
+
+    function renderOsmFountainsOnMap() {
+      if (!map) return;
+      if (osmFountainsLayer) {
+        map.removeLayer(osmFountainsLayer);
+      }
+      osmFountainsLayer = L.layerGroup().addTo(map);
+      const t = I18N[currentLang] || I18N.it;
+
+      osmDrinkingFountains.forEach((f) => {
+        if (!isValidLatLngPair(f.coords)) return;
+
+        // Evita sovrapposizione se l'utente ha già inserito una fontanella personalizzata nello stesso punto (< 25m)
+        const alreadyInCustomPois = POIS.some(
+          (p) => p.type === "water" && isValidLatLngPair(p.coords) && haversineMeters(p.coords, f.coords) < 25
+        );
+        if (alreadyInCustomPois) return;
+
+        const displayTitle = f.name ? f.name : (t.osmFountainLabel || "Fontanella (OpenStreetMap)");
+        const safeName = encodeURIComponent(displayTitle);
+        const lat = Number(f.coords[0]);
+        const lng = Number(f.coords[1]);
+        const popupHtml = `
+          <div style="min-width:165px;">
+            <div style="font-weight:800;font-size:12px;color:#0369a1;">💧 ${escapeHtml(displayTitle)}</div>
+            <div style="font-size:11px;color:#57534e;margin-top:2px;">OpenStreetMap · ${lat.toFixed(5)}, ${lng.toFixed(5)}</div>
+            ${f.note ? `<div style="font-size:11px;color:#44403c;margin-top:2px;">${escapeHtml(f.note)}</div>` : ""}
+            <button onclick="focusPoiOnMap(${lat}, ${lng}, decodeURIComponent('${safeName}'))"
+              style="margin-top:6px;padding:4px 9px;border-radius:7px;background:#0284c7;color:#fff;font-size:11px;font-weight:700;border:none;cursor:pointer;">
+              ${escapeHtml(t.guideOnMap || "Guida sulla Mappa")}
+            </button>
+          </div>
+        `;
+
+        L.marker([lat, lng], {
+          icon: createPoiLeafletIcon("water", true),
+          zIndexOffset: 420
+        }).addTo(osmFountainsLayer).bindPopup(popupHtml);
+      });
     }
 
     /* ================= REAL-TIME ELEVATION PROFILE ================= */
@@ -4163,6 +4398,7 @@
       renderPoiList();
       if (map) {
         renderPoiMarkersOnMap();
+        renderOsmFountainsOnMap();
         selectRoute(activeRouteId);
       } else {
         updateRouteProgressMetrics();
@@ -4209,6 +4445,7 @@
         renderPoiList();
         if (map) {
           renderPoiMarkersOnMap();
+          renderOsmFountainsOnMap();
         }
         if (isSuperManager) {
           setPoisSaveBadgeState(true, `✓ (${POIS.length})`);
@@ -4280,12 +4517,21 @@
     function getPoiTypeMeta(typeKey) {
       const t = I18N[currentLang] || I18N.it;
       const mapPoi = {
-        water: { badge: t.poiBadgeWater, color: "#2563eb" },
-        view: { badge: t.poiBadgeView, color: "#d97706" },
-        food: { badge: t.poiBadgeFood, color: "#15803d" },
-        service: { badge: t.poiBadgeService, color: "#7c3aed" }
+        water: { badge: t.poiBadgeWater, color: "#0284c7" },
+        view: { badge: t.poiBadgeView, color: "#141413" },
+        food: { badge: t.poiBadgeFood, color: "#141413" },
+        service: { badge: t.poiBadgeService, color: "#141413" }
       };
       return mapPoi[typeKey] || mapPoi.food;
+    }
+
+    function renderFilterPillIcons() {
+      ["water", "view", "food", "service"].forEach((k) => {
+        const el = document.getElementById(`filter-icon-${k}`);
+        if (el) {
+          el.innerHTML = `<span class="w-3 h-3 inline-block">${getPoiSvgMarkup(k)}</span>`;
+        }
+      });
     }
 
     function updateWakeLockUI() {
@@ -4437,10 +4683,12 @@
       updateNetworkStatusUI();
       updateWakeLockUI();
       updatePoiOwnerVisibility();
+      renderFilterPillIcons();
       rebuildRouteSelector();
       selectRoute(activeRouteId);
       renderPoiList();
       renderPoiMarkersOnMap();
+      renderOsmFountainsOnMap();
       renderTroubleshooting();
       fetchTrailWeather(false);
       if (isSuperManager) {
@@ -4560,7 +4808,7 @@
       );
     }
 
-    /* ================= CLIENT ACCESS CODES VIA CLOUDFLARE WORKER (NO SECRETS IN HTML) ================= */
+    /* ================= CLIENT ACCESS CODES VIA CLOUDFLARE WORKER ================= */
 
     function loadClientCodesPool(managerId = activeManagerId) {
       const storageKey = getManagerCodesLocalKey(managerId);
@@ -4902,6 +5150,7 @@
       selectRoute(activeRouteId);
       renderPoiList();
       renderPoiMarkersOnMap();
+      loadOsmDrinkingFountains(false);
       renderTroubleshooting();
       updatePoiOwnerVisibility();
 
@@ -5036,6 +5285,7 @@
       if (map) {
         renderBaseMarkerOnMap();
         renderPoiMarkersOnMap();
+        renderOsmFountainsOnMap();
         map.invalidateSize();
         return;
       }
@@ -5053,6 +5303,7 @@
 
       renderBaseMarkerOnMap();
       renderPoiMarkersOnMap();
+      renderOsmFountainsOnMap();
     }
 
     function updateRouteInfoCard(route) {
@@ -5693,6 +5944,7 @@
 
       await persistRoutesList(false);
       await persistPoisList(false);
+      await loadOsmDrinkingFountains(false);
       for (const r of ROUTES_LIST) {
         await ensureRouteElevationSeries(r);
       }
@@ -6111,12 +6363,10 @@
         const meta = getPoiTypeMeta(poi.type);
         const locName = escapeHtml(getLocalizedPoiField(poi, "name"));
         const locNote = escapeHtml(getLocalizedPoiField(poi, "note"));
-        const popupLabel = `${escapeHtml(meta.badge)} · ${locName}${locNote ? "<br><small>" + locNote + "</small>" : ""}`;
-        L.circleMarker(poi.coords, {
-          radius: 7,
-          color: meta.color,
-          fillColor: meta.color,
-          fillOpacity: 0.9
+        const popupLabel = `<strong>${escapeHtml(meta.badge)}</strong> · ${locName}${locNote ? "<br><small>" + locNote + "</small>" : ""}`;
+        L.marker(poi.coords, {
+          icon: createPoiLeafletIcon(poi.type, false),
+          zIndexOffset: 500
         }).addTo(poiMarkersLayer).bindPopup(popupLabel);
       });
     }
@@ -6126,8 +6376,8 @@
       document.querySelectorAll(".poi-filter-btn").forEach((btn) => {
         const isActive = btn.getAttribute("data-poi-filter") === activePoiTypeFilter;
         btn.className = isActive
-          ? "poi-filter-btn px-3 py-1.5 rounded-lg bg-stone-900 text-white text-xs font-bold cursor-pointer"
-          : "poi-filter-btn px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer";
+          ? "poi-filter-btn px-3 py-1.5 rounded-lg bg-stone-900 text-white text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer"
+          : "poi-filter-btn px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer";
       });
       renderPoiList();
     }
@@ -6206,6 +6456,7 @@
       await persistPoisList(true);
       renderPoiList();
       renderPoiMarkersOnMap();
+      renderOsmFountainsOnMap();
       resetPoiForm();
       showToast("✓ " + name);
     }
@@ -6221,6 +6472,7 @@
       await persistPoisList(true);
       renderPoiList();
       renderPoiMarkersOnMap();
+      renderOsmFountainsOnMap();
     }
 
     async function deletePoiById(poiId) {
@@ -6229,6 +6481,7 @@
       await persistPoisList(true);
       renderPoiList();
       renderPoiMarkersOnMap();
+      renderOsmFountainsOnMap();
     }
 
     async function restoreDefaultPois() {
@@ -6237,6 +6490,7 @@
       await persistPoisList(true);
       renderPoiList();
       renderPoiMarkersOnMap();
+      renderOsmFountainsOnMap();
     }
 
     async function saveAllPoisChanges() {
@@ -6244,6 +6498,7 @@
       await persistPoisList(true);
       renderPoiList();
       renderPoiMarkersOnMap();
+      renderOsmFountainsOnMap();
       showToast("✓");
     }
 
@@ -6276,13 +6531,17 @@
         const lng = Number(poi.coords[1]);
         const coordsText = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
         const distLabel = formatDistanceBadgeText(distMeters);
+        const iconBorder = poi.type === "water" ? "border-sky-500 bg-sky-50" : "border-stone-900 bg-white";
 
         return `
           <div class="p-3 rounded-xl border border-stone-200 bg-stone-50 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
             <div class="space-y-0.5">
               <div class="flex flex-wrap items-center gap-2">
                 <span class="text-[11px] font-extrabold text-stone-400">#${rankIdx + 1}</span>
-                <span class="text-xs font-bold text-stone-600">${escapeHtml(meta.badge)}</span>
+                <span class="inline-flex items-center justify-center w-6 h-6 rounded-full border ${iconBorder} shrink-0">
+                  <span class="w-4 h-4 inline-block">${getPoiSvgMarkup(poi.type)}</span>
+                </span>
+                <span class="text-xs font-bold text-stone-700">${escapeHtml(meta.badge)}</span>
                 ${distLabel ? `<span class="px-2 py-0.5 rounded text-[11px] font-extrabold bg-emerald-100 text-emerald-900">${escapeHtml(distLabel)}</span>` : ""}
                 <span class="text-[11px] text-stone-400">${coordsText}</span>
               </div>
@@ -6380,6 +6639,7 @@
     window.addEventListener("online", () => {
       updateNetworkStatusUI();
       fetchTrailWeather(false);
+      loadOsmDrinkingFountains(false);
       flushPendingRiderDepartures();
       flushPendingRiderAlertsWithCurrentCoords();
       syncAllCloudStateOnBoot();
