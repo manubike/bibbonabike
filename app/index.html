@@ -1802,7 +1802,7 @@
         toastWakeOn: "Scherm altijd aan ingeschakeld",
         toastWakeOff: "Scherm altijd aan uitgeschakeld",
         toastWakeUnsupported: "Browser ondersteunt geen Wake Lock: zet schermtime-out op 'Nooit' in telefooninstellingen",
-        toastWakeError: "Kan scherm niet actief houden (controleer batterijbesparing of HTTPS)",
+        toastWakeError: "Kan scherm niet actief houden (controleer batterijbesparing ou HTTPS)",
         toastPoiGuided: "MTB-/padroute berekend naar:",
         toastPoiCalc: "Pad- & gravelroute berekenen naar:"
       },
@@ -2829,6 +2829,8 @@
     let userCoords = null;
     let prevGpsCoords = null;
     let currentHeadingDeg = 0;
+    let compassListenerAttached = false;
+    let lastGpsFixTs = 0;
     let simulatedProgressRatio = 0;
     let pendingFormCoords = null;
     let poiMarkersLayer = null;
@@ -4876,6 +4878,7 @@
         renderUserPositionMarker(userCoords, pos.coords.accuracy);
         if (liveNavActive && followUserCenter) {
           centerMapOnCoords(userCoords, NAV_ZOOM_LEVEL, false);
+          applyMapHeadingRotation(currentHeadingDeg, true);
         }
       }
       renderPoiList();
@@ -5407,6 +5410,33 @@
       }
     }
 
+    function enableCompassHeadingListener() {
+      if (compassListenerAttached || typeof window === "undefined") return;
+      compassListenerAttached = true;
+
+      const handleOrientation = (ev) => {
+        if (!liveNavActive || !followUserCenter) return;
+        if (Date.now() - lastGpsFixTs < 4000) return;
+
+        let heading = null;
+        if (typeof ev.webkitCompassHeading === "number" && !Number.isNaN(ev.webkitCompassHeading)) {
+          heading = ev.webkitCompassHeading;
+        } else if (ev.absolute === true && typeof ev.alpha === "number") {
+          heading = (360 - ev.alpha) % 360;
+        }
+
+        if (heading !== null) {
+          applyMapHeadingRotation(heading, true);
+          if (map && isValidLatLngPair(userCoords)) {
+            centerMapOnCoords(userCoords, NAV_ZOOM_LEVEL, false);
+          }
+        }
+      };
+
+      window.addEventListener("deviceorientationabsolute", handleOrientation, true);
+      window.addEventListener("deviceorientation", handleOrientation, true);
+    }
+
     function centerMapOnCoords(coords, zoomLevel = NAV_ZOOM_LEVEL, animate = true) {
       if (!map || !isValidLatLngPair(coords)) return;
       map.invalidateSize({ pan: false });
@@ -5682,10 +5712,12 @@
       const sensorHeading = pos?.coords?.heading;
       const speed = pos?.coords?.speed;
 
-      if (typeof sensorHeading === "number" && !Number.isNaN(sensorHeading) && (speed === null || speed > 0.8)) {
+      if (typeof sensorHeading === "number" && !Number.isNaN(sensorHeading) && (speed === null || speed > 0.5)) {
         currentHeadingDeg = sensorHeading;
-      } else if (prevGpsCoords && haversineMeters(prevGpsCoords, newCoords) >= 3) {
+        lastGpsFixTs = Date.now();
+      } else if (prevGpsCoords && haversineMeters(prevGpsCoords, newCoords) >= 2) {
         currentHeadingDeg = computeBearingDegrees(prevGpsCoords, newCoords);
+        lastGpsFixTs = Date.now();
       }
       prevGpsCoords = [...newCoords];
 
@@ -5706,6 +5738,7 @@
         updateRouteProgressMetrics();
         if (liveNavActive && followUserCenter && map) {
           centerMapOnCoords(userCoords, NAV_ZOOM_LEVEL, false);
+          applyMapHeadingRotation(currentHeadingDeg, true);
         }
       };
 
@@ -5741,6 +5774,11 @@
       if (liveNavActive) {
         followUserCenter = true;
         hasInitialNavZoomed = false;
+        if (typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function") {
+          DeviceOrientationEvent.requestPermission().catch(() => {});
+        }
+        enableCompassHeadingListener();
+
         banner.classList.remove("hidden");
         const routeLabel = activeRoute ? getLocalizedRouteField(activeRoute, "name") : (t.selectTourOption || "Seleziona tour");
         statusText.textContent = `${t.liveNavBanner} — ${routeLabel}`;
