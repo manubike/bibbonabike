@@ -65,6 +65,12 @@
     #map-container.heading-up-active .cyclist-gps-marker {
       transform: rotate(calc(var(--map-rot, 0deg) * -1));
     }
+    #elevation-profile-canvas {
+      width: 100%;
+      height: 150px;
+      display: block;
+      border-radius: 12px;
+    }
     .map-stage.is-fullscreen {
       position: fixed !important;
       inset: 0 !important;
@@ -535,6 +541,23 @@
           </div>
         </div>
       </div>
+
+      <!-- Profilo Altimetrico in Tempo Reale sotto la mappa -->
+      <div id="elevation-profile-card" class="bg-white rounded-2xl border border-stone-200 p-4 space-y-2.5">
+        <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-stone-900">📈 Profilo Altimetrico Live</span>
+            <span id="elev-live-status" class="px-2 py-0.5 rounded font-bold text-[11px] bg-emerald-100 text-emerald-800">Quota: -- m</span>
+          </div>
+          <div class="flex flex-wrap items-center gap-3 text-stone-600 font-medium">
+            <span id="elev-min-max">Min: -- m · Max: -- m</span>
+            <span id="elev-cursor-dist" class="font-bold text-stone-900">0.0 km (0%)</span>
+          </div>
+        </div>
+        <div class="bg-stone-50 border border-stone-200/80 rounded-xl p-2">
+          <canvas id="elevation-profile-canvas"></canvas>
+        </div>
+      </div>
     </section>
 
     <!-- Scheda Punti Utili -->
@@ -962,6 +985,7 @@
     const OFFLINE_CACHE_NAME = "magona-offline-v1";
     const ROUTES_STORAGE_KEY = "magona_offline_routes_v3";
     const POIS_STORAGE_KEY = "magona_offline_pois_v2";
+    const ELEV_CACHE_STORAGE_KEY = "magona_elevation_profiles_v1";
     const CLIENT_CODES_STORAGE_KEY = "magona_client_codes_pool_v2";
     const PARTNERS_STORAGE_KEY = "magona_partner_managers_v1";
     const THEME_STORAGE_KEY = "magona_theme_mode_v1";
@@ -1462,6 +1486,9 @@
     let pendingFormCoords = null;
     let poiMarkersLayer = null;
     let activePoiTypeFilter = "all";
+    let elevationProfileCache = {};
+    let activeRouteElevations = [];
+    let activeElevationRouteId = "";
 
     let partnerManagersList = [];
     let riderAlertsList = [];
@@ -1503,6 +1530,299 @@
       const lat = Number(coords[0]);
       const lng = Number(coords[1]);
       return !Number.isNaN(lat) && !Number.isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+    }
+
+    /* ================= REAL-TIME ELEVATION PROFILE ================= */
+
+    function loadElevationCacheSync() {
+      try {
+        const raw = localStorage.getItem(ELEV_CACHE_STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === "object") {
+            return parsed;
+          }
+        }
+      } catch (e) {}
+      return {};
+    }
+
+    async function persistElevationCache() {
+      try {
+        localStorage.setItem(ELEV_CACHE_STORAGE_KEY, JSON.stringify(elevationProfileCache));
+      } catch (e) {}
+      await idbWrite(ELEV_CACHE_STORAGE_KEY, elevationProfileCache);
+    }
+
+    function getRouteSignature(route) {
+      const coords = Array.isArray(route?.coords) ? route.coords : [];
+      const first = coords[0] ? `${Number(coords[0][0]).toFixed(4)},${Number(coords[0][1]).toFixed(4)}` : "0,0";
+      const last = coords[coords.length - 1] ? `${Number(coords[coords.length - 1][0]).toFixed(4)},${Number(coords[coords.length - 1][1]).toFixed(4)}` : "0,0";
+      return `${route?.id || "route"}_${coords.length}_${Number(route?.distanceKm) || 0}_${Number(route?.elevationGainM) || 0}_${first}_${last}`;
+    }
+
+    function buildSyntheticElevations(route) {
+      const coords = Array.isArray(route?.coords) && route.coords.length > 1
+        ? route.coords
+        : [DEFAULT_BASE_COORDS, [43.266, 10.621], DEFAULT_BASE_COORDS];
+      const gain = Math.max(40, Number(route?.elevationGainM) || 350);
+      const baseAlt = 45;
+      const n = coords.length;
+      const out = [];
+      for (let i = 0; i < n; i++) {
+        const t = i / Math.max(1, n - 1);
+        const wave = Math.sin(t * Math.PI * 2) * 0.35 + Math.sin(t * Math.PI * 4) * 0.15;
+        const climbCurve = Math.sin(t * Math.PI);
+        const alt = baseAlt + climbCurve * gain * 0.72 + wave * gain * 0.25;
+        out.push(Math.max(0, Math.round(alt)));
+      }
+      return out;
+    }
+
+    function resampleCoordsForElevation(coords, maxSamples = 48) {
+      if (!Array.isArray(coords) || coords.length === 0) return [];
+      if (coords.length <= maxSamples) return coords;
+      const out = [];
+      for (let i = 0; i < maxSamples; i++) {
+        const idx = Math.round((i / (maxSamples - 1)) * (coords.length - 1));
+        out.push(coords[idx]);
+      }
+      return out;
+    }
+
+    function interpolateElevationsToCoords(sampledElevs, targetLen) {
+      if (!Array.isArray(sampledElevs) || sampledElevs.length === 0 || targetLen <= 0) return [];
+      if (sampledElevs.length === targetLen) return sampledElevs.slice();
+      const out = [];
+      for (let i = 0; i < targetLen; i++) {
+        const pos = (i / Math.max(1, targetLen - 1)) * (sampledElevs.length - 1);
+        const lo = Math.floor(pos);
+        const hi = Math.min(sampledElevs.length - 1, Math.ceil(pos));
+        const frac = pos - lo;
+        const val = sampledElevs[lo] + (sampledElevs[hi] - sampledElevs[lo]) * frac;
+        out.push(Math.round(val));
+      }
+      return out;
+    }
+
+    async function ensureRouteElevationSeries(route) {
+      if (!route) return [];
+      const sig = getRouteSignature(route);
+      if (activeElevationRouteId === sig && Array.isArray(activeRouteElevations) && activeRouteElevations.length > 0) {
+        return activeRouteElevations;
+      }
+
+      if (Array.isArray(elevationProfileCache[sig]) && elevationProfileCache[sig].length > 1) {
+        activeElevationRouteId = sig;
+        activeRouteElevations = elevationProfileCache[sig];
+        renderElevationProfileCanvas(route, activeRouteElevations);
+        return activeRouteElevations;
+      }
+
+      const fallback = buildSyntheticElevations(route);
+      activeElevationRouteId = sig;
+      activeRouteElevations = fallback;
+      renderElevationProfileCanvas(route, activeRouteElevations);
+
+      const coords = Array.isArray(route.coords) ? route.coords : [];
+      if (navigator.onLine && coords.length >= 2) {
+        const sampled = resampleCoordsForElevation(coords, 45);
+        const lats = sampled.map((c) => Number(c[0]).toFixed(5)).join(",");
+        const lons = sampled.map((c) => Number(c[1]).toFixed(5)).join(",");
+        try {
+          const url = `https://api.open-meteo.com/v1/elevation?latitude=${lats}&longitude=${lons}`;
+          const resp = await fetch(url, { cache: "no-store" });
+          if (resp.ok) {
+            const data = await resp.json();
+            if (Array.isArray(data?.elevation) && data.elevation.length === sampled.length) {
+              const cleanSampled = data.elevation.map((v) => Math.round(Number(v) || 0));
+              const fullSeries = interpolateElevationsToCoords(cleanSampled, coords.length);
+              elevationProfileCache[sig] = fullSeries;
+              await persistElevationCache();
+              if (activeRouteId === route.id) {
+                activeElevationRouteId = sig;
+                activeRouteElevations = fullSeries;
+                renderElevationProfileCanvas(route, activeRouteElevations);
+              }
+              return fullSeries;
+            }
+          }
+        } catch (e) {}
+      }
+
+      return fallback;
+    }
+
+    function computeLiveRouteCursor(route, elevations) {
+      const coords = Array.isArray(route?.coords) ? route.coords : [];
+      const totalKm = Number(route?.distanceKm) || 0;
+      if (coords.length < 2) {
+        const ratio = Math.min(1, Math.max(0, simulatedProgressRatio));
+        const alt = Array.isArray(elevations) && elevations.length > 0 ? elevations[0] : 0;
+        return { index: 0, ratio, distKm: +(totalKm * ratio).toFixed(1), altM: alt };
+      }
+
+      let bestIdx = 0;
+      if (isValidLatLngPair(userCoords)) {
+        let bestDist = Infinity;
+        for (let i = 0; i < coords.length; i++) {
+          const d = haversineMeters(userCoords, coords[i]);
+          if (d < bestDist) {
+            bestDist = d;
+            bestIdx = i;
+          }
+        }
+      } else {
+        bestIdx = Math.min(coords.length - 1, Math.max(0, Math.round(simulatedProgressRatio * (coords.length - 1))));
+      }
+
+      const ratio = coords.length > 1 ? bestIdx / (coords.length - 1) : 0;
+      const distKm = +(totalKm * ratio).toFixed(1);
+      const altM = Array.isArray(elevations) && elevations.length > 0
+        ? Math.round(elevations[Math.min(elevations.length - 1, bestIdx)] ?? 0)
+        : 0;
+
+      return { index: bestIdx, ratio, distKm, altM };
+    }
+
+    function renderElevationProfileCanvas(route, elevationsInput = null) {
+      const canvas = document.getElementById("elevation-profile-canvas");
+      if (!canvas || !route) return;
+
+      const sig = getRouteSignature(route);
+      const elevations = Array.isArray(elevationsInput) && elevationsInput.length > 0
+        ? elevationsInput
+        : (Array.isArray(elevationProfileCache[sig]) && elevationProfileCache[sig].length > 0
+          ? elevationProfileCache[sig]
+          : (activeElevationRouteId === sig && activeRouteElevations.length > 0
+            ? activeRouteElevations
+            : buildSyntheticElevations(route)));
+
+      const cursor = computeLiveRouteCursor(route, elevations);
+      const totalKm = Number(route.distanceKm) || 0;
+      const minAlt = Math.min(...elevations);
+      const maxAlt = Math.max(...elevations);
+      const pct = Math.round(cursor.ratio * 100);
+
+      const liveBadge = document.getElementById("elev-live-status");
+      const minMaxEl = document.getElementById("elev-min-max");
+      const cursorDistEl = document.getElementById("elev-cursor-dist");
+
+      if (liveBadge) liveBadge.textContent = `Quota: ${cursor.altM} m`;
+      if (minMaxEl) minMaxEl.textContent = `Min: ${minAlt} m · Max: ${maxAlt} m`;
+      if (cursorDistEl) cursorDistEl.textContent = `${cursor.distKm.toFixed(1)} / ${totalKm.toFixed(1)} km (${pct}%)`;
+
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      const cssW = Math.max(240, rect.width || canvas.parentElement?.clientWidth || 600);
+      const cssH = 150;
+
+      if (canvas.width !== Math.round(cssW * dpr) || canvas.height !== Math.round(cssH * dpr)) {
+        canvas.width = Math.round(cssW * dpr);
+        canvas.height = Math.round(cssH * dpr);
+      }
+
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.save();
+      ctx.scale(dpr, dpr);
+
+      const isDark = document.documentElement.classList.contains("dark-mode");
+      const padL = 38;
+      const padR = 14;
+      const padT = 14;
+      const padB = 24;
+      const plotW = Math.max(40, cssW - padL - padR);
+      const plotH = Math.max(40, cssH - padT - padB);
+      const spanAlt = Math.max(10, maxAlt - minAlt);
+
+      ctx.clearRect(0, 0, cssW, cssH);
+
+      // Griglia orizzontale e etichette quota
+      ctx.strokeStyle = isDark ? "#2f3634" : "#e5e7eb";
+      ctx.lineWidth = 1;
+      ctx.fillStyle = isDark ? "#a8a29e" : "#6b7280";
+      ctx.font = "10px -apple-system, BlinkMacSystemFont, sans-serif";
+      ctx.textAlign = "right";
+      ctx.textBaseline = "middle";
+
+      for (let g = 0; g <= 2; g++) {
+        const frac = g / 2;
+        const y = padT + plotH * (1 - frac);
+        const val = Math.round(minAlt + spanAlt * frac);
+        ctx.beginPath();
+        ctx.moveTo(padL, y);
+        ctx.lineTo(padL + plotW, y);
+        ctx.stroke();
+        ctx.fillText(`${val}m`, padL - 6, y);
+      }
+
+      const points = elevations.map((alt, idx) => {
+        const xFrac = elevations.length > 1 ? idx / (elevations.length - 1) : 0;
+        const yFrac = (alt - minAlt) / spanAlt;
+        return {
+          x: padL + xFrac * plotW,
+          y: padT + plotH * (1 - yFrac),
+          alt
+        };
+      });
+
+      // Area sotto il profilo altimetrico
+      const grad = ctx.createLinearGradient(0, padT, 0, padT + plotH);
+      grad.addColorStop(0, isDark ? "rgba(16, 185, 129, 0.36)" : "rgba(15, 118, 110, 0.28)");
+      grad.addColorStop(1, isDark ? "rgba(16, 185, 129, 0.02)" : "rgba(15, 118, 110, 0.02)");
+
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, padT + plotH);
+      points.forEach((p) => ctx.lineTo(p.x, p.y));
+      ctx.lineTo(points[points.length - 1].x, padT + plotH);
+      ctx.closePath();
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // Linea profilo altimetrico
+      ctx.beginPath();
+      points.forEach((p, idx) => {
+        if (idx === 0) ctx.moveTo(p.x, p.y);
+        else ctx.lineTo(p.x, p.y);
+      });
+      ctx.strokeStyle = isDark ? "#34d399" : "#0f766e";
+      ctx.lineWidth = 2.2;
+      ctx.stroke();
+
+      // Etichette distanza asse X
+      ctx.fillStyle = isDark ? "#a8a29e" : "#6b7280";
+      ctx.textBaseline = "top";
+      ctx.textAlign = "left";
+      ctx.fillText("0 km", padL, padT + plotH + 6);
+      ctx.textAlign = "center";
+      ctx.fillText(`${(totalKm / 2).toFixed(1)} km`, padL + plotW / 2, padT + plotH + 6);
+      ctx.textAlign = "right";
+      ctx.fillText(`${totalKm.toFixed(1)} km`, padL + plotW, padT + plotH + 6);
+
+      // Cursore posizione live sulla traccia altimetrica
+      const activePt = points[Math.min(points.length - 1, Math.max(0, cursor.index))];
+      if (activePt) {
+        ctx.save();
+        ctx.setLineDash([4, 3]);
+        ctx.strokeStyle = isDark ? "#facc15" : "#d97706";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(activePt.x, padT);
+        ctx.lineTo(activePt.x, padT + plotH);
+        ctx.stroke();
+        ctx.restore();
+
+        ctx.beginPath();
+        ctx.arc(activePt.x, activePt.y, 6, 0, Math.PI * 2);
+        ctx.fillStyle = isDark ? "#facc15" : "#d97706";
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = isDark ? "#0f1110" : "#ffffff";
+        ctx.stroke();
+      }
+
+      ctx.restore();
     }
 
     function setActiveBaseLocation(coords, label) {
@@ -2278,6 +2598,11 @@
       const appSel = document.getElementById("app-theme-select");
       if (authSel) authSel.value = currentThemeMode;
       if (appSel) appSel.value = currentThemeMode;
+
+      const currentRoute = getRouteById(activeRouteId);
+      if (currentRoute) {
+        renderElevationProfileCanvas(currentRoute, activeRouteElevations);
+      }
     }
 
     function changeThemeMode(mode) {
@@ -2489,6 +2814,12 @@
 
     async function hydrateLocalStateOnBoot() {
       loadPendingAlertsQueue();
+      elevationProfileCache = loadElevationCacheSync();
+      const idbElev = await idbRead(ELEV_CACHE_STORAGE_KEY);
+      if (idbElev && typeof idbElev === "object") {
+        elevationProfileCache = { ...idbElev, ...elevationProfileCache };
+      }
+
       const idbRoutes = await idbRead(ROUTES_STORAGE_KEY);
       if (Array.isArray(idbRoutes) && idbRoutes.length > 0) {
         ROUTES_LIST = idbRoutes;
@@ -2509,6 +2840,9 @@
       if (map) {
         renderPoiMarkersOnMap();
         selectRoute(activeRouteId);
+      } else {
+        const initRoute = getRouteById(activeRouteId);
+        if (initRoute) ensureRouteElevationSeries(initRoute);
       }
       if (isSuperManager) {
         renderToursManagerList();
@@ -2717,6 +3051,11 @@
           toggleMapFullscreen();
         }
       }
+    });
+
+    window.addEventListener("resize", function () {
+      const r = getRouteById(activeRouteId);
+      if (r) renderElevationProfileCanvas(r, activeRouteElevations);
     });
 
     function showToast(msg) {
@@ -3292,7 +3631,9 @@
 
       setTimeout(() => {
         if (map) map.invalidateSize();
-      }, 120);
+        const currRoute = getRouteById(activeRouteId);
+        if (currRoute) renderElevationProfileCanvas(currRoute, activeRouteElevations);
+      }, 140);
     }
 
     function lockApplication() {
@@ -3341,8 +3682,12 @@
         btn.classList.toggle("text-stone-500", !active);
       });
 
-      if (tabName === "map" && map) {
-        setTimeout(() => map.invalidateSize(), 100);
+      if (tabName === "map") {
+        setTimeout(() => {
+          if (map) map.invalidateSize();
+          const r = getRouteById(activeRouteId);
+          if (r) renderElevationProfileCanvas(r, activeRouteElevations);
+        }, 120);
       }
       if (tabName === "pois") {
         renderPoiList();
@@ -3440,6 +3785,7 @@
       rebuildRouteSelector(matches);
 
       updateRouteInfoCard(route);
+      ensureRouteElevationSeries(route);
 
       if (changed && !isManagerUser && activeSessionClientCode) {
         recordRiderDeparture("route_select");
@@ -3537,6 +3883,8 @@
       document.getElementById("fs-rem-elev").textContent = remElev + " m";
       document.getElementById("fs-total-elev").textContent = totalElev + " m";
       document.getElementById("fs-done-elev").textContent = doneElev + " m";
+
+      renderElevationProfileCanvas(route, activeRouteElevations);
 
       evaluateRiderProximityAndHalfway(route, pct);
       if (pendingAlertsQueue.length > 0 && navigator.onLine) {
@@ -3992,6 +4340,10 @@
 
       await persistRoutesList(false);
       await persistPoisList(false);
+      for (const r of ROUTES_LIST) {
+        await ensureRouteElevationSeries(r);
+      }
+      await persistElevationCache();
 
       const tileUrls = new Set();
       const allCoords = [activeBaseCoords, DEFAULT_BASE_COORDS];
@@ -4678,6 +5030,8 @@
       flushPendingRiderDepartures();
       flushPendingRiderAlertsWithCurrentCoords();
       syncAllCloudStateOnBoot();
+      const currRoute = getRouteById(activeRouteId);
+      if (currRoute) ensureRouteElevationSeries(currRoute);
     });
     window.addEventListener("offline", updateNetworkStatusUI);
     window.addEventListener("DOMContentLoaded", async () => {
