@@ -921,15 +921,6 @@
           </div>
           <div id="client-codes-list" class="space-y-2"></div>
         </div>
-
-        <div class="flex flex-wrap gap-2">
-          <button data-i18n="preCacheBtn" onclick="saveOfflineForUser()" class="px-4 py-2 rounded-xl bg-stone-900 text-white text-xs font-semibold cursor-pointer">
-            Pre-Scarica Mappa Magona Offline
-          </button>
-          <button id="btn-go-tours-manager" data-i18n="goToursBtn" onclick="switchTab('tours')" class="hidden px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold cursor-pointer">
-            Vai a Gestione Tour
-          </button>
-        </div>
       </div>
     </section>
   </div>
@@ -1166,8 +1157,6 @@
         managerTitle: "I Tuoi Codici Cliente & Cache Offline",
         clientPassLabel: "Password Cliente Attiva",
         genCodeBtn: "+ Genera Codice Utente",
-        preCacheBtn: "Pre-Scarica Mappa Magona Offline",
-        goToursBtn: "Vai a Gestione Tour",
         noToursOption: "-- Nessun tour disponibile --",
         toastNoFilterMatch: "Nessun percorso con questi filtri",
         toastGpsAcquiring: "Ricerca posizione GPS reale in corso...",
@@ -3392,8 +3381,6 @@
       if (superPartnersPanel) superPartnersPanel.classList.toggle("hidden", !isSuperManager);
       const partnerBasePanel = document.getElementById("partner-base-settings-panel");
       if (partnerBasePanel) partnerBasePanel.classList.toggle("hidden", !(isManagerUser && !isSuperManager));
-      const goToursBtn = document.getElementById("btn-go-tours-manager");
-      if (goToursBtn) goToursBtn.classList.toggle("hidden", !isSuperManager);
 
       renderClientCodesPoolUI();
       updateNetworkStatusUI();
@@ -4864,4 +4851,3 @@
   </script>
 </body>
 </html>
-
