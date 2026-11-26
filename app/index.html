@@ -100,10 +100,18 @@
       height: 190%;
       transform: rotate(var(--map-rot, 0deg));
     }
-    #map-container {
+        #map-container {
       width: 100%;
       height: 100%;
       z-index: 1;
+      background-color: #1c1f1e;
+    }
+    #map-rotator.heading-up-active .leaflet-tile {
+      width: 257px !important;
+      height: 257px !important;
+      margin: -0.5px;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
     }
     #map-rotator.heading-up-active .cyclist-gps-marker,
     #map-rotator.heading-up-active .poi-map-pin {
