@@ -146,13 +146,16 @@
     html.dark-mode #rider-alerts-list > div,
     html.dark-mode #rider-alerts-list .bg-white,
     html.dark-mode #rider-departures-list > div,
-    html.dark-mode #rider-departures-list .bg-white {
+    html.dark-mode #rider-departures-list .bg-white,
+    html.dark-mode #partners-list > div,
+    html.dark-mode #partners-list .bg-white {
       background-color: #202423 !important;
       background: #202423 !important;
       border-color: #464e4b !important;
       color: #ffffff !important;
     }
-    html.dark-mode #client-codes-list span:first-child {
+    html.dark-mode #client-codes-list span:first-child,
+    html.dark-mode #partners-list span:first-child {
       color: #ffffff !important;
     }
     html.dark-mode select,
@@ -315,7 +318,7 @@
       <div class="flex items-center gap-2.5">
         <img src="logo.png" alt="Magona Bike Garage" class="brand-logo-img" onerror="this.style.display='none'; document.getElementById('app-fallback-title').classList.remove('hidden');" />
         <span id="app-fallback-title" class="hidden font-extrabold text-base tracking-tight text-stone-900">Magona Bike Garage</span>
-        <span id="role-badge" data-i18n="roleBadge" class="hidden text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-stone-900 text-white">GESTORE</span>
+        <span id="role-badge" class="hidden text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-stone-900 text-white">GESTORE</span>
         <span id="offline-cache-badge" data-i18n="offlineBadge" class="hidden text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">OFFLINE PRONTO</span>
       </div>
       <div class="flex items-center gap-2">
@@ -536,7 +539,7 @@
 
     <!-- Scheda Punti Utili -->
     <section id="tab-pois" class="tab-panel hidden flex-1 p-4 max-w-5xl w-full mx-auto space-y-4">
-      <!-- Pannello Gestore: Aggiungi / Modifica Punto Utile -->
+      <!-- Pannello Super-Gestore: Aggiungi / Modifica Punto Utile -->
       <div id="poi-owner-editor" class="hidden bg-white rounded-2xl border border-stone-200 p-5 space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
@@ -667,7 +670,7 @@
       </div>
     </section>
 
-    <!-- Scheda Gestione Tour (Solo Gestore) -->
+    <!-- Scheda Gestione Tour (Solo Super-Gestore) -->
     <section id="tab-tours" class="tab-panel hidden flex-1 p-4 max-w-5xl w-full mx-auto space-y-4">
       <!-- Form Aggiunta / Modifica Tour -->
       <div class="bg-white rounded-2xl border border-stone-200 p-5 space-y-4">
@@ -785,14 +788,34 @@
       </div>
     </section>
 
-    <!-- Scheda Gestore & Cache -->
+    <!-- Scheda Gestore & Cache (Super-Gestore & Gestori Partner, ciascuno sul proprio spazio isolato) -->
     <section id="tab-manager" class="tab-panel hidden flex-1 p-4 max-w-4xl w-full mx-auto space-y-4">
+      <!-- Sezione Account Partner (Visibile SOLO al Super-Gestore) -->
+      <div id="super-partners-panel" class="hidden bg-white rounded-2xl border border-stone-200 p-4 space-y-3">
+        <div>
+          <h2 class="text-base font-bold text-stone-900">Account Gestori Partner (Esercenti & Strutture)</h2>
+          <p class="text-xs text-stone-500">Crea o revoca le password degli esercenti partner. Ogni gestore può usare i tuoi tour/punti utili e generare i propri codici cliente in totale autonomia.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
+          <input id="partner-name-input" type="text" placeholder="Nome struttura (es. Bike Hotel Bolgheri)"
+            class="border border-stone-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-stone-900" />
+          <input id="partner-pass-input" type="text" placeholder="Password gestore (es. BOLGHERI26)"
+            class="border border-stone-300 rounded-xl px-3 py-2 text-sm uppercase focus:outline-none focus:border-stone-900" />
+          <button onclick="addPartnerAccount()" class="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
+            + Aggiungi Gestore Partner
+          </button>
+        </div>
+
+        <div id="partners-list" class="space-y-2"></div>
+      </div>
+
       <!-- Partenze Clienti (Orario di Avvio) -->
       <div class="bg-white rounded-2xl border border-stone-200 p-4 space-y-3">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <h2 class="text-base font-bold text-stone-900">Partenze Clienti (Data e Orario di Avvio)</h2>
-            <p class="text-xs text-stone-500">Registra automaticamente data, ora di partenza e tour scelto da ciascun codice cliente al momento dell'accesso o avvio navigazione.</p>
+            <h2 class="text-base font-bold text-stone-900">Partenze dei Tuoi Clienti (Data e Orario di Avvio)</h2>
+            <p class="text-xs text-stone-500">Registra automaticamente data, ora di partenza e tour scelto dai clienti associati ai tuoi codici.</p>
           </div>
           <div class="flex items-center gap-1.5">
             <button onclick="syncRiderAlertsFromCloud(true)" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
@@ -811,7 +834,7 @@
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h2 class="text-base font-bold text-stone-900">Notifiche Posizione Clienti (Metà Percorso & 1,5 km Base)</h2>
-            <p class="text-xs text-stone-500">Quando un cliente supera il 50% del tour o entra entro 1,5 km dal negozio, l'avviso viene inviato con data, ora di arrivo e posizione GPS attuale al momento della connessione.</p>
+            <p class="text-xs text-stone-500">Quando un tuo cliente supera il 50% del tour o entra entro 1,5 km dalla base, l'avviso arriva con data, ora e posizione GPS attuale.</p>
           </div>
           <div class="flex items-center gap-1.5">
             <button onclick="requestOwnerNotificationPermissionIfNeeded(true)" class="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold cursor-pointer">
@@ -832,8 +855,8 @@
       <div class="bg-white rounded-2xl border border-stone-200 p-4 space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <h2 data-i18n="managerTitle" class="text-base font-bold text-stone-900">Pannello Gestore & Cache Offline</h2>
-            <p id="codes-pool-desc" class="text-xs text-stone-500">Più persone possono accedere con lo stesso codice. Ogni codice resta valido anche quando ne generi altri, fino a un massimo di 3 accessi per codice.</p>
+            <h2 data-i18n="managerTitle" class="text-base font-bold text-stone-900">I Tuoi Codici Cliente & Cache Offline</h2>
+            <p id="codes-pool-desc" class="text-xs text-stone-500">Genera codici dedicati ai tuoi clienti (fino a 3 accessi per codice). Gli altri gestori non possono vedere i tuoi codici né i tuoi clienti.</p>
           </div>
           <button id="btn-gen-code" onclick="rotateClientPassword()" class="px-3.5 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold cursor-pointer">
             Genera Nuovo Codice
@@ -842,7 +865,7 @@
 
         <div class="bg-stone-50 p-3 rounded-xl border border-stone-200 space-y-2">
           <div class="flex flex-wrap items-center justify-between gap-2">
-            <div class="text-xs font-semibold text-stone-600">Codici Attivi (max 3 accessi per codice)</div>
+            <div class="text-xs font-semibold text-stone-600">I Tuoi Codici Attivi (max 3 accessi per codice)</div>
             <div id="active-client-password" class="text-sm font-extrabold text-stone-900">RIDE-4829</div>
           </div>
           <div id="client-codes-list" class="space-y-2"></div>
@@ -852,7 +875,7 @@
           <button data-i18n="preCacheBtn" onclick="saveOfflineForUser()" class="px-4 py-2 rounded-xl bg-stone-900 text-white text-xs font-semibold cursor-pointer">
             Pre-Scarica Mappa Magona Offline
           </button>
-          <button data-i18n="goToursBtn" onclick="switchTab('tours')" class="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold cursor-pointer">
+          <button id="btn-go-tours-manager" data-i18n="goToursBtn" onclick="switchTab('tours')" class="hidden px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold cursor-pointer">
             Vai a Gestione Tour
           </button>
         </div>
@@ -864,7 +887,9 @@
   <div id="toast-msg" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[10000] hidden bg-stone-900 text-white text-xs font-semibold px-4 py-2.5 rounded-full shadow-lg"></div>
 
   <script>
-    const OWNER_PASSWORD = "MAGONABIKEGARAGE2025";
+    const OWNER_PASSWORD = "MAGONA2026";
+    const SUPER_MANAGER_ID = "magona";
+    const SUPER_MANAGER_NAME = "Magona Bike Garage";
     const FIREBASE_RTDB_URL = "https://magonabikegarage-c61b2-default-rtdb.europe-west1.firebasedatabase.app/";
     const FIREBASE_ROOT_PATH = "magona_bike_garage_state";
 
@@ -908,13 +933,16 @@
     const OFFLINE_CACHE_NAME = "magona-offline-v1";
     const ROUTES_STORAGE_KEY = "magona_offline_routes_v3";
     const POIS_STORAGE_KEY = "magona_offline_pois_v2";
-    const CLIENT_CODES_STORAGE_KEY = "magona_client_codes_pool_v1";
+    const CLIENT_CODES_STORAGE_KEY = "magona_client_codes_pool_v2";
+    const PARTNERS_STORAGE_KEY = "magona_partner_managers_v1";
     const THEME_STORAGE_KEY = "magona_theme_mode_v1";
     const PERMISSIONS_PROMPT_KEY = "magona_permissions_prompt_seen_v1";
     const WEATHER_CACHE_KEY = "magona_weather_cache_v1";
     const PENDING_ALERTS_QUEUE_KEY = "magona_pending_rider_alerts_v1";
     const PENDING_DEPARTURES_QUEUE_KEY = "magona_pending_rider_departures_v1";
     const SESSION_ROLE_KEY = "magona_session_role_v1";
+    const SESSION_MANAGER_ID_KEY = "magona_session_manager_id_v1";
+    const SESSION_MANAGER_NAME_KEY = "magona_session_manager_name_v1";
     const SESSION_DEPARTURE_ISO_KEY = "magona_session_departure_iso_v1";
     const MAX_USES_PER_CODE = 3;
     const IDB_NAME = "MagonaBikeGarageDB";
@@ -1077,7 +1105,7 @@
         rankPosLabel: "Pos.",
         rankUpBtn: "↑ Su",
         rankDownBtn: "↓ Giù",
-        managerTitle: "Pannello Gestore & Cache Offline",
+        managerTitle: "I Tuoi Codici Cliente & Cache Offline",
         clientPassLabel: "Password Cliente Attiva (monouso / rotazione automatica)",
         genCodeBtn: "Genera Nuovo Codice",
         preCacheBtn: "Pre-Scarica Mappa Magona Offline",
@@ -1249,7 +1277,7 @@
         rankPosLabel: "Pos.",
         rankUpBtn: "↑ Up",
         rankDownBtn: "↓ Down",
-        managerTitle: "Manager & Offline Cache Panel",
+        managerTitle: "Your Client Codes & Offline Cache",
         clientPassLabel: "Active Client Password (single-use / auto-rotation)",
         genCodeBtn: "Generate New Code",
         preCacheBtn: "Pre-Download Magona Map Offline",
@@ -2120,7 +2148,7 @@
         toastOfflineSaved: "Mapa e rotas salvos offline no telefone",
         toastWakeOn: "Tela sempre ligada ativada",
         toastWakeOff: "Tela sempre ligada desativada",
-        toastWakeUnsupported: "Navegador incompatível com Wake Lock: defina o bloqueio de tela como 'Nunca'",
+        toastWakeUnsupported: "Browser incompatível com Wake Lock: defina o bloqueio de tela como 'Nunca'",
         toastWakeError: "Não foi possível manter a tela ligada (verifique economia de bateria ou HTTPS)",
         toastPoiGuided: "Rota MTB/trilhas calculada para:",
         toastPoiCalc: "Calculando rota por trilhas para:"
@@ -2596,7 +2624,10 @@
 
     let currentLang = "it";
     let currentThemeMode = localStorage.getItem(THEME_STORAGE_KEY) || "light";
-    let isOwner = false;
+    let isSuperManager = false;
+    let isManagerUser = false;
+    let activeManagerId = SUPER_MANAGER_ID;
+    let activeManagerName = SUPER_MANAGER_NAME;
     let activeSessionClientCode = "";
     let sessionDepartureIso = localStorage.getItem(SESSION_DEPARTURE_ISO_KEY) || "";
     let map = null;
@@ -2615,6 +2646,7 @@
     let poiMarkersLayer = null;
     let activePoiTypeFilter = "all";
 
+    let partnerManagersList = [];
     let riderAlertsList = [];
     let riderDeparturesList = [];
     let pendingAlertsQueue = [];
@@ -2658,10 +2690,20 @@
       }
     }
 
+    function getManagerCloudPrefix(managerId = activeManagerId) {
+      const cleanId = String(managerId || SUPER_MANAGER_ID).trim().toLowerCase().replace(/[^a-z0-9_-]/g, "") || SUPER_MANAGER_ID;
+      return `managers/${cleanId}`;
+    }
+
+    function getManagerCodesLocalKey(managerId = activeManagerId) {
+      const cleanId = String(managerId || SUPER_MANAGER_ID).trim().toLowerCase() || SUPER_MANAGER_ID;
+      return `${CLIENT_CODES_STORAGE_KEY}_${cleanId}`;
+    }
+
     /* ================= BROWSER OPEN-TAB NOTIFICATIONS ================= */
 
     function requestOwnerNotificationPermissionIfNeeded(showFeedback = false) {
-      if (!isOwner || !("Notification" in window)) {
+      if (!isManagerUser || !("Notification" in window)) {
         if (showFeedback) showToast("Notifiche browser non supportate su questo dispositivo");
         return;
       }
@@ -2692,7 +2734,137 @@
       } catch (e) {}
     }
 
-    /* ================= RIDER DEPARTURES & ALERTS ================= */
+    /* ================= PARTNER ACCOUNTS MANAGEMENT (SUPER-GESTORE ONLY) ================= */
+
+    function loadPartnerManagersSync() {
+      try {
+        const raw = localStorage.getItem(PARTNERS_STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            return parsed.filter((p) => p && p.id && p.password);
+          }
+        }
+      } catch (e) {}
+      return [];
+    }
+
+    async function persistPartnerManagers(syncCloud = true) {
+      try {
+        localStorage.setItem(PARTNERS_STORAGE_KEY, JSON.stringify(partnerManagersList));
+      } catch (e) {}
+      await idbWrite(PARTNERS_STORAGE_KEY, partnerManagersList);
+      if (syncCloud) {
+        return await cloudWriteJson("partners", partnerManagersList);
+      }
+      return true;
+    }
+
+    async function syncPartnerManagersFromCloud() {
+      let list = loadPartnerManagersSync();
+      const idbList = await idbRead(PARTNERS_STORAGE_KEY);
+      if (Array.isArray(idbList) && idbList.length > 0) {
+        list = idbList.filter((p) => p && p.id && p.password);
+      }
+      if (isFirebaseConfigured() && navigator.onLine) {
+        const remote = await cloudReadJson("partners");
+        if (Array.isArray(remote)) {
+          list = remote.filter((p) => p && p.id && p.password);
+          try { localStorage.setItem(PARTNERS_STORAGE_KEY, JSON.stringify(list)); } catch (e) {}
+          await idbWrite(PARTNERS_STORAGE_KEY, list);
+        }
+      }
+      partnerManagersList = list;
+      if (isSuperManager) renderPartnerManagersUI();
+      return partnerManagersList;
+    }
+
+    async function addPartnerAccount() {
+      if (!isSuperManager) return;
+      const nameInput = document.getElementById("partner-name-input");
+      const passInput = document.getElementById("partner-pass-input");
+      const name = (nameInput?.value || "").trim();
+      const password = (passInput?.value || "").trim().toUpperCase().replace(/\s+/g, "");
+
+      if (!name || !password || password.length < 4) {
+        showToast("Inserisci nome struttura e password (min. 4 caratteri)");
+        return;
+      }
+
+      if (password === OWNER_PASSWORD.toUpperCase() || partnerManagersList.some((p) => p.password.toUpperCase() === password)) {
+        showToast("Questa password gestore è già utilizzata");
+        return;
+      }
+
+      const id = "partner_" + Date.now().toString(36);
+      partnerManagersList.unshift({
+        id,
+        name,
+        password,
+        active: true,
+        createdAt: new Date().toISOString()
+      });
+
+      const ok = await persistPartnerManagers(true);
+      if (nameInput) nameInput.value = "";
+      if (passInput) passInput.value = "";
+      renderPartnerManagersUI();
+      showToast(ok ? `✓ Gestore "${name}" creato` : "Salvato in locale (verifica rete)");
+    }
+
+    async function togglePartnerActive(partnerId) {
+      if (!isSuperManager) return;
+      partnerManagersList = partnerManagersList.map((p) =>
+        p.id === partnerId ? { ...p, active: p.active === false } : p
+      );
+      await persistPartnerManagers(true);
+      renderPartnerManagersUI();
+    }
+
+    async function deletePartnerAccount(partnerId) {
+      if (!isSuperManager) return;
+      partnerManagersList = partnerManagersList.filter((p) => p.id !== partnerId);
+      await persistPartnerManagers(true);
+      renderPartnerManagersUI();
+      showToast("Account partner rimosso");
+    }
+
+    function renderPartnerManagersUI() {
+      if (!isSuperManager) return;
+      const listEl = document.getElementById("partners-list");
+      if (!listEl) return;
+
+      if (!Array.isArray(partnerManagersList) || partnerManagersList.length === 0) {
+        listEl.innerHTML = `<div class="text-xs text-stone-500">Nessun gestore partner creato. Aggiungine uno qui sopra per permettergli di generare codici per i propri clienti.</div>`;
+        return;
+      }
+
+      listEl.innerHTML = partnerManagersList.map((p) => {
+        const isActive = p.active !== false;
+        const safeId = escapeHtml(p.id);
+        return `
+          <div class="flex flex-wrap items-center justify-between gap-2 bg-stone-50 px-3 py-2 rounded-xl border border-stone-200 text-xs">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="font-extrabold text-stone-900">${escapeHtml(p.name)}</span>
+              <span class="px-2 py-0.5 rounded font-mono font-bold text-[11px] bg-stone-200 text-stone-900">${escapeHtml(p.password)}</span>
+              <span class="px-2 py-0.5 rounded font-bold text-[11px] ${isActive ? "bg-emerald-100 text-emerald-800" : "bg-red-100 text-red-800"}">
+                ${isActive ? "Attivo" : "Sospeso"}
+              </span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button onclick="togglePartnerActive('${safeId}')" class="px-2.5 py-1 rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-900 font-semibold cursor-pointer">
+                ${isActive ? "Sospendi" : "Riattiva"}
+              </button>
+              <button onclick="deletePartnerAccount('${safeId}')" class="px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 font-semibold cursor-pointer">
+                Elimina
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    /* ================= RIDER DEPARTURES & ALERTS (ISOLATED PER MANAGER) ================= */
 
     function loadPendingAlertsQueue() {
       try {
@@ -2729,12 +2901,12 @@
 
     function getCurrentRiderIdentifier() {
       if (activeSessionClientCode) return activeSessionClientCode;
-      if (isOwner) return "GESTORE";
+      if (isManagerUser) return "GESTORE";
       return (localStorage.getItem("magona_active_client_pwd") || "CLIENTE").trim().toUpperCase();
     }
 
     function recordRiderDeparture(reason = "login") {
-      if (isOwner) return;
+      if (isManagerUser) return;
       const clientCode = getCurrentRiderIdentifier();
       if (!clientCode || clientCode === "GESTORE") return;
 
@@ -2748,6 +2920,7 @@
       const depId = `dep_${clientCode}_${sessionDepartureIso.slice(0, 16)}`;
       const entry = {
         id: depId,
+        managerId: activeManagerId || SUPER_MANAGER_ID,
         clientCode,
         routeId: route?.id || "",
         routeName: getLocalizedRouteField(route, "name") || route?.name || "",
@@ -2766,12 +2939,15 @@
       if (!isFirebaseConfigured() || !navigator.onLine) return;
 
       const nowIso = new Date().toISOString();
+      const targetMgrId = pendingDeparturesQueue[0]?.managerId || activeManagerId || SUPER_MANAGER_ID;
+      const cloudPath = `${getManagerCloudPrefix(targetMgrId)}/rider_departures`;
+
       const stampedQueue = pendingDeparturesQueue.map((item) => ({
         ...item,
         updatedAt: nowIso
       }));
 
-      const existing = await cloudReadJson("rider_departures");
+      const existing = await cloudReadJson(cloudPath);
       const remoteList = Array.isArray(existing) ? existing.filter((x) => x && x.id) : [];
       const queuedIds = new Set(stampedQueue.map((x) => x.id));
       const merged = [
@@ -2779,22 +2955,24 @@
         ...remoteList.filter((x) => !queuedIds.has(x.id))
       ].slice(0, 60);
 
-      const ok = await cloudWriteJson("rider_departures", merged);
+      const ok = await cloudWriteJson(cloudPath, merged);
       if (ok) {
         pendingDeparturesQueue = [];
         savePendingDeparturesQueue();
-        riderDeparturesList = merged;
-        if (isOwner) renderRiderDeparturesUI();
+        if (isManagerUser && activeManagerId === targetMgrId) {
+          riderDeparturesList = merged;
+          renderRiderDeparturesUI();
+        }
       }
     }
 
     function renderRiderDeparturesUI() {
-      if (!isOwner) return;
+      if (!isManagerUser) return;
       const listEl = document.getElementById("rider-departures-list");
       if (!listEl) return;
 
       if (!Array.isArray(riderDeparturesList) || riderDeparturesList.length === 0) {
-        listEl.innerHTML = `<div class="text-xs text-stone-500">Nessuna partenza registrata finora.</div>`;
+        listEl.innerHTML = `<div class="text-xs text-stone-500">Nessuna partenza registrata finora per i tuoi codici.</div>`;
         return;
       }
 
@@ -2823,11 +3001,11 @@
     }
 
     async function clearRiderDeparturesHistory() {
-      if (!isOwner) return;
+      if (!isManagerUser) return;
       riderDeparturesList = [];
       renderRiderDeparturesUI();
       if (isFirebaseConfigured() && navigator.onLine) {
-        await cloudWriteJson("rider_departures", []);
+        await cloudWriteJson(`${getManagerCloudPrefix(activeManagerId)}/rider_departures`, []);
       }
       showToast("✓ Storico partenze svuotato");
     }
@@ -2858,6 +3036,7 @@
 
       const entry = {
         id: alertKey,
+        managerId: activeManagerId || SUPER_MANAGER_ID,
         type: alertType,
         clientCode,
         routeId: route?.id || "",
@@ -2883,6 +3062,9 @@
         : null;
 
       const nowIso = new Date().toISOString();
+      const targetMgrId = pendingAlertsQueue[0]?.managerId || activeManagerId || SUPER_MANAGER_ID;
+      const cloudPath = `${getManagerCloudPrefix(targetMgrId)}/rider_alerts`;
+
       pendingAlertsQueue = pendingAlertsQueue.map((item) => {
         const finalCoords = freshCoords || item.coords || null;
         const distFromBaseKm = finalCoords
@@ -2900,7 +3082,7 @@
 
       if (!isFirebaseConfigured() || !navigator.onLine) return;
 
-      const existing = await cloudReadJson("rider_alerts");
+      const existing = await cloudReadJson(cloudPath);
       const remoteList = Array.isArray(existing) ? existing.filter((x) => x && x.id) : [];
       const queuedIds = new Set(pendingAlertsQueue.map((x) => x.id));
       const merged = [
@@ -2908,26 +3090,26 @@
         ...remoteList.filter((x) => !queuedIds.has(x.id))
       ].slice(0, 60);
 
-      const ok = await cloudWriteJson("rider_alerts", merged);
+      const ok = await cloudWriteJson(cloudPath, merged);
       if (ok) {
         pendingAlertsQueue = [];
         savePendingAlertsQueue();
-        riderAlertsList = merged;
-        if (isOwner) renderRiderAlertsUI();
+        if (isManagerUser && activeManagerId === targetMgrId) {
+          riderAlertsList = merged;
+          renderRiderAlertsUI();
+        }
       }
     }
 
     function evaluateRiderProximityAndHalfway(route, pct) {
-      if (isOwner) return;
+      if (isManagerUser) return;
       const clientCode = getCurrentRiderIdentifier();
 
-      // 1. Controllo metà percorso (>= 50%)
       if (route && pct >= 50) {
         const halfwayKey = `halfway_${clientCode}_${route.id}`;
         enqueueRiderAlert(halfwayKey, "halfway", { pct: Math.round(pct) });
       }
 
-      // 2. Controllo avvicinamento entro 1,5 km dal negozio/base
       if (Array.isArray(userCoords) && userCoords.length >= 2) {
         const distKm = haversineMeters(userCoords, BASE_COORDS) / 1000;
         if (distKm > NEAR_BASE_RADIUS_KM + 0.3) {
@@ -2944,10 +3126,11 @@
     }
 
     async function syncRiderAlertsFromCloud(notifyUser = false) {
-      if (!isOwner || !isFirebaseConfigured() || !navigator.onLine) return;
+      if (!isManagerUser || !isFirebaseConfigured() || !navigator.onLine) return;
+      const prefix = getManagerCloudPrefix(activeManagerId);
       const [remoteAlerts, remoteDepartures] = await Promise.all([
-        cloudReadJson("rider_alerts"),
-        cloudReadJson("rider_departures")
+        cloudReadJson(`${prefix}/rider_alerts`),
+        cloudReadJson(`${prefix}/rider_departures`)
       ]);
       if (Array.isArray(remoteAlerts)) {
         riderAlertsList = remoteAlerts.filter((x) => x && x.id);
@@ -2961,17 +3144,17 @@
     }
 
     async function clearRiderAlertsHistory() {
-      if (!isOwner) return;
+      if (!isManagerUser) return;
       riderAlertsList = [];
       renderRiderAlertsUI(false);
       if (isFirebaseConfigured() && navigator.onLine) {
-        await cloudWriteJson("rider_alerts", []);
+        await cloudWriteJson(`${getManagerCloudPrefix(activeManagerId)}/rider_alerts`, []);
       }
       showToast("✓ Storico avvisi svuotato");
     }
 
     function renderRiderAlertsUI(notifyIfNew = false) {
-      if (!isOwner) return;
+      if (!isManagerUser) return;
       const listEl = document.getElementById("rider-alerts-list");
       const badgeEl = document.getElementById("alerts-nav-badge");
       if (badgeEl) {
@@ -2990,16 +3173,16 @@
           try { localStorage.setItem("magona_last_seen_alert_id", newest.id); } catch (e) {}
           const isNear = newest.type === "near_base_1500m" || newest.type === "near_base_5km";
           const label = isNear
-            ? `${newest.clientCode} a ${newest.distFromBaseKm ?? "≤ 1.5"} km dal negozio (${newest.routeName})`
+            ? `${newest.clientCode} a ${newest.distFromBaseKm ?? "≤ 1.5"} km dalla base (${newest.routeName})`
             : `${newest.clientCode} a metà percorso (${newest.routeName})`;
           showToast("🔔 " + label);
-          showOpenBrowserNotification("Magona Bike Garage", label);
+          showOpenBrowserNotification(activeManagerName || "Magona Bike Garage", label);
         }
       }
 
       if (!listEl) return;
       if (riderAlertsList.length === 0) {
-        listEl.innerHTML = `<div class="text-xs text-stone-500">Nessun avviso ricevuto finora.</div>`;
+        listEl.innerHTML = `<div class="text-xs text-stone-500">Nessun avviso ricevuto finora per i tuoi codici.</div>`;
         return;
       }
 
@@ -3043,9 +3226,9 @@
 
     function startOwnerAlertsPolling() {
       if (ownerAlertsPollTimer) clearInterval(ownerAlertsPollTimer);
-      if (!isOwner) return;
+      if (!isManagerUser) return;
       ownerAlertsPollTimer = setInterval(() => {
-        if (isOwner && navigator.onLine) {
+        if (isManagerUser && navigator.onLine) {
           syncRiderAlertsFromCloud(false);
         }
       }, 20000);
@@ -3328,6 +3511,7 @@
     }
 
     async function persistRoutesList(syncCloud = true) {
+      if (syncCloud && !isSuperManager) return false;
       const serialized = JSON.stringify(ROUTES_LIST);
       let lsOk = false;
       try {
@@ -3354,6 +3538,7 @@
     }
 
     async function persistPoisList(syncCloud = true) {
+      if (syncCloud && !isSuperManager) return false;
       POIS = sanitizePoisArray(POIS);
       let lsOk = false;
       try {
@@ -3393,7 +3578,7 @@
         renderPoiMarkersOnMap();
         selectRoute(activeRouteId);
       }
-      if (isOwner) {
+      if (isSuperManager) {
         renderToursManagerList();
       }
     }
@@ -3403,11 +3588,13 @@
       await flushPendingRiderDepartures();
       await flushPendingRiderAlertsWithCurrentCoords();
 
-      const cloudData = await cloudReadJson("");
-      if (!cloudData || typeof cloudData !== "object") return;
+      const [cloudRoutes, cloudPois] = await Promise.all([
+        cloudReadJson("routes"),
+        cloudReadJson("pois")
+      ]);
 
-      if (Array.isArray(cloudData.routes) && cloudData.routes.length > 0) {
-        ROUTES_LIST = cloudData.routes;
+      if (Array.isArray(cloudRoutes) && cloudRoutes.length > 0) {
+        ROUTES_LIST = cloudRoutes;
         try { localStorage.setItem(ROUTES_STORAGE_KEY, JSON.stringify(ROUTES_LIST)); } catch (e) {}
         await idbWrite(ROUTES_STORAGE_KEY, ROUTES_LIST);
         if (ROUTES_LIST.length > 0 && !ROUTES_LIST.some((r) => r.id === activeRouteId)) {
@@ -3417,13 +3604,13 @@
         if (map) {
           selectRoute(activeRouteId);
         }
-        if (isOwner) {
+        if (isSuperManager) {
           renderToursManagerList();
           setSaveBadgeState(true, `✓ (${ROUTES_LIST.length})`);
         }
       }
 
-      const cleanedCloudPois = sanitizePoisArray(cloudData.pois);
+      const cleanedCloudPois = sanitizePoisArray(cloudPois);
       if (cleanedCloudPois.length > 0) {
         POIS = cleanedCloudPois;
         try { localStorage.setItem(POIS_STORAGE_KEY, JSON.stringify(POIS)); } catch (e) {}
@@ -3432,28 +3619,18 @@
         if (map) {
           renderPoiMarkersOnMap();
         }
-        if (isOwner) {
+        if (isSuperManager) {
           setPoisSaveBadgeState(true, `✓ (${POIS.length})`);
         }
       }
 
-      if (Array.isArray(cloudData.codes) && cloudData.codes.length > 0) {
-        const validPool = cloudData.codes.filter((item) => item && item.code);
-        if (validPool.length > 0) {
-          try { localStorage.setItem(CLIENT_CODES_STORAGE_KEY, JSON.stringify(validPool)); } catch (e) {}
-          await idbWrite(CLIENT_CODES_STORAGE_KEY, validPool);
-          renderClientCodesPoolUI();
-        }
+      if (isSuperManager) {
+        await syncPartnerManagersFromCloud();
       }
 
-      if (isOwner && Array.isArray(cloudData.rider_departures)) {
-        riderDeparturesList = cloudData.rider_departures.filter((x) => x && x.id);
-        renderRiderDeparturesUI();
-      }
-
-      if (isOwner && Array.isArray(cloudData.rider_alerts)) {
-        riderAlertsList = cloudData.rider_alerts.filter((x) => x && x.id);
-        renderRiderAlertsUI(true);
+      if (isManagerUser) {
+        await syncClientCodesFromCloud(false);
+        await syncRiderAlertsFromCloud(false);
       }
     }
 
@@ -3671,8 +3848,11 @@
       renderPoiMarkersOnMap();
       renderTroubleshooting();
       fetchTrailWeather(false);
-      if (isOwner) {
+      if (isSuperManager) {
         renderToursManagerList();
+        renderPartnerManagersUI();
+      }
+      if (isManagerUser) {
         renderRiderDeparturesUI();
         renderRiderAlertsUI(false);
       }
@@ -3748,37 +3928,54 @@
       );
     }
 
-    /* ================= CLIENT ACCESS CODES ================= */
+    /* ================= CLIENT ACCESS CODES (ISOLATED PER MANAGER + LOOKUP) ================= */
 
-    function loadClientCodesPool() {
+    function loadClientCodesPool(managerId = activeManagerId) {
+      const storageKey = getManagerCodesLocalKey(managerId);
       try {
-        const raw = localStorage.getItem(CLIENT_CODES_STORAGE_KEY);
+        const raw = localStorage.getItem(storageKey);
         if (raw) {
           const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed) && parsed.length > 0) {
+          if (Array.isArray(parsed)) {
             return parsed.filter((item) => item && item.code);
           }
         }
       } catch (e) {}
-      const initialLegacy = (localStorage.getItem("magona_active_client_pwd") || "RIDE-4829").trim().toUpperCase();
-      const initialPool = [{ code: initialLegacy, uses: 0, maxUses: MAX_USES_PER_CODE }];
-      try {
-        localStorage.setItem(CLIENT_CODES_STORAGE_KEY, JSON.stringify(initialPool));
-      } catch (e) {}
-      return initialPool;
+
+      if (managerId === SUPER_MANAGER_ID) {
+        const legacyPoolRaw = localStorage.getItem("magona_client_codes_pool_v1");
+        if (legacyPoolRaw) {
+          try {
+            const parsedLegacy = JSON.parse(legacyPoolRaw);
+            if (Array.isArray(parsedLegacy) && parsedLegacy.length > 0) {
+              return parsedLegacy.filter((item) => item && item.code);
+            }
+          } catch (e) {}
+        }
+        const initialLegacy = (localStorage.getItem("magona_active_client_pwd") || "RIDE-4829").trim().toUpperCase();
+        const initialPool = [{ code: initialLegacy, uses: 0, maxUses: MAX_USES_PER_CODE, managerId: SUPER_MANAGER_ID }];
+        try {
+          localStorage.setItem(storageKey, JSON.stringify(initialPool));
+        } catch (e) {}
+        return initialPool;
+      }
+
+      return [];
     }
 
-    async function saveClientCodesPool(pool, showSyncFeedback = false) {
+    async function saveClientCodesPool(pool, showSyncFeedback = false, managerId = activeManagerId) {
+      const storageKey = getManagerCodesLocalKey(managerId);
+      const cloudPath = `${getManagerCloudPrefix(managerId)}/codes`;
       try {
-        localStorage.setItem(CLIENT_CODES_STORAGE_KEY, JSON.stringify(pool));
+        localStorage.setItem(storageKey, JSON.stringify(pool));
         const active = pool.find((c) => (c.uses || 0) < (c.maxUses || MAX_USES_PER_CODE));
-        if (active) {
+        if (active && managerId === SUPER_MANAGER_ID) {
           localStorage.setItem("magona_active_client_pwd", active.code);
         }
       } catch (e) {}
-      await idbWrite(CLIENT_CODES_STORAGE_KEY, pool);
+      await idbWrite(storageKey, pool);
 
-      const cloudOk = await cloudWriteJson("codes", pool);
+      const cloudOk = await cloudWriteJson(cloudPath, pool);
       if (showSyncFeedback) {
         if (cloudOk) {
           showToast("✓ Codici salvati e sincronizzati su Firebase");
@@ -3789,34 +3986,47 @@
       return cloudOk;
     }
 
-    async function syncClientCodesFromCloud(notifyUser = false) {
-      let pool = loadClientCodesPool();
-      const idbPool = await idbRead(CLIENT_CODES_STORAGE_KEY);
+    async function syncClientCodesFromCloud(notifyUser = false, managerId = activeManagerId) {
+      const storageKey = getManagerCodesLocalKey(managerId);
+      const cloudPath = `${getManagerCloudPrefix(managerId)}/codes`;
+      let pool = loadClientCodesPool(managerId);
+
+      const idbPool = await idbRead(storageKey);
       if (Array.isArray(idbPool) && idbPool.length > 0) {
         pool = idbPool.filter((item) => item && item.code);
       }
 
       if (isFirebaseConfigured() && navigator.onLine) {
-        const remoteCodes = await cloudReadJson("codes");
-        if (Array.isArray(remoteCodes) && remoteCodes.length > 0) {
+        let remoteCodes = await cloudReadJson(cloudPath);
+        if ((!Array.isArray(remoteCodes) || remoteCodes.length === 0) && managerId === SUPER_MANAGER_ID) {
+          const legacyRemote = await cloudReadJson("codes");
+          if (Array.isArray(legacyRemote) && legacyRemote.length > 0) {
+            remoteCodes = legacyRemote;
+          }
+        }
+        if (Array.isArray(remoteCodes)) {
           pool = remoteCodes.filter((item) => item && item.code);
           try {
-            localStorage.setItem(CLIENT_CODES_STORAGE_KEY, JSON.stringify(pool));
+            localStorage.setItem(storageKey, JSON.stringify(pool));
           } catch (e) {}
-          await idbWrite(CLIENT_CODES_STORAGE_KEY, pool);
-          renderClientCodesPoolUI();
+          await idbWrite(storageKey, pool);
+          if (isManagerUser && activeManagerId === managerId) {
+            renderClientCodesPoolUI();
+          }
           if (notifyUser) showToast("✓ Codici aggiornati da Firebase");
           return pool;
         }
       }
 
-      renderClientCodesPoolUI();
+      if (isManagerUser && activeManagerId === managerId) {
+        renderClientCodesPoolUI();
+      }
       if (notifyUser) showToast("Mostrati codici salvati sul dispositivo");
       return pool;
     }
 
     function getActiveClientPassword() {
-      const pool = loadClientCodesPool();
+      const pool = loadClientCodesPool(activeManagerId);
       const validCodes = pool.filter((c) => (c.uses || 0) < (c.maxUses || MAX_USES_PER_CODE));
       if (validCodes.length === 0) {
         return "NESSUN CODICE ATTIVO";
@@ -3831,7 +4041,7 @@
       const listEl = document.getElementById("client-codes-list");
       if (!listEl) return;
 
-      const pool = loadClientCodesPool();
+      const pool = loadClientCodesPool(activeManagerId);
       if (pool.length === 0) {
         listEl.innerHTML = `<div class="text-xs text-stone-500">Nessun codice presente. Premi "Genera Nuovo Codice".</div>`;
         return;
@@ -3871,7 +4081,8 @@
     }
 
     async function rotateClientPassword() {
-      const pool = await syncClientCodesFromCloud(false);
+      if (!isManagerUser) return;
+      const pool = await syncClientCodesFromCloud(false, activeManagerId);
       let code = "";
       let attempts = 0;
       do {
@@ -3879,25 +4090,42 @@
         attempts++;
       } while (pool.some((item) => item.code === code) && attempts < 20);
 
-      pool.unshift({ code, uses: 0, maxUses: MAX_USES_PER_CODE });
+      pool.unshift({
+        code,
+        uses: 0,
+        maxUses: MAX_USES_PER_CODE,
+        managerId: activeManagerId,
+        managerName: activeManagerName
+      });
       renderClientCodesPoolUI();
-      await saveClientCodesPool(pool, true);
+      await saveClientCodesPool(pool, true, activeManagerId);
+      await cloudWriteJson(`code_lookup/${code}`, {
+        managerId: activeManagerId,
+        managerName: activeManagerName
+      });
     }
 
     async function resetClientCodeUses(code) {
-      const currentPool = await syncClientCodesFromCloud(false);
+      if (!isManagerUser) return;
+      const currentPool = await syncClientCodesFromCloud(false, activeManagerId);
       const pool = currentPool.map((item) =>
         item.code === code ? { ...item, uses: 0, maxUses: MAX_USES_PER_CODE } : item
       );
       renderClientCodesPoolUI();
-      await saveClientCodesPool(pool, true);
+      await saveClientCodesPool(pool, true, activeManagerId);
+      await cloudWriteJson(`code_lookup/${code}`, {
+        managerId: activeManagerId,
+        managerName: activeManagerName
+      });
     }
 
     async function revokeClientCode(code) {
-      const currentPool = await syncClientCodesFromCloud(false);
+      if (!isManagerUser) return;
+      const currentPool = await syncClientCodesFromCloud(false, activeManagerId);
       const pool = currentPool.filter((item) => item.code !== code);
       renderClientCodesPoolUI();
-      await saveClientCodesPool(pool, true);
+      await saveClientCodesPool(pool, true, activeManagerId);
+      await cloudWriteJson(`code_lookup/${code}`, null);
     }
 
     async function submitAccessPassword() {
@@ -3911,17 +4139,77 @@
         return;
       }
 
+      // 1. Accesso Super-Gestore (Magona Bike Garage)
       if (val === OWNER_PASSWORD.toUpperCase()) {
-        isOwner = true;
-        activeSessionClientCode = "GESTORE";
-        try { localStorage.setItem(SESSION_ROLE_KEY, "owner"); } catch (e) {}
+        isSuperManager = true;
+        isManagerUser = true;
+        activeManagerId = SUPER_MANAGER_ID;
+        activeManagerName = SUPER_MANAGER_NAME;
+        activeSessionClientCode = "SUPER-GESTORE";
+        try {
+          localStorage.setItem(SESSION_ROLE_KEY, "super");
+          localStorage.setItem(SESSION_MANAGER_ID_KEY, activeManagerId);
+          localStorage.setItem(SESSION_MANAGER_NAME_KEY, activeManagerName);
+        } catch (e) {}
         errEl.classList.add("hidden");
-        await syncClientCodesFromCloud(false);
+        await syncPartnerManagersFromCloud();
+        await syncClientCodesFromCloud(false, activeManagerId);
         await unlockApplication();
         return;
       }
 
-      const pool = await syncClientCodesFromCloud(false);
+      // 2. Accesso Gestore Partner
+      const partners = await syncPartnerManagersFromCloud();
+      const matchedPartner = partners.find((p) => String(p.password).toUpperCase() === val);
+      if (matchedPartner) {
+        if (matchedPartner.active === false) {
+          errEl.textContent = "Account gestore sospeso. Contatta Magona Bike Garage.";
+          errEl.classList.remove("hidden");
+          return;
+        }
+        isSuperManager = false;
+        isManagerUser = true;
+        activeManagerId = matchedPartner.id;
+        activeManagerName = matchedPartner.name;
+        activeSessionClientCode = "GESTORE";
+        try {
+          localStorage.setItem(SESSION_ROLE_KEY, "partner");
+          localStorage.setItem(SESSION_MANAGER_ID_KEY, activeManagerId);
+          localStorage.setItem(SESSION_MANAGER_NAME_KEY, activeManagerName);
+        } catch (e) {}
+        errEl.classList.add("hidden");
+        await syncClientCodesFromCloud(false, activeManagerId);
+        await unlockApplication();
+        return;
+      }
+
+      // 3. Accesso Cliente tramite codice (cerca prima nell'indice cloud, poi nei pool locali)
+      let targetManagerId = null;
+      if (isFirebaseConfigured() && navigator.onLine) {
+        const lookup = await cloudReadJson(`code_lookup/${val}`);
+        if (lookup && lookup.managerId) {
+          targetManagerId = lookup.managerId;
+        }
+      }
+
+      if (!targetManagerId) {
+        const candidateIds = [SUPER_MANAGER_ID, ...partners.map((p) => p.id)];
+        for (const candId of candidateIds) {
+          const candPool = await syncClientCodesFromCloud(false, candId);
+          if (candPool.some((item) => String(item.code).toUpperCase() === val)) {
+            targetManagerId = candId;
+            break;
+          }
+        }
+      }
+
+      if (!targetManagerId) {
+        errEl.textContent = (I18N[currentLang] || I18N.it).invalidPass;
+        errEl.classList.remove("hidden");
+        return;
+      }
+
+      const pool = await syncClientCodesFromCloud(false, targetManagerId);
       const matchIdx = pool.findIndex((item) => String(item.code).toUpperCase() === val);
 
       if (matchIdx === -1) {
@@ -3941,9 +4229,12 @@
       }
 
       pool[matchIdx] = { ...target, uses: currentUses + 1, maxUses };
-      await saveClientCodesPool(pool, false);
-      renderClientCodesPoolUI();
-      isOwner = false;
+      await saveClientCodesPool(pool, false, targetManagerId);
+
+      isSuperManager = false;
+      isManagerUser = false;
+      activeManagerId = targetManagerId;
+      activeManagerName = target.managerName || SUPER_MANAGER_NAME;
       activeSessionClientCode = String(target.code).toUpperCase();
       errEl.classList.add("hidden");
       recordRiderDeparture("login");
@@ -3998,9 +4289,24 @@
 
       document.getElementById("auth-screen").classList.add("hidden");
       document.getElementById("app-shell").classList.remove("hidden");
-      document.getElementById("role-badge").classList.toggle("hidden", !isOwner);
-      document.getElementById("nav-manager-tab").classList.toggle("hidden", !isOwner);
-      document.getElementById("nav-tours-tab").classList.toggle("hidden", !isOwner);
+
+      const roleBadge = document.getElementById("role-badge");
+      if (roleBadge) {
+        roleBadge.classList.toggle("hidden", !isManagerUser);
+        if (isSuperManager) {
+          roleBadge.textContent = "SUPER GESTORE";
+        } else if (isManagerUser) {
+          roleBadge.textContent = activeManagerName.toUpperCase();
+        }
+      }
+
+      document.getElementById("nav-manager-tab").classList.toggle("hidden", !isManagerUser);
+      document.getElementById("nav-tours-tab").classList.toggle("hidden", !isSuperManager);
+      const superPartnersPanel = document.getElementById("super-partners-panel");
+      if (superPartnersPanel) superPartnersPanel.classList.toggle("hidden", !isSuperManager);
+      const goToursBtn = document.getElementById("btn-go-tours-manager");
+      if (goToursBtn) goToursBtn.classList.toggle("hidden", !isSuperManager);
+
       renderClientCodesPoolUI();
       updateNetworkStatusUI();
       fetchTrailWeather(false);
@@ -4016,17 +4322,23 @@
       renderPoiMarkersOnMap();
       renderTroubleshooting();
       updatePoiOwnerVisibility();
-      if (isOwner) {
+
+      if (isSuperManager) {
         renderToursManagerList();
-        renderRiderDeparturesUI();
-        renderRiderAlertsUI(false);
+        renderPartnerManagersUI();
         setSaveBadgeState(true, `✓ (${ROUTES_LIST.length})`);
         setPoisSaveBadgeState(true, `✓ (${POIS.length})`);
+      }
+
+      if (isManagerUser) {
+        renderRiderDeparturesUI();
+        renderRiderAlertsUI(false);
         requestOwnerNotificationPermissionIfNeeded(false);
         startOwnerAlertsPolling();
       } else {
         startWatchingUserLocation();
       }
+
       updateWakeLockUI();
       if (keepScreenAwakeEnabled) requestScreenWakeLock(false);
 
@@ -4040,11 +4352,16 @@
     function lockApplication() {
       liveNavActive = false;
       hasInitialNavZoomed = false;
-      isOwner = false;
+      isSuperManager = false;
+      isManagerUser = false;
+      activeManagerId = SUPER_MANAGER_ID;
+      activeManagerName = SUPER_MANAGER_NAME;
       activeSessionClientCode = "";
       sessionDepartureIso = "";
       try {
         localStorage.removeItem(SESSION_ROLE_KEY);
+        localStorage.removeItem(SESSION_MANAGER_ID_KEY);
+        localStorage.removeItem(SESSION_MANAGER_NAME_KEY);
         localStorage.removeItem(SESSION_DEPARTURE_ISO_KEY);
       } catch (e) {}
       if (ownerAlertsPollTimer) {
@@ -4062,7 +4379,8 @@
     }
 
     async function switchTab(tabName) {
-      if ((tabName === "manager" || tabName === "tours") && !isOwner) return;
+      if (tabName === "manager" && !isManagerUser) return;
+      if (tabName === "tours" && !isSuperManager) return;
       document.querySelectorAll(".tab-panel").forEach((p) => p.classList.add("hidden"));
       document.getElementById("tab-" + tabName).classList.remove("hidden");
 
@@ -4080,11 +4398,12 @@
       if (tabName === "pois") {
         renderPoiList();
       }
-      if (tabName === "tours" && isOwner) {
+      if (tabName === "tours" && isSuperManager) {
         renderToursManagerList();
       }
-      if (tabName === "manager" && isOwner) {
-        await syncClientCodesFromCloud(false);
+      if (tabName === "manager" && isManagerUser) {
+        if (isSuperManager) await syncPartnerManagersFromCloud();
+        await syncClientCodesFromCloud(false, activeManagerId);
         await syncRiderAlertsFromCloud(false);
       }
     }
@@ -4171,7 +4490,7 @@
 
       updateRouteInfoCard(route);
 
-      if (changed && !isOwner && activeSessionClientCode) {
+      if (changed && !isManagerUser && activeSessionClientCode) {
         recordRiderDeparture("route_select");
       }
 
@@ -4766,7 +5085,7 @@
       showToast(t.toastOfflineSaved);
     }
 
-    /* ================= GPX & TOURS MANAGER ================= */
+    /* ================= GPX & TOURS MANAGER (SUPER-GESTORE ONLY) ================= */
 
     function simplifyCoords(coords, maxPoints = 600) {
       if (!Array.isArray(coords) || coords.length <= maxPoints) return coords;
@@ -4884,6 +5203,7 @@
     }
 
     function editTourInForm(tourId) {
+      if (!isSuperManager) return;
       const t = I18N[currentLang] || I18N.it;
       const route = getRouteById(tourId);
       if (!route) return;
@@ -4905,7 +5225,7 @@
     }
 
     async function saveTourFromForm() {
-      if (!isOwner) return;
+      if (!isSuperManager) return;
       const editId = document.getElementById("edit-tour-id").value.trim();
       const name = document.getElementById("tour-name-input").value.trim();
       if (!name) {
@@ -4982,7 +5302,7 @@
     }
 
     async function updateTourCategoryInline(index, newCategory) {
-      if (!isOwner || !ROUTES_LIST[index]) return;
+      if (!isSuperManager || !ROUTES_LIST[index]) return;
       ROUTES_LIST[index].category = newCategory === "gravel" ? "gravel" : "mtb";
       await persistRoutesList(true);
       rebuildRouteSelector();
@@ -4993,7 +5313,7 @@
     }
 
     async function moveTourRank(index, delta) {
-      if (!isOwner) return;
+      if (!isSuperManager) return;
       const targetIdx = index + delta;
       if (targetIdx < 0 || targetIdx >= ROUTES_LIST.length) return;
       const temp = ROUTES_LIST[index];
@@ -5006,7 +5326,7 @@
     }
 
     async function setTourRankExact(index, newRankValue) {
-      if (!isOwner) return;
+      if (!isSuperManager) return;
       const parsedRank = parseInt(newRankValue, 10);
       if (Number.isNaN(parsedRank)) return;
       const targetIdx = Math.min(ROUTES_LIST.length - 1, Math.max(0, parsedRank - 1));
@@ -5021,7 +5341,7 @@
     }
 
     async function deleteTourById(tourId) {
-      if (!isOwner || ROUTES_LIST.length <= 1) return;
+      if (!isSuperManager || ROUTES_LIST.length <= 1) return;
       ROUTES_LIST = ROUTES_LIST.filter((r) => r.id !== tourId);
       if (activeRouteId === tourId) {
         activeRouteId = ROUTES_LIST[0].id;
@@ -5033,7 +5353,7 @@
     }
 
     async function restoreDefaultRoutes() {
-      if (!isOwner) return;
+      if (!isSuperManager) return;
       ROUTES_LIST = JSON.parse(JSON.stringify(DEFAULT_ROUTES));
       activeRouteId = ROUTES_LIST[0].id;
       await persistRoutesList(true);
@@ -5043,7 +5363,7 @@
     }
 
     async function saveAllToursChanges() {
-      if (!isOwner) return;
+      if (!isSuperManager) return;
       await persistRoutesList(true);
       rebuildRouteSelector();
       selectRoute(activeRouteId);
@@ -5111,17 +5431,17 @@
       }).join("");
     }
 
-    /* ================= POIS MANAGER ================= */
+    /* ================= POIS MANAGER (EDITING SUPER-GESTORE ONLY, VIEWING ALL) ================= */
 
     function updatePoiOwnerVisibility() {
       const t = I18N[currentLang] || I18N.it;
       const editor = document.getElementById("poi-owner-editor");
       const actions = document.getElementById("poi-owner-list-actions");
       const sub = document.getElementById("poi-list-subtitle");
-      if (editor) editor.classList.toggle("hidden", !isOwner);
-      if (actions) actions.classList.toggle("hidden", !isOwner);
+      if (editor) editor.classList.toggle("hidden", !isSuperManager);
+      if (actions) actions.classList.toggle("hidden", !isSuperManager);
       if (sub) {
-        sub.textContent = isOwner ? t.poiSubtitleOwner : t.poiSubtitleUser;
+        sub.textContent = isSuperManager ? t.poiSubtitleOwner : t.poiSubtitleUser;
       }
     }
 
@@ -5183,7 +5503,7 @@
     }
 
     function editPoiInForm(poiId) {
-      if (!isOwner) return;
+      if (!isSuperManager) return;
       const t = I18N[currentLang] || I18N.it;
       const poi = POIS.find((p) => p.id === poiId);
       if (!poi) return;
@@ -5206,7 +5526,7 @@
     }
 
     async function savePoiFromForm() {
-      if (!isOwner) return;
+      if (!isSuperManager) return;
       const editId = document.getElementById("edit-poi-id").value.trim();
       const name = document.getElementById("poi-name-input").value.trim();
       const type = document.getElementById("poi-type-input").value;
@@ -5236,7 +5556,7 @@
     }
 
     async function movePoiRank(index, delta) {
-      if (!isOwner) return;
+      if (!isSuperManager) return;
       const targetIdx = index + delta;
       if (targetIdx < 0 || targetIdx >= POIS.length) return;
       const temp = POIS[index];
@@ -5249,7 +5569,7 @@
     }
 
     async function deletePoiById(poiId) {
-      if (!isOwner || POIS.length <= 1) return;
+      if (!isSuperManager || POIS.length <= 1) return;
       POIS = POIS.filter((p) => p.id !== poiId);
       await persistPoisList(true);
       renderPoiList();
@@ -5257,7 +5577,7 @@
     }
 
     async function restoreDefaultPois() {
-      if (!isOwner) return;
+      if (!isSuperManager) return;
       POIS = JSON.parse(JSON.stringify(DEFAULT_POIS));
       await persistPoisList(true);
       renderPoiList();
@@ -5265,7 +5585,7 @@
     }
 
     async function saveAllPoisChanges() {
-      if (!isOwner) return;
+      if (!isSuperManager) return;
       await persistPoisList(true);
       renderPoiList();
       renderPoiMarkersOnMap();
@@ -5319,7 +5639,7 @@
                 class="px-3 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold cursor-pointer">
                 ${escapeHtml(t.guideOnMap)}
               </button>
-              ${isOwner ? `
+              ${isSuperManager ? `
                 <button onclick="movePoiRank(${originalIdx}, -1)" ${originalIdx === 0 ? "disabled" : ""}
                   class="px-2.5 py-1.5 rounded-lg border border-stone-300 bg-white hover:bg-stone-100 disabled:opacity-35 text-xs font-bold cursor-pointer">
                   ${escapeHtml(t.rankUpBtn)}
@@ -5421,12 +5741,25 @@
       }
       applyThemeMode(currentThemeMode);
       updateNetworkStatusUI();
-      renderClientCodesPoolUI();
       changeLanguage("it");
       await hydrateLocalStateOnBoot();
 
-      if (localStorage.getItem(SESSION_ROLE_KEY) === "owner") {
-        isOwner = true;
+      const savedRole = localStorage.getItem(SESSION_ROLE_KEY);
+      if (savedRole === "super" || savedRole === "owner") {
+        isSuperManager = true;
+        isManagerUser = true;
+        activeManagerId = SUPER_MANAGER_ID;
+        activeManagerName = SUPER_MANAGER_NAME;
+        activeSessionClientCode = "SUPER-GESTORE";
+        await unlockApplication();
+        return;
+      }
+
+      if (savedRole === "partner") {
+        isSuperManager = false;
+        isManagerUser = true;
+        activeManagerId = localStorage.getItem(SESSION_MANAGER_ID_KEY) || "partner";
+        activeManagerName = localStorage.getItem(SESSION_MANAGER_NAME_KEY) || "Partner";
         activeSessionClientCode = "GESTORE";
         await unlockApplication();
         return;
@@ -5437,4 +5770,3 @@
   </script>
 </body>
 </html>
-r
