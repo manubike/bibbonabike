@@ -249,7 +249,7 @@
         </div>
         <div class="flex items-center justify-between bg-stone-100 px-3.5 py-2.5 rounded-xl">
           <span id="perm-net-label" data-i18n="permNetLabel" class="font-medium text-stone-800">Connessione Web & Cache Mappe</span>
-          <span id="perm-net-status" class="text-xs font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">Verifica...</span>
+          <span id="perm-net-status" data-i18n="netOnline" class="text-xs font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">Verifica...</span>
         </div>
       </div>
       <div class="flex flex-col gap-2">
@@ -282,19 +282,12 @@
           </select>
           <select id="lang-select" onchange="changeLanguage(this.value)" class="border border-stone-300 rounded-lg px-2.5 py-1.5 text-xs font-semibold bg-stone-50">
             <option value="it">IT</option>
-            <option value="en">EN</option>
-            <option value="de">DE</option>
-            <option value="nl">NL</option>
-            <option value="es">ES</option>
-            <option value="fr">FR</option>
-            <option value="pt">PT</option>
-            <option value="zh">ZH</option>
           </select>
         </div>
       </div>
 
       <p id="auth-subtitle" data-i18n="authSub" class="text-sm text-stone-600 mb-4">
-        Inserisci il codice fornito in officina per aprire la mappa sentieri.
+        Inserisci il codice fornito in officina o in struttura per aprire la mappa sentieri.
       </p>
 
       <label for="access-password-input" id="access-label" data-i18n="accessLabel" class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">
@@ -335,13 +328,6 @@
         </select>
         <select id="app-lang-select" onchange="changeLanguage(this.value)" class="border border-stone-300 rounded-lg px-2.5 py-1 text-xs font-semibold bg-stone-50">
           <option value="it">IT</option>
-          <option value="en">EN</option>
-          <option value="de">DE</option>
-          <option value="nl">NL</option>
-          <option value="es">ES</option>
-          <option value="fr">FR</option>
-          <option value="pt">PT</option>
-          <option value="zh">ZH</option>
         </select>
         <button id="btn-logout" data-i18n="logoutBtn" onclick="lockApplication()" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 cursor-pointer">
           Esci
@@ -361,7 +347,7 @@
       </button>
     </nav>
 
-    <!-- Barra Meteo compatta su singola riga anche in portrait (con vento visibile) -->
+    <!-- Barra Meteo compatta su singola riga -->
     <div id="weather-strip" class="bg-stone-50 border-b border-stone-200 px-3 sm:px-4 py-1.5 text-xs">
       <div class="max-w-6xl mx-auto flex flex-nowrap items-center justify-between gap-1.5">
         <div class="flex flex-nowrap items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
@@ -382,7 +368,7 @@
 
     <!-- Scheda Mappa -->
     <section id="tab-map" class="tab-panel flex-1 p-4 max-w-6xl w-full mx-auto space-y-4">
-      <div class="bg-white rounded-2xl border border-stone-200 p-4 space-y-3">
+      <div id="map-controls-card" class="bg-white rounded-2xl border border-stone-200 p-4 space-y-3">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div class="flex flex-wrap items-center gap-2 min-w-0 max-w-full w-full sm:w-auto">
             <select id="route-select" onchange="selectRoute(this.value)"
@@ -502,7 +488,7 @@
 
         <div id="nav-status-banner" class="hidden bg-stone-900 text-white rounded-xl px-3.5 py-2.5 text-xs flex flex-wrap items-center justify-between gap-2">
           <span id="nav-status-text" class="font-semibold">Navigazione GPS live attiva</span>
-          <button id="recenter-banner-btn" data-i18n="recenterBanner" onclick="recenterNavigator()" class="underline font-bold cursor-pointer">Ricentra Navigatore</button>
+          <button id="recenter-banner-btn" data-i18n="recenterBanner" onclick="recenterNavigator(true)" class="underline font-bold cursor-pointer">Ricentra Navigatore</button>
         </div>
       </div>
 
@@ -510,7 +496,7 @@
       <div id="map-stage" class="map-stage relative">
         <div class="map-wrapper relative w-full h-full">
           <div id="map-container"></div>
-          <button id="overlay-center-gps" data-i18n="overlayCenterGps" onclick="recenterNavigator()" title="Centra su GPS"
+          <button id="overlay-center-gps" data-i18n="overlayCenterGps" onclick="recenterNavigator(true)" title="Centra su GPS"
             class="absolute bottom-4 right-3 z-[450] bg-white/95 hover:bg-white text-stone-900 border border-stone-300 rounded-xl px-3 py-2 text-xs font-bold shadow cursor-pointer">
             ◎ Centra GPS
           </button>
@@ -522,6 +508,7 @@
 
         <!-- Barra telemetria e comandi in basso a schermo intero -->
         <div id="bottom-telemetry-panel" class="bottom-telemetry-panel">
+          <div id="fs-gps-recovery-slot"></div>
           <div class="flex flex-wrap items-center justify-between gap-2 border-b border-stone-200 pb-2">
             <div class="flex items-center gap-2">
               <span data-i18n="fsBannerLabel" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-stone-900 text-white">Navigazione</span>
@@ -529,7 +516,7 @@
               <span class="text-xs text-stone-500">· <strong id="fs-progress-pct" class="text-stone-900">0%</strong></span>
             </div>
             <div class="flex flex-wrap items-center gap-1.5">
-              <button data-i18n="fsCenterBtn" onclick="recenterNavigator()" class="px-2.5 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold cursor-pointer">
+              <button data-i18n="fsCenterBtn" onclick="recenterNavigator(true)" class="px-2.5 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold cursor-pointer">
                 Centra GPS
               </button>
               <button id="fs-btn-wake-lock" onclick="toggleScreenWakeLock()" class="px-2.5 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold cursor-pointer">
@@ -900,9 +887,6 @@
             <p class="text-xs text-stone-500">Quando un tuo cliente supera il 50% del tour o entra entro 1,5 km dalla base della struttura, l'avviso arriva con data, ora e posizione GPS attuale.</p>
           </div>
           <div class="flex items-center gap-1.5">
-            <button onclick="requestOwnerNotificationPermissionIfNeeded(true)" class="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold cursor-pointer">
-              🔔 Attiva Notifiche
-            </button>
             <button onclick="syncRiderAlertsFromCloud(true)" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
               ↻ Aggiorna
             </button>
@@ -1316,6 +1300,8 @@
     let pendingFormCoords = null;
     let poiMarkersLayer = null;
     let activePoiTypeFilter = "all";
+    let isLoginBusy = false;
+    let isCodeGenBusy = false;
 
     let partnerManagersList = [];
     let riderAlertsList = [];
@@ -1325,7 +1311,6 @@
     let hasLeftBaseArea = false;
     let ownerAlertsPollTimer = null;
     let lastShownOwnerAlertId = localStorage.getItem("magona_last_seen_alert_id") || "";
-    let swRegistration = null;
 
     let screenWakeLock = null;
     let keepScreenAwakeEnabled = localStorage.getItem("magona_keep_screen_awake") === "1";
@@ -1401,23 +1386,10 @@
                 );
               }
             });
-            self.addEventListener("notificationclick", (event) => {
-              event.notification.close();
-              event.waitUntil(
-                clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
-                  for (const client of clientList) {
-                    if ("focus" in client) return client.focus();
-                  }
-                  if (clients.openWindow) return clients.openWindow("./");
-                })
-              );
-            });
           `;
           const swBlob = new Blob([swCode], { type: "application/javascript" });
           const swUrl = URL.createObjectURL(swBlob);
-          navigator.serviceWorker.register(swUrl).then((reg) => {
-            swRegistration = reg;
-          }).catch(() => {});
+          navigator.serviceWorker.register(swUrl).catch(() => {});
         } catch (e) {}
       }
     }
@@ -1449,7 +1421,7 @@
       if (!Array.isArray(coords) || coords.length < 2) return false;
       const lat = Number(coords[0]);
       const lng = Number(coords[1]);
-      return !Number.isNaN(lat) && !Number.isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+      return Number.isFinite(lat) && Number.isFinite(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
     }
 
     function saveLastRealGpsCoords(coords, source = "gps") {
@@ -1498,9 +1470,27 @@
       updateRouteProgressMetrics();
     }
 
+    function syncGpsRecoveryPlacement() {
+      const box = document.getElementById("gps-recovery-box");
+      const stage = document.getElementById("map-stage");
+      const fsSlot = document.getElementById("fs-gps-recovery-slot");
+      const card = document.getElementById("map-controls-card");
+      const infoCard = document.getElementById("active-route-info-card");
+      if (!box || !stage || !fsSlot || !card || !infoCard) return;
+
+      if (stage.classList.contains("is-fullscreen")) {
+        if (box.parentElement !== fsSlot) {
+          fsSlot.appendChild(box);
+        }
+      } else if (box.parentElement !== card) {
+        card.insertBefore(box, infoCard);
+      }
+    }
+
     function showGpsRecoveryBox(customMsg = "") {
       const box = document.getElementById("gps-recovery-box");
       const titleEl = document.getElementById("gps-recovery-title");
+      syncGpsRecoveryPlacement();
       if (titleEl && customMsg) {
         titleEl.textContent = customMsg;
       } else if (titleEl) {
@@ -1647,76 +1637,6 @@
       return `magona_codes_explicitly_cleared_${cleanId}`;
     }
 
-    /* ================= NOTIFICHE GESTORE ================= */
-
-    async function requestOwnerNotificationPermissionIfNeeded(showFeedback = false) {
-      if (!("Notification" in window) || typeof Notification.requestPermission !== "function") {
-        if (showFeedback) showToast("Notifiche browser non disponibili su questo dispositivo");
-        return false;
-      }
-
-      if (Notification.permission === "granted") {
-        if (showFeedback) showToast("✓ Notifiche già attive");
-        return true;
-      }
-
-      if (Notification.permission === "denied") {
-        if (showFeedback) showToast("Notifiche bloccate dal browser: abilitale dalle impostazioni sito");
-        return false;
-      }
-
-      try {
-        const permResult = Notification.requestPermission();
-        const perm = (permResult && typeof permResult.then === "function")
-          ? await permResult
-          : await new Promise((resolve) => {
-              try {
-                Notification.requestPermission((status) => resolve(status || Notification.permission));
-              } catch (e) {
-                resolve(Notification.permission);
-              }
-            });
-
-        if (perm === "granted") {
-          if (showFeedback) showToast("✓ Notifiche attivate");
-          return true;
-        }
-        if (showFeedback) showToast("Permesso notifiche non concesso");
-        return false;
-      } catch (e) {
-        if (showFeedback) showToast("Notifiche non disponibili");
-        return false;
-      }
-    }
-
-    async function showOpenBrowserNotification(title, body) {
-      if (!("Notification" in window) || Notification.permission !== "granted") return;
-      const options = {
-        body,
-        icon: "logo.png",
-        badge: "logo.png",
-        tag: "magona-rider-alert",
-        renotify: true,
-        vibrate: [200, 100, 200]
-      };
-      try {
-        if (swRegistration && typeof swRegistration.showNotification === "function") {
-          await swRegistration.showNotification(title, options);
-          return;
-        }
-        if ("serviceWorker" in navigator) {
-          const readyReg = await navigator.serviceWorker.ready;
-          if (readyReg && typeof readyReg.showNotification === "function") {
-            await readyReg.showNotification(title, options);
-            return;
-          }
-        }
-      } catch (e) {}
-      try {
-        new Notification(title, options);
-      } catch (e) {}
-    }
-
     /* ================= PARTNER ACCOUNTS & CUSTOM BASE MANAGEMENT ================= */
 
     function loadPartnerManagersSync() {
@@ -1803,7 +1723,7 @@
       const lat = parseFloat(document.getElementById("own-base-lat-input")?.value);
       const lng = parseFloat(document.getElementById("own-base-lng-input")?.value);
 
-      if (Number.isNaN(lat) || Number.isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+      if (!isValidLatLngPair([lat, lng])) {
         showToast("Inserisci Latitudine e Longitudine valide");
         return;
       }
@@ -1849,14 +1769,14 @@
       const baseAddress = (addrInput?.value || "").trim();
       const latVal = parseFloat(latInput?.value);
       const lngVal = parseFloat(lngInput?.value);
-      const hasCoords = !Number.isNaN(latVal) && !Number.isNaN(lngVal) && latVal >= -90 && latVal <= 90 && lngVal >= -180 && lngVal <= 180;
+      const hasCoords = isValidLatLngPair([latVal, lngVal]);
 
       if (!name || !password || password.length < 4) {
         showToast("Inserisci nome struttura e password (min. 4 caratteri)");
         return;
       }
 
-      if (password === OWNER_PASSWORD.toUpperCase() || partnerManagersList.some((p) => p.password.toUpperCase() === password)) {
+      if (password === OWNER_PASSWORD.toUpperCase() || partnerManagersList.some((p) => String(p.password).toUpperCase() === password)) {
         showToast("Questa password gestore è già utilizzata");
         return;
       }
@@ -2108,7 +2028,7 @@
 
       const clientCode = getCurrentRiderIdentifier();
       const route = getRouteById(activeRouteId);
-      const currentCoords = Array.isArray(userCoords) && userCoords.length >= 2
+      const currentCoords = isValidLatLngPair(userCoords)
         ? [+Number(userCoords[0]).toFixed(6), +Number(userCoords[1]).toFixed(6)]
         : null;
 
@@ -2135,7 +2055,7 @@
     async function flushPendingRiderAlertsWithCurrentCoords() {
       if (!Array.isArray(pendingAlertsQueue) || pendingAlertsQueue.length === 0) return;
 
-      const freshCoords = Array.isArray(userCoords) && userCoords.length >= 2
+      const freshCoords = isValidLatLngPair(userCoords)
         ? [+Number(userCoords[0]).toFixed(6), +Number(userCoords[1]).toFixed(6)]
         : null;
 
@@ -2174,7 +2094,7 @@
         savePendingAlertsQueue();
         if (isManagerUser && activeManagerId === targetMgrId) {
           riderAlertsList = merged;
-          renderRiderAlertsUI();
+          renderRiderAlertsUI(false);
         }
       }
     }
@@ -2188,7 +2108,7 @@
         enqueueRiderAlert(halfwayKey, "halfway", { pct: Math.round(pct) });
       }
 
-      if (Array.isArray(userCoords) && userCoords.length >= 2) {
+      if (isValidLatLngPair(userCoords)) {
         const distKm = haversineMeters(userCoords, activeBaseCoords) / 1000;
         if (distKm > NEAR_BASE_RADIUS_KM + 0.3) {
           hasLeftBaseArea = true;
@@ -2254,7 +2174,6 @@
             ? `${newest.clientCode} a ${newest.distFromBaseKm ?? "≤ 1.5"} km dalla base (${newest.routeName})`
             : `${newest.clientCode} a metà percorso (${newest.routeName})`;
           showToast("🔔 " + label);
-          showOpenBrowserNotification(activeManagerName || "Magona Bike Garage", label);
         }
       }
 
@@ -2269,7 +2188,7 @@
         const typeBadge = isNearBase
           ? `<span class="px-2 py-0.5 rounded font-bold text-[11px] bg-amber-100 text-amber-900">📍 Entro 1,5 km dalla Base (${escapeHtml(item.distFromBaseKm ?? "≤ 1.5")} km)</span>`
           : `<span class="px-2 py-0.5 rounded font-bold text-[11px] bg-sky-100 text-sky-900">🏁 Metà Percorso (${Number(item.pct) || 50}%)</span>`;
-        const posText = Array.isArray(item.coords)
+        const posText = isValidLatLngPair(item.coords)
           ? `${Number(item.coords[0]).toFixed(5)}, ${Number(item.coords[1]).toFixed(5)}`
           : "GPS non disponibile";
         const sent = formatDateAndTime(item.sentAt);
@@ -2523,12 +2442,7 @@
 
     function sanitizePoisArray(list) {
       if (!Array.isArray(list)) return [];
-      return list.filter((p) => {
-        if (!p || typeof p.name !== "string" || !Array.isArray(p.coords) || p.coords.length < 2) return false;
-        const lat = Number(p.coords[0]);
-        const lng = Number(p.coords[1]);
-        return !Number.isNaN(lat) && !Number.isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
-      });
+      return list.filter((p) => p && typeof p.name === "string" && isValidLatLngPair(p.coords));
     }
 
     function loadStoredRoutesSync() {
@@ -2660,44 +2574,46 @@
       }
     }
 
-    async function syncAllCloudStateOnBoot() {
+    async function syncAllCloudStateOnBoot(syncCatalog = true) {
       if (!isFirebaseConfigured() || !navigator.onLine) return;
       await flushPendingRiderDepartures();
       await flushPendingRiderAlertsWithCurrentCoords();
 
-      const [cloudRoutes, cloudPois] = await Promise.all([
-        cloudReadJson("routes"),
-        cloudReadJson("pois")
-      ]);
+      if (syncCatalog) {
+        const [cloudRoutes, cloudPois] = await Promise.all([
+          cloudReadJson("routes"),
+          cloudReadJson("pois")
+        ]);
 
-      if (Array.isArray(cloudRoutes) && cloudRoutes.length > 0) {
-        ROUTES_LIST = cloudRoutes;
-        try { localStorage.setItem(ROUTES_STORAGE_KEY, JSON.stringify(ROUTES_LIST)); } catch (e) {}
-        await idbWrite(ROUTES_STORAGE_KEY, ROUTES_LIST);
-        if (ROUTES_LIST.length > 0 && !ROUTES_LIST.some((r) => r.id === activeRouteId)) {
-          activeRouteId = ROUTES_LIST[0].id;
+        if (Array.isArray(cloudRoutes) && cloudRoutes.length > 0) {
+          ROUTES_LIST = cloudRoutes;
+          try { localStorage.setItem(ROUTES_STORAGE_KEY, JSON.stringify(ROUTES_LIST)); } catch (e) {}
+          await idbWrite(ROUTES_STORAGE_KEY, ROUTES_LIST);
+          if (ROUTES_LIST.length > 0 && !ROUTES_LIST.some((r) => r.id === activeRouteId)) {
+            activeRouteId = ROUTES_LIST[0].id;
+          }
+          rebuildRouteSelector();
+          if (map) {
+            selectRoute(activeRouteId);
+          }
+          if (isSuperManager) {
+            renderToursManagerList();
+            setSaveBadgeState(true, `✓ (${ROUTES_LIST.length})`);
+          }
         }
-        rebuildRouteSelector();
-        if (map) {
-          selectRoute(activeRouteId);
-        }
-        if (isSuperManager) {
-          renderToursManagerList();
-          setSaveBadgeState(true, `✓ (${ROUTES_LIST.length})`);
-        }
-      }
 
-      const cleanedCloudPois = sanitizePoisArray(cloudPois);
-      if (cleanedCloudPois.length > 0) {
-        POIS = cleanedCloudPois;
-        try { localStorage.setItem(POIS_STORAGE_KEY, JSON.stringify(POIS)); } catch (e) {}
-        await idbWrite(POIS_STORAGE_KEY, POIS);
-        renderPoiList();
-        if (map) {
-          renderPoiMarkersOnMap();
-        }
-        if (isSuperManager) {
-          setPoisSaveBadgeState(true, `✓ (${POIS.length})`);
+        const cleanedCloudPois = sanitizePoisArray(cloudPois);
+        if (cleanedCloudPois.length > 0) {
+          POIS = cleanedCloudPois;
+          try { localStorage.setItem(POIS_STORAGE_KEY, JSON.stringify(POIS)); } catch (e) {}
+          await idbWrite(POIS_STORAGE_KEY, POIS);
+          renderPoiList();
+          if (map) {
+            renderPoiMarkersOnMap();
+          }
+          if (isSuperManager) {
+            setPoisSaveBadgeState(true, `✓ (${POIS.length})`);
+          }
         }
       }
 
@@ -2718,7 +2634,7 @@
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      showToast("tours.json downloaded");
+      showToast("tours.json scaricato");
     }
 
     function getRouteById(id) {
@@ -2927,7 +2843,7 @@
         renderRiderAlertsUI(false);
       }
       if (userMarker) {
-        userMarker.setPopupContent(t.yourGpsPopup);
+        userMarker.setPopupContent(escapeHtml(t.yourGpsPopup));
       }
     }
 
@@ -3182,33 +3098,42 @@
     }
 
     async function rotateClientPassword() {
-      if (!isManagerUser) return;
-      setManagerCodesExplicitlyCleared(false, activeManagerId);
-      const pool = await syncClientCodesFromCloud(false, activeManagerId);
-      let code = "";
-      let attempts = 0;
-      do {
-        code = "RIDE-" + Math.floor(1000 + Math.random() * 9000);
-        attempts++;
-      } while (pool.some((item) => item.code === code) && attempts < 20);
+      if (!isManagerUser || isCodeGenBusy) return;
+      isCodeGenBusy = true;
+      const genBtn = document.getElementById("btn-gen-code");
+      if (genBtn) genBtn.disabled = true;
 
-      pool.unshift({
-        code,
-        uses: 0,
-        maxUses: MAX_USES_PER_CODE,
-        managerId: activeManagerId,
-        managerName: activeManagerName,
-        baseCoords: [...activeBaseCoords],
-        baseLabel: activeBaseLabel
-      });
-      renderClientCodesPoolUI();
-      await saveClientCodesPool(pool, true, activeManagerId);
-      await cloudWriteJson(`code_lookup/${code}`, {
-        managerId: activeManagerId,
-        managerName: activeManagerName,
-        baseCoords: [...activeBaseCoords],
-        baseLabel: activeBaseLabel
-      });
+      try {
+        setManagerCodesExplicitlyCleared(false, activeManagerId);
+        const pool = await syncClientCodesFromCloud(false, activeManagerId);
+        let code = "";
+        let attempts = 0;
+        do {
+          code = "RIDE-" + Math.floor(1000 + Math.random() * 9000);
+          attempts++;
+        } while (pool.some((item) => item.code === code) && attempts < 20);
+
+        pool.unshift({
+          code,
+          uses: 0,
+          maxUses: MAX_USES_PER_CODE,
+          managerId: activeManagerId,
+          managerName: activeManagerName,
+          baseCoords: [...activeBaseCoords],
+          baseLabel: activeBaseLabel
+        });
+        renderClientCodesPoolUI();
+        await saveClientCodesPool(pool, true, activeManagerId);
+        await cloudWriteJson(`code_lookup/${code}`, {
+          managerId: activeManagerId,
+          managerName: activeManagerName,
+          baseCoords: [...activeBaseCoords],
+          baseLabel: activeBaseLabel
+        });
+      } finally {
+        isCodeGenBusy = false;
+        if (genBtn) genBtn.disabled = false;
+      }
     }
 
     async function resetClientCodeUses(code) {
@@ -3258,8 +3183,10 @@
     }
 
     async function submitAccessPassword() {
+      if (isLoginBusy) return;
       const input = document.getElementById("access-password-input");
       const errEl = document.getElementById("auth-error");
+      const loginBtn = document.getElementById("btn-login");
       const val = (input ? input.value : "").trim().toUpperCase();
 
       if (!val) {
@@ -3268,128 +3195,136 @@
         return;
       }
 
-      if (val === OWNER_PASSWORD.toUpperCase()) {
-        isSuperManager = true;
-        isManagerUser = true;
-        activeManagerId = SUPER_MANAGER_ID;
-        activeManagerName = SUPER_MANAGER_NAME;
-        activeSessionClientCode = "SUPER-GESTORE";
-        setActiveBaseLocation(DEFAULT_BASE_COORDS, `${SUPER_MANAGER_NAME} · ${DEFAULT_BASE_ADDRESS_LABEL}`);
-        try {
-          localStorage.setItem(SESSION_ROLE_KEY, "super");
-          localStorage.setItem(SESSION_MANAGER_ID_KEY, activeManagerId);
-          localStorage.setItem(SESSION_MANAGER_NAME_KEY, activeManagerName);
-        } catch (e) {}
-        errEl.classList.add("hidden");
-        await syncPartnerManagersFromCloud();
-        await syncClientCodesFromCloud(false, activeManagerId);
-        await unlockApplication();
-        return;
-      }
+      isLoginBusy = true;
+      if (loginBtn) loginBtn.disabled = true;
 
-      const partners = await syncPartnerManagersFromCloud();
-      const matchedPartner = partners.find((p) => String(p.password).toUpperCase() === val);
-      if (matchedPartner) {
-        if (matchedPartner.active === false) {
-          errEl.textContent = "Account gestore sospeso. Contatta Magona Bike Garage.";
+      try {
+        if (val === OWNER_PASSWORD.toUpperCase()) {
+          isSuperManager = true;
+          isManagerUser = true;
+          activeManagerId = SUPER_MANAGER_ID;
+          activeManagerName = SUPER_MANAGER_NAME;
+          activeSessionClientCode = "SUPER-GESTORE";
+          setActiveBaseLocation(DEFAULT_BASE_COORDS, `${SUPER_MANAGER_NAME} · ${DEFAULT_BASE_ADDRESS_LABEL}`);
+          try {
+            localStorage.setItem(SESSION_ROLE_KEY, "super");
+            localStorage.setItem(SESSION_MANAGER_ID_KEY, activeManagerId);
+            localStorage.setItem(SESSION_MANAGER_NAME_KEY, activeManagerName);
+          } catch (e) {}
+          errEl.classList.add("hidden");
+          await syncPartnerManagersFromCloud();
+          await syncClientCodesFromCloud(false, activeManagerId);
+          await unlockApplication();
+          return;
+        }
+
+        const partners = await syncPartnerManagersFromCloud();
+        const matchedPartner = partners.find((p) => String(p.password).toUpperCase() === val);
+        if (matchedPartner) {
+          if (matchedPartner.active === false) {
+            errEl.textContent = "Account gestore sospeso. Contatta Magona Bike Garage.";
+            errEl.classList.remove("hidden");
+            return;
+          }
+          isSuperManager = false;
+          isManagerUser = true;
+          activeManagerId = matchedPartner.id;
+          activeManagerName = matchedPartner.name;
+          activeSessionClientCode = "GESTORE";
+
+          const pCoords = isValidLatLngPair(matchedPartner.baseCoords) ? matchedPartner.baseCoords : DEFAULT_BASE_COORDS;
+          const pLabel = matchedPartner.baseAddress ? `${matchedPartner.name} · ${matchedPartner.baseAddress}` : matchedPartner.name;
+          setActiveBaseLocation(pCoords, pLabel);
+          populateOwnPartnerBaseForm(matchedPartner);
+
+          try {
+            localStorage.setItem(SESSION_ROLE_KEY, "partner");
+            localStorage.setItem(SESSION_MANAGER_ID_KEY, activeManagerId);
+            localStorage.setItem(SESSION_MANAGER_NAME_KEY, activeManagerName);
+          } catch (e) {}
+          errEl.classList.add("hidden");
+          await syncClientCodesFromCloud(false, activeManagerId);
+          await unlockApplication();
+          return;
+        }
+
+        let targetManagerId = null;
+        let lookupData = null;
+        if (isFirebaseConfigured() && navigator.onLine) {
+          const lookup = await cloudReadJson(`code_lookup/${val}`);
+          if (lookup && lookup.managerId) {
+            targetManagerId = lookup.managerId;
+            lookupData = lookup;
+          }
+        }
+
+        if (!targetManagerId) {
+          const candidateIds = [SUPER_MANAGER_ID, ...partners.map((p) => p.id)];
+          for (const candId of candidateIds) {
+            const candPool = await syncClientCodesFromCloud(false, candId);
+            if (candPool.some((item) => String(item.code).toUpperCase() === val)) {
+              targetManagerId = candId;
+              break;
+            }
+          }
+        }
+
+        if (!targetManagerId) {
+          errEl.textContent = (I18N[currentLang] || I18N.it).invalidPass;
           errEl.classList.remove("hidden");
           return;
         }
+
+        const pool = await syncClientCodesFromCloud(false, targetManagerId);
+        const matchIdx = pool.findIndex((item) => String(item.code).toUpperCase() === val);
+
+        if (matchIdx === -1) {
+          errEl.textContent = (I18N[currentLang] || I18N.it).invalidPass;
+          errEl.classList.remove("hidden");
+          return;
+        }
+
+        const target = pool[matchIdx];
+        const currentUses = Number(target.uses) || 0;
+        const maxUses = Number(target.maxUses) || MAX_USES_PER_CODE;
+
+        if (currentUses >= maxUses) {
+          errEl.textContent = `Codice ${escapeHtml(target.code)}: limite massimo di ${maxUses} accessi raggiunto.`;
+          errEl.classList.remove("hidden");
+          return;
+        }
+
+        pool[matchIdx] = { ...target, uses: currentUses + 1, maxUses };
+        await saveClientCodesPool(pool, false, targetManagerId);
+
         isSuperManager = false;
-        isManagerUser = true;
-        activeManagerId = matchedPartner.id;
-        activeManagerName = matchedPartner.name;
-        activeSessionClientCode = "GESTORE";
+        isManagerUser = false;
+        activeManagerId = targetManagerId;
+        activeManagerName = lookupData?.managerName || target.managerName || SUPER_MANAGER_NAME;
+        activeSessionClientCode = String(target.code).toUpperCase();
 
-        const pCoords = isValidLatLngPair(matchedPartner.baseCoords) ? matchedPartner.baseCoords : DEFAULT_BASE_COORDS;
-        const pLabel = matchedPartner.baseAddress ? `${matchedPartner.name} · ${matchedPartner.baseAddress}` : matchedPartner.name;
-        setActiveBaseLocation(pCoords, pLabel);
-        populateOwnPartnerBaseForm(matchedPartner);
+        const partnerObj = partners.find((p) => p.id === targetManagerId);
+        const resolvedBaseCoords = isValidLatLngPair(lookupData?.baseCoords)
+          ? lookupData.baseCoords
+          : isValidLatLngPair(target.baseCoords)
+            ? target.baseCoords
+            : isValidLatLngPair(partnerObj?.baseCoords)
+              ? partnerObj.baseCoords
+              : DEFAULT_BASE_COORDS;
 
-        try {
-          localStorage.setItem(SESSION_ROLE_KEY, "partner");
-          localStorage.setItem(SESSION_MANAGER_ID_KEY, activeManagerId);
-          localStorage.setItem(SESSION_MANAGER_NAME_KEY, activeManagerName);
-        } catch (e) {}
+        const resolvedBaseLabel = lookupData?.baseLabel
+          || target.baseLabel
+          || (partnerObj ? (partnerObj.baseAddress ? `${partnerObj.name} · ${partnerObj.baseAddress}` : partnerObj.name) : `${SUPER_MANAGER_NAME} · ${DEFAULT_BASE_ADDRESS_LABEL}`);
+
+        setActiveBaseLocation(resolvedBaseCoords, resolvedBaseLabel);
+
         errEl.classList.add("hidden");
-        await syncClientCodesFromCloud(false, activeManagerId);
+        recordRiderDeparture("login");
         await unlockApplication();
-        return;
+      } finally {
+        isLoginBusy = false;
+        if (loginBtn) loginBtn.disabled = false;
       }
-
-      let targetManagerId = null;
-      let lookupData = null;
-      if (isFirebaseConfigured() && navigator.onLine) {
-        const lookup = await cloudReadJson(`code_lookup/${val}`);
-        if (lookup && lookup.managerId) {
-          targetManagerId = lookup.managerId;
-          lookupData = lookup;
-        }
-      }
-
-      if (!targetManagerId) {
-        const candidateIds = [SUPER_MANAGER_ID, ...partners.map((p) => p.id)];
-        for (const candId of candidateIds) {
-          const candPool = await syncClientCodesFromCloud(false, candId);
-          if (candPool.some((item) => String(item.code).toUpperCase() === val)) {
-            targetManagerId = candId;
-            break;
-          }
-        }
-      }
-
-      if (!targetManagerId) {
-        errEl.textContent = (I18N[currentLang] || I18N.it).invalidPass;
-        errEl.classList.remove("hidden");
-        return;
-      }
-
-      const pool = await syncClientCodesFromCloud(false, targetManagerId);
-      const matchIdx = pool.findIndex((item) => String(item.code).toUpperCase() === val);
-
-      if (matchIdx === -1) {
-        errEl.textContent = (I18N[currentLang] || I18N.it).invalidPass;
-        errEl.classList.remove("hidden");
-        return;
-      }
-
-      const target = pool[matchIdx];
-      const currentUses = Number(target.uses) || 0;
-      const maxUses = Number(target.maxUses) || MAX_USES_PER_CODE;
-
-      if (currentUses >= maxUses) {
-        errEl.textContent = `Codice ${escapeHtml(target.code)}: limite massimo di ${maxUses} accessi raggiunto.`;
-        errEl.classList.remove("hidden");
-        return;
-      }
-
-      pool[matchIdx] = { ...target, uses: currentUses + 1, maxUses };
-      await saveClientCodesPool(pool, false, targetManagerId);
-
-      isSuperManager = false;
-      isManagerUser = false;
-      activeManagerId = targetManagerId;
-      activeManagerName = lookupData?.managerName || target.managerName || SUPER_MANAGER_NAME;
-      activeSessionClientCode = String(target.code).toUpperCase();
-
-      const partnerObj = partners.find((p) => p.id === targetManagerId);
-      const resolvedBaseCoords = isValidLatLngPair(lookupData?.baseCoords)
-        ? lookupData.baseCoords
-        : isValidLatLngPair(target.baseCoords)
-          ? target.baseCoords
-          : isValidLatLngPair(partnerObj?.baseCoords)
-            ? partnerObj.baseCoords
-            : DEFAULT_BASE_COORDS;
-
-      const resolvedBaseLabel = lookupData?.baseLabel
-        || target.baseLabel
-        || (partnerObj ? (partnerObj.baseAddress ? `${partnerObj.name} · ${partnerObj.baseAddress}` : partnerObj.name) : `${SUPER_MANAGER_NAME} · ${DEFAULT_BASE_ADDRESS_LABEL}`);
-
-      setActiveBaseLocation(resolvedBaseCoords, resolvedBaseLabel);
-
-      errEl.classList.add("hidden");
-      recordRiderDeparture("login");
-      await unlockApplication();
     }
 
     /* ================= APP SHELL, FILTERS & NAVIGATION ================= */
@@ -3495,7 +3430,7 @@
       updateWakeLockUI();
       if (keepScreenAwakeEnabled) requestScreenWakeLock(false);
 
-      await syncAllCloudStateOnBoot();
+      await syncAllCloudStateOnBoot(true);
 
       setTimeout(() => {
         if (map) map.invalidateSize();
@@ -3505,12 +3440,26 @@
     function lockApplication() {
       liveNavActive = false;
       hasInitialNavZoomed = false;
+      followUserCenter = true;
       isSuperManager = false;
       isManagerUser = false;
       activeManagerId = SUPER_MANAGER_ID;
       activeManagerName = SUPER_MANAGER_NAME;
       activeSessionClientCode = "";
       sessionDepartureIso = "";
+      userCoords = null;
+      prevGpsCoords = null;
+      currentHeadingDeg = 0;
+      simulatedProgressRatio = 0;
+      hasLeftBaseArea = false;
+
+      if (map) {
+        if (userMarker) { map.removeLayer(userMarker); userMarker = null; }
+        if (userAccuracyCircle) { map.removeLayer(userAccuracyCircle); userAccuracyCircle = null; }
+        if (returnToBaseLayer) { map.removeLayer(returnToBaseLayer); returnToBaseLayer = null; }
+        if (poiRouteLayer) { map.removeLayer(poiRouteLayer); poiRouteLayer = null; }
+      }
+
       setActiveBaseLocation(DEFAULT_BASE_COORDS, `${SUPER_MANAGER_NAME} · ${DEFAULT_BASE_ADDRESS_LABEL}`);
       try {
         localStorage.removeItem(SESSION_ROLE_KEY);
@@ -3529,6 +3478,20 @@
         navigator.geolocation.clearWatch(watchId);
         watchId = null;
       }
+      const navBanner = document.getElementById("nav-status-banner");
+      if (navBanner) navBanner.classList.add("hidden");
+
+      const offlineBox = document.getElementById("offline-download-box");
+      if (offlineBox) offlineBox.classList.add("hidden");
+
+      hideGpsRecoveryBox();
+
+      const stage = document.getElementById("map-stage");
+      if (stage) stage.classList.remove("is-fullscreen");
+      syncGpsRecoveryPlacement();
+
+      setPoiTypeFilter("all");
+      switchTab("map");
       document.getElementById("app-shell").classList.add("hidden");
       document.getElementById("auth-screen").classList.remove("hidden");
       document.getElementById("access-password-input").value = "";
@@ -3654,7 +3617,7 @@
         }).addTo(map);
 
         if (liveNavActive) {
-          recenterNavigator(true);
+          recenterNavigator(false);
         } else if (route.coords && route.coords.length > 0) {
           map.fitBounds(routePolyline.getBounds(), { padding: [24, 24] });
         }
@@ -3879,7 +3842,7 @@
       }
     }
 
-    function recenterNavigator() {
+    function recenterNavigator(notifyUser = true) {
       if (!map) return;
       followUserCenter = true;
       const routeStart = getRouteById(activeRouteId)?.coords?.[0] || activeBaseCoords;
@@ -3889,8 +3852,8 @@
         applyMapHeadingRotation(currentHeadingDeg, true);
       }
       if (!userCoords) {
-        retryRealGpsNow();
-      } else {
+        if (notifyUser) retryRealGpsNow();
+      } else if (notifyUser) {
         showToast("✓ Centrato sulla tua posizione");
       }
     }
@@ -3898,6 +3861,7 @@
     function toggleMapFullscreen() {
       const stage = document.getElementById("map-stage");
       stage.classList.toggle("is-fullscreen");
+      syncGpsRecoveryPlacement();
       setTimeout(() => {
         if (map) {
           map.invalidateSize();
@@ -4251,7 +4215,7 @@
       trkpts.forEach((pt) => {
         const lat = parseFloat(pt.getAttribute("lat"));
         const lon = parseFloat(pt.getAttribute("lon"));
-        if (!Number.isNaN(lat) && !Number.isNaN(lon) && lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180) {
+        if (isValidLatLngPair([lat, lon])) {
           const cur = [lat, lon];
           if (rawCoords.length > 0) {
             totalMeters += haversineMeters(rawCoords[rawCoords.length - 1], cur);
@@ -4261,7 +4225,7 @@
           const eleNode = pt.querySelector("ele");
           if (eleNode) {
             const ele = parseFloat(eleNode.textContent);
-            if (!Number.isNaN(ele)) {
+            if (Number.isFinite(ele)) {
               if (prevEle !== null && ele > prevEle) {
                 elevGain += (ele - prevEle);
               }
@@ -4384,8 +4348,8 @@
       const difficulty = document.getElementById("tour-diff-input").value;
       const parsedDist = parseFloat(document.getElementById("tour-dist-input").value);
       const parsedElev = parseInt(document.getElementById("tour-elev-input").value, 10);
-      const distanceKm = !Number.isNaN(parsedDist) && parsedDist > 0 ? parsedDist : 15.0;
-      const elevationGainM = !Number.isNaN(parsedElev) && parsedElev >= 0 ? parsedElev : 0;
+      const distanceKm = Number.isFinite(parsedDist) && parsedDist > 0 ? parsedDist : 15.0;
+      const elevationGainM = Number.isFinite(parsedElev) && parsedElev >= 0 ? parsedElev : 0;
       const duration = document.getElementById("tour-duration-input").value.trim();
       const surface = document.getElementById("tour-surface-input").value.trim();
       const description = document.getElementById("tour-desc-input").value.trim();
@@ -4504,7 +4468,7 @@
       rebuildRouteSelector();
       selectRoute(activeRouteId);
       renderToursManagerList();
-      showToast("✓");
+      showToast("✓ Modifiche salvate");
     }
 
     function renderToursManagerList() {
@@ -4588,7 +4552,7 @@
       }
       poiMarkersLayer = L.layerGroup().addTo(map);
       POIS.forEach((poi) => {
-        if (!Array.isArray(poi.coords) || poi.coords.length < 2) return;
+        if (!isValidLatLngPair(poi.coords)) return;
         const meta = getPoiTypeMeta(poi.type);
         const locName = escapeHtml(getLocalizedPoiField(poi, "name"));
         const locNote = escapeHtml(getLocalizedPoiField(poi, "note"));
@@ -4614,8 +4578,8 @@
     }
 
     function getPoiDistanceMeters(poi) {
-      const refPt = Array.isArray(userCoords) && userCoords.length >= 2 ? userCoords : activeBaseCoords;
-      if (!Array.isArray(poi?.coords) || poi.coords.length < 2) return Infinity;
+      const refPt = isValidLatLngPair(userCoords) ? userCoords : activeBaseCoords;
+      if (!isValidLatLngPair(poi?.coords)) return Infinity;
       return haversineMeters(refPt, [Number(poi.coords[0]), Number(poi.coords[1])]);
     }
 
@@ -4670,7 +4634,7 @@
       const lng = parseFloat(document.getElementById("poi-lng-input").value);
       const note = document.getElementById("poi-note-input").value.trim();
 
-      if (!name || Number.isNaN(lat) || Number.isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+      if (!name || !isValidLatLngPair([lat, lng])) {
         showToast("Controlla nome e coordinate (Lat/Lng)");
         return;
       }
@@ -4725,7 +4689,7 @@
       await persistPoisList(true);
       renderPoiList();
       renderPoiMarkersOnMap();
-      showToast("✓");
+      showToast("✓ Modifiche salvate");
     }
 
     function renderPoiList() {
@@ -4776,14 +4740,16 @@
                 ${escapeHtml(t.guideOnMap)}
               </button>
               ${isSuperManager ? `
-                <button onclick="movePoiRank(${originalIdx}, -1)" ${originalIdx === 0 ? "disabled" : ""}
-                  class="px-2.5 py-1.5 rounded-lg border border-stone-300 bg-white hover:bg-stone-100 disabled:opacity-35 text-xs font-bold cursor-pointer">
-                  ${escapeHtml(t.rankUpBtn)}
-                </button>
-                <button onclick="movePoiRank(${originalIdx}, 1)" ${originalIdx === POIS.length - 1 ? "disabled" : ""}
-                  class="px-2.5 py-1.5 rounded-lg border border-stone-300 bg-white hover:bg-stone-100 disabled:opacity-35 text-xs font-bold cursor-pointer">
-                  ${escapeHtml(t.rankDownBtn)}
-                </button>
+                ${activePoiTypeFilter === "all" ? `
+                  <button onclick="movePoiRank(${originalIdx}, -1)" ${originalIdx === 0 ? "disabled" : ""}
+                    class="px-2.5 py-1.5 rounded-lg border border-stone-300 bg-white hover:bg-stone-100 disabled:opacity-35 text-xs font-bold cursor-pointer">
+                    ${escapeHtml(t.rankUpBtn)}
+                  </button>
+                  <button onclick="movePoiRank(${originalIdx}, 1)" ${originalIdx === POIS.length - 1 ? "disabled" : ""}
+                    class="px-2.5 py-1.5 rounded-lg border border-stone-300 bg-white hover:bg-stone-100 disabled:opacity-35 text-xs font-bold cursor-pointer">
+                    ${escapeHtml(t.rankDownBtn)}
+                  </button>
+                ` : ""}
                 <button onclick="editPoiInForm('${safeId}')"
                   class="px-3 py-1.5 rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-900 text-xs font-semibold cursor-pointer">
                   ${escapeHtml(t.editBtn)}
@@ -4869,7 +4835,7 @@
       fetchTrailWeather(true);
       flushPendingRiderDepartures();
       flushPendingRiderAlertsWithCurrentCoords();
-      syncAllCloudStateOnBoot();
+      syncAllCloudStateOnBoot(false);
     });
     window.addEventListener("offline", updateNetworkStatusUI);
 
@@ -4892,9 +4858,10 @@
         if (permModal) permModal.classList.add("hidden");
       }
       if (isFirebaseConfigured() && navigator.onLine) {
-        syncAllCloudStateOnBoot();
+        syncAllCloudStateOnBoot(true);
       }
     });
   </script>
 </body>
 </html>
+
