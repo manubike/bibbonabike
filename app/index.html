@@ -209,11 +209,16 @@
       border-color: #10b981 !important;
       color: #0f1110 !important;
     }
+    html.dark-mode #poi-type-filters button.bg-stone-900 {
+      background-color: #10b981 !important;
+      border-color: #10b981 !important;
+      color: #0f1110 !important;
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
-  <!-- Schermata iniziale autorizzazioni GPS & Rete Web -->
+  <!-- Schermata iniziale autorizzazioni GPS & Rete Web (solo primo accesso) -->
   <div id="startup-permissions-modal" class="fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-stone-200">
       <div class="mb-2 flex items-center gap-2">
@@ -609,6 +614,31 @@
             </button>
           </div>
         </div>
+
+        <!-- Barra filtri rapidi per tipologia -->
+        <div id="poi-type-filters" class="flex flex-wrap gap-1.5 pb-1">
+          <button type="button" data-poi-filter="all" data-i18n="poiFilterAll" onclick="setPoiTypeFilter('all')"
+            class="poi-filter-btn px-3 py-1.5 rounded-lg bg-stone-900 text-white text-xs font-bold cursor-pointer">
+            Tutti
+          </button>
+          <button type="button" data-poi-filter="water" data-i18n="poiOptWater" onclick="setPoiTypeFilter('water')"
+            class="poi-filter-btn px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
+            💧 Fontanella / Acqua
+          </button>
+          <button type="button" data-poi-filter="view" data-i18n="poiOptView" onclick="setPoiTypeFilter('view')"
+            class="poi-filter-btn px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
+            🏔️ Panorama / Punto Foto
+          </button>
+          <button type="button" data-poi-filter="food" data-i18n="poiOptFood" onclick="setPoiTypeFilter('food')"
+            class="poi-filter-btn px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
+            🍽️ Ristoro / Bar / Area Sosta
+          </button>
+          <button type="button" data-poi-filter="service" data-i18n="poiOptService" onclick="setPoiTypeFilter('service')"
+            class="poi-filter-btn px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
+            🔧 Assistenza Officina
+          </button>
+        </div>
+
         <div id="poi-list" class="space-y-2.5"></div>
       </div>
     </section>
@@ -979,6 +1009,8 @@
         poiTitle: "Punti Utili (Fontanelle, Panorami, Ristori)",
         poiSubtitleUser: "Seleziona un punto per avviare la guida sulla mappa.",
         poiSubtitleOwner: "Ordina, modifica, aggiungi o elimina i punti utili e premi Salva Modifiche.",
+        poiFilterAll: "Tutti",
+        poiNoFilterMatch: "Nessun punto utile per questa tipologia.",
         poiFormAddTitle: "Aggiungi Nuovo Punto Utile o Modifica Esistente",
         poiFormEditTitle: "Modifica Punto Utile:",
         poiFormDesc: "Gestisci fontanelle, punti panoramici, ristori e punti di interesse lungo i percorsi, poi premi Salva Modifiche.",
@@ -1149,6 +1181,8 @@
         poiTitle: "Points of Interest (Fountains, Views, Stops)",
         poiSubtitleUser: "Select a point to start map guidance.",
         poiSubtitleOwner: "Order, edit, add or delete points of interest and press Save Changes.",
+        poiFilterAll: "All",
+        poiNoFilterMatch: "No points of interest for this category.",
         poiFormAddTitle: "Add New Point of Interest or Edit Existing",
         poiFormEditTitle: "Edit Point of Interest:",
         poiFormDesc: "Manage water fountains, viewpoints, rest stops and points of interest along the routes, then press Save Changes.",
@@ -1319,6 +1353,8 @@
         poiTitle: "Wegpunkte (Brunnen, Aussicht, Einkehr)",
         poiSubtitleUser: "Wählen Sie einen Punkt für die Kartenführung.",
         poiSubtitleOwner: "Sortieren, bearbeiten, hinzufügen oder löschen und Änderungen speichern.",
+        poiFilterAll: "Alle",
+        poiNoFilterMatch: "Keine Wegpunkte für diese Kategorie.",
         poiFormAddTitle: "Neuen Wegpunkt hinzufügen oder bestehenden bearbeiten",
         poiFormEditTitle: "Wegpunkt bearbeiten:",
         poiFormDesc: "Verwalten Sie Trinkbrunnen, Aussichtspunkte, Einkehrmöglichkeiten und Wegpunkte entlang der Strecken und klicken Sie auf Änderungen speichern.",
@@ -1489,6 +1525,8 @@
         poiTitle: "Nuttige Punten (Water, Uitzicht, Rust)",
         poiSubtitleUser: "Selecteer een punt om begeleiding op de kaart te starten.",
         poiSubtitleOwner: "Sorteer, bewerk, voeg toe of verwijder nuttige punten en klik op Wijzigingen opslaan.",
+        poiFilterAll: "Alle",
+        poiNoFilterMatch: "Geen nuttige punten voor deze categorie.",
         poiFormAddTitle: "Nieuw Nuttig Punt toevoegen of bestaand bewerken",
         poiFormEditTitle: "Nuttig Punt bewerken:",
         poiFormDesc: "Beheer waterpunten, uitzichtpunten, rustplaatsen en nuttige punten langs de routes en klik op Wijzigingen opslaan.",
@@ -1659,6 +1697,8 @@
         poiTitle: "Puntos Útiles (Fuentes, Miradores, Descanso)",
         poiSubtitleUser: "Selecciona un punto para iniciar la guía en el mapa.",
         poiSubtitleOwner: "Ordena, edita, añade o elimina puntos útiles y pulsa Guardar Cambios.",
+        poiFilterAll: "Todos",
+        poiNoFilterMatch: "No hay puntos útiles para esta categoría.",
         poiFormAddTitle: "Añadir Nuevo Punto Útil o Editar Existente",
         poiFormEditTitle: "Editar Punto Útil:",
         poiFormDesc: "Gestiona fuentes de agua, miradores, áreas de descanso y puntos de interés y pulsa Guardar Cambios.",
@@ -1829,6 +1869,8 @@
         poiTitle: "Points Utiles (Fontaines, Panoramas, Pauses)",
         poiSubtitleUser: "Sélectionnez un point pour lancer le guidage sur la carte.",
         poiSubtitleOwner: "Triez, modifiez, ajoutez ou supprimez des points utiles puis cliquez sur Enregistrer.",
+        poiFilterAll: "Tous",
+        poiNoFilterMatch: "Aucun point utile pour cette catégorie.",
         poiFormAddTitle: "Ajouter un Point Utile ou Modifier",
         poiFormEditTitle: "Modifier le Point Utile :",
         poiFormDesc: "Gérez les points d'eau, panoramas, haltes et points d'intérêt puis cliquez sur Enregistrer.",
@@ -1999,6 +2041,8 @@
         poiTitle: "Pontos Úteis (Fontes, Mirantes, Paradas)",
         poiSubtitleUser: "Selecione um ponto para iniciar a orientação no mapa.",
         poiSubtitleOwner: "Ordene, edite, adicione ou exclua pontos úteis e clique em Salvar Alterações.",
+        poiFilterAll: "Todos",
+        poiNoFilterMatch: "Nenhum ponto útil para esta categoria.",
         poiFormAddTitle: "Adicionar Novo Ponto Útil ou Editar",
         poiFormEditTitle: "Editar Ponto Útil:",
         poiFormDesc: "Gerencie fontes de água, mirantes, paradas e pontos de interesse e clique em Salvar Alterações.",
@@ -2038,7 +2082,7 @@
         tourFormEditTitle: "Editar Rota:",
         tourFormDesc: "Indique se a rota é MTB ou Gravel para exibir aos clientes, carregue o GPX e defina dificuldade, distância, elevação e descrição.",
         tourNameLabel: "Nome da Rota *",
-        tourNamePlaceholder: "Ex. Circuito Macchia della Magona e Campo di Sasso",
+        tourNamePlaceholder: "Ex. Circuito Macchia da Magona e Campo di Sasso",
         tourDisciplineLabel: "Disciplina da Rota (MTB / Gravel) *",
         tourDiffLabel: "Dificuldade",
         tourDiffOptGreen: "Verde — Fácil / Famílias",
@@ -2071,8 +2115,8 @@
         toastGpsAcquiring: "Buscando GPS: centralizado no ponto de partida",
         toastOfflineSaved: "Mapa e rotas salvos offline no telefone",
         toastWakeOn: "Tela sempre ligada ativada",
-        toastWakeOff: "Tela sempre ligada desativada",
-        toastWakeUnsupported: "Navegador incompatível com Wake Lock: defina o bloqueio de tela como 'Nunca'",
+        toastWakeOff: "Tela sempre ligada desactivada",
+        toastWakeUnsupported: "Browser incompatível com Wake Lock: defina o bloqueio de tela como 'Nunca'",
         toastWakeError: "Não foi possível manter a tela ligada (verifique economia de bateria ou HTTPS)",
         toastPoiGuided: "Rota MTB/trilhas calculada para:",
         toastPoiCalc: "Calculando rota por trilhas para:"
@@ -2169,6 +2213,8 @@
         poiTitle: "兴趣点 (饮水处、观景点、补给点)",
         poiSubtitleUser: "选择一个地点以在地图上开始导航。",
         poiSubtitleOwner: "排序、编辑、添加或删除兴趣点，然后点击保存更改。",
+        poiFilterAll: "全部",
+        poiNoFilterMatch: "该分类下暂无兴趣点。",
         poiFormAddTitle: "添加新兴趣点或编辑现有地点",
         poiFormEditTitle: "编辑兴趣点：",
         poiFormDesc: "管理沿途饮水处、观景点、休息区和兴趣点，然后点击保存更改。",
@@ -2284,7 +2330,7 @@
         pt: {
           name: "Circuito Macchia della Magona",
           surface: "Mata, singletrack e estradas florestais",
-          description: "Percurso clássico na Macchia della Magona entre sobreiros, azinheiras e mirantes com vista para o mar."
+          description: "Percurso clássico na Macchia da Magona entre sobreiros, azinheiras e mirantes com vista para o mar."
         },
         zh: {
           name: "Macchia della Magona 森林环线",
@@ -2563,6 +2609,7 @@
     let simulatedProgressRatio = 0;
     let pendingFormCoords = null;
     let poiMarkersLayer = null;
+    let activePoiTypeFilter = "all";
 
     let riderAlertsList = [];
     let riderDeparturesList = [];
@@ -3999,6 +4046,9 @@
       if (tabName === "map" && map) {
         setTimeout(() => map.invalidateSize(), 100);
       }
+      if (tabName === "pois") {
+        renderPoiList();
+      }
       if (tabName === "tours" && isOwner) {
         renderToursManagerList();
       }
@@ -4191,6 +4241,9 @@
       if (pendingAlertsQueue.length > 0 && navigator.onLine) {
         flushPendingRiderAlertsWithCurrentCoords();
       }
+      if (pendingDeparturesQueue.length > 0 && navigator.onLine) {
+        flushPendingRiderDepartures();
+      }
     }
 
     function createMiniCyclistIcon() {
@@ -4266,6 +4319,7 @@
           updateHeadingFromPosition(pos, newCoords);
           userCoords = newCoords;
           renderUserPositionMarker(userCoords, pos.coords.accuracy);
+          renderPoiList();
           updateRouteProgressMetrics();
           if (liveNavActive && followUserCenter && map) {
             map.setView(userCoords, NAV_ZOOM_LEVEL, { animate: false });
@@ -4282,6 +4336,7 @@
           updateHeadingFromPosition(pos, newCoords);
           userCoords = newCoords;
           renderUserPositionMarker(userCoords, pos.coords.accuracy);
+          renderPoiList();
           updateRouteProgressMetrics();
 
           if (liveNavActive && followUserCenter && map) {
@@ -5060,6 +5115,29 @@
       });
     }
 
+    function setPoiTypeFilter(typeKey) {
+      activePoiTypeFilter = ["all", "water", "view", "food", "service"].includes(typeKey) ? typeKey : "all";
+      document.querySelectorAll(".poi-filter-btn").forEach((btn) => {
+        const isActive = btn.getAttribute("data-poi-filter") === activePoiTypeFilter;
+        btn.className = isActive
+          ? "poi-filter-btn px-3 py-1.5 rounded-lg bg-stone-900 text-white text-xs font-bold cursor-pointer"
+          : "poi-filter-btn px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer";
+      });
+      renderPoiList();
+    }
+
+    function getPoiDistanceMeters(poi) {
+      const refPt = Array.isArray(userCoords) && userCoords.length >= 2 ? userCoords : BASE_COORDS;
+      if (!Array.isArray(poi?.coords) || poi.coords.length < 2) return Infinity;
+      return haversineMeters(refPt, [Number(poi.coords[0]), Number(poi.coords[1])]);
+    }
+
+    function formatDistanceBadgeText(meters) {
+      if (!Number.isFinite(meters)) return "";
+      if (meters < 1000) return `${Math.round(meters)} m`;
+      return `${(meters / 1000).toFixed(1)} km`;
+    }
+
     function resetPoiForm() {
       const t = I18N[currentLang] || I18N.it;
       document.getElementById("edit-poi-id").value = "";
@@ -5167,7 +5245,22 @@
       const container = document.getElementById("poi-list");
       if (!container) return;
       const t = I18N[currentLang] || I18N.it;
-      container.innerHTML = POIS.map((poi, idx) => {
+
+      const indexedPois = POIS
+        .map((poi, originalIdx) => ({
+          poi,
+          originalIdx,
+          distMeters: getPoiDistanceMeters(poi)
+        }))
+        .filter(({ poi }) => activePoiTypeFilter === "all" || poi.type === activePoiTypeFilter)
+        .sort((a, b) => a.distMeters - b.distMeters);
+
+      if (indexedPois.length === 0) {
+        container.innerHTML = `<div class="text-xs text-stone-500 py-3">${escapeHtml(t.poiNoFilterMatch)}</div>`;
+        return;
+      }
+
+      container.innerHTML = indexedPois.map(({ poi, originalIdx, distMeters }, rankIdx) => {
         const meta = getPoiTypeMeta(poi.type);
         const locName = getLocalizedPoiField(poi, "name");
         const locNote = getLocalizedPoiField(poi, "note");
@@ -5176,12 +5269,15 @@
         const lat = Number(poi.coords[0]);
         const lng = Number(poi.coords[1]);
         const coordsText = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+        const distLabel = formatDistanceBadgeText(distMeters);
+
         return `
           <div class="p-3 rounded-xl border border-stone-200 bg-stone-50 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
             <div class="space-y-0.5">
               <div class="flex flex-wrap items-center gap-2">
-                <span class="text-[11px] font-extrabold text-stone-400">#${idx + 1}</span>
+                <span class="text-[11px] font-extrabold text-stone-400">#${rankIdx + 1}</span>
                 <span class="text-xs font-bold text-stone-600">${escapeHtml(meta.badge)}</span>
+                ${distLabel ? `<span class="px-2 py-0.5 rounded text-[11px] font-extrabold bg-emerald-100 text-emerald-900">${escapeHtml(distLabel)}</span>` : ""}
                 <span class="text-[11px] text-stone-400">${coordsText}</span>
               </div>
               <div class="text-sm font-bold text-stone-900">${escapeHtml(locName)}</div>
@@ -5193,11 +5289,11 @@
                 ${escapeHtml(t.guideOnMap)}
               </button>
               ${isOwner ? `
-                <button onclick="movePoiRank(${idx}, -1)" ${idx === 0 ? "disabled" : ""}
+                <button onclick="movePoiRank(${originalIdx}, -1)" ${originalIdx === 0 ? "disabled" : ""}
                   class="px-2.5 py-1.5 rounded-lg border border-stone-300 bg-white hover:bg-stone-100 disabled:opacity-35 text-xs font-bold cursor-pointer">
                   ${escapeHtml(t.rankUpBtn)}
                 </button>
-                <button onclick="movePoiRank(${idx}, 1)" ${idx === POIS.length - 1 ? "disabled" : ""}
+                <button onclick="movePoiRank(${originalIdx}, 1)" ${originalIdx === POIS.length - 1 ? "disabled" : ""}
                   class="px-2.5 py-1.5 rounded-lg border border-stone-300 bg-white hover:bg-stone-100 disabled:opacity-35 text-xs font-bold cursor-pointer">
                   ${escapeHtml(t.rankDownBtn)}
                 </button>
