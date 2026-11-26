@@ -901,7 +901,7 @@
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h2 data-i18n="managerTitle" class="text-base font-bold text-stone-900">I Tuoi Codici Cliente & Cache Offline</h2>
-            <p id="codes-pool-desc" class="text-xs text-stone-500">Genera codici dedicati ai tuoi clienti (fino a 3 accessi per codice). Gli altri gestori non possono vedere i tuoi codici né i tuoi clienti.</p>
+            <p id="codes-pool-desc" class="text-xs text-stone-500">Genera codici dedicati ai tuoi clienti (fino a 3 accessi per codice). I codici revocati restano bloccati per 30 giorni e non riappaiono.</p>
           </div>
           <button id="btn-gen-code" onclick="rotateClientPassword()" class="px-3.5 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold cursor-pointer">
             Genera Nuovo Codice
@@ -911,7 +911,7 @@
         <div class="bg-stone-50 p-3 rounded-xl border border-stone-200 space-y-2">
           <div class="flex flex-wrap items-center justify-between gap-2">
             <div class="text-xs font-semibold text-stone-600">I Tuoi Codici Attivi (max 3 accessi per codice)</div>
-            <div id="active-client-password" class="text-sm font-extrabold text-stone-900">RIDE-4829</div>
+            <div id="active-client-password" class="text-sm font-extrabold text-stone-900">-</div>
           </div>
           <div id="client-codes-list" class="space-y-2"></div>
         </div>
@@ -974,7 +974,9 @@
     const ROUTES_STORAGE_KEY = "magona_offline_routes_v3";
     const POIS_STORAGE_KEY = "magona_offline_pois_v2";
     const ELEV_CACHE_STORAGE_KEY = "magona_elevation_profiles_v1";
-    const CLIENT_CODES_STORAGE_KEY = "magona_client_codes_pool_v2";
+    const CLIENT_CODES_STORAGE_KEY = "magona_client_codes_pool_v3";
+    const REVOKED_CODES_STORAGE_KEY = "magona_revoked_codes_30d_v1";
+    const REVOKED_CODE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
     const PARTNERS_STORAGE_KEY = "magona_partner_managers_v1";
     const THEME_STORAGE_KEY = "magona_theme_mode_v1";
     const LANG_STORAGE_KEY = "magona_lang_v1";
@@ -3109,6 +3111,69 @@
       return `${CLIENT_CODES_STORAGE_KEY}_${cleanId}`;
     }
 
+    function getManagerRevokedLocalKey(managerId = activeManagerId) {
+      const cleanId = String(managerId || SUPER_MANAGER_ID).trim().toLowerCase() || SUPER_MANAGER_ID;
+      return `${REVOKED_CODES_STORAGE_KEY}_${cleanId}`;
+    }
+
+    function pruneExpiredRevokedMap(rawMap) {
+      const now = Date.now();
+      const cleaned = {};
+      if (rawMap && typeof rawMap === "object" && !Array.isArray(rawMap)) {
+        Object.entries(rawMap).forEach(([rawCode, ts]) => {
+          const code = String(rawCode || "").trim().toUpperCase();
+          const numTs = Number(ts);
+          if (code && Number.isFinite(numTs) && (now - numTs) < REVOKED_CODE_TTL_MS) {
+            cleaned[code] = numTs;
+          }
+        });
+      }
+      return cleaned;
+    }
+
+    function loadRevokedCodesMapSync(managerId = activeManagerId) {
+      try {
+        const raw = localStorage.getItem(getManagerRevokedLocalKey(managerId));
+        if (raw) {
+          return pruneExpiredRevokedMap(JSON.parse(raw));
+        }
+      } catch (e) {}
+      return {};
+    }
+
+    async function saveRevokedCodesMap(revokedMap, syncCloud = true, managerId = activeManagerId) {
+      const cleaned = pruneExpiredRevokedMap(revokedMap);
+      const localKey = getManagerRevokedLocalKey(managerId);
+      try {
+        localStorage.setItem(localKey, JSON.stringify(cleaned));
+      } catch (e) {}
+      await idbWrite(localKey, cleaned);
+      if (syncCloud) {
+        await cloudWriteJson(`${getManagerCloudPrefix(managerId)}/revoked_codes`, cleaned);
+      }
+      return cleaned;
+    }
+
+    async function getActiveRevokedCodesMap(managerId = activeManagerId) {
+      const localKey = getManagerRevokedLocalKey(managerId);
+      let merged = loadRevokedCodesMapSync(managerId);
+      const idbVal = await idbRead(localKey);
+      if (idbVal && typeof idbVal === "object") {
+        merged = pruneExpiredRevokedMap({ ...idbVal, ...merged });
+      }
+      if (isFirebaseConfigured() && navigator.onLine) {
+        const remoteVal = await cloudReadJson(`${getManagerCloudPrefix(managerId)}/revoked_codes`);
+        if (remoteVal && typeof remoteVal === "object") {
+          merged = pruneExpiredRevokedMap({ ...remoteVal, ...merged });
+        }
+      }
+      try {
+        localStorage.setItem(localKey, JSON.stringify(merged));
+      } catch (e) {}
+      await idbWrite(localKey, merged);
+      return merged;
+    }
+
     function requestOwnerNotificationPermissionIfNeeded(showFeedback = false) {
       if (!isManagerUser || !("Notification" in window)) {
         if (showFeedback) showToast("Notifiche browser non supportate su questo dispositivo");
@@ -3531,6 +3596,7 @@
       const currentCoords = Array.isArray(userCoords) && userCoords.length >= 2
         ? [+Number(userCoords[0]).toFixed(6), +Number(userCoords[1]).toFixed(6)]
         : null;
+      const nowIso = new Date().toISOString();
 
       const entry = {
         id: alertKey,
@@ -3540,8 +3606,8 @@
         routeId: route?.id || "",
         routeName: route ? (getLocalizedRouteField(route, "name") || route.name || "") : "",
         departedAt: sessionDepartureIso || "",
-        triggeredAt: new Date().toISOString(),
-        sentAt: new Date().toISOString(),
+        triggeredAt: nowIso,
+        sentAt: nowIso,
         coords: currentCoords,
         ...extraData
       };
@@ -3570,6 +3636,7 @@
           : (item.distFromBaseKm ?? null);
         return {
           ...item,
+          triggeredAt: item.triggeredAt || nowIso,
           sentAt: nowIso,
           coords: finalCoords,
           distFromBaseKm,
@@ -3670,9 +3737,11 @@
           lastShownOwnerAlertId = newest.id;
           try { localStorage.setItem("magona_last_seen_alert_id", newest.id); } catch (e) {}
           const isNear = newest.type === "near_base_1500m" || newest.type === "near_base_5km";
+          const evTime = formatDateAndTime(newest.triggeredAt || newest.sentAt);
+          const timeSuffix = evTime.time ? ` [${evTime.date} ${evTime.time}]` : "";
           const label = isNear
-            ? `${newest.clientCode} a ${newest.distFromBaseKm ?? "≤ 1.5"} km dalla base (${newest.routeName})`
-            : `${newest.clientCode} a metà percorso (${newest.routeName})`;
+            ? `${newest.clientCode} a ${newest.distFromBaseKm ?? "≤ 1.5"} km dalla base (${newest.routeName})${timeSuffix}`
+            : `${newest.clientCode} a metà percorso (${newest.routeName})${timeSuffix}`;
           showToast("🔔 " + label);
           showOpenBrowserNotification(activeManagerName || "Magona Bike Garage", label);
         }
@@ -3686,17 +3755,23 @@
 
       listEl.innerHTML = riderAlertsList.map((item) => {
         const isNearBase = item.type === "near_base_1500m" || item.type === "near_base_5km";
+        const eventStamp = formatDateAndTime(item.triggeredAt || item.sentAt);
+        const eventDateTimeText = eventStamp.time
+          ? `${eventStamp.date ? eventStamp.date + " " : ""}ore ${eventStamp.time}`
+          : "";
+
         const typeBadge = isNearBase
           ? `<span class="px-2 py-0.5 rounded font-bold text-[11px] bg-amber-100 text-amber-900">📍 Entro 1,5 km dalla Base (${escapeHtml(item.distFromBaseKm ?? "≤ 1.5")} km)</span>`
           : `<span class="px-2 py-0.5 rounded font-bold text-[11px] bg-sky-100 text-sky-900">🏁 Metà Percorso (${Number(item.pct) || 50}%)</span>`;
+
+        const eventDateBadge = eventDateTimeText
+          ? `<span class="px-2 py-0.5 rounded font-bold text-[11px] bg-stone-200 text-stone-900">📅 ${escapeHtml(eventDateTimeText)}</span>`
+          : "";
+
         const posText = Array.isArray(item.coords)
           ? `${Number(item.coords[0]).toFixed(5)}, ${Number(item.coords[1]).toFixed(5)}`
           : "GPS non disponibile";
-        const sent = formatDateAndTime(item.sentAt);
         const dep = formatDateAndTime(item.departedAt);
-        const receivedBadgeText = sent.time
-          ? `Arrivo avviso: ${sent.date ? sent.date + " " : ""}ore ${sent.time}`
-          : "";
 
         return `
           <div class="p-3 rounded-xl bg-white border border-stone-200 flex flex-wrap items-center justify-between gap-2 text-xs">
@@ -3704,11 +3779,11 @@
               <div class="flex flex-wrap items-center gap-2">
                 <span class="font-extrabold text-stone-900">${escapeHtml(item.clientCode)}</span>
                 ${typeBadge}
+                ${eventDateBadge}
                 ${dep.time ? `<span class="text-[11px] text-emerald-700 font-semibold">Partito ${dep.date ? escapeHtml(dep.date) + " " : ""}ore ${escapeHtml(dep.time)}</span>` : ""}
-                ${receivedBadgeText ? `<span class="text-[11px] text-stone-500 font-medium">${dep.time ? "· " : ""}${escapeHtml(receivedBadgeText)}</span>` : ""}
               </div>
               <div class="text-stone-600">
-                Tour: <strong>${escapeHtml(item.routeName)}</strong> · Posizione attuale all'invio: ${escapeHtml(posText)}
+                Tour: <strong>${escapeHtml(item.routeName)}</strong> · Posizione GPS: ${escapeHtml(posText)}
               </div>
             </div>
             ${item.mapsUrl ? `
@@ -4452,7 +4527,6 @@
           startWatchingUserLocation();
         },
         (err) => {
-          // Fallback rapido senza alta precisione (utile su iPhone in ambienti chiusi o con fix lento)
           navigator.geolocation.getCurrentPosition(
             (pos2) => {
               handleGpsSuccessPosition(pos2, gpsStatus, true);
@@ -4473,52 +4547,43 @@
       );
     }
 
+    /* ================= CLIENT ACCESS CODES (NO AUTO-RESTORE, 30-DAY BLOCK) ================= */
+
     function loadClientCodesPool(managerId = activeManagerId) {
       const storageKey = getManagerCodesLocalKey(managerId);
+      const revokedMap = loadRevokedCodesMapSync(managerId);
       try {
         const raw = localStorage.getItem(storageKey);
-        if (raw) {
+        if (raw !== null) {
           const parsed = JSON.parse(raw);
           if (Array.isArray(parsed)) {
-            return parsed.filter((item) => item && item.code);
+            return parsed.filter((item) => {
+              if (!item || !item.code) return false;
+              const upper = String(item.code).trim().toUpperCase();
+              return !revokedMap[upper];
+            });
           }
         }
       } catch (e) {}
-
-      if (managerId === SUPER_MANAGER_ID) {
-        const legacyPoolRaw = localStorage.getItem("magona_client_codes_pool_v1");
-        if (legacyPoolRaw) {
-          try {
-            const parsedLegacy = JSON.parse(legacyPoolRaw);
-            if (Array.isArray(parsedLegacy) && parsedLegacy.length > 0) {
-              return parsedLegacy.filter((item) => item && item.code);
-            }
-          } catch (e) {}
-        }
-        const initialLegacy = (localStorage.getItem("magona_active_client_pwd") || "RIDE-4829").trim().toUpperCase();
-        const initialPool = [{ code: initialLegacy, uses: 0, maxUses: MAX_USES_PER_CODE, managerId: SUPER_MANAGER_ID }];
-        try {
-          localStorage.setItem(storageKey, JSON.stringify(initialPool));
-        } catch (e) {}
-        return initialPool;
-      }
-
       return [];
     }
 
     async function saveClientCodesPool(pool, showSyncFeedback = false, managerId = activeManagerId) {
       const storageKey = getManagerCodesLocalKey(managerId);
       const cloudPath = `${getManagerCloudPrefix(managerId)}/codes`;
-      try {
-        localStorage.setItem(storageKey, JSON.stringify(pool));
-        const active = pool.find((c) => (c.uses || 0) < (c.maxUses || MAX_USES_PER_CODE));
-        if (active && managerId === SUPER_MANAGER_ID) {
-          localStorage.setItem("magona_active_client_pwd", active.code);
-        }
-      } catch (e) {}
-      await idbWrite(storageKey, pool);
+      const revokedMap = await getActiveRevokedCodesMap(managerId);
+      const cleanPool = (Array.isArray(pool) ? pool : []).filter((item) => {
+        if (!item || !item.code) return false;
+        const upper = String(item.code).trim().toUpperCase();
+        return !revokedMap[upper];
+      });
 
-      const cloudOk = await cloudWriteJson(cloudPath, pool);
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(cleanPool));
+      } catch (e) {}
+      await idbWrite(storageKey, cleanPool);
+
+      const cloudOk = await cloudWriteJson(cloudPath, cleanPool);
       if (showSyncFeedback) {
         if (cloudOk) {
           showToast("✓ Codici salvati e sincronizzati su Firebase");
@@ -4532,33 +4597,48 @@
     async function syncClientCodesFromCloud(notifyUser = false, managerId = activeManagerId) {
       const storageKey = getManagerCodesLocalKey(managerId);
       const cloudPath = `${getManagerCloudPrefix(managerId)}/codes`;
+      const revokedMap = await getActiveRevokedCodesMap(managerId);
       let pool = loadClientCodesPool(managerId);
 
-      const idbPool = await idbRead(storageKey);
-      if (Array.isArray(idbPool) && idbPool.length > 0) {
-        pool = idbPool.filter((item) => item && item.code);
+      const hasLocalKey = localStorage.getItem(storageKey) !== null;
+      if (!hasLocalKey) {
+        const idbPool = await idbRead(storageKey);
+        if (Array.isArray(idbPool)) {
+          pool = idbPool.filter((item) => item && item.code && !revokedMap[String(item.code).trim().toUpperCase()]);
+        }
       }
 
       if (isFirebaseConfigured() && navigator.onLine) {
-        let remoteCodes = await cloudReadJson(cloudPath);
-        if ((!Array.isArray(remoteCodes) || remoteCodes.length === 0) && managerId === SUPER_MANAGER_ID) {
-          const legacyRemote = await cloudReadJson("codes");
-          if (Array.isArray(legacyRemote) && legacyRemote.length > 0) {
-            remoteCodes = legacyRemote;
-          }
-        }
-        if (Array.isArray(remoteCodes)) {
-          pool = remoteCodes.filter((item) => item && item.code);
+        const remoteCodes = await cloudReadJson(cloudPath);
+        if (remoteCodes === null) {
+          // Nodo vuoto su Firebase (nessun codice attivo)
+          pool = [];
+          try {
+            localStorage.setItem(storageKey, JSON.stringify([]));
+          } catch (e) {}
+          await idbWrite(storageKey, []);
+        } else if (Array.isArray(remoteCodes)) {
+          const filteredRemote = remoteCodes.filter((item) => {
+            if (!item || !item.code) return false;
+            const upper = String(item.code).trim().toUpperCase();
+            return !revokedMap[upper];
+          });
+          pool = filteredRemote;
           try {
             localStorage.setItem(storageKey, JSON.stringify(pool));
           } catch (e) {}
           await idbWrite(storageKey, pool);
-          if (isManagerUser && activeManagerId === managerId) {
-            renderClientCodesPoolUI();
+          // Se su Firebase c'erano codici già revocati, ripulisci anche il nodo cloud
+          if (filteredRemote.length !== remoteCodes.length) {
+            await cloudWriteJson(cloudPath, pool);
           }
-          if (notifyUser) showToast("✓ Codici aggiornati da Firebase");
-          return pool;
         }
+
+        if (isManagerUser && activeManagerId === managerId) {
+          renderClientCodesPoolUI();
+        }
+        if (notifyUser) showToast("✓ Codici aggiornati da Firebase");
+        return pool;
       }
 
       if (isManagerUser && activeManagerId === managerId) {
@@ -4625,13 +4705,14 @@
 
     async function rotateClientPassword() {
       if (!isManagerUser) return;
+      const revokedMap = await getActiveRevokedCodesMap(activeManagerId);
       const pool = await syncClientCodesFromCloud(false, activeManagerId);
       let code = "";
       let attempts = 0;
       do {
         code = "RIDE-" + Math.floor(1000 + Math.random() * 9000);
         attempts++;
-      } while (pool.some((item) => item.code === code) && attempts < 20);
+      } while ((pool.some((item) => item.code === code) || Boolean(revokedMap[code])) && attempts < 40);
 
       pool.unshift({
         code,
@@ -4642,8 +4723,8 @@
         baseCoords: [...activeBaseCoords],
         baseLabel: activeBaseLabel
       });
-      renderClientCodesPoolUI();
       await saveClientCodesPool(pool, true, activeManagerId);
+      renderClientCodesPoolUI();
       await cloudWriteJson(`code_lookup/${code}`, {
         managerId: activeManagerId,
         managerName: activeManagerName,
@@ -4654,15 +4735,21 @@
 
     async function resetClientCodeUses(code) {
       if (!isManagerUser) return;
+      const upper = String(code || "").trim().toUpperCase();
+      const revokedMap = await getActiveRevokedCodesMap(activeManagerId);
+      if (revokedMap[upper]) {
+        showToast(`Codice ${upper} revocato: inutilizzabile per 30 giorni`);
+        return;
+      }
       const currentPool = await syncClientCodesFromCloud(false, activeManagerId);
       const pool = currentPool.map((item) =>
-        item.code === code
+        String(item.code).toUpperCase() === upper
           ? { ...item, uses: 0, maxUses: MAX_USES_PER_CODE, baseCoords: [...activeBaseCoords], baseLabel: activeBaseLabel }
           : item
       );
-      renderClientCodesPoolUI();
       await saveClientCodesPool(pool, true, activeManagerId);
-      await cloudWriteJson(`code_lookup/${code}`, {
+      renderClientCodesPoolUI();
+      await cloudWriteJson(`code_lookup/${upper}`, {
         managerId: activeManagerId,
         managerName: activeManagerName,
         baseCoords: [...activeBaseCoords],
@@ -4672,11 +4759,29 @@
 
     async function revokeClientCode(code) {
       if (!isManagerUser) return;
-      const currentPool = await syncClientCodesFromCloud(false, activeManagerId);
-      const pool = currentPool.filter((item) => item.code !== code);
+      const upper = String(code || "").trim().toUpperCase();
+      if (!upper) return;
+
+      // Aggiunge il codice alla blacklist di 30 giorni PRIMA di salvare
+      const revokedMap = await getActiveRevokedCodesMap(activeManagerId);
+      revokedMap[upper] = Date.now();
+      await saveRevokedCodesMap(revokedMap, true, activeManagerId);
+
+      // Rimuove il codice sia localmente che su Firebase
+      const currentLocal = loadClientCodesPool(activeManagerId);
+      const filteredPool = currentLocal.filter((item) => String(item.code).trim().toUpperCase() !== upper);
+      await saveClientCodesPool(filteredPool, false, activeManagerId);
       renderClientCodesPoolUI();
-      await saveClientCodesPool(pool, true, activeManagerId);
-      await cloudWriteJson(`code_lookup/${code}`, null);
+
+      // Elimina definitivamente il lookup globale su Firebase e marca come revocato
+      await cloudWriteJson(`code_lookup/${upper}`, null);
+      await cloudWriteJson(`revoked_global/${upper}`, {
+        revokedAt: Date.now(),
+        expiresAt: Date.now() + REVOKED_CODE_TTL_MS,
+        managerId: activeManagerId
+      });
+
+      showToast(`✓ Codice ${upper} cancellato e bloccato per 30 giorni`);
     }
 
     async function submitAccessPassword() {
@@ -4739,6 +4844,16 @@
         return;
       }
 
+      // Verifica se il codice è nella blacklist globale di 30 giorni
+      if (isFirebaseConfigured() && navigator.onLine) {
+        const globalRevoked = await cloudReadJson(`revoked_global/${val}`);
+        if (globalRevoked && Number(globalRevoked.expiresAt) > Date.now()) {
+          errEl.textContent = `Codice ${escapeHtml(val)} revocato e non utilizzabile per 30 giorni.`;
+          errEl.classList.remove("hidden");
+          return;
+        }
+      }
+
       let targetManagerId = null;
       let lookupData = null;
       if (isFirebaseConfigured() && navigator.onLine) {
@@ -4752,6 +4867,12 @@
       if (!targetManagerId) {
         const candidateIds = [SUPER_MANAGER_ID, ...partners.map((p) => p.id)];
         for (const candId of candidateIds) {
+          const revokedForMgr = await getActiveRevokedCodesMap(candId);
+          if (revokedForMgr[val]) {
+            errEl.textContent = `Codice ${escapeHtml(val)} revocato e non utilizzabile per 30 giorni.`;
+            errEl.classList.remove("hidden");
+            return;
+          }
           const candPool = await syncClientCodesFromCloud(false, candId);
           if (candPool.some((item) => String(item.code).toUpperCase() === val)) {
             targetManagerId = candId;
@@ -4762,6 +4883,13 @@
 
       if (!targetManagerId) {
         errEl.textContent = (I18N[currentLang] || I18N.it).invalidPass;
+        errEl.classList.remove("hidden");
+        return;
+      }
+
+      const revokedTargetMap = await getActiveRevokedCodesMap(targetManagerId);
+      if (revokedTargetMap[val]) {
+        errEl.textContent = `Codice ${escapeHtml(val)} revocato e non utilizzabile per 30 giorni.`;
         errEl.classList.remove("hidden");
         return;
       }
@@ -5191,6 +5319,7 @@
         document.getElementById("fs-done-elev").textContent = "0 m";
 
         renderElevationProfileCanvas(null, []);
+        evaluateRiderProximityAndHalfway(null, 0);
         return;
       }
 
