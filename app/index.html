@@ -185,6 +185,7 @@
     }
     html.dark-mode button#overlay-center-gps,
     html.dark-mode button#overlay-fullscreen-btn,
+    html.dark-mode button#overlay-toggle-fountains,
     html.dark-mode select#map-layer-select {
       background-color: #181b1a !important;
       background: #181b1a !important;
@@ -532,7 +533,12 @@
             class="absolute top-3 left-3 z-[450] bg-white/95 hover:bg-white text-stone-900 border border-stone-300 rounded-xl px-2.5 py-1.5 text-xs font-bold shadow cursor-pointer">
             <option value="osm">🗺️ OpenStreetMap</option>
             <option value="openmtbmap">🚵 OpenMTBMap</option>
+            <option value="satellite">🛰️ Satellite</option>
           </select>
+          <button id="overlay-toggle-fountains" onclick="toggleOsmFountainsLayer()" title="Fontanelle OpenStreetMap"
+            class="absolute bottom-4 left-3 z-[450] bg-white/95 hover:bg-white text-sky-900 border border-sky-400 rounded-xl px-3 py-2 text-xs font-bold shadow cursor-pointer">
+            💧 OSM <span id="osm-fountains-count">0</span>
+          </button>
           <button id="overlay-center-gps" data-i18n="overlayCenterGps" onclick="recenterNavigator()" title="Centra su GPS"
             class="absolute bottom-4 right-3 z-[450] bg-white/95 hover:bg-white text-stone-900 border border-stone-300 rounded-xl px-3 py-2 text-xs font-bold shadow cursor-pointer">
             ◎ Centra GPS
@@ -2841,6 +2847,7 @@
     let poiMarkersLayer = null;
     let osmFountainsLayer = null;
     let osmDrinkingFountains = [];
+    let osmFountainsVisible = true;
     let activePoiTypeFilter = "all";
     let elevationProfileCache = {};
     let activeRouteElevations = [];
@@ -2907,12 +2914,35 @@
       return { ok: resp.ok, status: resp.status, data };
     }
 
-    /* ================= BASE MAP LAYERS (OSM & OPENMTBMAP) ================= */
+    /* ================= BASE MAP LAYERS (OSM, OPENMTBMAP & SATELLITE) ================= */
 
     const OSM_TILE_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
     const OPENMTBMAP_TILE_URL = "https://tile.openmtbmap.org/tile/{z}/{x}/{y}.png";
+    const SATELLITE_TILE_URL = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
+    const SATELLITE_LABELS_TILE_URL = "https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}";
 
     function createBaseTileLayer(layerKey) {
+      if (layerKey === "satellite") {
+        const satBase = L.tileLayer(SATELLITE_TILE_URL, {
+          maxZoom: 19,
+          attribution: "&copy; Esri, Maxar, Earthstar Geographics"
+        });
+        satBase.on("tileerror", (ev) => {
+          if (ev?.tile && ev.tile.dataset.fallbackApplied !== "1") {
+            ev.tile.dataset.fallbackApplied = "1";
+            const { x, y, z } = ev.coords || {};
+            if (typeof x === "number" && typeof y === "number" && typeof z === "number") {
+              ev.tile.src = `https://a.tile.openstreetmap.org/${z}/${x}/${y}.png`;
+            }
+          }
+        });
+        const satRoads = L.tileLayer(SATELLITE_LABELS_TILE_URL, {
+          maxZoom: 19,
+          opacity: 0.78
+        });
+        return L.layerGroup([satBase, satRoads]);
+      }
+
       if (layerKey === "openmtbmap") {
         const mtbLayer = L.tileLayer(OPENMTBMAP_TILE_URL, {
           maxZoom: 18,
@@ -2929,6 +2959,7 @@
         });
         return mtbLayer;
       }
+
       return L.tileLayer(OSM_TILE_URL, {
         maxZoom: 19,
         attribution: "&copy; OpenStreetMap"
@@ -2936,7 +2967,7 @@
     }
 
     function applyMapBaseLayer(layerKey) {
-      currentMapLayerKey = layerKey === "openmtbmap" ? "openmtbmap" : "osm";
+      currentMapLayerKey = ["openmtbmap", "satellite"].includes(layerKey) ? layerKey : "osm";
       try {
         localStorage.setItem(MAP_LAYER_STORAGE_KEY, currentMapLayerKey);
       } catch (e) {}
@@ -2949,15 +2980,47 @@
         map.removeLayer(activeBaseTileLayer);
       }
       activeBaseTileLayer = createBaseTileLayer(currentMapLayerKey).addTo(map);
-      activeBaseTileLayer.bringToBack();
+      if (typeof activeBaseTileLayer.bringToBack === "function") {
+        activeBaseTileLayer.bringToBack();
+      } else if (typeof activeBaseTileLayer.eachLayer === "function") {
+        activeBaseTileLayer.eachLayer((sub) => {
+          if (typeof sub.bringToBack === "function") sub.bringToBack();
+        });
+      }
     }
 
     function changeMapBaseLayer(layerKey) {
       applyMapBaseLayer(layerKey);
-      showToast(layerKey === "openmtbmap" ? "Mappa OpenMTBMap attivata" : "Mappa OpenStreetMap attivata");
+      const labels = {
+        osm: "Mappa OpenStreetMap attivata",
+        openmtbmap: "Mappa OpenMTBMap attivata",
+        satellite: "Vista Satellitare attivata"
+      };
+      showToast(labels[currentMapLayerKey] || labels.osm);
     }
 
-    /* ================= OPENSTREETMAP DRINKING FOUNTAINS (ALWAYS ACTIVE) ================= */
+    /* ================= OPENSTREETMAP DRINKING FOUNTAINS (OVERPASS + TOGGLE) ================= */
+
+    function updateOsmFountainCounterBadge() {
+      const countEl = document.getElementById("osm-fountains-count");
+      const btnEl = document.getElementById("overlay-toggle-fountains");
+      if (countEl) {
+        countEl.textContent = String(osmDrinkingFountains.length);
+      }
+      if (btnEl) {
+        btnEl.classList.toggle("opacity-60", !osmFountainsVisible);
+      }
+    }
+
+    function toggleOsmFountainsLayer() {
+      osmFountainsVisible = !osmFountainsVisible;
+      updateOsmFountainCounterBadge();
+      renderOsmFountainsOnMap();
+      if (osmFountainsVisible && osmDrinkingFountains.length === 0) {
+        loadOsmDrinkingFountains(true);
+      }
+      showToast(osmFountainsVisible ? "Fontanelle OSM visibili" : "Fontanelle OSM nascoste");
+    }
 
     function loadStoredOsmFountainsSync() {
       try {
@@ -2995,21 +3058,25 @@
       const cachedSync = loadStoredOsmFountainsSync();
       if (cachedSync.items.length > 0 && osmDrinkingFountains.length === 0) {
         osmDrinkingFountains = cachedSync.items;
+        updateOsmFountainCounterBadge();
         renderOsmFountainsOnMap();
       } else if (osmDrinkingFountains.length === 0) {
         const idbCached = await idbRead(OSM_FOUNTAINS_STORAGE_KEY);
         if (idbCached && Array.isArray(idbCached.items) && idbCached.items.length > 0) {
           osmDrinkingFountains = idbCached.items;
+          updateOsmFountainCounterBadge();
           renderOsmFountainsOnMap();
         }
       }
 
       const isFresh = cachedSync.ts && (Date.now() - cachedSync.ts < OSM_FOUNTAINS_TTL_MS);
       if (!forceRefresh && !customBbox && isFresh && osmDrinkingFountains.length > 0) {
+        updateOsmFountainCounterBadge();
         return osmDrinkingFountains;
       }
 
       if (!navigator.onLine) {
+        updateOsmFountainCounterBadge();
         return osmDrinkingFountains;
       }
 
@@ -3068,12 +3135,14 @@
           if (parsed.length > 0) {
             osmDrinkingFountains = mergeOsmFountains(osmDrinkingFountains, parsed);
             await saveStoredOsmFountains(osmDrinkingFountains);
+            updateOsmFountainCounterBadge();
             renderOsmFountainsOnMap();
             break;
           }
         } catch (e) {}
       }
 
+      updateOsmFountainCounterBadge();
       return osmDrinkingFountains;
     }
 
@@ -3083,6 +3152,8 @@
         map.removeLayer(osmFountainsLayer);
         osmFountainsLayer = null;
       }
+      updateOsmFountainCounterBadge();
+      if (!osmFountainsVisible) return;
 
       osmFountainsLayer = L.layerGroup().addTo(map);
       const t = I18N[currentLang] || I18N.it;
@@ -5429,7 +5500,6 @@
         return;
       }
 
-      // Filtra micro-tremolii inferiori a 3.5 gradi
       const diffFromTarget = Math.abs(shortestAngleDelta(targetHeadingDeg, normalized));
       if (diffFromTarget >= 3.5) {
         targetHeadingDeg = normalized;
@@ -6174,6 +6244,8 @@
             for (let dy = -1; dy <= 1; dy++) {
               if (currentMapLayerKey === "openmtbmap") {
                 tileUrls.add(`https://tile.openmtbmap.org/tile/${z}/${x + dx}/${y + dy}.png`);
+              } else if (currentMapLayerKey === "satellite") {
+                tileUrls.add(`https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y + dy}/${x + dx}`);
               }
               tileUrls.add(`https://a.tile.openstreetmap.org/${z}/${x + dx}/${y + dy}.png`);
             }
