@@ -66,9 +66,11 @@
     }
     #map-container.heading-up-active {
       transform: scale(1.55) rotate(var(--map-rot, 0deg));
+      transition: transform 0.35s linear;
     }
-    #map-container.heading-up-active .cyclist-gps-marker {
+    #map-container.heading-up-active .cyclist-gps-marker svg {
       transform: rotate(calc(var(--map-rot, 0deg) * -1));
+      transition: transform 0.35s linear;
     }
     .map-stage.is-fullscreen {
       position: fixed !important;
@@ -1538,17 +1540,17 @@
       } catch (e) {}
     }
 
-    function applyRealUserPosition(coords, accuracy = 15, source = "gps") {
+    function applyRealUserPosition(coords, accuracy = 15, source = "gps", sensorHeading = null, speed = null) {
       if (!isValidLatLngPair(coords)) return;
       const clean = [Number(coords[0]), Number(coords[1])];
-      if (userCoords && isValidLatLngPair(userCoords)) {
-        if (!prevGpsCoords && haversineMeters(userCoords, clean) >= 3) {
-          currentHeadingDeg = computeBearingDegrees(userCoords, clean);
-        } else if (prevGpsCoords && haversineMeters(prevGpsCoords, clean) >= 3) {
-          currentHeadingDeg = computeBearingDegrees(prevGpsCoords, clean);
-        }
-        prevGpsCoords = [...userCoords];
+
+      if (typeof sensorHeading === "number" && !Number.isNaN(sensorHeading) && (speed === null || speed > 0.8)) {
+        currentHeadingDeg = sensorHeading;
+      } else if (userCoords && isValidLatLngPair(userCoords) && haversineMeters(userCoords, clean) >= 3) {
+        currentHeadingDeg = computeBearingDegrees(userCoords, clean);
       }
+
+      prevGpsCoords = userCoords ? [...userCoords] : [...clean];
       userCoords = clean;
       saveLastRealGpsCoords(clean, source);
       hideGpsRecoveryBox();
@@ -1564,8 +1566,6 @@
         renderUserPositionMarker(userCoords, accuracy);
         if (liveNavActive && followUserCenter) {
           const targetZoom = Math.max(map.getZoom() || NAV_ZOOM_LEVEL, NAV_ZOOM_LEVEL);
-          map.setView(clean, targetZoom, { animate: false, reset: true });
-          map.invalidateSize({ debounceMoveend: false });
           map.setView(clean, targetZoom, { animate: false, reset: true });
           hasInitialNavZoomed = true;
           applyMapHeadingRotation(currentHeadingDeg, true);
@@ -1672,7 +1672,13 @@
       startWatchingUserLocation();
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          applyRealUserPosition([pos.coords.latitude, pos.coords.longitude], pos.coords.accuracy, "gps_retry");
+          applyRealUserPosition(
+            [pos.coords.latitude, pos.coords.longitude],
+            pos.coords.accuracy,
+            "gps_retry",
+            pos.coords.heading,
+            pos.coords.speed
+          );
           if (map) {
             followUserCenter = true;
             map.setView(userCoords, NAV_ZOOM_LEVEL, { animate: false });
@@ -2095,7 +2101,7 @@
         const dep = formatDateAndTime(item.departedAt);
         const recv = formatDateAndTime(item.updatedAt);
         const arrivalNote = recv.time
-          ? `· Ricevuto ${recv.date ? recv.date + " " : ""}ore ${recv.time}`
+          ? `· Ricevuto ${recv.date ? escapeHtml(recv.date) + " " : ""}ore ${escapeHtml(recv.time)}`
           : "";
 
         return `
@@ -3059,7 +3065,13 @@
 
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          applyRealUserPosition([pos.coords.latitude, pos.coords.longitude], pos.coords.accuracy, "startup_gps");
+          applyRealUserPosition(
+            [pos.coords.latitude, pos.coords.longitude],
+            pos.coords.accuracy,
+            "startup_gps",
+            pos.coords.heading,
+            pos.coords.speed
+          );
           fetchTrailWeather(true);
           setTimeout(dismissStartupPermissions, 300);
         },
@@ -3757,6 +3769,7 @@
       map.on("dragstart", () => {
         if (liveNavActive) {
           followUserCenter = false;
+          applyMapHeadingRotation(0, false);
         }
       });
 
@@ -4325,22 +4338,6 @@
       }
     }
 
-    function updateHeadingFromPosition(pos, newCoords) {
-      const sensorHeading = pos?.coords?.heading;
-      const speed = pos?.coords?.speed;
-
-      if (typeof sensorHeading === "number" && !Number.isNaN(sensorHeading) && (speed === null || speed > 0.8)) {
-        currentHeadingDeg = sensorHeading;
-      } else if (prevGpsCoords && haversineMeters(prevGpsCoords, newCoords) >= 3) {
-        currentHeadingDeg = computeBearingDegrees(prevGpsCoords, newCoords);
-      }
-      prevGpsCoords = [...newCoords];
-
-      if (liveNavActive && followUserCenter) {
-        applyMapHeadingRotation(currentHeadingDeg, true);
-      }
-    }
-
     function startWatchingUserLocation() {
       if (!("geolocation" in navigator)) return;
       if (watchId !== null) return;
@@ -4348,8 +4345,13 @@
       watchId = navigator.geolocation.watchPosition(
         (pos) => {
           const newCoords = [pos.coords.latitude, pos.coords.longitude];
-          updateHeadingFromPosition(pos, newCoords);
-          applyRealUserPosition(newCoords, pos.coords.accuracy, "watch_gps");
+          applyRealUserPosition(
+            newCoords,
+            pos.coords.accuracy,
+            "watch_gps",
+            pos.coords.heading,
+            pos.coords.speed
+          );
         },
         (err) => {
           const code = err && typeof err.code === "number" ? err.code : 0;
