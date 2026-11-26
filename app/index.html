@@ -923,7 +923,7 @@
   <div id="toast-msg" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[10000] hidden bg-stone-900 text-white text-xs font-semibold px-4 py-2.5 rounded-full shadow-lg"></div>
 
   <script>
-    const OWNER_PASSWORD = "MAGONABIKEGARAGE2025";
+    const WORKER_API_BASE = "https://magona-api.vitiellomanuel1985.workers.dev";
     const SUPER_MANAGER_ID = "magona";
     const SUPER_MANAGER_NAME = "Magona Bike Garage";
     const FIREBASE_RTDB_URL = "https://magonabikegarage-c61b2-default-rtdb.europe-west1.firebasedatabase.app/";
@@ -985,6 +985,7 @@
     const PENDING_ALERTS_QUEUE_KEY = "magona_pending_rider_alerts_v1";
     const PENDING_DEPARTURES_QUEUE_KEY = "magona_pending_rider_departures_v1";
     const SESSION_ROLE_KEY = "magona_session_role_v1";
+    const SESSION_TOKEN_KEY = "magona_session_token_v1";
     const SESSION_MANAGER_ID_KEY = "magona_session_manager_id_v1";
     const SESSION_MANAGER_NAME_KEY = "magona_session_manager_name_v1";
     const SESSION_BASE_COORDS_KEY = "magona_session_base_coords_v1";
@@ -2696,6 +2697,7 @@
     let currentThemeMode = localStorage.getItem(THEME_STORAGE_KEY) || "light";
     let isSuperManager = false;
     let isManagerUser = false;
+    let activeManagerToken = localStorage.getItem(SESSION_TOKEN_KEY) || "";
     let activeManagerId = SUPER_MANAGER_ID;
     let activeManagerName = SUPER_MANAGER_NAME;
     let activeSessionClientCode = "";
@@ -2759,6 +2761,25 @@
       const lat = Number(coords[0]);
       const lng = Number(coords[1]);
       return !Number.isNaN(lat) && !Number.isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+    }
+
+    async function callWorkerApi(endpointPath, options = {}) {
+      const cleanBase = WORKER_API_BASE.replace(/\/+$/, "");
+      const headers = { "Content-Type": "application/json", ...(options.headers || {}) };
+      if (activeManagerToken) {
+        headers["Authorization"] = `Bearer ${activeManagerToken}`;
+      }
+      const resp = await fetch(`${cleanBase}${endpointPath}`, {
+        method: options.method || "GET",
+        headers,
+        body: options.body ? JSON.stringify(options.body) : undefined,
+        cache: "no-store"
+      });
+      let data = null;
+      try {
+        data = await resp.json();
+      } catch (e) {}
+      return { ok: resp.ok, status: resp.status, data };
     }
 
     /* ================= REAL-TIME ELEVATION PROFILE ================= */
@@ -3123,7 +3144,7 @@
         Object.entries(rawMap).forEach(([rawCode, ts]) => {
           const code = String(rawCode || "").trim().toUpperCase();
           const numTs = Number(ts);
-          if (code && Number.isFinite(numTs) && (now - numTs) < REVOKED_CODE_TTL_MS) {
+          if (code && Number.isFinite(numTs) && numTs > now) {
             cleaned[code] = numTs;
           }
         });
@@ -3141,16 +3162,13 @@
       return {};
     }
 
-    async function saveRevokedCodesMap(revokedMap, syncCloud = true, managerId = activeManagerId) {
+    async function saveRevokedCodesMap(revokedMap, managerId = activeManagerId) {
       const cleaned = pruneExpiredRevokedMap(revokedMap);
       const localKey = getManagerRevokedLocalKey(managerId);
       try {
         localStorage.setItem(localKey, JSON.stringify(cleaned));
       } catch (e) {}
       await idbWrite(localKey, cleaned);
-      if (syncCloud) {
-        await cloudWriteJson(`${getManagerCloudPrefix(managerId)}/revoked_codes`, cleaned);
-      }
       return cleaned;
     }
 
@@ -3162,15 +3180,12 @@
         merged = pruneExpiredRevokedMap({ ...idbVal, ...merged });
       }
       if (isFirebaseConfigured() && navigator.onLine) {
-        const remoteVal = await cloudReadJson(`${getManagerCloudPrefix(managerId)}/revoked_codes`);
+        const remoteVal = await cloudReadJson("revoked_global");
         if (remoteVal && typeof remoteVal === "object") {
           merged = pruneExpiredRevokedMap({ ...remoteVal, ...merged });
         }
       }
-      try {
-        localStorage.setItem(localKey, JSON.stringify(merged));
-      } catch (e) {}
-      await idbWrite(localKey, merged);
+      await saveRevokedCodesMap(merged, managerId);
       return merged;
     }
 
@@ -3343,7 +3358,7 @@
         return;
       }
 
-      if (password === OWNER_PASSWORD.toUpperCase() || partnerManagersList.some((p) => p.password.toUpperCase() === password)) {
+      if (partnerManagersList.some((p) => p.password.toUpperCase() === password)) {
         showToast("Questa password gestore è già utilizzata");
         return;
       }
@@ -3465,13 +3480,13 @@
     function getCurrentRiderIdentifier() {
       if (activeSessionClientCode) return activeSessionClientCode;
       if (isManagerUser) return "GESTORE";
-      return (localStorage.getItem("magona_active_client_pwd") || "CLIENTE").trim().toUpperCase();
+      return "CLIENTE";
     }
 
     function recordRiderDeparture(reason = "login") {
       if (isManagerUser) return;
       const clientCode = getCurrentRiderIdentifier();
-      if (!clientCode || clientCode === "GESTORE") return;
+      if (!clientCode || clientCode === "GESTORE" || clientCode === "CLIENTE") return;
 
       const route = activeRouteId ? getRouteById(activeRouteId) : null;
       const nowIso = new Date().toISOString();
@@ -3499,34 +3514,31 @@
 
     async function flushPendingRiderDepartures() {
       if (!Array.isArray(pendingDeparturesQueue) || pendingDeparturesQueue.length === 0) return;
-      if (!isFirebaseConfigured() || !navigator.onLine) return;
+      if (!navigator.onLine) return;
 
       const nowIso = new Date().toISOString();
       const targetMgrId = pendingDeparturesQueue[0]?.managerId || activeManagerId || SUPER_MANAGER_ID;
-      const cloudPath = `${getManagerCloudPrefix(targetMgrId)}/rider_departures`;
+      const remaining = [];
 
-      const stampedQueue = pendingDeparturesQueue.map((item) => ({
-        ...item,
-        updatedAt: nowIso
-      }));
-
-      const existing = await cloudReadJson(cloudPath);
-      const remoteList = Array.isArray(existing) ? existing.filter((x) => x && x.id) : [];
-      const queuedIds = new Set(stampedQueue.map((x) => x.id));
-      const merged = [
-        ...stampedQueue,
-        ...remoteList.filter((x) => !queuedIds.has(x.id))
-      ].slice(0, 60);
-
-      const ok = await cloudWriteJson(cloudPath, merged);
-      if (ok) {
-        pendingDeparturesQueue = [];
-        savePendingDeparturesQueue();
-        if (isManagerUser && activeManagerId === targetMgrId) {
-          riderDeparturesList = merged;
-          renderRiderDeparturesUI();
+      for (const item of pendingDeparturesQueue) {
+        const stamped = { ...item, updatedAt: nowIso };
+        try {
+          const res = await callWorkerApi("/api/rider/event", {
+            method: "POST",
+            body: {
+              managerId: item.managerId || targetMgrId,
+              kind: "departure",
+              entry: stamped
+            }
+          });
+          if (!res.ok) remaining.push(stamped);
+        } catch (e) {
+          remaining.push(stamped);
         }
       }
+
+      pendingDeparturesQueue = remaining;
+      savePendingDeparturesQueue();
     }
 
     function renderRiderDeparturesUI() {
@@ -3627,7 +3639,6 @@
 
       const nowIso = new Date().toISOString();
       const targetMgrId = pendingAlertsQueue[0]?.managerId || activeManagerId || SUPER_MANAGER_ID;
-      const cloudPath = `${getManagerCloudPrefix(targetMgrId)}/rider_alerts`;
 
       pendingAlertsQueue = pendingAlertsQueue.map((item) => {
         const finalCoords = freshCoords || item.coords || null;
@@ -3645,25 +3656,27 @@
       });
       savePendingAlertsQueue();
 
-      if (!isFirebaseConfigured() || !navigator.onLine) return;
+      if (!navigator.onLine) return;
 
-      const existing = await cloudReadJson(cloudPath);
-      const remoteList = Array.isArray(existing) ? existing.filter((x) => x && x.id) : [];
-      const queuedIds = new Set(pendingAlertsQueue.map((x) => x.id));
-      const merged = [
-        ...pendingAlertsQueue,
-        ...remoteList.filter((x) => !queuedIds.has(x.id))
-      ].slice(0, 60);
-
-      const ok = await cloudWriteJson(cloudPath, merged);
-      if (ok) {
-        pendingAlertsQueue = [];
-        savePendingAlertsQueue();
-        if (isManagerUser && activeManagerId === targetMgrId) {
-          riderAlertsList = merged;
-          renderRiderAlertsUI();
+      const remaining = [];
+      for (const item of pendingAlertsQueue) {
+        try {
+          const res = await callWorkerApi("/api/rider/event", {
+            method: "POST",
+            body: {
+              managerId: item.managerId || targetMgrId,
+              kind: "alert",
+              entry: item
+            }
+          });
+          if (!res.ok) remaining.push(item);
+        } catch (e) {
+          remaining.push(item);
         }
       }
+
+      pendingAlertsQueue = remaining;
+      savePendingAlertsQueue();
     }
 
     function evaluateRiderProximityAndHalfway(route, pct) {
@@ -4204,7 +4217,7 @@
 
       if (isManagerUser) {
         await syncPartnerManagersFromCloud();
-        await syncClientCodesFromCloud(false);
+        await syncClientCodesFromWorker(false);
         await syncRiderAlertsFromCloud(false);
       }
     }
@@ -4547,7 +4560,7 @@
       );
     }
 
-    /* ================= CLIENT ACCESS CODES (NO AUTO-RESTORE, 30-DAY BLOCK) ================= */
+    /* ================= CLIENT ACCESS CODES VIA CLOUDFLARE WORKER (NO SECRETS IN HTML) ================= */
 
     function loadClientCodesPool(managerId = activeManagerId) {
       const storageKey = getManagerCodesLocalKey(managerId);
@@ -4568,84 +4581,43 @@
       return [];
     }
 
-    async function saveClientCodesPool(pool, showSyncFeedback = false, managerId = activeManagerId) {
+    async function saveClientCodesLocalOnly(pool, managerId = activeManagerId) {
       const storageKey = getManagerCodesLocalKey(managerId);
-      const cloudPath = `${getManagerCloudPrefix(managerId)}/codes`;
       const revokedMap = await getActiveRevokedCodesMap(managerId);
       const cleanPool = (Array.isArray(pool) ? pool : []).filter((item) => {
         if (!item || !item.code) return false;
         const upper = String(item.code).trim().toUpperCase();
         return !revokedMap[upper];
       });
-
       try {
         localStorage.setItem(storageKey, JSON.stringify(cleanPool));
       } catch (e) {}
       await idbWrite(storageKey, cleanPool);
-
-      const cloudOk = await cloudWriteJson(cloudPath, cleanPool);
-      if (showSyncFeedback) {
-        if (cloudOk) {
-          showToast("✓ Codici salvati e sincronizzati su Firebase");
-        } else {
-          showToast("Salvato in locale (offline/cloud non raggiungibile)");
-        }
-      }
-      return cloudOk;
+      return cleanPool;
     }
 
-    async function syncClientCodesFromCloud(notifyUser = false, managerId = activeManagerId) {
-      const storageKey = getManagerCodesLocalKey(managerId);
-      const cloudPath = `${getManagerCloudPrefix(managerId)}/codes`;
-      const revokedMap = await getActiveRevokedCodesMap(managerId);
-      let pool = loadClientCodesPool(managerId);
-
-      const hasLocalKey = localStorage.getItem(storageKey) !== null;
-      if (!hasLocalKey) {
-        const idbPool = await idbRead(storageKey);
-        if (Array.isArray(idbPool)) {
-          pool = idbPool.filter((item) => item && item.code && !revokedMap[String(item.code).trim().toUpperCase()]);
-        }
-      }
-
-      if (isFirebaseConfigured() && navigator.onLine) {
-        const remoteCodes = await cloudReadJson(cloudPath);
-        if (remoteCodes === null) {
-          // Nodo vuoto su Firebase (nessun codice attivo)
-          pool = [];
-          try {
-            localStorage.setItem(storageKey, JSON.stringify([]));
-          } catch (e) {}
-          await idbWrite(storageKey, []);
-        } else if (Array.isArray(remoteCodes)) {
-          const filteredRemote = remoteCodes.filter((item) => {
-            if (!item || !item.code) return false;
-            const upper = String(item.code).trim().toUpperCase();
-            return !revokedMap[upper];
-          });
-          pool = filteredRemote;
-          try {
-            localStorage.setItem(storageKey, JSON.stringify(pool));
-          } catch (e) {}
-          await idbWrite(storageKey, pool);
-          // Se su Firebase c'erano codici già revocati, ripulisci anche il nodo cloud
-          if (filteredRemote.length !== remoteCodes.length) {
-            await cloudWriteJson(cloudPath, pool);
-          }
-        }
-
-        if (isManagerUser && activeManagerId === managerId) {
-          renderClientCodesPoolUI();
-        }
-        if (notifyUser) showToast("✓ Codici aggiornati da Firebase");
-        return pool;
-      }
-
-      if (isManagerUser && activeManagerId === managerId) {
+    async function syncClientCodesFromWorker(notifyUser = false) {
+      if (!isManagerUser || !activeManagerToken) return [];
+      if (!navigator.onLine) {
+        const local = loadClientCodesPool(activeManagerId);
         renderClientCodesPoolUI();
+        if (notifyUser) showToast("Offline: mostrati codici salvati sul dispositivo");
+        return local;
       }
-      if (notifyUser) showToast("Mostrati codici salvati sul dispositivo");
-      return pool;
+
+      try {
+        const res = await callWorkerApi("/api/codes/list", { method: "GET" });
+        if (res.ok && res.data && Array.isArray(res.data.codes)) {
+          const clean = await saveClientCodesLocalOnly(res.data.codes, activeManagerId);
+          renderClientCodesPoolUI();
+          if (notifyUser) showToast("✓ Codici sincronizzati dal server");
+          return clean;
+        }
+      } catch (e) {}
+
+      const fallback = loadClientCodesPool(activeManagerId);
+      renderClientCodesPoolUI();
+      return fallback;
     }
 
     function getActiveClientPassword() {
@@ -4689,11 +4661,6 @@
               <span class="px-2 py-0.5 rounded font-bold text-[11px] ${badgeClass}">${statusLabel}</span>
             </div>
             <div class="flex items-center gap-1.5">
-              ${exhausted ? `
-                <button onclick="resetClientCodeUses('${safeCode}')" class="px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 font-semibold cursor-pointer">
-                  Ripristina 0/3
-                </button>
-              ` : ""}
               <button onclick="revokeClientCode('${safeCode}')" class="px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 font-semibold cursor-pointer">
                 Revoca
               </button>
@@ -4704,84 +4671,62 @@
     }
 
     async function rotateClientPassword() {
-      if (!isManagerUser) return;
-      const revokedMap = await getActiveRevokedCodesMap(activeManagerId);
-      const pool = await syncClientCodesFromCloud(false, activeManagerId);
-      let code = "";
-      let attempts = 0;
-      do {
-        code = "RIDE-" + Math.floor(1000 + Math.random() * 9000);
-        attempts++;
-      } while ((pool.some((item) => item.code === code) || Boolean(revokedMap[code])) && attempts < 40);
-
-      pool.unshift({
-        code,
-        uses: 0,
-        maxUses: MAX_USES_PER_CODE,
-        managerId: activeManagerId,
-        managerName: activeManagerName,
-        baseCoords: [...activeBaseCoords],
-        baseLabel: activeBaseLabel
-      });
-      await saveClientCodesPool(pool, true, activeManagerId);
-      renderClientCodesPoolUI();
-      await cloudWriteJson(`code_lookup/${code}`, {
-        managerId: activeManagerId,
-        managerName: activeManagerName,
-        baseCoords: [...activeBaseCoords],
-        baseLabel: activeBaseLabel
-      });
-    }
-
-    async function resetClientCodeUses(code) {
-      if (!isManagerUser) return;
-      const upper = String(code || "").trim().toUpperCase();
-      const revokedMap = await getActiveRevokedCodesMap(activeManagerId);
-      if (revokedMap[upper]) {
-        showToast(`Codice ${upper} revocato: inutilizzabile per 30 giorni`);
+      if (!isManagerUser || !activeManagerToken) return;
+      if (!navigator.onLine) {
+        showToast("Connessione richiesta per generare un nuovo codice");
         return;
       }
-      const currentPool = await syncClientCodesFromCloud(false, activeManagerId);
-      const pool = currentPool.map((item) =>
-        String(item.code).toUpperCase() === upper
-          ? { ...item, uses: 0, maxUses: MAX_USES_PER_CODE, baseCoords: [...activeBaseCoords], baseLabel: activeBaseLabel }
-          : item
-      );
-      await saveClientCodesPool(pool, true, activeManagerId);
-      renderClientCodesPoolUI();
-      await cloudWriteJson(`code_lookup/${upper}`, {
-        managerId: activeManagerId,
-        managerName: activeManagerName,
-        baseCoords: [...activeBaseCoords],
-        baseLabel: activeBaseLabel
-      });
+
+      try {
+        const res = await callWorkerApi("/api/codes/create", {
+          method: "POST",
+          body: {
+            managerName: activeManagerName,
+            baseCoords: [...activeBaseCoords],
+            baseLabel: activeBaseLabel
+          }
+        });
+        if (res.ok && res.data && Array.isArray(res.data.codes)) {
+          await saveClientCodesLocalOnly(res.data.codes, activeManagerId);
+          renderClientCodesPoolUI();
+          showToast("✓ Nuovo codice generato e salvato");
+        } else {
+          showToast(res.data?.error || "Errore creazione codice");
+        }
+      } catch (e) {
+        showToast("Errore di rete durante la creazione del codice");
+      }
     }
 
     async function revokeClientCode(code) {
-      if (!isManagerUser) return;
+      if (!isManagerUser || !activeManagerToken) return;
       const upper = String(code || "").trim().toUpperCase();
       if (!upper) return;
 
-      // Aggiunge il codice alla blacklist di 30 giorni PRIMA di salvare
       const revokedMap = await getActiveRevokedCodesMap(activeManagerId);
-      revokedMap[upper] = Date.now();
-      await saveRevokedCodesMap(revokedMap, true, activeManagerId);
+      revokedMap[upper] = Date.now() + REVOKED_CODE_TTL_MS;
+      await saveRevokedCodesMap(revokedMap, activeManagerId);
 
-      // Rimuove il codice sia localmente che su Firebase
       const currentLocal = loadClientCodesPool(activeManagerId);
-      const filteredPool = currentLocal.filter((item) => String(item.code).trim().toUpperCase() !== upper);
-      await saveClientCodesPool(filteredPool, false, activeManagerId);
+      const filteredLocal = currentLocal.filter((item) => String(item.code).trim().toUpperCase() !== upper);
+      await saveClientCodesLocalOnly(filteredLocal, activeManagerId);
       renderClientCodesPoolUI();
 
-      // Elimina definitivamente il lookup globale su Firebase e marca come revocato
-      await cloudWriteJson(`code_lookup/${upper}`, null);
-      await cloudWriteJson(`revoked_global/${upper}`, {
-        revokedAt: Date.now(),
-        expiresAt: Date.now() + REVOKED_CODE_TTL_MS,
-        managerId: activeManagerId
-      });
-
-      showToast(`✓ Codice ${upper} cancellato e bloccato per 30 giorni`);
+      try {
+        const res = await callWorkerApi("/api/codes/revoke", {
+          method: "POST",
+          body: { code: upper }
+        });
+        if (res.ok && res.data && Array.isArray(res.data.codes)) {
+          await saveClientCodesLocalOnly(res.data.codes, activeManagerId);
+          renderClientCodesPoolUI();
+          showToast(`✓ Codice ${upper} cancellato e bloccato per 30 giorni`);
+        } else {
+          showToast(`Codice ${upper} rimosso in locale (verifica connessione)`);
+        }
+      } catch (e) {
+        showToast(`Codice ${upper} rimosso in locale (verifica connessione)`);
+      }
     }
 
     async function submitAccessPassword() {
@@ -4795,151 +4740,91 @@
         return;
       }
 
-      if (val === OWNER_PASSWORD.toUpperCase()) {
-        isSuperManager = true;
-        isManagerUser = true;
-        activeManagerId = SUPER_MANAGER_ID;
-        activeManagerName = SUPER_MANAGER_NAME;
-        activeSessionClientCode = "SUPER-GESTORE";
-        setActiveBaseLocation(DEFAULT_BASE_COORDS, `${SUPER_MANAGER_NAME} · ${DEFAULT_BASE_ADDRESS_LABEL}`);
-        try {
-          localStorage.setItem(SESSION_ROLE_KEY, "super");
-          localStorage.setItem(SESSION_MANAGER_ID_KEY, activeManagerId);
-          localStorage.setItem(SESSION_MANAGER_NAME_KEY, activeManagerName);
-        } catch (e) {}
-        errEl.classList.add("hidden");
-        await syncPartnerManagersFromCloud();
-        await syncClientCodesFromCloud(false, activeManagerId);
-        await unlockApplication();
+      if (!navigator.onLine) {
+        errEl.textContent = "Connessione Internet richiesta per verificare il codice di accesso.";
+        errEl.classList.remove("hidden");
         return;
       }
 
-      const partners = await syncPartnerManagersFromCloud();
-      const matchedPartner = partners.find((p) => String(p.password).toUpperCase() === val);
-      if (matchedPartner) {
-        if (matchedPartner.active === false) {
-          errEl.textContent = "Account gestore sospeso. Contatta Magona Bike Garage.";
+      try {
+        const res = await callWorkerApi("/api/login", {
+          method: "POST",
+          body: { code: val }
+        });
+
+        if (!res.ok || !res.data || !res.data.ok) {
+          errEl.textContent = res.data?.error || (I18N[currentLang] || I18N.it).invalidPass;
           errEl.classList.remove("hidden");
           return;
         }
+
+        const payload = res.data;
+        errEl.classList.add("hidden");
+
+        if (payload.role === "super") {
+          isSuperManager = true;
+          isManagerUser = true;
+          activeManagerToken = payload.token || val;
+          activeManagerId = payload.managerId || SUPER_MANAGER_ID;
+          activeManagerName = payload.managerName || SUPER_MANAGER_NAME;
+          activeSessionClientCode = "SUPER-GESTORE";
+          setActiveBaseLocation(DEFAULT_BASE_COORDS, `${SUPER_MANAGER_NAME} · ${DEFAULT_BASE_ADDRESS_LABEL}`);
+          try {
+            localStorage.setItem(SESSION_ROLE_KEY, "super");
+            localStorage.setItem(SESSION_TOKEN_KEY, activeManagerToken);
+            localStorage.setItem(SESSION_MANAGER_ID_KEY, activeManagerId);
+            localStorage.setItem(SESSION_MANAGER_NAME_KEY, activeManagerName);
+          } catch (e) {}
+          await syncPartnerManagersFromCloud();
+          await syncClientCodesFromWorker(false);
+          await unlockApplication();
+          return;
+        }
+
+        if (payload.role === "partner") {
+          isSuperManager = false;
+          isManagerUser = true;
+          activeManagerToken = payload.token || val;
+          activeManagerId = payload.managerId;
+          activeManagerName = payload.managerName;
+          activeSessionClientCode = "GESTORE";
+
+          const pCoords = isValidLatLngPair(payload.baseCoords) ? payload.baseCoords : DEFAULT_BASE_COORDS;
+          const pLabel = payload.baseAddress ? `${payload.managerName} · ${payload.baseAddress}` : payload.managerName;
+          setActiveBaseLocation(pCoords, pLabel);
+          populateOwnPartnerBaseForm(payload);
+
+          try {
+            localStorage.setItem(SESSION_ROLE_KEY, "partner");
+            localStorage.setItem(SESSION_TOKEN_KEY, activeManagerToken);
+            localStorage.setItem(SESSION_MANAGER_ID_KEY, activeManagerId);
+            localStorage.setItem(SESSION_MANAGER_NAME_KEY, activeManagerName);
+          } catch (e) {}
+          await syncClientCodesFromWorker(false);
+          await unlockApplication();
+          return;
+        }
+
+        // Accesso Cliente
         isSuperManager = false;
-        isManagerUser = true;
-        activeManagerId = matchedPartner.id;
-        activeManagerName = matchedPartner.name;
-        activeSessionClientCode = "GESTORE";
+        isManagerUser = false;
+        activeManagerToken = "";
+        activeManagerId = payload.managerId || SUPER_MANAGER_ID;
+        activeManagerName = payload.managerName || SUPER_MANAGER_NAME;
+        activeSessionClientCode = String(payload.clientCode || val).toUpperCase();
 
-        const pCoords = isValidLatLngPair(matchedPartner.baseCoords) ? matchedPartner.baseCoords : DEFAULT_BASE_COORDS;
-        const pLabel = matchedPartner.baseAddress ? `${matchedPartner.name} · ${matchedPartner.baseAddress}` : matchedPartner.name;
-        setActiveBaseLocation(pCoords, pLabel);
-        populateOwnPartnerBaseForm(matchedPartner);
+        const resolvedBaseCoords = isValidLatLngPair(payload.baseCoords)
+          ? payload.baseCoords
+          : DEFAULT_BASE_COORDS;
+        const resolvedBaseLabel = payload.baseLabel || `${activeManagerName} · ${DEFAULT_BASE_ADDRESS_LABEL}`;
+        setActiveBaseLocation(resolvedBaseCoords, resolvedBaseLabel);
 
-        try {
-          localStorage.setItem(SESSION_ROLE_KEY, "partner");
-          localStorage.setItem(SESSION_MANAGER_ID_KEY, activeManagerId);
-          localStorage.setItem(SESSION_MANAGER_NAME_KEY, activeManagerName);
-        } catch (e) {}
-        errEl.classList.add("hidden");
-        await syncClientCodesFromCloud(false, activeManagerId);
+        recordRiderDeparture("login");
         await unlockApplication();
-        return;
-      }
-
-      // Verifica se il codice è nella blacklist globale di 30 giorni
-      if (isFirebaseConfigured() && navigator.onLine) {
-        const globalRevoked = await cloudReadJson(`revoked_global/${val}`);
-        if (globalRevoked && Number(globalRevoked.expiresAt) > Date.now()) {
-          errEl.textContent = `Codice ${escapeHtml(val)} revocato e non utilizzabile per 30 giorni.`;
-          errEl.classList.remove("hidden");
-          return;
-        }
-      }
-
-      let targetManagerId = null;
-      let lookupData = null;
-      if (isFirebaseConfigured() && navigator.onLine) {
-        const lookup = await cloudReadJson(`code_lookup/${val}`);
-        if (lookup && lookup.managerId) {
-          targetManagerId = lookup.managerId;
-          lookupData = lookup;
-        }
-      }
-
-      if (!targetManagerId) {
-        const candidateIds = [SUPER_MANAGER_ID, ...partners.map((p) => p.id)];
-        for (const candId of candidateIds) {
-          const revokedForMgr = await getActiveRevokedCodesMap(candId);
-          if (revokedForMgr[val]) {
-            errEl.textContent = `Codice ${escapeHtml(val)} revocato e non utilizzabile per 30 giorni.`;
-            errEl.classList.remove("hidden");
-            return;
-          }
-          const candPool = await syncClientCodesFromCloud(false, candId);
-          if (candPool.some((item) => String(item.code).toUpperCase() === val)) {
-            targetManagerId = candId;
-            break;
-          }
-        }
-      }
-
-      if (!targetManagerId) {
-        errEl.textContent = (I18N[currentLang] || I18N.it).invalidPass;
+      } catch (e) {
+        errEl.textContent = "Errore di connessione al server di autenticazione.";
         errEl.classList.remove("hidden");
-        return;
       }
-
-      const revokedTargetMap = await getActiveRevokedCodesMap(targetManagerId);
-      if (revokedTargetMap[val]) {
-        errEl.textContent = `Codice ${escapeHtml(val)} revocato e non utilizzabile per 30 giorni.`;
-        errEl.classList.remove("hidden");
-        return;
-      }
-
-      const pool = await syncClientCodesFromCloud(false, targetManagerId);
-      const matchIdx = pool.findIndex((item) => String(item.code).toUpperCase() === val);
-
-      if (matchIdx === -1) {
-        errEl.textContent = (I18N[currentLang] || I18N.it).invalidPass;
-        errEl.classList.remove("hidden");
-        return;
-      }
-
-      const target = pool[matchIdx];
-      const currentUses = Number(target.uses) || 0;
-      const maxUses = Number(target.maxUses) || MAX_USES_PER_CODE;
-
-      if (currentUses >= maxUses) {
-        errEl.textContent = `Codice ${escapeHtml(target.code)}: limite massimo di ${maxUses} accessi raggiunto.`;
-        errEl.classList.remove("hidden");
-        return;
-      }
-
-      pool[matchIdx] = { ...target, uses: currentUses + 1, maxUses };
-      await saveClientCodesPool(pool, false, targetManagerId);
-
-      isSuperManager = false;
-      isManagerUser = false;
-      activeManagerId = targetManagerId;
-      activeManagerName = lookupData?.managerName || target.managerName || SUPER_MANAGER_NAME;
-      activeSessionClientCode = String(target.code).toUpperCase();
-
-      const partnerObj = partners.find((p) => p.id === targetManagerId);
-      const resolvedBaseCoords = isValidLatLngPair(lookupData?.baseCoords)
-        ? lookupData.baseCoords
-        : isValidLatLngPair(target.baseCoords)
-          ? target.baseCoords
-          : isValidLatLngPair(partnerObj?.baseCoords)
-            ? partnerObj.baseCoords
-            : DEFAULT_BASE_COORDS;
-
-      const resolvedBaseLabel = lookupData?.baseLabel
-        || target.baseLabel
-        || (partnerObj ? (partnerObj.baseAddress ? `${partnerObj.name} · ${partnerObj.baseAddress}` : partnerObj.name) : `${SUPER_MANAGER_NAME} · ${DEFAULT_BASE_ADDRESS_LABEL}`);
-
-      setActiveBaseLocation(resolvedBaseCoords, resolvedBaseLabel);
-
-      errEl.classList.add("hidden");
-      recordRiderDeparture("login");
-      await unlockApplication();
     }
 
     function getFilteredRoutesList() {
@@ -5053,6 +4938,7 @@
       hasInitialNavZoomed = false;
       isSuperManager = false;
       isManagerUser = false;
+      activeManagerToken = "";
       activeManagerId = SUPER_MANAGER_ID;
       activeManagerName = SUPER_MANAGER_NAME;
       activeSessionClientCode = "";
@@ -5060,6 +4946,7 @@
       setActiveBaseLocation(DEFAULT_BASE_COORDS, `${SUPER_MANAGER_NAME} · ${DEFAULT_BASE_ADDRESS_LABEL}`);
       try {
         localStorage.removeItem(SESSION_ROLE_KEY);
+        localStorage.removeItem(SESSION_TOKEN_KEY);
         localStorage.removeItem(SESSION_MANAGER_ID_KEY);
         localStorage.removeItem(SESSION_MANAGER_NAME_KEY);
         localStorage.removeItem(SESSION_BASE_COORDS_KEY);
@@ -5109,7 +4996,7 @@
       }
       if (tabName === "manager" && isManagerUser) {
         await syncPartnerManagersFromCloud();
-        await syncClientCodesFromCloud(false, activeManagerId);
+        await syncClientCodesFromWorker(false);
         await syncRiderAlertsFromCloud(false);
       }
     }
@@ -6511,9 +6398,12 @@
       await hydrateLocalStateOnBoot();
 
       const savedRole = localStorage.getItem(SESSION_ROLE_KEY);
-      if (savedRole === "super" || savedRole === "owner") {
+      const savedToken = localStorage.getItem(SESSION_TOKEN_KEY) || "";
+
+      if ((savedRole === "super" || savedRole === "owner") && savedToken) {
         isSuperManager = true;
         isManagerUser = true;
+        activeManagerToken = savedToken;
         activeManagerId = SUPER_MANAGER_ID;
         activeManagerName = SUPER_MANAGER_NAME;
         activeSessionClientCode = "SUPER-GESTORE";
@@ -6522,9 +6412,10 @@
         return;
       }
 
-      if (savedRole === "partner") {
+      if (savedRole === "partner" && savedToken) {
         isSuperManager = false;
         isManagerUser = true;
+        activeManagerToken = savedToken;
         activeManagerId = localStorage.getItem(SESSION_MANAGER_ID_KEY) || "partner";
         activeManagerName = localStorage.getItem(SESSION_MANAGER_NAME_KEY) || "Partner";
         activeSessionClientCode = "GESTORE";
