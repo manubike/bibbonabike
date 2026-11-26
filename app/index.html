@@ -231,18 +231,18 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
-  <!-- Schermata iniziale autorizzazioni GPS, Rete Web & Notifiche -->
+  <!-- Schermata iniziale autorizzazioni GPS e Rete Web -->
   <div id="startup-permissions-modal" class="fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-stone-200">
       <div class="mb-2 flex items-center gap-2">
         <img src="logo.png" alt="Magona Bike Garage" class="brand-logo-img" onerror="this.style.display='none'; document.getElementById('perm-fallback-brand').classList.remove('hidden');" />
         <span id="perm-fallback-brand" class="hidden text-xs uppercase tracking-widest text-stone-500 font-semibold">Magona Bike Garage · Bibbona</span>
       </div>
-      <h2 id="perm-title" data-i18n="permTitle" class="text-xl font-bold text-stone-900 mb-2">Autorizzazioni GPS, Rete e Notifiche</h2>
+      <h2 id="perm-title" data-i18n="permTitle" class="text-xl font-bold text-stone-900 mb-2">Autorizzazioni GPS e Rete Web</h2>
       <p id="perm-desc" data-i18n="permDesc" class="text-sm text-stone-600 mb-4">
-        Per mostrare la tua posizione sul sentiero, calcolare distanza e dislivello rimanenti, salvare le mappe offline e ricevere avvisi, abilita GPS, rete e notifiche.
+        Per mostrare la tua posizione sul sentiero, calcolare distanza e dislivello rimanenti e salvare le mappe offline, abilita GPS e rete.
       </p>
-      <div class="space-y-2.5 mb-4 text-sm">
+      <div class="space-y-2.5 mb-5 text-sm">
         <div class="flex items-center justify-between bg-stone-100 px-3.5 py-2.5 rounded-xl">
           <span id="perm-gps-label" data-i18n="permGpsLabel" class="font-medium text-stone-800">Posizione GPS Live</span>
           <span id="perm-gps-status" data-i18n="gpsWaiting" class="text-xs font-semibold px-2 py-0.5 rounded bg-stone-200 text-stone-700">In attesa</span>
@@ -251,15 +251,10 @@
           <span id="perm-net-label" data-i18n="permNetLabel" class="font-medium text-stone-800">Connessione Web & Cache Mappe</span>
           <span id="perm-net-status" class="text-xs font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">Verifica...</span>
         </div>
-        <div class="flex items-center justify-between bg-stone-100 px-3.5 py-2.5 rounded-xl">
-          <span class="font-medium text-stone-800">Notifiche Avvisi</span>
-          <span id="perm-notif-status" class="text-xs font-semibold px-2 py-0.5 rounded bg-stone-200 text-stone-700">In attesa</span>
-        </div>
       </div>
-      <div id="perm-notif-help" class="hidden mb-4 text-xs bg-amber-50 border border-amber-200 text-amber-900 rounded-xl p-3"></div>
       <div class="flex flex-col gap-2">
         <button id="btn-authorize-all" data-i18n="authBtn" onclick="requestStartupPermissions()" class="w-full py-3 px-4 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-semibold text-sm transition cursor-pointer">
-          Autorizza GPS, Rete e Notifiche
+          Autorizza GPS e Rete
         </button>
         <button id="btn-skip-perm" data-i18n="skipBtn" onclick="dismissStartupPermissions()" class="w-full py-2.5 px-4 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium text-xs transition cursor-pointer">
           Continua senza GPS per ora
@@ -1042,8 +1037,8 @@
           55: "Pioviggine intensa", 61: "Pioggia debole", 63: "Pioggia moderata", 65: "Pioggia forte",
           80: "Rovesci deboli", 81: "Rovesci moderati", 82: "Rovesci forti", 95: "Temporale"
         },
-        permTitle: "Autorizzazioni GPS, Rete e Notifiche",
-        permDesc: "Per mostrare la tua posizione sul sentiero, calcolare distanza e dislivello rimanenti, salvare le mappe offline e ricevere avvisi, abilita GPS, rete e notifiche.",
+        permTitle: "Autorizzazioni GPS e Rete Web",
+        permDesc: "Per mostrare la tua posizione sul sentiero, calcolare distanza e dislivello rimanenti e salvare le mappe offline, abilita GPS e rete.",
         permGpsLabel: "Posizione GPS Live",
         permNetLabel: "Connessione Web & Cache Mappe",
         gpsWaiting: "In attesa",
@@ -1051,7 +1046,7 @@
         gpsDenied: "Errore 1 (Home/Blocco)",
         netOnline: "Online · Cache pronta",
         netOffline: "Offline · Cache locale",
-        authBtn: "Autorizza GPS, Rete e Notifiche",
+        authBtn: "Autorizza GPS e Rete",
         skipBtn: "Continua senza GPS per ora",
         authSub: "Inserisci il codice fornito in officina o in struttura per aprire la mappa sentieri.",
         accessLabel: "Codice Accesso / Password",
@@ -1335,7 +1330,7 @@
     let screenWakeLock = null;
     let keepScreenAwakeEnabled = localStorage.getItem("magona_keep_screen_awake") === "1";
 
-    /* ================= PWA & SERVICE WORKER (iOS SAFE — NO BLOB MANIFEST) ================= */
+    /* ================= PWA & SERVICE WORKER ================= */
 
     function isAppleMobileDevice() {
       return (
@@ -1652,74 +1647,25 @@
       return `magona_codes_explicitly_cleared_${cleanId}`;
     }
 
-    /* ================= NOTIFICHE (CHROME SAFE + SERVICE WORKER) ================= */
-
-    function setNotifHelpMessage(msg = "") {
-      const helpEl = document.getElementById("perm-notif-help");
-      if (!helpEl) return;
-      if (msg) {
-        helpEl.textContent = msg;
-        helpEl.classList.remove("hidden");
-      } else {
-        helpEl.textContent = "";
-        helpEl.classList.add("hidden");
-      }
-    }
-
-    function updateNotifPermissionStatusUI() {
-      const badge = document.getElementById("perm-notif-status");
-      if (!badge) return;
-
-      const hasNotifApi = ("Notification" in window) && typeof Notification.requestPermission === "function";
-      const isSecureContextOk = Boolean(window.isSecureContext) || location.hostname === "localhost" || location.hostname === "127.0.0.1";
-
-      if (!hasNotifApi) {
-        badge.textContent = !isSecureContextOk ? "Richiede HTTPS" : "Non supportate";
-        badge.className = "text-xs font-semibold px-2 py-0.5 rounded bg-amber-100 text-amber-900";
-        return;
-      }
-
-      if (Notification.permission === "granted") {
-        badge.textContent = "Attive";
-        badge.className = "text-xs font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800";
-        setNotifHelpMessage("");
-      } else if (Notification.permission === "denied") {
-        badge.textContent = "Bloccate su Chrome";
-        badge.className = "text-xs font-semibold px-2 py-0.5 rounded bg-red-100 text-red-800";
-        setNotifHelpMessage("Chrome ha bloccato le notifiche per questo sito. Tocca l'icona a sinistra dell'URL (impostazioni sito) → Notifiche → Consenti, poi riprova.");
-      } else {
-        badge.textContent = "Da autorizzare";
-        badge.className = "text-xs font-semibold px-2 py-0.5 rounded bg-amber-100 text-amber-800";
-      }
-    }
+    /* ================= NOTIFICHE GESTORE ================= */
 
     async function requestOwnerNotificationPermissionIfNeeded(showFeedback = false) {
-      updateNotifPermissionStatusUI();
-
       if (!("Notification" in window) || typeof Notification.requestPermission !== "function") {
-        const msg = (!window.isSecureContext && location.hostname !== "localhost" && location.hostname !== "127.0.0.1")
-          ? "Chrome richiede HTTPS per mostrare la richiesta notifiche."
-          : "Notifiche non disponibili in questo contesto/browser.";
-        setNotifHelpMessage(msg);
-        if (showFeedback) showToast(msg);
+        if (showFeedback) showToast("Notifiche browser non disponibili su questo dispositivo");
         return false;
       }
 
       if (Notification.permission === "granted") {
-        setNotifHelpMessage("");
         if (showFeedback) showToast("✓ Notifiche già attive");
         return true;
       }
 
       if (Notification.permission === "denied") {
-        const msg = "Notifiche bloccate in Chrome: aprila dalle Impostazioni sito (icona accanto all'URL) e impostale su Consenti.";
-        setNotifHelpMessage(msg);
-        if (showFeedback) showToast(msg);
+        if (showFeedback) showToast("Notifiche bloccate dal browser: abilitale dalle impostazioni sito");
         return false;
       }
 
       try {
-        // Invocazione diretta nel contesto del click utente su Chrome (supporta sia Promise che callback)
         const permResult = Notification.requestPermission();
         const perm = (permResult && typeof permResult.then === "function")
           ? await permResult
@@ -1731,29 +1677,14 @@
               }
             });
 
-        updateNotifPermissionStatusUI();
-
         if (perm === "granted") {
-          setNotifHelpMessage("");
-          if (showFeedback) showToast("✓ Notifiche attivate su Chrome");
+          if (showFeedback) showToast("✓ Notifiche attivate");
           return true;
         }
-
-        if (perm === "denied") {
-          const msg = "Richiesta notifiche rifiutata su Chrome. Puoi riattivarla dall'icona a sinistra della barra indirizzi.";
-          setNotifHelpMessage(msg);
-          if (showFeedback) showToast(msg);
-        } else {
-          const msg = "La finestra di richiesta notifiche non è comparsa (controlla se Chrome ha notifiche disattivate nelle impostazioni di sistema o se la pagina è in un frame limitato).";
-          setNotifHelpMessage(msg);
-          if (showFeedback) showToast("Permesso notifiche non concesso");
-        }
+        if (showFeedback) showToast("Permesso notifiche non concesso");
         return false;
       } catch (e) {
-        updateNotifPermissionStatusUI();
-        const msg = "Errore nella richiesta notifiche su Chrome: verifica che il sito sia servito su HTTPS.";
-        setNotifHelpMessage(msg);
-        if (showFeedback) showToast(msg);
+        if (showFeedback) showToast("Notifiche non disponibili");
         return false;
       }
     }
@@ -2923,7 +2854,6 @@
     document.addEventListener("visibilitychange", function () {
       if (document.visibilityState === "visible") {
         updateNetworkStatusUI();
-        updateNotifPermissionStatusUI();
         if (keepScreenAwakeEnabled) requestScreenWakeLock(false);
         if (navigator.onLine) {
           flushPendingRiderDepartures();
@@ -2980,7 +2910,6 @@
       if (fsLiveBtn) fsLiveBtn.textContent = liveNavActive ? t.fsNavStop : t.fsNavStart;
 
       updateNetworkStatusUI();
-      updateNotifPermissionStatusUI();
       updateWakeLockUI();
       updatePoiOwnerVisibility();
       rebuildRouteSelector();
@@ -3026,7 +2955,6 @@
 
     function openStartupPermissionsModal() {
       updateNetworkStatusUI();
-      updateNotifPermissionStatusUI();
       document.getElementById("startup-permissions-modal").classList.remove("hidden");
     }
 
@@ -3037,14 +2965,10 @@
       startWatchingUserLocation();
     }
 
-    async function requestStartupPermissions() {
+    function requestStartupPermissions() {
       markStartupPermissionsSeen();
       updateNetworkStatusUI();
 
-      // 1) Richiedi SUBITO le notifiche nel contesto diretto del click utente su Chrome
-      await requestOwnerNotificationPermissionIfNeeded(true);
-
-      // 2) Poi avvia e richiede il GPS
       const gpsStatus = document.getElementById("perm-gps-status");
 
       if (!("geolocation" in navigator)) {
@@ -3084,7 +3008,7 @@
       );
     }
 
-    /* ================= CLIENT ACCESS CODES (NO AUTO-RESTORE WHEN CLEARED) ================= */
+    /* ================= CLIENT ACCESS CODES ================= */
 
     function isManagerCodesExplicitlyCleared(managerId = activeManagerId) {
       try {
@@ -3538,7 +3462,6 @@
 
       renderClientCodesPoolUI();
       updateNetworkStatusUI();
-      updateNotifPermissionStatusUI();
       fetchTrailWeather(false);
 
       if (ROUTES_LIST.length > 0 && !ROUTES_LIST.some((r) => r.id === activeRouteId)) {
@@ -4953,7 +4876,6 @@
     applyThemeMode(currentThemeMode);
     setupPwaManifestAndWorker();
     updateNetworkStatusUI();
-    updateNotifPermissionStatusUI();
     fetchTrailWeather(false);
     hydrateLocalStateOnBoot();
 
@@ -4965,7 +4887,6 @@
 
     window.addEventListener("DOMContentLoaded", () => {
       applyThemeMode(currentThemeMode);
-      updateNotifPermissionStatusUI();
       if (localStorage.getItem(PERMISSIONS_PROMPT_KEY) === "1") {
         const permModal = document.getElementById("startup-permissions-modal");
         if (permModal) permModal.classList.add("hidden");
