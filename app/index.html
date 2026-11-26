@@ -2797,21 +2797,28 @@
     }
 
     async function requestStartupPermissions() {
-      markStartupPermissionsSeen();
+            markStartupPermissionsSeen();
       updateNetworkStatusUI();
-      await requestOwnerNotificationPermissionIfNeeded(false);
 
       const gpsStatus = document.getElementById("perm-gps-status");
       const t = I18N[currentLang] || I18N.it;
 
       if (!("geolocation" in navigator)) {
-        if (gpsStatus) gpsStatus.textContent = t.gpsDenied;
-        setTimeout(dismissStartupPermissions, 350);
+        if (gpsStatus) {
+          gpsStatus.textContent = "GPS non supportato";
+          gpsStatus.className = "text-xs font-semibold px-2 py-0.5 rounded bg-red-100 text-red-800";
+        }
+        await requestOwnerNotificationPermissionIfNeeded(false);
         return;
       }
 
+      if (gpsStatus) {
+        gpsStatus.textContent = "Aggancio GPS...";
+        gpsStatus.className = "text-xs font-semibold px-2 py-0.5 rounded bg-amber-100 text-amber-800";
+      }
+
       navigator.geolocation.getCurrentPosition(
-        (pos) => {
+        async (pos) => {
           userCoords = [pos.coords.latitude, pos.coords.longitude];
           if (gpsStatus) {
             gpsStatus.textContent = t.gpsGranted;
@@ -2819,16 +2826,18 @@
           }
           startWatchingUserLocation();
           fetchTrailWeather(true);
+          await requestOwnerNotificationPermissionIfNeeded(false);
           setTimeout(dismissStartupPermissions, 350);
         },
-        () => {
+        async (err) => {
+          const code = err && typeof err.code === "number" ? err.code : 0;
           if (gpsStatus) {
-            gpsStatus.textContent = t.gpsDenied;
-            gpsStatus.className = "text-xs font-semibold px-2 py-0.5 rounded bg-amber-100 text-amber-800";
+            gpsStatus.textContent = `Errore GPS (${code})`;
+            gpsStatus.className = "text-xs font-semibold px-2 py-0.5 rounded bg-red-100 text-red-800";
           }
-          setTimeout(dismissStartupPermissions, 450);
+          await requestOwnerNotificationPermissionIfNeeded(false);
         },
-        { enableHighAccuracy: true, timeout: 5000, maximumAge: 10000 }
+        { enableHighAccuracy: false, timeout: 12000, maximumAge: 30000 }
       );
     }
 
