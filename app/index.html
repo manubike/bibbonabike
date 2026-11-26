@@ -140,7 +140,9 @@
     html.dark-mode #client-codes-list > div,
     html.dark-mode #client-codes-list .bg-white,
     html.dark-mode #rider-alerts-list > div,
-    html.dark-mode #rider-alerts-list .bg-white {
+    html.dark-mode #rider-alerts-list .bg-white,
+    html.dark-mode #rider-departures-list > div,
+    html.dark-mode #rider-departures-list .bg-white {
       background-color: #202423 !important;
       background: #202423 !important;
       border-color: #464e4b !important;
@@ -341,7 +343,7 @@
       </button>
     </nav>
 
-    <!-- Barra Meteo compatta su singola riga anche in portrait -->
+    <!-- Barra Meteo compatta su singola riga anche in portrait (con vento visibile) -->
     <div id="weather-strip" class="bg-stone-50 border-b border-stone-200 px-3 sm:px-4 py-1.5 text-xs">
       <div class="max-w-6xl mx-auto flex flex-nowrap items-center justify-between gap-1.5">
         <div class="flex flex-nowrap items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
@@ -349,17 +351,13 @@
           <span class="font-bold text-stone-900 shrink-0" id="weather-location">Bibbona</span>
           <span id="weather-temp" class="font-extrabold text-emerald-700 shrink-0">--°C</span>
           <span id="weather-desc" class="text-stone-600 truncate" data-i18n="weatherLoading">Caricamento meteo...</span>
-          <span id="weather-wind" class="text-stone-500 hidden sm:inline shrink-0"></span>
-          <span id="weather-rain" class="text-stone-500 hidden md:inline shrink-0"></span>
+          <span id="weather-wind" class="text-stone-600 font-medium shrink-0"></span>
+          <span id="weather-rain" class="text-stone-500 hidden sm:inline shrink-0"></span>
         </div>
-        <div class="flex flex-nowrap items-center gap-1.5 shrink-0">
+        <div class="flex flex-nowrap items-center shrink-0">
           <button onclick="fetchTrailWeather(true)" title="Aggiorna meteo" class="px-2 py-1 rounded-lg bg-stone-200/80 hover:bg-stone-300/80 text-stone-800 font-semibold text-[11px] leading-none cursor-pointer">
             ↻
           </button>
-          <a id="google-weather-link" href="https://www.google.com/search?q=meteo+Bibbona" target="_blank" rel="noopener"
-            class="px-2 py-1 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-semibold text-[11px] leading-none whitespace-nowrap">
-            Google Meteo ↗
-          </a>
         </div>
       </div>
     </div>
@@ -755,6 +753,25 @@
 
     <!-- Scheda Gestore & Cache -->
     <section id="tab-manager" class="tab-panel hidden flex-1 p-4 max-w-4xl w-full mx-auto space-y-4">
+      <!-- Partenze Clienti (Orario di Avvio) -->
+      <div class="bg-white rounded-2xl border border-stone-200 p-4 space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 class="text-base font-bold text-stone-900">Partenze Clienti (Orario di Avvio)</h2>
+            <p class="text-xs text-stone-500">Registra automaticamente l'orario di partenza e il tour scelto da ciascun codice cliente al momento dell'accesso o avvio navigazione.</p>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button onclick="syncRiderAlertsFromCloud(true)" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
+              ↻ Aggiorna
+            </button>
+            <button onclick="clearRiderDeparturesHistory()" class="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 text-xs font-semibold cursor-pointer">
+              Svuota Partenze
+            </button>
+          </div>
+        </div>
+        <div id="rider-departures-list" class="space-y-2"></div>
+      </div>
+
       <!-- Avvisi Live Ciclisti (Metà Percorso + 1,5 km dalla Base) -->
       <div class="bg-white rounded-2xl border border-stone-200 p-4 space-y-3">
         <div class="flex flex-wrap items-center justify-between gap-2">
@@ -862,7 +879,9 @@
     const PERMISSIONS_PROMPT_KEY = "magona_permissions_prompt_seen_v1";
     const WEATHER_CACHE_KEY = "magona_weather_cache_v1";
     const PENDING_ALERTS_QUEUE_KEY = "magona_pending_rider_alerts_v1";
+    const PENDING_DEPARTURES_QUEUE_KEY = "magona_pending_rider_departures_v1";
     const SESSION_ROLE_KEY = "magona_session_role_v1";
+    const SESSION_DEPARTURE_ISO_KEY = "magona_session_departure_iso_v1";
     const MAX_USES_PER_CODE = 3;
     const IDB_NAME = "MagonaBikeGarageDB";
     const IDB_STORE = "appState";
@@ -2529,6 +2548,7 @@
     let currentThemeMode = localStorage.getItem(THEME_STORAGE_KEY) || "light";
     let isOwner = false;
     let activeSessionClientCode = "";
+    let sessionDepartureIso = localStorage.getItem(SESSION_DEPARTURE_ISO_KEY) || "";
     let map = null;
     let routePolyline = null;
     let userMarker = null;
@@ -2545,7 +2565,9 @@
     let poiMarkersLayer = null;
 
     let riderAlertsList = [];
+    let riderDeparturesList = [];
     let pendingAlertsQueue = [];
+    let pendingDeparturesQueue = [];
     let hasLeftBaseArea = false;
     let ownerAlertsPollTimer = null;
     let lastShownOwnerAlertId = localStorage.getItem("magona_last_seen_alert_id") || "";
@@ -2560,6 +2582,15 @@
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#39;");
+    }
+
+    function formatShortTime(isoStr) {
+      if (!isoStr) return "";
+      try {
+        return new Date(isoStr).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      } catch (e) {
+        return "";
+      }
     }
 
     /* ================= BROWSER OPEN-TAB NOTIFICATIONS ================= */
@@ -2596,7 +2627,7 @@
       } catch (e) {}
     }
 
-    /* ================= RIDER ALERTS (HALFWAY + 1.5 KM FROM BASE) ================= */
+    /* ================= RIDER DEPARTURES & ALERTS ================= */
 
     function loadPendingAlertsQueue() {
       try {
@@ -2608,6 +2639,15 @@
           }
         }
       } catch (e) {}
+      try {
+        const rawDep = localStorage.getItem(PENDING_DEPARTURES_QUEUE_KEY);
+        if (rawDep) {
+          const parsedDep = JSON.parse(rawDep);
+          if (Array.isArray(parsedDep)) {
+            pendingDeparturesQueue = parsedDep.filter((x) => x && x.id);
+          }
+        }
+      } catch (e) {}
     }
 
     function savePendingAlertsQueue() {
@@ -2616,10 +2656,105 @@
       } catch (e) {}
     }
 
+    function savePendingDeparturesQueue() {
+      try {
+        localStorage.setItem(PENDING_DEPARTURES_QUEUE_KEY, JSON.stringify(pendingDeparturesQueue));
+      } catch (e) {}
+    }
+
     function getCurrentRiderIdentifier() {
       if (activeSessionClientCode) return activeSessionClientCode;
       if (isOwner) return "GESTORE";
       return (localStorage.getItem("magona_active_client_pwd") || "CLIENTE").trim().toUpperCase();
+    }
+
+    function recordRiderDeparture(reason = "login") {
+      if (isOwner) return;
+      const clientCode = getCurrentRiderIdentifier();
+      if (!clientCode || clientCode === "GESTORE") return;
+
+      const route = getRouteById(activeRouteId);
+      const nowIso = new Date().toISOString();
+      if (!sessionDepartureIso || reason === "login") {
+        sessionDepartureIso = nowIso;
+        try { localStorage.setItem(SESSION_DEPARTURE_ISO_KEY, sessionDepartureIso); } catch (e) {}
+      }
+
+      const depId = `dep_${clientCode}_${sessionDepartureIso.slice(0, 16)}`;
+      const entry = {
+        id: depId,
+        clientCode,
+        routeId: route?.id || "",
+        routeName: getLocalizedRouteField(route, "name") || route?.name || "",
+        departedAt: sessionDepartureIso,
+        updatedAt: nowIso
+      };
+
+      pendingDeparturesQueue = pendingDeparturesQueue.filter((item) => item.id !== depId);
+      pendingDeparturesQueue.unshift(entry);
+      savePendingDeparturesQueue();
+      flushPendingRiderDepartures();
+    }
+
+    async function flushPendingRiderDepartures() {
+      if (!Array.isArray(pendingDeparturesQueue) || pendingDeparturesQueue.length === 0) return;
+      if (!isFirebaseConfigured() || !navigator.onLine) return;
+
+      const existing = await cloudReadJson("rider_departures");
+      const remoteList = Array.isArray(existing) ? existing.filter((x) => x && x.id) : [];
+      const queuedIds = new Set(pendingDeparturesQueue.map((x) => x.id));
+      const merged = [
+        ...pendingDeparturesQueue,
+        ...remoteList.filter((x) => !queuedIds.has(x.id))
+      ].slice(0, 60);
+
+      const ok = await cloudWriteJson("rider_departures", merged);
+      if (ok) {
+        pendingDeparturesQueue = [];
+        savePendingDeparturesQueue();
+        riderDeparturesList = merged;
+        if (isOwner) renderRiderDeparturesUI();
+      }
+    }
+
+    function renderRiderDeparturesUI() {
+      if (!isOwner) return;
+      const listEl = document.getElementById("rider-departures-list");
+      if (!listEl) return;
+
+      if (!Array.isArray(riderDeparturesList) || riderDeparturesList.length === 0) {
+        listEl.innerHTML = `<div class="text-xs text-stone-500">Nessuna partenza registrata finora.</div>`;
+        return;
+      }
+
+      listEl.innerHTML = riderDeparturesList.map((item) => {
+        const depTime = formatShortTime(item.departedAt);
+        const depDate = item.departedAt
+          ? new Date(item.departedAt).toLocaleDateString([], { day: "2-digit", month: "2-digit" })
+          : "";
+        return `
+          <div class="p-3 rounded-xl bg-white border border-stone-200 flex flex-wrap items-center justify-between gap-2 text-xs">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="font-extrabold text-stone-900">${escapeHtml(item.clientCode)}</span>
+              <span class="px-2 py-0.5 rounded font-bold text-[11px] bg-emerald-100 text-emerald-900">🚴 Partenza ore ${escapeHtml(depTime || "--:--")}</span>
+              ${depDate ? `<span class="text-[11px] text-stone-400">(${escapeHtml(depDate)})</span>` : ""}
+            </div>
+            <div class="text-stone-600">
+              Tour: <strong>${escapeHtml(item.routeName || "-")}</strong>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function clearRiderDeparturesHistory() {
+      if (!isOwner) return;
+      riderDeparturesList = [];
+      renderRiderDeparturesUI();
+      if (isFirebaseConfigured() && navigator.onLine) {
+        await cloudWriteJson("rider_departures", []);
+      }
+      showToast("✓ Storico partenze svuotato");
     }
 
     function hasAlertBeenTriggered(alertKey) {
@@ -2652,6 +2787,7 @@
         clientCode,
         routeId: route?.id || "",
         routeName: getLocalizedRouteField(route, "name") || route?.name || "",
+        departedAt: sessionDepartureIso || "",
         triggeredAt: new Date().toISOString(),
         sentAt: new Date().toISOString(),
         coords: currentCoords,
@@ -2734,12 +2870,19 @@
 
     async function syncRiderAlertsFromCloud(notifyUser = false) {
       if (!isOwner || !isFirebaseConfigured() || !navigator.onLine) return;
-      const remote = await cloudReadJson("rider_alerts");
-      if (Array.isArray(remote)) {
-        riderAlertsList = remote.filter((x) => x && x.id);
+      const [remoteAlerts, remoteDepartures] = await Promise.all([
+        cloudReadJson("rider_alerts"),
+        cloudReadJson("rider_departures")
+      ]);
+      if (Array.isArray(remoteAlerts)) {
+        riderAlertsList = remoteAlerts.filter((x) => x && x.id);
         renderRiderAlertsUI(true);
-        if (notifyUser) showToast("✓ Avvisi aggiornati");
       }
+      if (Array.isArray(remoteDepartures)) {
+        riderDeparturesList = remoteDepartures.filter((x) => x && x.id);
+        renderRiderDeparturesUI();
+      }
+      if (notifyUser) showToast("✓ Dati utenti aggiornati");
     }
 
     async function clearRiderAlertsHistory() {
@@ -2793,9 +2936,8 @@
         const posText = Array.isArray(item.coords)
           ? `${Number(item.coords[0]).toFixed(5)}, ${Number(item.coords[1]).toFixed(5)}`
           : "GPS non disponibile";
-        const sentTime = item.sentAt
-          ? new Date(item.sentAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-          : "";
+        const sentTime = formatShortTime(item.sentAt);
+        const depTime = formatShortTime(item.departedAt);
 
         return `
           <div class="p-3 rounded-xl bg-white border border-stone-200 flex flex-wrap items-center justify-between gap-2 text-xs">
@@ -2803,7 +2945,8 @@
               <div class="flex flex-wrap items-center gap-2">
                 <span class="font-extrabold text-stone-900">${escapeHtml(item.clientCode)}</span>
                 ${typeBadge}
-                ${sentTime ? `<span class="text-[11px] text-stone-400">ore ${escapeHtml(sentTime)}</span>` : ""}
+                ${depTime ? `<span class="text-[11px] text-emerald-700 font-semibold">Partito ore ${escapeHtml(depTime)}</span>` : ""}
+                ${sentTime ? `<span class="text-[11px] text-stone-400">· Avviso ore ${escapeHtml(sentTime)}</span>` : ""}
               </div>
               <div class="text-stone-600">
                 Tour: <strong>${escapeHtml(item.routeName)}</strong> · Posizione attuale all'invio: ${escapeHtml(posText)}
@@ -2852,7 +2995,6 @@
       const descEl = document.getElementById("weather-desc");
       const windEl = document.getElementById("weather-wind");
       const rainEl = document.getElementById("weather-rain");
-      const gLink = document.getElementById("google-weather-link");
 
       if (iconEl) iconEl.textContent = getWeatherEmoji(data.weatherCode);
       if (tempEl) tempEl.textContent = `${Math.round(data.temp)}°C`;
@@ -2864,19 +3006,6 @@
       }
       if (rainEl && typeof data.rainProb === "number") {
         rainEl.textContent = `· ${t.weatherRainLabel}: ${data.rainProb}%`;
-      }
-      if (gLink) {
-        const queries = {
-          it: "meteo+Bibbona",
-          en: "weather+Bibbona",
-          de: "wetter+Bibbona",
-          nl: "weer+Bibbona",
-          es: "tiempo+Bibbona",
-          fr: "météo+Bibbona",
-          pt: "tempo+Bibbona",
-          zh: "天气+Bibbona"
-        };
-        gLink.href = `https://www.google.com/search?q=${queries[currentLang] || queries.it}`;
       }
     }
 
@@ -3193,6 +3322,7 @@
 
     async function syncAllCloudStateOnBoot() {
       if (!isFirebaseConfigured() || !navigator.onLine) return;
+      await flushPendingRiderDepartures();
       await flushPendingRiderAlertsWithCurrentCoords();
 
       const cloudData = await cloudReadJson("");
@@ -3236,6 +3366,11 @@
           await idbWrite(CLIENT_CODES_STORAGE_KEY, validPool);
           renderClientCodesPoolUI();
         }
+      }
+
+      if (isOwner && Array.isArray(cloudData.rider_departures)) {
+        riderDeparturesList = cloudData.rider_departures.filter((x) => x && x.id);
+        renderRiderDeparturesUI();
       }
 
       if (isOwner && Array.isArray(cloudData.rider_alerts)) {
@@ -3460,6 +3595,7 @@
       fetchTrailWeather(false);
       if (isOwner) {
         renderToursManagerList();
+        renderRiderDeparturesUI();
         renderRiderAlertsUI(false);
       }
       if (userMarker) {
@@ -3732,6 +3868,7 @@
       isOwner = false;
       activeSessionClientCode = String(target.code).toUpperCase();
       errEl.classList.add("hidden");
+      recordRiderDeparture("login");
       await unlockApplication();
     }
 
@@ -3803,6 +3940,7 @@
       updatePoiOwnerVisibility();
       if (isOwner) {
         renderToursManagerList();
+        renderRiderDeparturesUI();
         renderRiderAlertsUI(false);
         setSaveBadgeState(true, `✓ (${ROUTES_LIST.length})`);
         setPoisSaveBadgeState(true, `✓ (${POIS.length})`);
@@ -3826,7 +3964,11 @@
       hasInitialNavZoomed = false;
       isOwner = false;
       activeSessionClientCode = "";
-      try { localStorage.removeItem(SESSION_ROLE_KEY); } catch (e) {}
+      sessionDepartureIso = "";
+      try {
+        localStorage.removeItem(SESSION_ROLE_KEY);
+        localStorage.removeItem(SESSION_DEPARTURE_ISO_KEY);
+      } catch (e) {}
       if (ownerAlertsPollTimer) {
         clearInterval(ownerAlertsPollTimer);
         ownerAlertsPollTimer = null;
@@ -3942,10 +4084,15 @@
 
       const route = matches.find((r) => r.id === routeId) || matches[0];
       if (!route) return;
+      const changed = activeRouteId !== route.id;
       activeRouteId = route.id;
       rebuildRouteSelector(matches);
 
       updateRouteInfoCard(route);
+
+      if (changed && !isOwner && activeSessionClientCode) {
+        recordRiderDeparture("route_select");
+      }
 
       if (map) {
         if (routePolyline) map.removeLayer(routePolyline);
@@ -4177,6 +4324,7 @@
         }
         applyMapHeadingRotation(currentHeadingDeg, true);
         startWatchingUserLocation();
+        recordRiderDeparture("nav_start");
         updateRouteProgressMetrics();
       } else {
         applyMapHeadingRotation(0, false);
@@ -5134,6 +5282,7 @@
     window.addEventListener("online", () => {
       updateNetworkStatusUI();
       fetchTrailWeather(false);
+      flushPendingRiderDepartures();
       flushPendingRiderAlertsWithCurrentCoords();
       syncAllCloudStateOnBoot();
     });
