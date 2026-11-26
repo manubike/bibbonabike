@@ -426,6 +426,37 @@
           </div>
         </div>
 
+        <!-- Recupero GPS reale quando iOS/Home restituisce Errore 1 -->
+        <div id="gps-recovery-box" class="hidden bg-amber-50 border border-amber-300 rounded-xl p-3 space-y-2.5 text-xs text-stone-900">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="font-bold text-amber-950" id="gps-recovery-title">
+              GPS bloccato dalla modalità Home su iPhone (Errore 1) — Ottieni posizione GPS reale:
+            </div>
+            <button type="button" onclick="hideGpsRecoveryBox()" class="text-[11px] font-bold underline text-stone-600 cursor-pointer">
+              Chiudi
+            </button>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button type="button" onclick="openAppInExternalBrowserForGps()" class="px-3 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-bold cursor-pointer">
+              ↗ Apri GPS in Browser
+            </button>
+            <button type="button" onclick="retryRealGpsNow()" class="px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-bold cursor-pointer">
+              ↻ Riprova GPS Live
+            </button>
+            <button type="button" onclick="toggleManualRealGpsInput()" class="px-3 py-1.5 rounded-lg bg-amber-200/80 hover:bg-amber-300/80 text-amber-950 font-bold cursor-pointer">
+              📍 Incolla Coordinate GPS Reali
+            </button>
+          </div>
+          <div id="manual-real-gps-row" class="hidden flex flex-wrap items-center gap-2 pt-1">
+            <input id="manual-real-gps-input" type="text" placeholder="Es. 43.266028, 10.594667 o link Maps"
+              onkeydown="if(event.key==='Enter') applyManualRealGpsCoords()"
+              class="flex-1 min-w-[210px] border border-amber-300 rounded-lg px-2.5 py-1.5 text-xs bg-white text-stone-900" />
+            <button type="button" onclick="applyManualRealGpsCoords()" class="px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-bold cursor-pointer">
+              Imposta Posizione Reale
+            </button>
+          </div>
+        </div>
+
         <!-- Scheda dettagliata del tour attivo -->
         <div id="active-route-info-card" class="bg-stone-50 border border-stone-200/90 rounded-xl p-3 flex flex-wrap items-center justify-between gap-2 text-xs">
           <div class="space-y-1">
@@ -990,6 +1021,7 @@
     const SESSION_BASE_COORDS_KEY = "magona_session_base_coords_v1";
     const SESSION_BASE_LABEL_KEY = "magona_session_base_label_v1";
     const SESSION_DEPARTURE_ISO_KEY = "magona_session_departure_iso_v1";
+    const REAL_GPS_CACHE_KEY = "magona_last_real_gps_v1";
     const MAX_USES_PER_CODE = 3;
     const IDB_NAME = "MagonaBikeGarageDB";
     const IDB_STORE = "appState";
@@ -1015,7 +1047,7 @@
         permNetLabel: "Connessione Web & Cache Mappe",
         gpsWaiting: "In attesa",
         gpsGranted: "Attivo",
-        gpsDenied: "Non disponibile qui",
+        gpsDenied: "Errore 1 (Home/Blocco)",
         netOnline: "Online · Cache pronta",
         netOffline: "Offline · Cache locale",
         authBtn: "Autorizza GPS, Rete e Notifiche",
@@ -1158,7 +1190,7 @@
         goToursBtn: "Vai a Gestione Tour",
         noToursOption: "-- Nessun tour disponibile --",
         toastNoFilterMatch: "Nessun percorso con questi filtri",
-        toastGpsAcquiring: "Aggancio GPS in corso: centrato sul punto di partenza",
+        toastGpsAcquiring: "Ricerca posizione GPS reale in corso...",
         toastOfflineSaved: "Mappa e tour salvati offline sul telefono",
         toastWakeOn: "Schermo sempre acceso attivato",
         toastWakeOff: "Schermo sempre acceso disattivato",
@@ -1311,6 +1343,10 @@
       );
     }
 
+    function isIosStandaloneHomeScreen() {
+      return Boolean(window.navigator && window.navigator.standalone === true);
+    }
+
     function setupPwaManifestAndWorker() {
       try {
         const existingManifest = document.querySelector('link[rel="manifest"]');
@@ -1418,6 +1454,153 @@
       const lat = Number(coords[0]);
       const lng = Number(coords[1]);
       return !Number.isNaN(lat) && !Number.isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+    }
+
+    function saveLastRealGpsCoords(coords, source = "gps") {
+      if (!isValidLatLngPair(coords)) return;
+      const clean = [+Number(coords[0]).toFixed(6), +Number(coords[1]).toFixed(6)];
+      try {
+        localStorage.setItem(REAL_GPS_CACHE_KEY, JSON.stringify({ coords: clean, source, ts: Date.now() }));
+      } catch (e) {}
+    }
+
+    function applyRealUserPosition(coords, accuracy = 15, source = "gps") {
+      if (!isValidLatLngPair(coords)) return;
+      const clean = [Number(coords[0]), Number(coords[1])];
+      if (userCoords && isValidLatLngPair(userCoords)) {
+        if (!prevGpsCoords && haversineMeters(userCoords, clean) >= 3) {
+          currentHeadingDeg = computeBearingDegrees(userCoords, clean);
+        } else if (prevGpsCoords && haversineMeters(prevGpsCoords, clean) >= 3) {
+          currentHeadingDeg = computeBearingDegrees(prevGpsCoords, clean);
+        }
+        prevGpsCoords = [...userCoords];
+      }
+      userCoords = clean;
+      saveLastRealGpsCoords(clean, source);
+      hideGpsRecoveryBox();
+
+      const gpsStatus = document.getElementById("perm-gps-status");
+      if (gpsStatus) {
+        const t = I18N[currentLang] || I18N.it;
+        gpsStatus.textContent = t.gpsGranted;
+        gpsStatus.className = "text-xs font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800";
+      }
+
+      if (map) {
+        renderUserPositionMarker(userCoords, accuracy);
+        if (liveNavActive && followUserCenter) {
+          if (!hasInitialNavZoomed) {
+            map.setView(userCoords, NAV_ZOOM_LEVEL, { animate: false });
+            hasInitialNavZoomed = true;
+          } else {
+            map.panTo(userCoords, { animate: false });
+          }
+          applyMapHeadingRotation(currentHeadingDeg, true);
+        }
+      }
+      renderPoiList();
+      updateRouteProgressMetrics();
+    }
+
+    function showGpsRecoveryBox(customMsg = "") {
+      const box = document.getElementById("gps-recovery-box");
+      const titleEl = document.getElementById("gps-recovery-title");
+      if (titleEl && customMsg) {
+        titleEl.textContent = customMsg;
+      } else if (titleEl) {
+        titleEl.textContent = isIosStandaloneHomeScreen()
+          ? "GPS bloccato dalla modalità Home su iPhone (Errore 1) — Ottieni posizione GPS reale:"
+          : "Permesso GPS negato (Errore 1) — Ottieni posizione GPS reale:";
+      }
+      if (box) box.classList.remove("hidden");
+    }
+
+    function hideGpsRecoveryBox() {
+      const box = document.getElementById("gps-recovery-box");
+      if (box) box.classList.add("hidden");
+    }
+
+    function toggleManualRealGpsInput() {
+      const row = document.getElementById("manual-real-gps-row");
+      if (row) row.classList.toggle("hidden");
+      const inp = document.getElementById("manual-real-gps-input");
+      if (inp && row && !row.classList.contains("hidden")) inp.focus();
+    }
+
+    function parseCoordsFromInputText(rawText) {
+      if (!rawText || typeof rawText !== "string") return null;
+      const trimmed = rawText.trim();
+
+      // Cerca pattern @lat,lng o q=lat,lng o ll=lat,lng in URL di mappe
+      const urlMatch = trimmed.match(/(?:@|[?&](?:q|ll|query|center)=)(-?\d{1,2}\.\d+),\s*(-?\d{1,3}\.\d+)/i);
+      if (urlMatch) {
+        const lat = parseFloat(urlMatch[1]);
+        const lng = parseFloat(urlMatch[2]);
+        if (isValidLatLngPair([lat, lng])) return [lat, lng];
+      }
+
+      // Cerca coppia "lat, lng"
+      const pairMatch = trimmed.match(/(-?\d{1,2}(?:\.\d+)?)\s*[,;\s/]+\s*(-?\d{1,3}(?:\.\d+)?)/);
+      if (pairMatch) {
+        const lat = parseFloat(pairMatch[1]);
+        const lng = parseFloat(pairMatch[2]);
+        if (isValidLatLngPair([lat, lng])) return [lat, lng];
+      }
+      return null;
+    }
+
+    function applyManualRealGpsCoords() {
+      const inp = document.getElementById("manual-real-gps-input");
+      const parsed = parseCoordsFromInputText(inp ? inp.value : "");
+      if (!parsed) {
+        showToast("Inserisci coordinate valide (es. 43.266028, 10.594667) o un link Maps");
+        return;
+      }
+      applyRealUserPosition(parsed, 12, "manual_real");
+      if (map) {
+        followUserCenter = true;
+        map.setView(parsed, NAV_ZOOM_LEVEL, { animate: false });
+      }
+      showToast(`✓ Posizione reale impostata: ${parsed[0].toFixed(5)}, ${parsed[1].toFixed(5)}`);
+    }
+
+    function openAppInExternalBrowserForGps() {
+      const cleanUrl = new URL(window.location.href);
+      cleanUrl.searchParams.set("gps_unlock", Date.now().toString(36));
+      window.open(cleanUrl.toString(), "_blank", "noopener,noreferrer");
+    }
+
+    function retryRealGpsNow() {
+      showToast((I18N[currentLang] || I18N.it).toastGpsAcquiring);
+      if (!("geolocation" in navigator)) {
+        showGpsRecoveryBox("Geolocalizzazione non supportata su questo dispositivo.");
+        return;
+      }
+      // Forza riavvio watchPosition anche se era già attivo
+      if (watchId !== null) {
+        try { navigator.geolocation.clearWatch(watchId); } catch (e) {}
+        watchId = null;
+      }
+      startWatchingUserLocation();
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          applyRealUserPosition([pos.coords.latitude, pos.coords.longitude], pos.coords.accuracy, "gps_retry");
+          if (map) {
+            followUserCenter = true;
+            map.setView(userCoords, NAV_ZOOM_LEVEL, { animate: false });
+          }
+          showToast("✓ Posizione GPS reale agganciata");
+        },
+        (err) => {
+          const code = err && typeof err.code === "number" ? err.code : 0;
+          if (code === 1) {
+            showGpsRecoveryBox();
+          } else {
+            showToast(`GPS in attesa (codice ${code})`);
+          }
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
     }
 
     function setActiveBaseLocation(coords, label) {
@@ -2534,7 +2717,7 @@
 
       if (isManagerUser) {
         await syncPartnerManagersFromCloud();
-        await syncClientCodesFromCloud(false);
+        await syncClientCodesFromCloud(false, activeManagerId);
         await syncRiderAlertsFromCloud(false);
       }
     }
@@ -2796,6 +2979,7 @@
       markStartupPermissionsSeen();
       const modal = document.getElementById("startup-permissions-modal");
       if (modal) modal.classList.add("hidden");
+      startWatchingUserLocation();
     }
 
     async function requestStartupPermissions() {
@@ -2810,6 +2994,7 @@
           gpsStatus.textContent = "GPS non supportato";
           gpsStatus.className = "text-xs font-semibold px-2 py-0.5 rounded bg-red-100 text-red-800";
         }
+        showGpsRecoveryBox("Geolocalizzazione non supportata su questo dispositivo.");
         await requestOwnerNotificationPermissionIfNeeded(false);
         return;
       }
@@ -2819,22 +3004,14 @@
         gpsStatus.className = "text-xs font-semibold px-2 py-0.5 rounded bg-amber-100 text-amber-800";
       }
 
+      startWatchingUserLocation();
+
       navigator.geolocation.getCurrentPosition(
         async (pos) => {
-          const newCoords = [pos.coords.latitude, pos.coords.longitude];
-          updateHeadingFromPosition(pos, newCoords);
-          userCoords = newCoords;
-          if (gpsStatus) {
-            gpsStatus.textContent = t.gpsGranted;
-            gpsStatus.className = "text-xs font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800";
-          }
-          renderUserPositionMarker(userCoords, pos.coords.accuracy);
-          renderPoiList();
-          updateRouteProgressMetrics();
-          startWatchingUserLocation();
+          applyRealUserPosition([pos.coords.latitude, pos.coords.longitude], pos.coords.accuracy, "startup_gps");
           fetchTrailWeather(true);
           await requestOwnerNotificationPermissionIfNeeded(false);
-          setTimeout(dismissStartupPermissions, 350);
+          setTimeout(dismissStartupPermissions, 300);
         },
         async (err) => {
           const code = err && typeof err.code === "number" ? err.code : 0;
@@ -2843,8 +3020,12 @@
             gpsStatus.className = "text-xs font-semibold px-2 py-0.5 rounded bg-red-100 text-red-800";
           }
           await requestOwnerNotificationPermissionIfNeeded(false);
+          if (code === 1) {
+            setTimeout(dismissStartupPermissions, 350);
+            setTimeout(() => showGpsRecoveryBox(), 450);
+          }
         },
-        { enableHighAccuracy: false, timeout: 12000, maximumAge: 30000 }
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 10000 }
       );
     }
 
@@ -3660,22 +3841,15 @@
         (pos) => {
           const newCoords = [pos.coords.latitude, pos.coords.longitude];
           updateHeadingFromPosition(pos, newCoords);
-          userCoords = newCoords;
-          renderUserPositionMarker(userCoords, pos.coords.accuracy);
-          renderPoiList();
-          updateRouteProgressMetrics();
-
-          if (liveNavActive && followUserCenter && map) {
-            if (!hasInitialNavZoomed) {
-              map.setView(userCoords, NAV_ZOOM_LEVEL, { animate: false });
-              hasInitialNavZoomed = true;
-            } else {
-              map.panTo(userCoords, { animate: false });
-            }
+          applyRealUserPosition(newCoords, pos.coords.accuracy, "watch_gps");
+        },
+        (err) => {
+          const code = err && typeof err.code === "number" ? err.code : 0;
+          if (code === 1) {
+            showGpsRecoveryBox();
           }
         },
-        () => {},
-        { enableHighAccuracy: true, maximumAge: 2000, timeout: 10000 }
+        { enableHighAccuracy: true, maximumAge: 2000, timeout: 12000 }
       );
     }
 
@@ -3710,6 +3884,9 @@
         }
         applyMapHeadingRotation(currentHeadingDeg, true);
         startWatchingUserLocation();
+        if (!userCoords) {
+          retryRealGpsNow();
+        }
         recordRiderDeparture("nav_start");
         updateRouteProgressMetrics();
       } else {
@@ -3735,8 +3912,9 @@
         applyMapHeadingRotation(currentHeadingDeg, true);
       }
       if (!userCoords) {
-        startWatchingUserLocation();
-        showToast(t.toastGpsAcquiring);
+        retryRealGpsNow();
+      } else {
+        showToast("✓ Centrato sulla tua posizione");
       }
     }
 
@@ -4653,112 +4831,88 @@
       const destPt = [lat, lng];
       showToast(`${t.toastPoiCalc} ${label}`);
 
-      let routed = await fetchOpenMtbTrailRoute(startPt, destPt);
-      if (!routed || !routed.coords || routed.coords.length < 2) {
-        routed = computeOfflineTrailFallbackPath(startPt, destPt);
+      let chosenPath = computeOfflineTrailFallbackPath(startPt, destPt);
+      const onlineTrail = await fetchOpenMtbTrailRoute(startPt, destPt);
+      if (onlineTrail && onlineTrail.coords.length > 1) {
+        chosenPath = {
+          coords: onlineTrail.coords,
+          distanceKm: onlineTrail.distanceKm
+        };
       }
 
       if (poiRouteLayer) {
         map.removeLayer(poiRouteLayer);
       }
-      poiRouteLayer = L.polyline(routed.coords, {
-        color: "#0284c7",
+      poiRouteLayer = L.polyline(chosenPath.coords, {
+        color: "#2563eb",
         weight: 5,
-        opacity: 0.95
+        opacity: 0.92,
+        dashArray: "8, 6"
       }).addTo(map);
-      poiRouteLayer.bindPopup(escapeHtml(`${label} · ${routed.distanceKm} km (${routed.source})`));
+      poiRouteLayer.bindPopup(escapeHtml(`${label} (${chosenPath.distanceKm} km)`));
+
+      L.popup().setLatLng(destPt).setContent(escapeHtml(`${label} · ${chosenPath.distanceKm} km`)).openOn(map);
+      map.fitBounds(poiRouteLayer.getBounds(), { padding: [30, 30] });
 
       const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=bicycling`;
       const banner = document.getElementById("nav-status-banner");
       const statusText = document.getElementById("nav-status-text");
       if (banner && statusText) {
         banner.classList.remove("hidden");
-        statusText.innerHTML = `${escapeHtml(t.toastPoiGuided)} <strong>${escapeHtml(label)}</strong> (${routed.distanceKm} km · ${escapeHtml(routed.source)}) · <a href="${gmapsUrl}" target="_blank" rel="noopener" class="underline font-bold text-sky-300">${escapeHtml(t.openGmaps)}</a>`;
+        statusText.innerHTML = `${escapeHtml(label)} (${chosenPath.distanceKm} km) · <a href="${gmapsUrl}" target="_blank" rel="noopener" class="underline font-bold text-emerald-300">${escapeHtml(t.openGmaps)}</a>`;
       }
-
-      if (liveNavActive && userCoords) {
-        followUserCenter = true;
-        map.setView(userCoords, NAV_ZOOM_LEVEL, { animate: false });
-      } else {
-        map.fitBounds(poiRouteLayer.getBounds(), { padding: [30, 30] });
-      }
-      showToast(`${t.toastPoiGuided} ${label} (${routed.distanceKm} km)`);
+      showToast(`${t.toastPoiGuided} ${label} (${chosenPath.distanceKm} km)`);
     }
 
-    /* ================= SUPPORT & WHATSAPP ================= */
-
     function renderTroubleshooting() {
+      const container = document.getElementById("troubleshooting-list");
+      if (!container) return;
       const t = I18N[currentLang] || I18N.it;
-      const items = Array.isArray(t.troubleItems) ? t.troubleItems : I18N.it.troubleItems;
-      document.getElementById("troubleshooting-list").innerHTML = items
-        .map((txt) => `<div class="p-2.5 rounded-xl bg-stone-50 border border-stone-200/70">${escapeHtml(txt)}</div>`)
-        .join("");
+      container.innerHTML = (t.troubleItems || []).map((item) => {
+        const idx = item.indexOf(":");
+        if (idx === -1) return `<p>• ${escapeHtml(item)}</p>`;
+        const head = escapeHtml(item.slice(0, idx));
+        const body = escapeHtml(item.slice(idx + 1));
+        return `<p><strong>${head}:</strong>${body}</p>`;
+      }).join("");
     }
 
     function sendWhatsAppLocation() {
-      const route = getRouteById(activeRouteId);
-      const routeName = getLocalizedRouteField(route, "name") || "Route";
-      const locText = userCoords
-        ? `Lat ${userCoords[0].toFixed(5)}, Lng ${userCoords[1].toFixed(5)}`
-        : "GPS N/A";
-      const msg = encodeURIComponent(`Magona Bike Garage · ${routeName} · ${locText}`);
-      window.open(`https://wa.me/393313453207?text=${msg}`, "_blank", "noopener");
+      const coords = userCoords || activeBaseCoords;
+      const mapsLink = `https://www.google.com/maps?q=${coords[0]},${coords[1]}`;
+      const text = encodeURIComponent(`Ciao Magona Bike Garage, ho bisogno di assistenza. La mia posizione: ${mapsLink}`);
+      window.open(`https://wa.me/393313453207?text=${text}`, "_blank", "noopener");
     }
 
-    /* ================= BOOTSTRAP ================= */
+    setupPwaManifestAndWorker();
+    applyThemeMode(currentThemeMode);
+    changeLanguage(currentLang);
+    updateNetworkStatusUI();
+    updateNotifPermissionStatusUI();
 
-    window.addEventListener("online", () => {
-      updateNetworkStatusUI();
-      fetchTrailWeather(false);
-      flushPendingRiderDepartures();
-      flushPendingRiderAlertsWithCurrentCoords();
-      syncAllCloudStateOnBoot();
-    });
-    window.addEventListener("offline", updateNetworkStatusUI);
-    window.addEventListener("DOMContentLoaded", async () => {
-      setupPwaManifestAndWorker();
+    (async function initBootSequence() {
+      // Ripristina l'ultima posizione GPS reale salvata se presente (mai coordinate fittizie)
+      try {
+        const rawGps = localStorage.getItem(REAL_GPS_CACHE_KEY);
+        if (rawGps) {
+          const parsedGps = JSON.parse(rawGps);
+          if (parsedGps && isValidLatLngPair(parsedGps.coords)) {
+            userCoords = [Number(parsedGps.coords[0]), Number(parsedGps.coords[1])];
+          }
+        }
+      } catch (e) {}
 
-      const modal = document.getElementById("startup-permissions-modal");
-      if (modal && localStorage.getItem(PERMISSIONS_PROMPT_KEY) === "1") {
-        modal.classList.add("hidden");
-      }
-      applyThemeMode(currentThemeMode);
-      updateNetworkStatusUI();
-      updateNotifPermissionStatusUI();
-      changeLanguage("it");
       await hydrateLocalStateOnBoot();
-
-      const savedRole = localStorage.getItem(SESSION_ROLE_KEY);
-      if (savedRole === "super" || savedRole === "owner") {
-        isSuperManager = true;
-        isManagerUser = true;
-        activeManagerId = SUPER_MANAGER_ID;
-        activeManagerName = SUPER_MANAGER_NAME;
-        activeSessionClientCode = "SUPER-GESTORE";
-        setActiveBaseLocation(DEFAULT_BASE_COORDS, `${SUPER_MANAGER_NAME} · ${DEFAULT_BASE_ADDRESS_LABEL}`);
-        await unlockApplication();
-        return;
+      if (navigator.onLine) {
+        await syncAllCloudStateOnBoot();
       }
-
-      if (savedRole === "partner") {
-        isSuperManager = false;
-        isManagerUser = true;
-        activeManagerId = localStorage.getItem(SESSION_MANAGER_ID_KEY) || "partner";
-        activeManagerName = localStorage.getItem(SESSION_MANAGER_NAME_KEY) || "Partner";
-        activeSessionClientCode = "GESTORE";
-
-        try {
-          const savedCoords = JSON.parse(localStorage.getItem(SESSION_BASE_COORDS_KEY) || "null");
-          const savedLabel = localStorage.getItem(SESSION_BASE_LABEL_KEY) || activeManagerName;
-          setActiveBaseLocation(savedCoords, savedLabel);
-        } catch (e) {}
-
-        await unlockApplication();
-        return;
+      const seenModal = localStorage.getItem(PERMISSIONS_PROMPT_KEY) === "1";
+      if (seenModal) {
+        const modal = document.getElementById("startup-permissions-modal");
+        if (modal) modal.classList.add("hidden");
+        startWatchingUserLocation();
       }
-
-      await syncAllCloudStateOnBoot();
-    });
+    })();
   </script>
 </body>
 </html>
