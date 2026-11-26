@@ -84,26 +84,29 @@
       width: 100%;
       height: 440px;
     }
+    #map-rotator {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-origin: center center;
+      transition: transform 0.18s linear;
+      will-change: transform;
+    }
+    #map-rotator.heading-up-active {
+      position: absolute;
+      top: -45%;
+      left: -45%;
+      width: 190%;
+      height: 190%;
+      transform: rotate(var(--map-rot, 0deg));
+    }
     #map-container {
       width: 100%;
       height: 100%;
       z-index: 1;
-      border-radius: 14px;
-      transition: transform 0.2s linear;
-      transform-origin: center center;
     }
-    #map-container.heading-up-active {
-      position: absolute !important;
-      top: -45% !important;
-      left: -45% !important;
-      width: 190% !important;
-      height: 190% !important;
-      max-width: none !important;
-      border-radius: 0 !important;
-      transform: rotate(var(--map-rot, 0deg));
-    }
-    #map-container.heading-up-active .cyclist-gps-marker,
-    #map-container.heading-up-active .poi-map-pin {
+    #map-rotator.heading-up-active .cyclist-gps-marker,
+    #map-rotator.heading-up-active .poi-map-pin {
       transform: rotate(calc(var(--map-rot, 0deg) * -1));
     }
     #elevation-profile-canvas {
@@ -130,10 +133,6 @@
       min-height: 0 !important;
       height: auto !important;
       width: 100% !important;
-    }
-    .map-stage.is-fullscreen #map-container:not(.heading-up-active) {
-      height: 100% !important;
-      border-radius: 14px !important;
     }
     .bottom-telemetry-panel {
       display: none;
@@ -528,7 +527,9 @@
       <!-- Contenitore mappa con pannello navigazione in basso in modalità schermo intero -->
       <div id="map-stage" class="map-stage relative">
         <div class="map-wrapper relative w-full">
-          <div id="map-container"></div>
+          <div id="map-rotator">
+            <div id="map-container"></div>
+          </div>
           <button id="overlay-toggle-fountains" onclick="toggleOsmFountainsLayer()" title="Fontanelle OpenStreetMap"
             class="absolute bottom-4 left-3 z-[450] bg-white/95 hover:bg-white text-sky-900 border border-sky-400 rounded-xl px-3 py-2 text-xs font-bold shadow cursor-pointer">
             💧 OSM <span id="osm-fountains-count">0</span>
@@ -1802,7 +1803,7 @@
         toastWakeOn: "Scherm altijd aan ingeschakeld",
         toastWakeOff: "Scherm altijd aan uitgeschakeld",
         toastWakeUnsupported: "Browser ondersteunt geen Wake Lock: zet schermtime-out op 'Nooit' in telefooninstellingen",
-        toastWakeError: "Kan scherm niet actief houden (controleer batterijbesparing ou HTTPS)",
+        toastWakeError: "Kan scherm niet actief houden (controleer batterijbesparing of HTTPS)",
         toastPoiGuided: "MTB-/padroute berekend naar:",
         toastPoiCalc: "Pad- & gravelroute berekenen naar:"
       },
@@ -2325,7 +2326,7 @@
         selectTourOption: "Selecionar rota",
         noToursOption: "Selecionar rota",
         toastNoFilterMatch: "Nenhuma rota com estes filtros",
-        toastGpsAcquiring: "Buscando GPS: centrado no ponto de partida",
+        toastGpsAcquiring: "Buscando GPS: centralizado no ponto de partida",
         toastOfflineSaved: "Mapa e rotas salvos offline no telefone",
         toastWakeOn: "Tela sempre ligada ativada",
         toastWakeOff: "Tela sempre ligada desactivada",
@@ -2825,6 +2826,7 @@
     let watchId = null;
     let liveNavActive = false;
     let followUserCenter = true;
+    let followPauseTimer = null;
     let hasInitialNavZoomed = false;
     let userCoords = null;
     let prevGpsCoords = null;
@@ -5388,25 +5390,30 @@
     }
 
     function applyMapHeadingRotation(headingDeg, enabled) {
-      const mapEl = document.getElementById("map-container");
-      if (!mapEl) return;
-      const wasActive = mapEl.classList.contains("heading-up-active");
+      const rotatorEl = document.getElementById("map-rotator");
+      if (!rotatorEl) return;
+      const wasActive = rotatorEl.classList.contains("heading-up-active");
 
       if (!enabled || typeof headingDeg !== "number" || Number.isNaN(headingDeg)) {
-        mapEl.classList.remove("heading-up-active");
-        mapEl.style.removeProperty("--map-rot");
+        rotatorEl.classList.remove("heading-up-active");
+        rotatorEl.style.removeProperty("--map-rot");
         if (wasActive && map) {
-          setTimeout(() => map.invalidateSize({ pan: false }), 60);
+          setTimeout(() => map.invalidateSize({ pan: false }), 50);
         }
         return;
       }
 
       currentHeadingDeg = headingDeg;
-      mapEl.classList.add("heading-up-active");
-      mapEl.style.setProperty("--map-rot", `${(-headingDeg).toFixed(1)}deg`);
+      rotatorEl.classList.add("heading-up-active");
+      rotatorEl.style.setProperty("--map-rot", `${(-headingDeg).toFixed(1)}deg`);
 
       if (!wasActive && map) {
-        setTimeout(() => map.invalidateSize({ pan: false }), 60);
+        setTimeout(() => {
+          map.invalidateSize({ pan: false });
+          if (isValidLatLngPair(userCoords)) {
+            map.setView(userCoords, Math.max(map.getZoom() || NAV_ZOOM_LEVEL, NAV_ZOOM_LEVEL), { animate: false });
+          }
+        }, 50);
       }
     }
 
@@ -5416,20 +5423,17 @@
 
       const handleOrientation = (ev) => {
         if (!liveNavActive || !followUserCenter) return;
-        if (Date.now() - lastGpsFixTs < 4000) return;
+        if (Date.now() - lastGpsFixTs < 3500) return;
 
         let heading = null;
         if (typeof ev.webkitCompassHeading === "number" && !Number.isNaN(ev.webkitCompassHeading)) {
           heading = ev.webkitCompassHeading;
-        } else if (ev.absolute === true && typeof ev.alpha === "number") {
+        } else if (typeof ev.alpha === "number" && !Number.isNaN(ev.alpha)) {
           heading = (360 - ev.alpha) % 360;
         }
 
         if (heading !== null) {
           applyMapHeadingRotation(heading, true);
-          if (map && isValidLatLngPair(userCoords)) {
-            centerMapOnCoords(userCoords, NAV_ZOOM_LEVEL, false);
-          }
         }
       };
 
@@ -5437,9 +5441,8 @@
       window.addEventListener("deviceorientation", handleOrientation, true);
     }
 
-    function centerMapOnCoords(coords, zoomLevel = NAV_ZOOM_LEVEL, animate = true) {
+    function centerMapOnCoords(coords, zoomLevel = NAV_ZOOM_LEVEL, animate = false) {
       if (!map || !isValidLatLngPair(coords)) return;
-      map.invalidateSize({ pan: false });
       const targetZoom = Math.max(map.getZoom() || zoomLevel, zoomLevel);
       map.setView(coords, targetZoom, { animate });
     }
@@ -5459,6 +5462,16 @@
       map.on("dragstart", () => {
         if (liveNavActive) {
           followUserCenter = false;
+          clearTimeout(followPauseTimer);
+          followPauseTimer = setTimeout(() => {
+            if (liveNavActive) {
+              followUserCenter = true;
+              if (isValidLatLngPair(userCoords)) {
+                centerMapOnCoords(userCoords, NAV_ZOOM_LEVEL, false);
+                applyMapHeadingRotation(currentHeadingDeg, true);
+              }
+            }
+          }, 8000);
         }
       });
 
@@ -5538,7 +5551,7 @@
         }).addTo(map);
 
         if (liveNavActive) {
-          recenterNavigator(true);
+          recenterNavigator();
         } else if (route.coords && route.coords.length > 0) {
           map.fitBounds(routePolyline.getBounds(), { padding: [24, 24] });
         }
@@ -5712,10 +5725,10 @@
       const sensorHeading = pos?.coords?.heading;
       const speed = pos?.coords?.speed;
 
-      if (typeof sensorHeading === "number" && !Number.isNaN(sensorHeading) && (speed === null || speed > 0.5)) {
+      if (typeof sensorHeading === "number" && !Number.isNaN(sensorHeading) && (speed === null || speed > 0.4)) {
         currentHeadingDeg = sensorHeading;
         lastGpsFixTs = Date.now();
-      } else if (prevGpsCoords && haversineMeters(prevGpsCoords, newCoords) >= 2) {
+      } else if (prevGpsCoords && haversineMeters(prevGpsCoords, newCoords) >= 1.5) {
         currentHeadingDeg = computeBearingDegrees(prevGpsCoords, newCoords);
         lastGpsFixTs = Date.now();
       }
@@ -5748,17 +5761,17 @@
           navigator.geolocation.getCurrentPosition(onPos, () => {}, {
             enableHighAccuracy: false,
             timeout: 12000,
-            maximumAge: 30000
+            maximumAge: 15000
           });
         },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 5000 }
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
 
       if (watchId !== null) return;
       watchId = navigator.geolocation.watchPosition(
         onPos,
         () => {},
-        { enableHighAccuracy: true, maximumAge: 5000, timeout: 12000 }
+        { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
       );
     }
 
@@ -5773,6 +5786,7 @@
 
       if (liveNavActive) {
         followUserCenter = true;
+        clearTimeout(followPauseTimer);
         hasInitialNavZoomed = false;
         if (typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function") {
           DeviceOrientationEvent.requestPermission().catch(() => {});
@@ -5803,6 +5817,7 @@
         recordRiderDeparture("nav_start");
         updateRouteProgressMetrics();
       } else {
+        clearTimeout(followPauseTimer);
         applyMapHeadingRotation(0, false);
         banner.classList.add("hidden");
         btn.textContent = t.navStart;
@@ -5818,6 +5833,11 @@
       const t = I18N[currentLang] || I18N.it;
       if (!map) return;
       followUserCenter = true;
+      clearTimeout(followPauseTimer);
+      if (typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function") {
+        DeviceOrientationEvent.requestPermission().catch(() => {});
+      }
+      enableCompassHeadingListener();
       const activeRoute = activeRouteId ? getRouteById(activeRouteId) : null;
       const routeStart = activeRoute?.coords?.[0] || activeBaseCoords;
       const target = userCoords || routeStart;
