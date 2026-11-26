@@ -108,6 +108,10 @@
       background-color: #0f1110;
       color: #f3f4f3;
     }
+    html.dark-mode .brand-logo-img,
+    html.dark-mode .brand-logo-auth {
+      filter: invert(1) hue-rotate(180deg) !important;
+    }
     html.dark-mode header,
     html.dark-mode nav,
     html.dark-mode #weather-strip,
@@ -787,8 +791,8 @@
       <div class="bg-white rounded-2xl border border-stone-200 p-4 space-y-3">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <h2 class="text-base font-bold text-stone-900">Partenze Clienti (Orario di Avvio)</h2>
-            <p class="text-xs text-stone-500">Registra automaticamente l'orario di partenza e il tour scelto da ciascun codice cliente al momento dell'accesso o avvio navigazione.</p>
+            <h2 class="text-base font-bold text-stone-900">Partenze Clienti (Data e Orario di Avvio)</h2>
+            <p class="text-xs text-stone-500">Registra automaticamente data, ora di partenza e tour scelto da ciascun codice cliente al momento dell'accesso o avvio navigazione.</p>
           </div>
           <div class="flex items-center gap-1.5">
             <button onclick="syncRiderAlertsFromCloud(true)" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer">
@@ -807,7 +811,7 @@
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h2 class="text-base font-bold text-stone-900">Notifiche Posizione Clienti (Metà Percorso & 1,5 km Base)</h2>
-            <p class="text-xs text-stone-500">Quando un cliente supera il 50% del tour o entra entro 1,5 km dal negozio, l'avviso viene inviato con la posizione GPS attuale al momento della connessione (anche come notifica browser a pagina aperta).</p>
+            <p class="text-xs text-stone-500">Quando un cliente supera il 50% del tour o entra entro 1,5 km dal negozio, l'avviso viene inviato con data, ora di arrivo e posizione GPS attuale al momento della connessione.</p>
           </div>
           <div class="flex items-center gap-1.5">
             <button onclick="requestOwnerNotificationPermissionIfNeeded(true)" class="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold cursor-pointer">
@@ -2115,8 +2119,8 @@
         toastGpsAcquiring: "Buscando GPS: centralizado no ponto de partida",
         toastOfflineSaved: "Mapa e rotas salvos offline no telefone",
         toastWakeOn: "Tela sempre ligada ativada",
-        toastWakeOff: "Tela sempre ligada desactivada",
-        toastWakeUnsupported: "Browser incompatível com Wake Lock: defina o bloqueio de tela como 'Nunca'",
+        toastWakeOff: "Tela sempre ligada desativada",
+        toastWakeUnsupported: "Navegador incompatível com Wake Lock: defina o bloqueio de tela como 'Nunca'",
         toastWakeError: "Não foi possível manter a tela ligada (verifique economia de bateria ou HTTPS)",
         toastPoiGuided: "Rota MTB/trilhas calculada para:",
         toastPoiCalc: "Calculando rota por trilhas para:"
@@ -2640,6 +2644,20 @@
       }
     }
 
+    function formatDateAndTime(isoStr) {
+      if (!isoStr) return { date: "", time: "" };
+      try {
+        const d = new Date(isoStr);
+        if (Number.isNaN(d.getTime())) return { date: "", time: "" };
+        return {
+          date: d.toLocaleDateString([], { day: "2-digit", month: "2-digit" }),
+          time: d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+        };
+      } catch (e) {
+        return { date: "", time: "" };
+      }
+    }
+
     /* ================= BROWSER OPEN-TAB NOTIFICATIONS ================= */
 
     function requestOwnerNotificationPermissionIfNeeded(showFeedback = false) {
@@ -2747,11 +2765,17 @@
       if (!Array.isArray(pendingDeparturesQueue) || pendingDeparturesQueue.length === 0) return;
       if (!isFirebaseConfigured() || !navigator.onLine) return;
 
+      const nowIso = new Date().toISOString();
+      const stampedQueue = pendingDeparturesQueue.map((item) => ({
+        ...item,
+        updatedAt: nowIso
+      }));
+
       const existing = await cloudReadJson("rider_departures");
       const remoteList = Array.isArray(existing) ? existing.filter((x) => x && x.id) : [];
-      const queuedIds = new Set(pendingDeparturesQueue.map((x) => x.id));
+      const queuedIds = new Set(stampedQueue.map((x) => x.id));
       const merged = [
-        ...pendingDeparturesQueue,
+        ...stampedQueue,
         ...remoteList.filter((x) => !queuedIds.has(x.id))
       ].slice(0, 60);
 
@@ -2775,16 +2799,20 @@
       }
 
       listEl.innerHTML = riderDeparturesList.map((item) => {
-        const depTime = formatShortTime(item.departedAt);
-        const depDate = item.departedAt
-          ? new Date(item.departedAt).toLocaleDateString([], { day: "2-digit", month: "2-digit" })
+        const dep = formatDateAndTime(item.departedAt);
+        const recv = formatDateAndTime(item.updatedAt);
+        const arrivalNote = recv.time
+          ? `· Ricevuto ${recv.date ? recv.date + " " : ""}ore ${recv.time}`
           : "";
+
         return `
           <div class="p-3 rounded-xl bg-white border border-stone-200 flex flex-wrap items-center justify-between gap-2 text-xs">
             <div class="flex flex-wrap items-center gap-2">
               <span class="font-extrabold text-stone-900">${escapeHtml(item.clientCode)}</span>
-              <span class="px-2 py-0.5 rounded font-bold text-[11px] bg-emerald-100 text-emerald-900">🚴 Partenza ore ${escapeHtml(depTime || "--:--")}</span>
-              ${depDate ? `<span class="text-[11px] text-stone-400">(${escapeHtml(depDate)})</span>` : ""}
+              <span class="px-2 py-0.5 rounded font-bold text-[11px] bg-emerald-100 text-emerald-900">
+                🚴 Partenza ${dep.date ? escapeHtml(dep.date) + " " : ""}ore ${escapeHtml(dep.time || "--:--")}
+              </span>
+              ${arrivalNote ? `<span class="text-[11px] text-stone-500">${escapeHtml(arrivalNote)}</span>` : ""}
             </div>
             <div class="text-stone-600">
               Tour: <strong>${escapeHtml(item.routeName || "-")}</strong>
@@ -2983,8 +3011,11 @@
         const posText = Array.isArray(item.coords)
           ? `${Number(item.coords[0]).toFixed(5)}, ${Number(item.coords[1]).toFixed(5)}`
           : "GPS non disponibile";
-        const sentTime = formatShortTime(item.sentAt);
-        const depTime = formatShortTime(item.departedAt);
+        const sent = formatDateAndTime(item.sentAt);
+        const dep = formatDateAndTime(item.departedAt);
+        const receivedBadgeText = sent.time
+          ? `Arrivo avviso: ${sent.date ? sent.date + " " : ""}ore ${sent.time}`
+          : "";
 
         return `
           <div class="p-3 rounded-xl bg-white border border-stone-200 flex flex-wrap items-center justify-between gap-2 text-xs">
@@ -2992,8 +3023,8 @@
               <div class="flex flex-wrap items-center gap-2">
                 <span class="font-extrabold text-stone-900">${escapeHtml(item.clientCode)}</span>
                 ${typeBadge}
-                ${depTime ? `<span class="text-[11px] text-emerald-700 font-semibold">Partito ore ${escapeHtml(depTime)}</span>` : ""}
-                ${sentTime ? `<span class="text-[11px] text-stone-400">· Avviso ore ${escapeHtml(sentTime)}</span>` : ""}
+                ${dep.time ? `<span class="text-[11px] text-emerald-700 font-semibold">Partito ${dep.date ? escapeHtml(dep.date) + " " : ""}ore ${escapeHtml(dep.time)}</span>` : ""}
+                ${receivedBadgeText ? `<span class="text-[11px] text-stone-500 font-medium">${dep.time ? "· " : ""}${escapeHtml(receivedBadgeText)}</span>` : ""}
               </div>
               <div class="text-stone-600">
                 Tour: <strong>${escapeHtml(item.routeName)}</strong> · Posizione attuale all'invio: ${escapeHtml(posText)}
@@ -5406,3 +5437,4 @@
   </script>
 </body>
 </html>
+r
