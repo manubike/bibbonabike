@@ -1564,8 +1564,9 @@
         renderUserPositionMarker(userCoords, accuracy);
         if (liveNavActive && followUserCenter) {
           const targetZoom = Math.max(map.getZoom() || NAV_ZOOM_LEVEL, NAV_ZOOM_LEVEL);
-          map.invalidateSize({ debounceMoveend: true });
-          map.setView(userCoords, targetZoom, { animate: false });
+          map.setView(clean, targetZoom, { animate: false, reset: true });
+          map.invalidateSize({ debounceMoveend: false });
+          map.setView(clean, targetZoom, { animate: false, reset: true });
           hasInitialNavZoomed = true;
           applyMapHeadingRotation(currentHeadingDeg, true);
         }
@@ -4384,8 +4385,8 @@
         const routeStart = activeRoute?.coords?.[0] || activeBaseCoords;
         const targetStart = userCoords || routeStart;
         if (map) {
-          map.invalidateSize({ debounceMoveend: true });
-          map.setView(targetStart, NAV_ZOOM_LEVEL, { animate: false });
+          map.invalidateSize({ debounceMoveend: false });
+          map.setView(targetStart, NAV_ZOOM_LEVEL, { animate: false, reset: true });
           if (userCoords) {
             hasInitialNavZoomed = true;
           }
@@ -4419,8 +4420,8 @@
       followUserCenter = true;
       const routeStart = getRouteById(activeRouteId)?.coords?.[0] || activeBaseCoords;
       const target = userCoords || routeStart;
-      map.invalidateSize({ debounceMoveend: true });
-      map.setView(target, NAV_ZOOM_LEVEL, { animate: false });
+      map.invalidateSize({ debounceMoveend: false });
+      map.setView(target, NAV_ZOOM_LEVEL, { animate: false, reset: true });
       if (liveNavActive) {
         applyMapHeadingRotation(currentHeadingDeg, true);
       }
@@ -4439,7 +4440,7 @@
         if (map) {
           map.invalidateSize();
           if (liveNavActive && followUserCenter && userCoords) {
-            map.setView(userCoords, NAV_ZOOM_LEVEL, { animate: false });
+            map.setView(userCoords, NAV_ZOOM_LEVEL, { animate: false, reset: true });
             applyMapHeadingRotation(currentHeadingDeg, true);
           }
         }
