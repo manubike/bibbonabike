@@ -58,7 +58,6 @@
       width: 100%;
       z-index: 1;
       border-radius: 14px;
-      transition: transform 0.25s linear;
       transform-origin: center center;
     }
     .map-wrapper {
@@ -1564,12 +1563,10 @@
       if (map) {
         renderUserPositionMarker(userCoords, accuracy);
         if (liveNavActive && followUserCenter) {
-          if (!hasInitialNavZoomed) {
-            map.setView(userCoords, NAV_ZOOM_LEVEL, { animate: false });
-            hasInitialNavZoomed = true;
-          } else {
-            map.panTo(userCoords, { animate: false });
-          }
+          const targetZoom = Math.max(map.getZoom() || NAV_ZOOM_LEVEL, NAV_ZOOM_LEVEL);
+          map.invalidateSize({ debounceMoveend: true });
+          map.setView(userCoords, targetZoom, { animate: false });
+          hasInitialNavZoomed = true;
           applyMapHeadingRotation(currentHeadingDeg, true);
         }
       }
@@ -4010,7 +4007,7 @@
         </defs>
         <line x1="${padL}" y1="${yTop}" x2="${W - padR}" y2="${yTop}" stroke="${gridColor}" stroke-dasharray="3,3" stroke-width="1" />
         <line x1="${padL}" y1="${yMid}" x2="${W - padR}" y2="${yMid}" stroke="${gridColor}" stroke-dasharray="3,3" stroke-width="1" />
-        <line x1="${padL}" y1="${yBot}" x2="${W - padR}" y2="${yBot}" stroke="${gridColor}" stroke-dasharray="3,3" stroke-width="1" />
+        <line x1="${padL}" y1="${yBot}" x2="${W - padR}" y2="${yBot}" stroke="${gridColor}" stroke-width="1" />
 
         <text x="4" y="${yTop + 3}" fill="${textColor}" font-size="10" font-weight="600">${rawMax}m</text>
         <text x="4" y="${yMid + 3}" fill="${textColor}" font-size="10">${midEle}m</text>
@@ -4387,6 +4384,7 @@
         const routeStart = activeRoute?.coords?.[0] || activeBaseCoords;
         const targetStart = userCoords || routeStart;
         if (map) {
+          map.invalidateSize({ debounceMoveend: true });
           map.setView(targetStart, NAV_ZOOM_LEVEL, { animate: false });
           if (userCoords) {
             hasInitialNavZoomed = true;
@@ -4421,6 +4419,7 @@
       followUserCenter = true;
       const routeStart = getRouteById(activeRouteId)?.coords?.[0] || activeBaseCoords;
       const target = userCoords || routeStart;
+      map.invalidateSize({ debounceMoveend: true });
       map.setView(target, NAV_ZOOM_LEVEL, { animate: false });
       if (liveNavActive) {
         applyMapHeadingRotation(currentHeadingDeg, true);
