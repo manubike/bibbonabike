@@ -435,6 +435,11 @@
               <option value="red" data-i18n="diffRed">Rosso (Impegnativo)</option>
               <option value="black" data-i18n="diffBlack">Nero (Esperto)</option>
             </select>
+            <select id="map-layer-select" onchange="changeMapBaseLayer(this.value)" title="Stile mappa"
+              class="border border-stone-300 rounded-xl px-3 py-2 text-xs font-semibold bg-stone-50 max-w-full">
+              <option value="osm">🗺️ OpenStreetMap</option>
+              <option value="openmtbmap">🚵 OpenMTBMap</option>
+            </select>
           </div>
 
           <div class="flex flex-wrap gap-2">
@@ -513,6 +518,10 @@
       <div id="map-stage" class="map-stage relative">
         <div class="map-wrapper relative w-full h-full">
           <div id="map-container"></div>
+          <button id="overlay-toggle-fountains" onclick="toggleOsmFountainsLayer()" title="Fontanelle OpenStreetMap"
+            class="absolute bottom-4 left-3 z-[450] bg-white/95 hover:bg-white text-sky-900 border border-sky-400 rounded-xl px-3 py-2 text-xs font-bold shadow cursor-pointer">
+            💧 OSM <span id="osm-fountains-count">0</span>
+          </button>
           <button id="overlay-center-gps" data-i18n="overlayCenterGps" onclick="recenterNavigator()" title="Centra su GPS"
             class="absolute bottom-4 right-3 z-[450] bg-white/95 hover:bg-white text-stone-900 border border-stone-300 rounded-xl px-3 py-2 text-xs font-bold shadow cursor-pointer">
             ◎ Centra GPS
@@ -1013,6 +1022,7 @@
     const POIS_STORAGE_KEY = "magona_offline_pois_v2";
     const OSM_FOUNTAINS_STORAGE_KEY = "magona_osm_fountains_v1";
     const OSM_FOUNTAINS_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+    const MAP_LAYER_STORAGE_KEY = "magona_map_base_layer_v1";
     const ELEV_CACHE_STORAGE_KEY = "magona_elevation_profiles_v1";
     const CLIENT_CODES_STORAGE_KEY = "magona_client_codes_pool_v3";
     const REVOKED_CODES_STORAGE_KEY = "magona_revoked_codes_30d_v1";
@@ -2528,7 +2538,7 @@
           description: "Boucle classique dans la forêt de la Macchia della Magona entre chênes-lièges, chênes verts et vues sur la mer."
         },
         pt: {
-          name: "Circuito Macchia della Magona",
+          name: "Circuito Macchia da Magona",
           surface: "Mata, singletrack e estradas florestais",
           description: "Percurso clássico na Macchia da Magona entre sobreiros, azinheiras e mirantes com vista para o mar."
         },
@@ -2792,6 +2802,8 @@
 
     let currentLang = localStorage.getItem(LANG_STORAGE_KEY) || "it";
     let currentThemeMode = localStorage.getItem(THEME_STORAGE_KEY) || "light";
+    let currentMapLayerKey = localStorage.getItem(MAP_LAYER_STORAGE_KEY) || "osm";
+    let activeBaseTileLayer = null;
     let isSuperManager = false;
     let isManagerUser = false;
     let activeManagerToken = localStorage.getItem(SESSION_TOKEN_KEY) || "";
@@ -2815,6 +2827,7 @@
     let poiMarkersLayer = null;
     let osmFountainsLayer = null;
     let osmDrinkingFountains = [];
+    let osmFountainsVisible = true;
     let activePoiTypeFilter = "all";
     let elevationProfileCache = {};
     let activeRouteElevations = [];
@@ -2881,7 +2894,78 @@
       return { ok: resp.ok, status: resp.status, data };
     }
 
+    /* ================= BASE MAP LAYERS (OSM & OPENMTBMAP) ================= */
+
+    const OSM_TILE_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+    const OPENMTBMAP_TILE_URL = "https://tile.openmtbmap.org/tile/{z}/{x}/{y}.png";
+
+    function createBaseTileLayer(layerKey) {
+      if (layerKey === "openmtbmap") {
+        const mtbLayer = L.tileLayer(OPENMTBMAP_TILE_URL, {
+          maxZoom: 18,
+          attribution: "&copy; OpenMTBMap &amp; OpenStreetMap"
+        });
+        mtbLayer.on("tileerror", (ev) => {
+          if (ev?.tile && ev.tile.dataset.fallbackApplied !== "1") {
+            ev.tile.dataset.fallbackApplied = "1";
+            const { x, y, z } = ev.coords || {};
+            if (typeof x === "number" && typeof y === "number" && typeof z === "number") {
+              ev.tile.src = `https://a.tile.openstreetmap.org/${z}/${x}/${y}.png`;
+            }
+          }
+        });
+        return mtbLayer;
+      }
+      return L.tileLayer(OSM_TILE_URL, {
+        maxZoom: 19,
+        attribution: "&copy; OpenStreetMap"
+      });
+    }
+
+    function applyMapBaseLayer(layerKey) {
+      currentMapLayerKey = layerKey === "openmtbmap" ? "openmtbmap" : "osm";
+      try {
+        localStorage.setItem(MAP_LAYER_STORAGE_KEY, currentMapLayerKey);
+      } catch (e) {}
+
+      const sel = document.getElementById("map-layer-select");
+      if (sel) sel.value = currentMapLayerKey;
+
+      if (!map) return;
+      if (activeBaseTileLayer) {
+        map.removeLayer(activeBaseTileLayer);
+      }
+      activeBaseTileLayer = createBaseTileLayer(currentMapLayerKey).addTo(map);
+      activeBaseTileLayer.bringToBack();
+    }
+
+    function changeMapBaseLayer(layerKey) {
+      applyMapBaseLayer(layerKey);
+      showToast(layerKey === "openmtbmap" ? "Mappa OpenMTBMap attivata" : "Mappa OpenStreetMap attivata");
+    }
+
     /* ================= OPENSTREETMAP DRINKING FOUNTAINS (OVERPASS) ================= */
+
+    function updateOsmFountainCounterBadge() {
+      const countEl = document.getElementById("osm-fountains-count");
+      const btnEl = document.getElementById("overlay-toggle-fountains");
+      if (countEl) {
+        countEl.textContent = String(osmDrinkingFountains.length);
+      }
+      if (btnEl) {
+        btnEl.classList.toggle("opacity-60", !osmFountainsVisible);
+      }
+    }
+
+    function toggleOsmFountainsLayer() {
+      osmFountainsVisible = !osmFountainsVisible;
+      updateOsmFountainCounterBadge();
+      renderOsmFountainsOnMap();
+      if (osmFountainsVisible && osmDrinkingFountains.length === 0) {
+        loadOsmDrinkingFountains(true);
+      }
+      showToast(osmFountainsVisible ? "Fontanelle OSM visibili" : "Fontanelle OSM nascoste");
+    }
 
     function loadStoredOsmFountainsSync() {
       try {
@@ -2904,45 +2988,72 @@
       await idbWrite(OSM_FOUNTAINS_STORAGE_KEY, payload);
     }
 
-    async function loadOsmDrinkingFountains(forceRefresh = false) {
+    function mergeOsmFountains(existing, incoming) {
+      const mapById = new Map();
+      (existing || []).forEach((item) => {
+        if (item && item.id) mapById.set(item.id, item);
+      });
+      (incoming || []).forEach((item) => {
+        if (item && item.id) mapById.set(item.id, item);
+      });
+      return Array.from(mapById.values());
+    }
+
+    async function loadOsmDrinkingFountains(forceRefresh = false, customBbox = null) {
       const cachedSync = loadStoredOsmFountainsSync();
-      if (cachedSync.items.length > 0) {
+      if (cachedSync.items.length > 0 && osmDrinkingFountains.length === 0) {
         osmDrinkingFountains = cachedSync.items;
+        updateOsmFountainCounterBadge();
         renderOsmFountainsOnMap();
-      } else {
+      } else if (osmDrinkingFountains.length === 0) {
         const idbCached = await idbRead(OSM_FOUNTAINS_STORAGE_KEY);
         if (idbCached && Array.isArray(idbCached.items) && idbCached.items.length > 0) {
           osmDrinkingFountains = idbCached.items;
+          updateOsmFountainCounterBadge();
           renderOsmFountainsOnMap();
         }
       }
 
       const isFresh = cachedSync.ts && (Date.now() - cachedSync.ts < OSM_FOUNTAINS_TTL_MS);
-      if (!forceRefresh && isFresh && osmDrinkingFountains.length > 0) {
+      if (!forceRefresh && !customBbox && isFresh && osmDrinkingFountains.length > 0) {
+        updateOsmFountainCounterBadge();
         return osmDrinkingFountains;
       }
 
       if (!navigator.onLine) {
+        updateOsmFountainCounterBadge();
         return osmDrinkingFountains;
       }
 
-      // Bounding box: Costa degli Etruschi & Val di Cecina (Bolgheri, Bibbona, Cecina, Casale, Guardistallo, Riparbella, Montescudaio)
-      const overpassQuery = `[out:json][timeout:15];(node["amenity"="drinking_water"](43.18,10.50,43.38,10.74);way["amenity"="drinking_water"](43.18,10.50,43.38,10.74););out center;`;
+      const bbox = customBbox || "43.14,10.48,43.42,10.82";
+      const overpassQuery = `[out:json][timeout:20];(
+        node["amenity"="drinking_water"](${bbox});
+        way["amenity"="drinking_water"](${bbox});
+        node["man_made"="water_tap"]["drinking_water"!="no"](${bbox});
+        node["drinking_water"="yes"](${bbox});
+        node["natural"="spring"]["drinking_water"!="no"](${bbox});
+      );out center;`;
+
       const endpoints = [
         "https://overpass-api.de/api/interpreter",
-        "https://overpass.kumi.systems/api/interpreter"
+        "https://overpass.kumi.systems/api/interpreter",
+        "https://maps.mail.ru/osm/tools/overpass/api/interpreter"
       ];
 
       for (const endpoint of endpoints) {
         try {
           const ctrl = new AbortController();
-          const timer = setTimeout(() => ctrl.abort(), 8000);
-          const resp = await fetch(`${endpoint}?data=${encodeURIComponent(overpassQuery)}`, {
+          const timer = setTimeout(() => ctrl.abort(), 15000);
+          const resp = await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+            body: "data=" + encodeURIComponent(overpassQuery),
             signal: ctrl.signal,
             cache: "no-store"
           });
           clearTimeout(timer);
           if (!resp.ok) continue;
+
           const json = await resp.json();
           const elements = Array.isArray(json?.elements) ? json.elements : [];
           const parsed = [];
@@ -2953,6 +3064,7 @@
               const tags = el.tags || {};
               const customName = tags.name || tags["name:it"] || tags.description || "";
               const noteParts = [];
+              if (tags.natural === "spring") noteParts.push("Sorgente");
               if (tags.operator) noteParts.push(tags.operator);
               if (tags.bottle === "yes") noteParts.push("Riempimento borraccia");
               if (tags.wheelchair === "yes") noteParts.push("Accessibile");
@@ -2966,14 +3078,16 @@
           });
 
           if (parsed.length > 0) {
-            osmDrinkingFountains = parsed;
-            await saveStoredOsmFountains(parsed);
+            osmDrinkingFountains = mergeOsmFountains(osmDrinkingFountains, parsed);
+            await saveStoredOsmFountains(osmDrinkingFountains);
+            updateOsmFountainCounterBadge();
             renderOsmFountainsOnMap();
             break;
           }
         } catch (e) {}
       }
 
+      updateOsmFountainCounterBadge();
       return osmDrinkingFountains;
     }
 
@@ -2981,14 +3095,17 @@
       if (!map) return;
       if (osmFountainsLayer) {
         map.removeLayer(osmFountainsLayer);
+        osmFountainsLayer = null;
       }
+      updateOsmFountainCounterBadge();
+      if (!osmFountainsVisible) return;
+
       osmFountainsLayer = L.layerGroup().addTo(map);
       const t = I18N[currentLang] || I18N.it;
 
       osmDrinkingFountains.forEach((f) => {
         if (!isValidLatLngPair(f.coords)) return;
 
-        // Evita sovrapposizione se l'utente ha già inserito una fontanella personalizzata nello stesso punto (< 25m)
         const alreadyInCustomPois = POIS.some(
           (p) => p.type === "water" && isValidLatLngPair(p.coords) && haversineMeters(p.coords, f.coords) < 25
         );
@@ -5283,6 +5400,7 @@
 
     function initMap() {
       if (map) {
+        applyMapBaseLayer(currentMapLayerKey);
         renderBaseMarkerOnMap();
         renderPoiMarkersOnMap();
         renderOsmFountainsOnMap();
@@ -5290,10 +5408,7 @@
         return;
       }
       map = L.map("map-container").setView(activeBaseCoords, 13);
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
-        attribution: "&copy; OpenStreetMap"
-      }).addTo(map);
+      applyMapBaseLayer(currentMapLayerKey);
 
       map.on("dragstart", () => {
         if (liveNavActive) {
@@ -5961,13 +6076,16 @@
           const { x, y } = latLngToTile(lat, lon, z);
           for (let dx = -1; dx <= 1; dx++) {
             for (let dy = -1; dy <= 1; dy++) {
+              if (currentMapLayerKey === "openmtbmap") {
+                tileUrls.add(`https://tile.openmtbmap.org/tile/${z}/${x + dx}/${y + dy}.png`);
+              }
               tileUrls.add(`https://a.tile.openstreetmap.org/${z}/${x + dx}/${y + dy}.png`);
             }
           }
         });
       });
 
-      const urls = Array.from(tileUrls).slice(0, 75);
+      const urls = Array.from(tileUrls).slice(0, 85);
       let completed = 0;
 
       if ("caches" in window) {
@@ -6653,6 +6771,8 @@
         modal.classList.add("hidden");
       }
       applyThemeMode(currentThemeMode);
+      const layerSel = document.getElementById("map-layer-select");
+      if (layerSel) layerSel.value = currentMapLayerKey;
       updateNetworkStatusUI();
       changeLanguage(currentLang);
       await hydrateLocalStateOnBoot();
