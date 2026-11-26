@@ -110,6 +110,7 @@
     }
     html.dark-mode header,
     html.dark-mode nav,
+    html.dark-mode #weather-strip,
     html.dark-mode section > div,
     html.dark-mode #auth-screen > div,
     html.dark-mode #startup-permissions-modal > div {
@@ -278,6 +279,29 @@
       <button id="nav-tours-tab" data-tab="tours" data-i18n="tabTours" onclick="switchTab('tours')" class="nav-tab hidden py-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 whitespace-nowrap cursor-pointer">Gestione Tour</button>
       <button id="nav-manager-tab" data-tab="manager" data-i18n="tabManager" onclick="switchTab('manager')" class="nav-tab hidden py-3 border-b-2 border-transparent text-stone-500 hover:text-stone-800 whitespace-nowrap cursor-pointer">Gestore & Cache</button>
     </nav>
+
+    <!-- Barra Meteo compatta sotto il menu -->
+    <div id="weather-strip" class="bg-stone-50 border-b border-stone-200 px-4 py-2 text-xs">
+      <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-2">
+        <div class="flex flex-wrap items-center gap-2.5">
+          <span id="weather-icon" class="text-base leading-none">⛅</span>
+          <span class="font-bold text-stone-900" id="weather-location">Bibbona · Macchia della Magona</span>
+          <span id="weather-temp" class="font-extrabold text-emerald-700">--°C</span>
+          <span id="weather-desc" class="text-stone-600" data-i18n="weatherLoading">Caricamento meteo...</span>
+          <span id="weather-wind" class="text-stone-500 hidden sm:inline"></span>
+          <span id="weather-rain" class="text-stone-500 hidden md:inline"></span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="fetchTrailWeather(true)" title="Aggiorna meteo" class="px-2 py-1 rounded-lg bg-stone-200/80 hover:bg-stone-300/80 text-stone-800 font-semibold text-[11px] cursor-pointer">
+            ↻
+          </button>
+          <a id="google-weather-link" href="https://www.google.com/search?q=meteo+Bibbona" target="_blank" rel="noopener"
+            class="px-2.5 py-1 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-semibold text-[11px] whitespace-nowrap">
+            Google Meteo ↗
+          </a>
+        </div>
+      </div>
+    </div>
 
     <!-- Scheda Mappa -->
     <section id="tab-map" class="tab-panel flex-1 p-4 max-w-6xl w-full mx-auto space-y-4">
@@ -751,6 +775,7 @@
     const CLIENT_CODES_STORAGE_KEY = "magona_client_codes_pool_v1";
     const THEME_STORAGE_KEY = "magona_theme_mode_v1";
     const PERMISSIONS_PROMPT_KEY = "magona_permissions_prompt_seen_v1";
+    const WEATHER_CACHE_KEY = "magona_weather_cache_v1";
     const MAX_USES_PER_CODE = 3;
     const IDB_NAME = "MagonaBikeGarageDB";
     const IDB_STORE = "appState";
@@ -760,6 +785,16 @@
         themeLight: "Chiaro",
         themeDark: "Scuro",
         themeAuto: "Auto",
+        weatherLoading: "Caricamento meteo...",
+        weatherOffline: "Meteo offline",
+        weatherWindLabel: "Vento",
+        weatherRainLabel: "Pioggia",
+        weatherCodes: {
+          0: "Sereno", 1: "Prevalentemente sereno", 2: "Parzialmente nuvoloso", 3: "Coperto",
+          45: "Nebbia", 48: "Nebbia con brina", 51: "Pioviggine leggera", 53: "Pioviggine",
+          55: "Pioviggine intensa", 61: "Pioggia debole", 63: "Pioggia moderata", 65: "Pioggia forte",
+          80: "Rovesci deboli", 81: "Rovesci moderati", 82: "Rovesci forti", 95: "Temporale"
+        },
         permTitle: "Autorizzazioni GPS e Rete Web",
         permDesc: "Per mostrare la tua posizione sul sentiero, calcolare distanza e dislivello rimanenti e salvare le mappe offline, abilita il GPS e la connessione web.",
         permGpsLabel: "Posizione GPS Live",
@@ -920,6 +955,16 @@
         themeLight: "Light",
         themeDark: "Dark",
         themeAuto: "Auto",
+        weatherLoading: "Loading weather...",
+        weatherOffline: "Weather offline",
+        weatherWindLabel: "Wind",
+        weatherRainLabel: "Rain",
+        weatherCodes: {
+          0: "Clear sky", 1: "Mainly clear", 2: "Partly cloudy", 3: "Overcast",
+          45: "Fog", 48: "Depositing rime fog", 51: "Light drizzle", 53: "Drizzle",
+          55: "Dense drizzle", 61: "Slight rain", 63: "Moderate rain", 65: "Heavy rain",
+          80: "Slight showers", 81: "Moderate showers", 82: "Violent showers", 95: "Thunderstorm"
+        },
         permTitle: "GPS & Web Network Permissions",
         permDesc: "To show your position on the trail, calculate remaining distance and elevation gain, and cache maps offline, enable GPS and web access.",
         permGpsLabel: "Live GPS Location",
@@ -1080,6 +1125,16 @@
         themeLight: "Hell",
         themeDark: "Dunkel",
         themeAuto: "Auto",
+        weatherLoading: "Wetter wird geladen...",
+        weatherOffline: "Wetter offline",
+        weatherWindLabel: "Wind",
+        weatherRainLabel: "Regen",
+        weatherCodes: {
+          0: "Klar", 1: "Überwiegend klar", 2: "Teilweise bewölkt", 3: "Bedeckt",
+          45: "Nebel", 48: "Reifnebel", 51: "Leichter Nieselregen", 53: "Nieselregen",
+          55: "Starker Nieselregen", 61: "Leichter Regen", 63: "Mäßiger Regen", 65: "Starker Regen",
+          80: "Leichte Schauer", 81: "Mäßige Schauer", 82: "Starke Schauer", 95: "Gewitter"
+        },
         permTitle: "GPS- & Web-Berechtigungen",
         permDesc: "Um Ihre Position auf dem Trail anzuzeigen, verbleibende Distanz und Höhenmeter zu berechnen und Karten offline zu speichern, aktivieren Sie GPS und Web.",
         permGpsLabel: "Live-GPS-Position",
@@ -1240,6 +1295,16 @@
         themeLight: "Licht",
         themeDark: "Donker",
         themeAuto: "Auto",
+        weatherLoading: "Weer laden...",
+        weatherOffline: "Weer offline",
+        weatherWindLabel: "Wind",
+        weatherRainLabel: "Regen",
+        weatherCodes: {
+          0: "Onbewolkt", 1: "Overwegend helder", 2: "Half bewolkt", 3: "Bewolkt",
+          45: "Mist", 48: "Rijpmist", 51: "Lichte motregen", 53: "Motregen",
+          55: "Dichte motregen", 61: "Lichte regen", 63: "Matige regen", 65: "Zware regen",
+          80: "Lichte buien", 81: "Matige buien", 82: "Zware buien", 95: "Onweer"
+        },
         permTitle: "GPS- & Webtoestemmingen",
         permDesc: "Om je positie op de route te tonen, resterende afstand en hoogtemeters te berekenen en kaarten offline op te slaan, schakel je GPS en webtoegang in.",
         permGpsLabel: "Live GPS-locatie",
@@ -1609,6 +1674,96 @@
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#39;");
+    }
+
+    /* ================= WEATHER BAR ================= */
+
+    function getWeatherEmoji(code) {
+      if (code === 0) return "☀️";
+      if (code === 1 || code === 2) return "⛅";
+      if (code === 3) return "☁️";
+      if (code === 45 || code === 48) return "🌫️";
+      if (code >= 51 && code <= 67) return "🌧️";
+      if (code >= 71 && code <= 77) return "❄️";
+      if (code >= 80 && code <= 82) return "🌦️";
+      if (code >= 95) return "⛈️";
+      return "🌤️";
+    }
+
+    function renderWeatherData(data) {
+      if (!data) return;
+      const t = I18N[currentLang] || I18N.it;
+      const iconEl = document.getElementById("weather-icon");
+      const tempEl = document.getElementById("weather-temp");
+      const descEl = document.getElementById("weather-desc");
+      const windEl = document.getElementById("weather-wind");
+      const rainEl = document.getElementById("weather-rain");
+      const gLink = document.getElementById("google-weather-link");
+
+      if (iconEl) iconEl.textContent = getWeatherEmoji(data.weatherCode);
+      if (tempEl) tempEl.textContent = `${Math.round(data.temp)}°C`;
+      if (descEl) {
+        descEl.textContent = (t.weatherCodes && t.weatherCodes[data.weatherCode]) || t.weatherCodes[2];
+      }
+      if (windEl) {
+        windEl.textContent = `· ${t.weatherWindLabel}: ${Math.round(data.wind)} km/h`;
+      }
+      if (rainEl && typeof data.rainProb === "number") {
+        rainEl.textContent = `· ${t.weatherRainLabel}: ${data.rainProb}%`;
+      }
+      if (gLink) {
+        const queries = { it: "meteo+Bibbona", en: "weather+Bibbona", de: "wetter+Bibbona", nl: "weer+Bibbona" };
+        gLink.href = `https://www.google.com/search?q=${queries[currentLang] || queries.it}`;
+      }
+    }
+
+    async function fetchTrailWeather(forceRefresh = false) {
+      const t = I18N[currentLang] || I18N.it;
+      try {
+        const cachedRaw = localStorage.getItem(WEATHER_CACHE_KEY);
+        if (cachedRaw) {
+          const cached = JSON.parse(cachedRaw);
+          if (cached && cached.data) {
+            renderWeatherData(cached.data);
+            if (!forceRefresh && Date.now() - cached.ts < 15 * 60 * 1000) {
+              return;
+            }
+          }
+        }
+      } catch (e) {}
+
+      if (!navigator.onLine) {
+        const descEl = document.getElementById("weather-desc");
+        if (descEl && descEl.textContent === t.weatherLoading) {
+          descEl.textContent = t.weatherOffline;
+        }
+        return;
+      }
+
+      const [lat, lon] = userCoords || BASE_COORDS;
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat.toFixed(4)}&longitude=${lon.toFixed(4)}&current=temperature_2m,weather_code,wind_speed_10m&hourly=precipitation_probability&forecast_days=1&timezone=Europe%2FRome`;
+
+      try {
+        const resp = await fetch(url, { cache: "no-store" });
+        if (!resp.ok) return;
+        const json = await resp.json();
+        const cur = json.current || {};
+        const hourIdx = Math.min(new Date().getHours(), (json.hourly?.precipitation_probability?.length || 1) - 1);
+        const rainProb = json.hourly?.precipitation_probability?.[hourIdx];
+
+        const weatherData = {
+          temp: Number(cur.temperature_2m ?? 18),
+          weatherCode: Number(cur.weather_code ?? 1),
+          wind: Number(cur.wind_speed_10m ?? 0),
+          rainProb: typeof rainProb === "number" ? rainProb : 0
+        };
+
+        try {
+          localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: weatherData }));
+        } catch (e) {}
+
+        renderWeatherData(weatherData);
+      } catch (e) {}
     }
 
     /* ================= THEME MODE ================= */
@@ -2131,6 +2286,7 @@
       renderPoiList();
       renderPoiMarkersOnMap();
       renderTroubleshooting();
+      fetchTrailWeather(false);
       if (isOwner) {
         renderToursManagerList();
       }
@@ -2192,6 +2348,7 @@
             gpsStatus.className = "text-xs font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800";
           }
           startWatchingUserLocation();
+          fetchTrailWeather(true);
           setTimeout(dismissStartupPermissions, 350);
         },
         () => {
@@ -2456,6 +2613,7 @@
       document.getElementById("nav-tours-tab").classList.toggle("hidden", !isOwner);
       renderClientCodesPoolUI();
       updateNetworkStatusUI();
+      fetchTrailWeather(false);
 
       if (ROUTES_LIST.length > 0 && !ROUTES_LIST.some((r) => r.id === activeRouteId)) {
         activeRouteId = ROUTES_LIST[0].id;
@@ -3782,6 +3940,7 @@
 
     window.addEventListener("online", () => {
       updateNetworkStatusUI();
+      fetchTrailWeather(false);
       syncAllCloudStateOnBoot();
     });
     window.addEventListener("offline", updateNetworkStatusUI);
