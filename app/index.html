@@ -231,7 +231,7 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
-  <!-- Schermata iniziale autorizzazioni GPS & Rete Web (solo primo accesso) -->
+  <!-- Schermata iniziale autorizzazioni GPS & Rete Web -->
   <div id="startup-permissions-modal" class="fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-stone-200">
       <div class="mb-2 flex items-center gap-2">
@@ -1013,7 +1013,7 @@
         permNetLabel: "Connessione Web & Cache Mappe",
         gpsWaiting: "In attesa",
         gpsGranted: "Attivo",
-        gpsDenied: "Non disponibile qui",
+        gpsDenied: "GPS non disponibile qui",
         netOnline: "Online · Cache pronta",
         netOffline: "Offline · Cache locale",
         authBtn: "Autorizza GPS e Rete Web",
@@ -1188,7 +1188,7 @@
         permNetLabel: "Web Connection & Map Cache",
         gpsWaiting: "Waiting",
         gpsGranted: "Active",
-        gpsDenied: "Unavailable here",
+        gpsDenied: "GPS unavailable here",
         netOnline: "Online · Cache ready",
         netOffline: "Offline · Local cache",
         authBtn: "Authorize GPS & Web",
@@ -1363,7 +1363,7 @@
         permNetLabel: "Webverbindung & Karten-Cache",
         gpsWaiting: "Wartend",
         gpsGranted: "Aktiv",
-        gpsDenied: "Hier nicht verfügbar",
+        gpsDenied: "GPS hier nicht verfügbar",
         netOnline: "Online · Cache bereit",
         netOffline: "Offline · Lokaler Cache",
         authBtn: "GPS & Web freigeben",
@@ -1538,7 +1538,7 @@
         permNetLabel: "Webverbinding & Kaartcache",
         gpsWaiting: "Wachten",
         gpsGranted: "Actief",
-        gpsDenied: "Hier niet beschikbaar",
+        gpsDenied: "GPS hier niet beschikbaar",
         netOnline: "Online · Cache gereed",
         netOffline: "Offline · Lokale cache",
         authBtn: "GPS & Web toestaan",
@@ -1713,7 +1713,7 @@
         permNetLabel: "Conexión Web y Caché de Mapas",
         gpsWaiting: "En espera",
         gpsGranted: "Activo",
-        gpsDenied: "No disponible aquí",
+        gpsDenied: "GPS no disponible aquí",
         netOnline: "En línea · Caché lista",
         netOffline: "Sin conexión · Caché local",
         authBtn: "Autorizar GPS y Red Web",
@@ -1863,7 +1863,7 @@
         toastOfflineSaved: "Mapa y rutas guardados sin conexión en el teléfono",
         toastWakeOn: "Pantalla siempre encendida activada",
         toastWakeOff: "Pantalla siempre encendida desactivada",
-        toastWakeUnsupported: "Navegador incompatible con Wake Lock: configura el bloqueo de pantalla en 'Nunca'",
+        toastWakeUnsupported: "Browser incompatible con Wake Lock: configura el bloqueo de pantalla en 'Nunca'",
         toastWakeError: "No se pudo mantener la pantalla encendida (revisa ahorro de batería o HTTPS)",
         toastPoiGuided: "Ruta MTB/senderos calculada hacia:",
         toastPoiCalc: "Calculando ruta por senderos hacia:"
@@ -1888,7 +1888,7 @@
         permNetLabel: "Connexion Web & Cache Cartes",
         gpsWaiting: "En attente",
         gpsGranted: "Actif",
-        gpsDenied: "Indisponible ici",
+        gpsDenied: "GPS indisponible ici",
         netOnline: "En ligne · Cache prêt",
         netOffline: "Hors ligne · Cache local",
         authBtn: "Autoriser GPS et Web",
@@ -2063,7 +2063,7 @@
         permNetLabel: "Conexão Web e Cache de Mapas",
         gpsWaiting: "Aguardando",
         gpsGranted: "Ativo",
-        gpsDenied: "Indisponível aqui",
+        gpsDenied: "GPS indisponível aqui",
         netOnline: "Online · Cache pronto",
         netOffline: "Offline · Cache local",
         authBtn: "Autorizar GPS e Rede Web",
@@ -2238,7 +2238,7 @@
         permNetLabel: "网络连接与地图缓存",
         gpsWaiting: "等待中",
         gpsGranted: "已开启",
-        gpsDenied: "此处不可用",
+        gpsDenied: "此处 GPS 不可用",
         netOnline: "在线 · 缓存就绪",
         netOffline: "离线 · 本地缓存",
         authBtn: "授权 GPS 与网络",
@@ -3408,7 +3408,7 @@
       const clientCode = getCurrentRiderIdentifier();
       if (!clientCode || clientCode === "GESTORE") return;
 
-      const route = getRouteById(activeRouteId);
+      const route = activeRouteId ? getRouteById(activeRouteId) : null;
       const nowIso = new Date().toISOString();
       if (!sessionDepartureIso || reason === "login") {
         sessionDepartureIso = nowIso;
@@ -3421,7 +3421,7 @@
         managerId: activeManagerId || SUPER_MANAGER_ID,
         clientCode,
         routeId: route?.id || "",
-        routeName: getLocalizedRouteField(route, "name") || route?.name || "",
+        routeName: route ? (getLocalizedRouteField(route, "name") || route.name || "") : "",
         departedAt: sessionDepartureIso,
         updatedAt: nowIso
       };
@@ -3527,7 +3527,7 @@
       markAlertTriggered(alertKey);
 
       const clientCode = getCurrentRiderIdentifier();
-      const route = getRouteById(activeRouteId);
+      const route = activeRouteId ? getRouteById(activeRouteId) : null;
       const currentCoords = Array.isArray(userCoords) && userCoords.length >= 2
         ? [+Number(userCoords[0]).toFixed(6), +Number(userCoords[1]).toFixed(6)]
         : null;
@@ -3538,7 +3538,7 @@
         type: alertType,
         clientCode,
         routeId: route?.id || "",
-        routeName: getLocalizedRouteField(route, "name") || route?.name || "",
+        routeName: route ? (getLocalizedRouteField(route, "name") || route.name || "") : "",
         departedAt: sessionDepartureIso || "",
         triggeredAt: new Date().toISOString(),
         sentAt: new Date().toISOString(),
@@ -4401,6 +4401,32 @@
       if (modal) modal.classList.add("hidden");
     }
 
+    function handleGpsSuccessPosition(pos, gpsStatus, closeModalAfter = false) {
+      const t = I18N[currentLang] || I18N.it;
+      const newCoords = [pos.coords.latitude, pos.coords.longitude];
+      updateHeadingFromPosition(pos, newCoords);
+      userCoords = newCoords;
+
+      if (gpsStatus) {
+        gpsStatus.textContent = t.gpsGranted;
+        gpsStatus.className = "text-xs font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800";
+      }
+
+      if (map) {
+        renderUserPositionMarker(userCoords, pos.coords.accuracy);
+        if (liveNavActive && followUserCenter) {
+          centerMapOnCoords(userCoords, NAV_ZOOM_LEVEL, false);
+        }
+      }
+      renderPoiList();
+      updateRouteProgressMetrics();
+      fetchTrailWeather(true);
+
+      if (closeModalAfter) {
+        setTimeout(dismissStartupPermissions, 300);
+      }
+    }
+
     function requestStartupPermissions() {
       markStartupPermissionsSeen();
       updateNetworkStatusUI();
@@ -4408,30 +4434,42 @@
       const t = I18N[currentLang] || I18N.it;
 
       if (!("geolocation" in navigator)) {
-        if (gpsStatus) gpsStatus.textContent = t.gpsDenied;
-        setTimeout(dismissStartupPermissions, 350);
+        if (gpsStatus) {
+          gpsStatus.textContent = t.gpsDenied;
+          gpsStatus.className = "text-xs font-semibold px-2 py-0.5 rounded bg-amber-100 text-amber-800";
+        }
         return;
+      }
+
+      if (gpsStatus) {
+        gpsStatus.textContent = t.gpsWaiting;
+        gpsStatus.className = "text-xs font-semibold px-2 py-0.5 rounded bg-stone-200 text-stone-700";
       }
 
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          userCoords = [pos.coords.latitude, pos.coords.longitude];
-          if (gpsStatus) {
-            gpsStatus.textContent = t.gpsGranted;
-            gpsStatus.className = "text-xs font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800";
-          }
+          handleGpsSuccessPosition(pos, gpsStatus, true);
           startWatchingUserLocation();
-          fetchTrailWeather(true);
-          setTimeout(dismissStartupPermissions, 350);
         },
-        () => {
-          if (gpsStatus) {
-            gpsStatus.textContent = t.gpsDenied;
-            gpsStatus.className = "text-xs font-semibold px-2 py-0.5 rounded bg-amber-100 text-amber-800";
-          }
-          setTimeout(dismissStartupPermissions, 450);
+        (err) => {
+          // Fallback rapido senza alta precisione (utile su iPhone in ambienti chiusi o con fix lento)
+          navigator.geolocation.getCurrentPosition(
+            (pos2) => {
+              handleGpsSuccessPosition(pos2, gpsStatus, true);
+              startWatchingUserLocation();
+            },
+            (err2) => {
+              const code = err2?.code || err?.code || 0;
+              if (gpsStatus) {
+                gpsStatus.textContent = `${t.gpsDenied} (${code})`;
+                gpsStatus.className = "text-xs font-semibold px-2 py-0.5 rounded bg-amber-100 text-amber-800";
+              }
+              startWatchingUserLocation();
+            },
+            { enableHighAccuracy: false, timeout: 12000, maximumAge: 30000 }
+          );
         },
-        { enableHighAccuracy: true, timeout: 4500, maximumAge: 10000 }
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 10000 }
       );
     }
 
@@ -5261,38 +5299,35 @@
     function startWatchingUserLocation() {
       if (!("geolocation" in navigator)) return;
 
+      const onPos = (pos) => {
+        const newCoords = [pos.coords.latitude, pos.coords.longitude];
+        updateHeadingFromPosition(pos, newCoords);
+        userCoords = newCoords;
+        renderUserPositionMarker(userCoords, pos.coords.accuracy);
+        renderPoiList();
+        updateRouteProgressMetrics();
+        if (liveNavActive && followUserCenter && map) {
+          centerMapOnCoords(userCoords, NAV_ZOOM_LEVEL, false);
+        }
+      };
+
       navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const newCoords = [pos.coords.latitude, pos.coords.longitude];
-          updateHeadingFromPosition(pos, newCoords);
-          userCoords = newCoords;
-          renderUserPositionMarker(userCoords, pos.coords.accuracy);
-          renderPoiList();
-          updateRouteProgressMetrics();
-          if (liveNavActive && followUserCenter && map) {
-            centerMapOnCoords(userCoords, NAV_ZOOM_LEVEL, false);
-          }
+        onPos,
+        () => {
+          navigator.geolocation.getCurrentPosition(onPos, () => {}, {
+            enableHighAccuracy: false,
+            timeout: 12000,
+            maximumAge: 30000
+          });
         },
-        () => {},
-        { enableHighAccuracy: true, timeout: 6000, maximumAge: 2000 }
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 5000 }
       );
 
       if (watchId !== null) return;
       watchId = navigator.geolocation.watchPosition(
-        (pos) => {
-          const newCoords = [pos.coords.latitude, pos.coords.longitude];
-          updateHeadingFromPosition(pos, newCoords);
-          userCoords = newCoords;
-          renderUserPositionMarker(userCoords, pos.coords.accuracy);
-          renderPoiList();
-          updateRouteProgressMetrics();
-
-          if (liveNavActive && followUserCenter && map) {
-            centerMapOnCoords(userCoords, NAV_ZOOM_LEVEL, true);
-          }
-        },
+        onPos,
         () => {},
-        { enableHighAccuracy: true, maximumAge: 1500, timeout: 10000 }
+        { enableHighAccuracy: true, maximumAge: 5000, timeout: 12000 }
       );
     }
 
