@@ -1,18 +1,27 @@
 const CACHE_NAME = "magona-offline-v2";
-const APP_SHELL = ["./", "./index.html", "./logo.png"];
+const APP_SHELL = [
+  "./",
+  "./index.html",
+  "./logo.png",
+  "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css",
+  "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js",
+  "https://cdn.tailwindcss.com"
+];
 
 self.addEventListener("install", (event) => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL).catch(() => {}))
+    caches.open(CACHE_NAME).then((cache) =>
+      Promise.allSettled(APP_SHELL.map((url) => cache.add(url)))
+    )
   );
 });
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
-    ).then(() => self.clients.claim())
+    caches.keys()
+      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))))
+      .then(() => self.clients.claim())
   );
 });
 
@@ -21,21 +30,51 @@ self.addEventListener("fetch", (event) => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
 
-  // Non intercettare chiamate API dinamiche (Worker / Firebase / Meteo)
-  if (url.hostname.includes("workers.dev") || url.hostname.includes("firebasedatabase.app") || url.hostname.includes("open-meteo.com")) {
+  // Escludi le API dinamiche in tempo reale
+  if (
+    url.hostname.includes("workers.dev") ||
+    url.hostname.includes("firebasedatabase.app") ||
+    url.hostname.includes("open-meteo.com") ||
+    url.hostname.includes("overpass") ||
+    url.hostname.includes("brouter.de") ||
+    url.hostname.includes("project-osrm.org")
+  ) {
     return;
   }
 
+  // Navigazione pagina: network-first con fallback immediato alla cache offline
+  if (req.mode === "navigate") {
+    event.respondWith(
+      fetch(req)
+        .then((networkResp) => {
+          if (networkResp && networkResp.ok) {
+            const copy = networkResp.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put("./index.html", copy)).catch(() => {});
+          }
+          return networkResp;
+        })
+        .catch(() =>
+          caches.match(req, { ignoreSearch: true })
+            .then((m) => m || caches.match("./index.html"))
+            .then((m) => m || caches.match("./"))
+        )
+    );
+    return;
+  }
+
+  // Tasselli mappa, script e immagini: cache-first con salvataggio automatico
   event.respondWith(
-    caches.match(req).then((cached) => {
+    caches.match(req, { ignoreSearch: false }).then((cached) => {
       if (cached) return cached;
-      return fetch(req).then((networkResp) => {
-        if (networkResp && (networkResp.ok || networkResp.type === "opaque")) {
-          const copy = networkResp.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(req, copy)).catch(() => {});
-        }
-        return networkResp;
-      }).catch(() => cached || new Response("", { status: 504 }));
+      return fetch(req)
+        .then((networkResp) => {
+          if (networkResp && (networkResp.ok || networkResp.type === "opaque")) {
+            const copy = networkResp.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(req, copy)).catch(() => {});
+          }
+          return networkResp;
+        })
+        .catch(() => caches.match(req, { ignoreSearch: true }).then((m) => m || new Response("", { status: 504 })));
     })
   );
 });
