@@ -2391,13 +2391,8 @@
       if (!map) return;
       if (baseLocationMarker) {
         map.removeLayer(baseLocationMarker);
+        baseLocationMarker = null;
       }
-      baseLocationMarker = L.circleMarker(activeBaseCoords, {
-        radius: 8,
-        color: "#141413",
-        fillColor: "#141413",
-        fillOpacity: 0.9
-      }).addTo(map).bindPopup(escapeHtml(activeBaseLabel));
     }
 
     function getManagerCloudPrefix(managerId = activeManagerId) {
