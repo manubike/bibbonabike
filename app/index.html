@@ -1,3 +1,41 @@
+(function initAutoGithubLogosBanner() {
+  const GITHUB_USER = "manubike";
+  const GITHUB_REPO = "bibbonabike";
+  const LOGOS_FOLDER = "app/logos"; // percorso cartella nel repo
+
+  const track = document.getElementById("marquee-track");
+  const wrapper = document.getElementById("github-logos-marquee");
+  if (!track || !wrapper) return;
+
+  const apiUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${LOGOS_FOLDER}`;
+
+  fetch(apiUrl, { cache: "no-store" })
+    .then((res) => (res.ok ? res.json() : []))
+    .then((files) => {
+      if (!Array.isArray(files)) return;
+      const validExts = /\.(png|jpe?g|svg|webp|gif)$/i;
+      const logos = files.filter((f) => f && f.type === "file" && validExts.test(f.name));
+      if (logos.length === 0) {
+        wrapper.style.display = "none";
+        return;
+      }
+
+      const itemsHtml = logos.map((file) => {
+        const cleanAlt = file.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ");
+        // Usa il percorso relativo di GitHub Pages (oppure file.download_url)
+        const imgSrc = `./logos/${encodeURIComponent(file.name)}`;
+        return `<div class="marquee-item"><img src="${imgSrc}" alt="${cleanAlt}" loading="eager" decoding="async" onerror="this.closest('.marquee-item').style.display='none'" /></div>`;
+      }).join("");
+
+      track.innerHTML = itemsHtml + itemsHtml;
+      const durationSec = Math.max(16, logos.length * 4.5);
+      wrapper.style.setProperty("--marquee-duration", `${durationSec}s`);
+    })
+    .catch(() => {
+      wrapper.style.display = "none";
+    });
+})();
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
