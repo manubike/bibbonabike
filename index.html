@@ -530,11 +530,11 @@
               <div class="price-slide"><span>| giorno</span></div>
             </h3>
 
-            <p class="bike-type">E-MTB 29</p>
-            <a href="#prenota" class="btn-secondary bike-select" data-bike="E-MTB 29" aria-label="Seleziona bici E-MTB 29">SELEZIONA »</a>
+            <p class="bike-type">E-MTB 29 — A partire da 40€ / giorno</p>
+            <a href="#prenota" class="btn-secondary bike-select" data-bike="E-MTB 29" data-price-day="40" aria-label="Seleziona bici E-MTB 29">SELEZIONA »</a>
 
-            <p class="bike-type">E-MTB 24</p>
-            <a href="#prenota" class="btn-secondary bike-select" data-bike="E-MTB 24" aria-label="Seleziona bici E-MTB 24">SELEZIONA »</a>
+            <p class="bike-type">E-MTB 24 — 40€ / giorno · 25€ mezza giornata</p>
+            <a href="#prenota" class="btn-secondary bike-select" data-bike="E-MTB 24" data-price-day="40" data-price-half="25" aria-label="Seleziona bici E-MTB 24">SELEZIONA »</a>
           </div>
         </div>
       </div>
@@ -747,12 +747,18 @@
           </div>
 
           <div class="form-group icon-input">
+            <label for="phone">Numero di telefono *</label>
+            <i class="fa fa-phone"></i>
+            <input type="tel" id="phone" name="phone" autocomplete="tel" placeholder="+39 333 1234567" required />
+          </div>
+
+          <div class="form-group icon-input">
             <label for="bikeType">Tipo di bici *</label>
             <i class="fa fa-bicycle"></i>
             <select id="bikeType" name="bikeType" required>
               <option value="">Seleziona</option>
-              <option value="E-MTB 29">E-MTB 29</option>
-              <option value="E-MTB 24">E-MTB 24</option>
+              <option value="E-MTB 29" data-price-day="40" data-price-half="20">E-MTB 29 (40€/giorno)</option>
+              <option value="E-MTB 24" data-price-day="40" data-price-half="25">E-MTB 24 (40€/giorno · 25€ mezza giornata)</option>
             </select>
           </div>
 
@@ -845,8 +851,6 @@
           <button type="submit" class="btn-primary">📩 Invia richiesta</button>
           <p id="responseMessage"></p>
         </form>
-
-        <div id="paypalPlaceholder" style="margin-top: 20px; text-align: center;"></div>
       </div>
     </section>
   </main>
@@ -1005,6 +1009,74 @@
           });
         });
       }
+    });
+  </script>
+
+  <!-- Calcolo Totale Prenotazione (E-MTB 24: 40€/giorno, 25€ mezza giornata) -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('noleggioForm');
+      const bikeSelect = document.getElementById('bikeType');
+      const quantityInput = document.getElementById('quantity');
+      const durationSelect = document.getElementById('duration');
+      const totalAmountSpan = document.getElementById('totalAmount');
+      const totalHiddenInput = document.getElementById('totalHidden');
+      const selectButtons = document.querySelectorAll('.bike-select');
+
+      function computeRentalTotal() {
+        if (!bikeSelect || !quantityInput || !durationSelect || !totalAmountSpan || !totalHiddenInput) {
+          return;
+        }
+
+        const selectedOption = bikeSelect.options[bikeSelect.selectedIndex];
+        if (!selectedOption || !selectedOption.value) {
+          totalAmountSpan.textContent = '0.00';
+          totalHiddenInput.value = '0.00';
+          return;
+        }
+
+        const days = parseFloat(durationSelect.value) || 1;
+        const qty = Math.max(1, parseInt(quantityInput.value, 10) || 1);
+        const priceDay = parseFloat(selectedOption.dataset.priceDay) || 40;
+        const priceHalf = parseFloat(selectedOption.dataset.priceHalf) || (priceDay / 2);
+
+        let unitPrice;
+        if (days === 0.5) {
+          unitPrice = priceHalf;
+        } else {
+          unitPrice = priceDay * days;
+        }
+
+        let accessoriesTotal = 0;
+        const checkedAccessories = form ? form.querySelectorAll('input[name="accessories"]:checked') : [];
+        checkedAccessories.forEach(acc => {
+          if (acc.value === 'carrello') accessoriesTotal += 7;
+          if (acc.value === 'shotgun') accessoriesTotal += 15;
+        });
+
+        const grandTotal = (unitPrice * qty) + accessoriesTotal;
+        const formatted = grandTotal.toFixed(2);
+        totalAmountSpan.textContent = formatted;
+        totalHiddenInput.value = formatted;
+      }
+
+      selectButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const bikeVal = btn.getAttribute('data-bike');
+          if (bikeSelect && bikeVal) {
+            bikeSelect.value = bikeVal;
+            bikeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+          computeRentalTotal();
+        });
+      });
+
+      if (form) {
+        form.addEventListener('change', computeRentalTotal);
+        form.addEventListener('input', computeRentalTotal);
+      }
+
+      computeRentalTotal();
     });
   </script>
 
