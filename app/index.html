@@ -3030,18 +3030,47 @@ resolve(null);
 return;
 }
 
+const tryLoadWithTimeout = (targetUrl, timeoutMs) => new Promise((res) => {
 const img = new Image();
-let triedFallback = false;
-img.onload = () => resolve(img);
-img.onerror = () => {
-if (!triedFallback && fallbackUrl && fallbackUrl !== url) {
-triedFallback = true;
-img.src = fallbackUrl;
-} else {
-resolve(null);
+let settled = false;
+const timer = setTimeout(() => {
+if (!settled) {
+settled = true;
+img.src = "";
+res(null);
+}
+}, timeoutMs);
+
+img.onload = () => {
+if (!settled) {
+settled = true;
+clearTimeout(timer);
+res(img);
 }
 };
-img.src = url;
+img.onerror = () => {
+if (!settled) {
+settled = true;
+clearTimeout(timer);
+res(null);
+}
+};
+img.src = targetUrl;
+});
+
+const primaryImg = await tryLoadWithTimeout(url, 2500);
+if (primaryImg) {
+resolve(primaryImg);
+return;
+}
+
+if (fallbackUrl && fallbackUrl !== url) {
+const fbImg = await tryLoadWithTimeout(fallbackUrl, 2500);
+resolve(fbImg);
+return;
+}
+
+resolve(null);
 });
 }
 
