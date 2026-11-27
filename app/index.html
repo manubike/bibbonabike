@@ -88,7 +88,7 @@
       border-radius: 14px;
       width: 100%;
       height: 440px;
-      background-color: #dcdad5;
+      background-color: #f2efe9;
     }
     #map-rotator {
       position: relative;
@@ -103,21 +103,17 @@
       left: -45%;
       width: 190%;
       height: 190%;
-      transform: rotate(var(--map-rot, 0deg));
+      transform: rotate(var(--map-rot, 0deg)) scale(1.015);
     }
     #map-container {
       width: 100%;
       height: 100%;
       z-index: 1;
-      background-color: #dcdad5;
+      background-color: #f2efe9;
     }
     #map-rotator.heading-up-active .leaflet-tile-container img.leaflet-tile {
-      width: 258px !important;
-      height: 258px !important;
-      margin: -1px !important;
-      max-width: none !important;
-      max-height: none !important;
-      border: 0 !important;
+      outline: 1.5px solid #f2efe9;
+      outline-offset: -0.5px;
       -webkit-backface-visibility: hidden;
       backface-visibility: hidden;
     }
@@ -5020,7 +5016,6 @@
     async function fetchOpenMtbTrailRoute(startPt, endPt) {
       if (!navigator.onLine) return null;
 
-      // 1) Asfalto / strade principali (OSRM cycling + BRouter fastbike)
       const roadCandidates = [];
 
       try {
@@ -5064,7 +5059,6 @@
         return pureRoad.reduce((a, b) => (a.weightedScore < b.weightedScore ? a : b));
       }
 
-      // 2) Carrareccia / strada bianca (BRouter gravel)
       const trackCandidates = [];
       try {
         const gravelUrl = `https://brouter.de/brouter?lonlats=${startPt[1]},${startPt[0]}|${endPt[1]},${endPt[0]}&profile=gravel&alternativeidx=0&format=geojson`;
@@ -5094,7 +5088,6 @@
         return anyNonTrail.reduce((a, b) => (a.weightedScore < b.weightedScore ? a : b));
       }
 
-      // 3) Sentiero (ultima risorsa) solo se non c'è asfalto né carrareccia
       try {
         const mtbUrl = `https://brouter.de/brouter?lonlats=${startPt[1]},${startPt[0]}|${endPt[1]},${endPt[0]}&profile=mtb&alternativeidx=0&format=geojson`;
         const ctrl = new AbortController();
