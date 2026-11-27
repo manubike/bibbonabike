@@ -436,36 +436,6 @@ Esci
 </div>
 </div>
 </div>
-<!-- Banner Sponsor a scorrimento (blocco unico) -->
-<div id="github-logos-marquee" style="width:100%;overflow:hidden;border-bottom:1px solid #e7e5e4;background:rgba(255,255,255,0.95);padding:6px 12px;min-height:40px;max-height:46px;display:flex;align-items:center;user-select:none;">
-  <style>
-    html.dark-mode #github-logos-marquee { background:#181b1a !important; border-color:#2c312f !important; }
-    #github-logos-marquee .m-track { display:flex; align-items:center; gap:2.2rem; padding-right:2.2rem; width:max-content; animation:mScroll var(--m-dur,24s) linear infinite; }
-    #github-logos-marquee:hover .m-track, #github-logos-marquee:active .m-track { animation-play-state:paused; }
-    #github-logos-marquee img { max-height:26px; max-width:110px; width:auto; height:auto; object-fit:contain; display:block; }
-    @keyframes mScroll { 0% { transform:translate3d(0,0,0); } 100% { transform:translate3d(-50%,0,0); } }
-  </style>
-  <div style="max-width:72rem;width:100%;margin:0 auto;overflow:hidden;">
-    <div id="marquee-track" class="m-track"></div>
-  </div>
-  <script>
-    (function(){
-      const USER = "TUO_USERNAME"; // es. "manuelvitiello"
-      const REPO = "TUO_REPO";     // es. "bibbonabike.com"
-      const box = document.getElementById("github-logos-marquee");
-      const track = document.getElementById("marquee-track");
-      fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/app/loghi`, { cache: "no-store" })
-        .then(r => r.ok ? r.json() : [])
-        .then(files => {
-          const imgs = (Array.isArray(files) ? files : []).filter(f => f.type === "file" && /\.(png|jpe?g|svg|webp)$/i.test(f.name));
-          if (!imgs.length) { box.style.display = "none"; return; }
-          const html = imgs.map(f => `<img src="./loghi/${encodeURIComponent(f.name)}" alt="" onerror="this.style.display='none'">`).join("");
-          track.innerHTML = html + html;
-          box.style.setProperty("--m-dur", Math.max(15, imgs.length * 4.5) + "s");
-        })
-        .catch(() => { box.style.display = "none"; });
-    })();
-  </
 
 <!-- Scheda Mappa -->
 <section id="tab-map" class="tab-panel flex-1 p-4 max-w-6xl w-full mx-auto space-y-4">
