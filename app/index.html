@@ -528,6 +528,10 @@
           <span id="nav-status-text" class="font-semibold">Navigazione GPS live attiva</span>
           <button id="recenter-banner-btn" data-i18n="recenterBanner" onclick="recenterNavigator()" class="underline font-bold cursor-pointer">Ricentra Navigatore</button>
         </div>
+
+        <div id="off-route-banner" class="hidden bg-red-600 text-white rounded-xl px-3.5 py-2.5 text-xs flex items-center justify-between gap-2 font-bold">
+          <span id="off-route-text">⚠️ Sei fuori percorso (oltre 20 m): rientra sul tracciato</span>
+        </div>
       </div>
 
       <!-- Contenitore mappa con pannello navigazione in basso in modalità schermo intero -->
@@ -558,6 +562,9 @@
 
         <!-- Barra telemetria e comandi in basso a schermo intero -->
         <div id="bottom-telemetry-panel" class="bottom-telemetry-panel">
+          <div id="fs-off-route-alert" class="hidden bg-red-600 text-white rounded-xl px-3 py-2 text-xs font-bold">
+            <span id="fs-off-route-text">⚠️ Sei fuori percorso (oltre 20 m): rientra sul tracciato</span>
+          </div>
           <div class="flex flex-wrap items-center justify-between gap-2 border-b border-stone-200 pb-2">
             <div class="flex items-center gap-2">
               <span data-i18n="fsBannerLabel" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-stone-900 text-white">Navigazione</span>
@@ -1280,6 +1287,7 @@
         fsTotalElev: "Disl. + Totale",
         liveNavBanner: "Navigazione GPS live attiva",
         recenterBanner: "Ricentra Navigatore",
+        offRouteWarning: "⚠️ Sei fuori percorso (oltre 20 m): rientra sul tracciato",
         returnBasePrefix: "Rientro (asfalto → carrareccia → sentiero) verso",
         openGmaps: "Apri su Google Maps",
         yourGpsPopup: "La tua posizione GPS",
@@ -1453,6 +1461,7 @@
         fsTotalElev: "Total Elev. +",
         liveNavBanner: "Live GPS navigation active",
         recenterBanner: "Recenter Navigator",
+        offRouteWarning: "⚠️ Off route (over 20 m): return to the trail",
         returnBasePrefix: "Return (asphalt → dirt track → trail) to",
         openGmaps: "Open in Google Maps",
         yourGpsPopup: "Your GPS location",
@@ -1626,6 +1635,7 @@
         fsTotalElev: "Gesamt-Hm +",
         liveNavBanner: "Live-GPS-Navigation aktiv",
         recenterBanner: "Navigator zentrieren",
+        offRouteWarning: "⚠️ Du bist abseits der Route (über 20 m): kehre auf den Weg zurück",
         returnBasePrefix: "Rückweg (Asphalt → Forstweg → Trail) nach",
         openGmaps: "In Google Maps öffnen",
         yourGpsPopup: "Dein GPS-Standort",
@@ -1767,6 +1777,7 @@
         fsTotalElev: "Totaal hm +",
         liveNavBanner: "Live GPS-navigatie actief",
         recenterBanner: "Navigator centreren",
+        offRouteWarning: "⚠️ Je bent van de route af (meer dan 20 m): keer terug naar het pad",
         returnBasePrefix: "Terugweg (asfalt → zandpad → trail) naar",
         openGmaps: "Open in Google Maps",
         yourGpsPopup: "Jouw GPS-locatie",
@@ -1892,6 +1903,7 @@
         fsTotalElev: "Desn. + Total",
         liveNavBanner: "Navegación GPS en vivo activa",
         recenterBanner: "Recentrar Navegador",
+        offRouteWarning: "⚠️ Estás fuera de ruta (más de 20 m): vuelve al trazado",
         returnBasePrefix: "Regreso (asfalto → pista → sendero) hacia",
         openGmaps: "Abrir en Google Maps",
         yourGpsPopup: "Tu ubicación GPS",
@@ -2017,6 +2029,7 @@
         fsTotalElev: "Déniv. + Total",
         liveNavBanner: "Navigation GPS en direct active",
         recenterBanner: "Recentrer",
+        offRouteWarning: "⚠️ Vous êtes hors itinéraire (plus de 20 m) : revenez sur le tracé",
         returnBasePrefix: "Retour (asphalte → piste → sentier) vers",
         openGmaps: "Ouvrir dans Google Maps",
         yourGpsPopup: "Votre position GPS",
@@ -2142,6 +2155,7 @@
         fsTotalElev: "Elev. + Total",
         liveNavBanner: "Navegação GPS ao vivo ativa",
         recenterBanner: "Recentralizar",
+        offRouteWarning: "⚠️ Você saiu da rota (mais de 20 m): volte ao traçado",
         returnBasePrefix: "Retorno (asfalto → estrada de terra → trilha) para",
         openGmaps: "Abrir no Google Maps",
         yourGpsPopup: "Sua localização GPS",
@@ -2267,6 +2281,7 @@
         fsTotalElev: "总爬升 +",
         liveNavBanner: "实时 GPS 导航已开启",
         recenterBanner: "重新居中",
+        offRouteWarning: "⚠️ 您已偏离路线（超过 20 米）：请返回规划路线",
         returnBasePrefix: "返回路线 (柏油路 → 土路 → 小径) 前往",
         openGmaps: "在 Google 地图中打开",
         yourGpsPopup: "您的 GPS 位置",
@@ -2606,6 +2621,12 @@
     let followPauseTimer = null;
     let hasInitialNavZoomed = false;
     let userCoords = null;
+    const ON_ROUTE_THRESHOLD_M = 20;
+    const MIN_ON_ROUTE_RATIO = 0.8;
+    let routeAdherenceHistory = [];
+    let routeAdherenceRouteId = "";
+    let isCurrentlyOffRoute = false;
+    let lastOffRouteToastTs = 0;
     let prevGpsCoords = null;
     let currentHeadingDeg = 0;
     let targetHeadingDeg = 0;
@@ -4635,6 +4656,11 @@
       const liveBtn = document.getElementById("btn-live-nav");
       if (liveBtn) liveBtn.textContent = liveNavActive ? t.navStop : t.navStart;
 
+      const offRouteTxt = document.getElementById("off-route-text");
+      if (offRouteTxt) offRouteTxt.textContent = t.offRouteWarning;
+      const fsOffRouteTxt = document.getElementById("fs-off-route-text");
+      if (fsOffRouteTxt) fsOffRouteTxt.textContent = t.offRouteWarning;
+
       updateNetworkStatusUI();
       updateWakeLockUI();
       updatePoiOwnerVisibility();
@@ -5466,6 +5492,12 @@
       const changed = activeRouteId !== chosenId;
       activeRouteId = chosenId;
 
+      if (changed) {
+        routeAdherenceHistory = [];
+        routeAdherenceRouteId = activeRouteId;
+        updateOffRouteBanner(false);
+      }
+
       const sel = document.getElementById("route-select");
       if (sel) sel.value = activeRouteId;
 
@@ -5538,8 +5570,81 @@
       return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     }
 
+    function distancePointToSegmentMeters(p, a, b) {
+      const latScale = 111320;
+      const lonScale = 111320 * Math.cos((p[0] * Math.PI) / 180);
+      const px = (p[1] - a[1]) * lonScale;
+      const py = (p[0] - a[0]) * latScale;
+      const bx = (b[1] - a[1]) * lonScale;
+      const by = (b[0] - a[0]) * latScale;
+      const lenSq = bx * bx + by * by;
+      if (lenSq <= 0) return Math.hypot(px, py);
+      const t = Math.max(0, Math.min(1, (px * bx + py * by) / lenSq));
+      return Math.hypot(px - t * bx, py - t * by);
+    }
+
+    function getMinDistanceToRouteMeters(coords, routeCoords) {
+      if (!isValidLatLngPair(coords) || !Array.isArray(routeCoords) || routeCoords.length === 0) {
+        return Infinity;
+      }
+      if (routeCoords.length === 1) {
+        return isValidLatLngPair(routeCoords[0]) ? haversineMeters(coords, routeCoords[0]) : Infinity;
+      }
+      let minDist = Infinity;
+      for (let i = 1; i < routeCoords.length; i++) {
+        if (!isValidLatLngPair(routeCoords[i - 1]) || !isValidLatLngPair(routeCoords[i])) continue;
+        const d = distancePointToSegmentMeters(coords, routeCoords[i - 1], routeCoords[i]);
+        if (d < minDist) minDist = d;
+      }
+      return minDist;
+    }
+
+    function updateOffRouteBanner(offRoute, distMeters = 0) {
+      const t = getActiveDict();
+      const bannerEl = document.getElementById("off-route-banner");
+      const textEl = document.getElementById("off-route-text");
+      const fsBannerEl = document.getElementById("fs-off-route-alert");
+      const fsTextEl = document.getElementById("fs-off-route-text");
+
+      const msg = offRoute
+        ? `${t.offRouteWarning} (${Math.round(distMeters)} m)`
+        : t.offRouteWarning;
+
+      if (textEl) textEl.textContent = msg;
+      if (fsTextEl) fsTextEl.textContent = msg;
+      if (bannerEl) bannerEl.classList.toggle("hidden", !offRoute);
+      if (fsBannerEl) fsBannerEl.classList.toggle("hidden", !offRoute);
+
+      if (offRoute && (!isCurrentlyOffRoute || Date.now() - lastOffRouteToastTs > 20000)) {
+        lastOffRouteToastTs = Date.now();
+        showToast(msg);
+      }
+      isCurrentlyOffRoute = offRoute;
+    }
+
     function computeProgressFromGps(coords, routeCoords) {
       if (!coords || !routeCoords || routeCoords.length < 2) return null;
+
+      if (routeAdherenceRouteId !== activeRouteId) {
+        routeAdherenceRouteId = activeRouteId;
+        routeAdherenceHistory = [];
+      }
+
+      const distToRoute = getMinDistanceToRouteMeters(coords, routeCoords);
+      const onRouteNow = distToRoute <= ON_ROUTE_THRESHOLD_M;
+      routeAdherenceHistory.push(onRouteNow);
+
+      updateOffRouteBanner(Boolean(liveNavActive && !onRouteNow), distToRoute);
+
+      const onRouteCount = routeAdherenceHistory.filter(Boolean).length;
+      const adherenceRatio = routeAdherenceHistory.length > 0
+        ? onRouteCount / routeAdherenceHistory.length
+        : 0;
+
+      if (adherenceRatio < MIN_ON_ROUTE_RATIO) {
+        return 0;
+      }
+
       let cumulative = [0];
       for (let i = 1; i < routeCoords.length; i++) {
         cumulative.push(cumulative[i - 1] + haversineMeters(routeCoords[i - 1], routeCoords[i]));
@@ -5564,6 +5669,7 @@
       const route = activeRouteId ? getRouteById(activeRouteId) : null;
 
       if (!route) {
+        updateOffRouteBanner(false);
         document.getElementById("stat-total-dist").textContent = "0.0 km";
         document.getElementById("stat-rem-dist").textContent = "0.0 km";
         document.getElementById("stat-total-elev").textContent = "0 m";
@@ -5763,6 +5869,7 @@
       } else {
         clearTimeout(followPauseTimer);
         applyMapHeadingRotation(0, false);
+        updateOffRouteBanner(false);
         banner.classList.add("hidden");
         btn.textContent = t.navStart;
         btn.className = "px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer";
