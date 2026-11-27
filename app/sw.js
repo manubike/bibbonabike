@@ -3,7 +3,7 @@ const APP_SHELL = [
   "./",
   "./index.html",
   "./manifest.json",
-  "./logo.png",
+  "./img/icononly.png",
   "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css",
   "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js",
   "https://cdn.tailwindcss.com"
@@ -31,7 +31,6 @@ self.addEventListener("fetch", (event) => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
 
-  // Escludi le API dinamiche in tempo reale
   if (
     url.hostname.includes("workers.dev") ||
     url.hostname.includes("firebasedatabase.app") ||
@@ -43,7 +42,6 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Navigazione pagina: network-first con fallback immediato alla cache offline
   if (req.mode === "navigate") {
     event.respondWith(
       fetch(req)
@@ -63,7 +61,6 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Tasselli mappa, script e immagini: cache-first con salvataggio automatico
   event.respondWith(
     caches.match(req, { ignoreSearch: true }).then((cached) => {
       if (cached) return cached;
