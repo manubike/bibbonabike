@@ -77,14 +77,18 @@
       width: 15px;
       height: 15px;
     }
+    .map-wrapper,
+    .map-wrapper #map-rotator,
+    .map-wrapper #map-container {
+      touch-action: none;
+    }
     .map-wrapper {
       position: relative;
       overflow: hidden;
       border-radius: 14px;
       width: 100%;
       height: 440px;
-      touch-action: none;
-      background-color: #e5e3df;
+      background-color: #dcdad5;
     }
     #map-rotator {
       position: relative;
@@ -105,16 +109,15 @@
       width: 100%;
       height: 100%;
       z-index: 1;
-      background-color: #e5e3df;
+      background-color: #dcdad5;
     }
     #map-rotator.heading-up-active .leaflet-tile-container img.leaflet-tile {
-      width: 257.5px !important;
-      height: 257.5px !important;
-      margin: -0.75px !important;
+      width: 258px !important;
+      height: 258px !important;
+      margin: -1px !important;
       max-width: none !important;
       max-height: none !important;
       border: 0 !important;
-      outline: 1px solid transparent;
       -webkit-backface-visibility: hidden;
       backface-visibility: hidden;
     }
@@ -578,12 +581,6 @@
               <button id="fs-btn-wake-lock" onclick="toggleScreenWakeLock()" class="px-2.5 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold cursor-pointer">
                 Schermo: OFF
               </button>
-              <button id="fs-btn-live-nav" onclick="toggleLiveNavigation()" class="px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer">
-                GPS Live
-              </button>
-              <button data-i18n="fsExitBtn" onclick="toggleMapFullscreen()" class="px-3 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold cursor-pointer">
-                Esci
-              </button>
             </div>
           </div>
 
@@ -1019,8 +1016,8 @@
 
     const SURFACE_COST_MULTIPLIERS = {
       asphalt: 1.0,
-      track: 1.4,
-      trail: 4.5
+      track: 1.5,
+      trail: 6.0
     };
 
     const SAFE_RETURN_GRAPH = {
@@ -1066,7 +1063,7 @@
         }
       });
 
-      if (minDistToRoutes < 180) {
+      if (minDistToRoutes < 160) {
         const matchingRoute = ROUTES_LIST.find((r) => {
           const s = String(r.surface || "").toLowerCase();
           return s.includes("singletrack") || s.includes("trail") || s.includes("sentiero");
@@ -1262,8 +1259,6 @@
         diffBadgeBlack: "Nero · Esperto",
         navStart: "Naviga Ora",
         navStop: "Ferma GPS Live",
-        fsNavStart: "GPS Live",
-        fsNavStop: "Ferma GPS",
         saveOfflineBtn: "Salva Offline (Mappa + Tour)",
         returnBaseBtn: "Rientra alla Base",
         wakeOnLabel: "Schermo Acceso: ON",
@@ -1275,7 +1270,6 @@
         fullscreenBtn: "Schermo Intero",
         overlayCenterGps: "◎ Centra GPS",
         overlayFullscreen: "⤢ Schermo Intero",
-        fsExitBtn: "Esci",
         fsCenterBtn: "Centra GPS",
         fsBannerLabel: "Navigazione",
         elevProfileTitle: "📈 Profilo Altimetrico Live",
@@ -1438,8 +1432,6 @@
         diffBadgeBlack: "Black · Expert",
         navStart: "Start Navigation",
         navStop: "Stop Live GPS",
-        fsNavStart: "Live GPS",
-        fsNavStop: "Stop GPS",
         saveOfflineBtn: "Save Offline (Map + Tours)",
         returnBaseBtn: "Return to Base",
         wakeOnLabel: "Keep Screen On: ON",
@@ -1451,7 +1443,6 @@
         fullscreenBtn: "Fullscreen",
         overlayCenterGps: "◎ Center GPS",
         overlayFullscreen: "⤢ Fullscreen",
-        fsExitBtn: "Exit",
         fsCenterBtn: "Center GPS",
         fsBannerLabel: "Navigation",
         elevProfileTitle: "📈 Live Elevation Profile",
@@ -3716,8 +3707,6 @@
 
       const liveBtn = document.getElementById("btn-live-nav");
       if (liveBtn) liveBtn.textContent = liveNavActive ? t.navStop : t.navStart;
-      const fsLiveBtn = document.getElementById("fs-btn-live-nav");
-      if (fsLiveBtn) fsLiveBtn.textContent = liveNavActive ? t.fsNavStop : t.fsNavStart;
 
       updateNetworkStatusUI();
       updateWakeLockUI();
@@ -4315,9 +4304,9 @@
         }
 
         const delta = shortestAngleDelta(smoothedHeadingDeg, targetHeadingDeg);
-        if (Math.abs(delta) > 0.08) {
-          smoothedHeadingDeg = (smoothedHeadingDeg + delta * 0.14 + 360) % 360;
-          rotatorEl.style.setProperty("--map-rot", `${(-smoothedHeadingDeg).toFixed(2)}deg`);
+        if (Math.abs(delta) > 0.6) {
+          smoothedHeadingDeg = (smoothedHeadingDeg + delta * 0.2 + 360) % 360;
+          rotatorEl.style.setProperty("--map-rot", `${(-smoothedHeadingDeg).toFixed(1)}deg`);
         }
 
         rotationAnimFrameId = requestAnimationFrame(step);
@@ -4362,7 +4351,7 @@
         currentHeadingDeg = normalized;
         rotationActiveState = true;
         rotatorEl.classList.add("heading-up-active");
-        rotatorEl.style.setProperty("--map-rot", `${(-smoothedHeadingDeg).toFixed(2)}deg`);
+        rotatorEl.style.setProperty("--map-rot", `${(-smoothedHeadingDeg).toFixed(1)}deg`);
         startSmoothRotationLoop();
 
         if (map) {
@@ -4377,7 +4366,7 @@
       }
 
       const diffFromTarget = Math.abs(shortestAngleDelta(targetHeadingDeg, normalized));
-      if (diffFromTarget >= 3.5) {
+      if (diffFromTarget >= 6.0) {
         targetHeadingDeg = normalized;
         currentHeadingDeg = normalized;
       }
@@ -4452,7 +4441,8 @@
         lastX = e.clientX;
         lastY = e.clientY;
 
-        const rotRad = ((-smoothedHeadingDeg) * Math.PI) / 180;
+        const rotDeg = -smoothedHeadingDeg;
+        const rotRad = (rotDeg * Math.PI) / 180;
         const cosA = Math.cos(rotRad);
         const sinA = Math.sin(rotRad);
         const localDx = dx * cosA + dy * sinA;
@@ -4813,7 +4803,6 @@
       const banner = document.getElementById("nav-status-banner");
       const statusText = document.getElementById("nav-status-text");
       const btn = document.getElementById("btn-live-nav");
-      const fsBtn = document.getElementById("fs-btn-live-nav");
       const activeRoute = activeRouteId ? getRouteById(activeRouteId) : null;
 
       if (liveNavActive) {
@@ -4830,10 +4819,6 @@
         statusText.textContent = `${t.liveNavBanner} — ${routeLabel}`;
         btn.textContent = t.navStop;
         btn.className = "px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer";
-        if (fsBtn) {
-          fsBtn.textContent = t.fsNavStop;
-          fsBtn.className = "px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer";
-        }
 
         const routeStart = activeRoute?.coords?.[0] || activeBaseCoords;
         const targetStart = userCoords || routeStart;
@@ -4854,10 +4839,6 @@
         banner.classList.add("hidden");
         btn.textContent = t.navStart;
         btn.className = "px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer";
-        if (fsBtn) {
-          fsBtn.textContent = t.fsNavStart;
-          fsBtn.className = "px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold cursor-pointer";
-        }
       }
     }
 
@@ -5012,10 +4993,34 @@
       };
     }
 
+    function isLikelyTrailSegment(ptA, ptB) {
+      const dist = haversineMeters(ptA, ptB);
+      if (dist < 5) return false;
+      return ROUTES_LIST.some((r) => {
+        const s = String(r.surface || "").toLowerCase();
+        const isTrailRoute = s.includes("singletrack") || s.includes("trail") || s.includes("sentiero");
+        if (!isTrailRoute || !Array.isArray(r.coords)) return false;
+        return r.coords.some((c) => isValidLatLngPair(c) && (haversineMeters(ptA, c) < 60 || haversineMeters(ptB, c) < 60));
+      });
+    }
+
+    function detectRouteSurfaceFromGeometry(latLngs, defaultSurface) {
+      if (!Array.isArray(latLngs) || latLngs.length < 2) return defaultSurface;
+      let trailHits = 0;
+      const step = Math.max(1, Math.floor(latLngs.length / 20));
+      for (let i = step; i < latLngs.length; i += step) {
+        if (isLikelyTrailSegment(latLngs[i - step], latLngs[i])) {
+          trailHits++;
+        }
+      }
+      if (trailHits > 0) return "trail";
+      return defaultSurface;
+    }
+
     async function fetchOpenMtbTrailRoute(startPt, endPt) {
       if (!navigator.onLine) return null;
 
-      // PRIORITÀ 1: Asfalto / strade principali (OSRM cycling + BRouter fastbike)
+      // 1) Asfalto / strade principali (OSRM cycling + BRouter fastbike)
       const roadCandidates = [];
 
       try {
@@ -5030,7 +5035,8 @@
           if (route?.geometry?.coordinates?.length > 1) {
             const latLngs = route.geometry.coordinates.map(([lon, lat]) => [lat, lon]);
             latLngs.push([...endPt]);
-            roadCandidates.push(buildCandidateFromLatLngs(latLngs, "asphalt", "Asfalto / Strada"));
+            const surf = detectRouteSurfaceFromGeometry(latLngs, "asphalt");
+            roadCandidates.push(buildCandidateFromLatLngs(latLngs, surf, surf === "trail" ? "Sentiero (ultima risorsa)" : "Asfalto / Strada"));
           }
         }
       } catch (e) {}
@@ -5047,42 +5053,48 @@
           if (Array.isArray(rawCoords) && rawCoords.length > 1) {
             const latLngs = rawCoords.map(([lon, lat]) => [lat, lon]);
             latLngs.push([...endPt]);
-            roadCandidates.push(buildCandidateFromLatLngs(latLngs, "asphalt", "Asfalto / Strada"));
+            const surf = detectRouteSurfaceFromGeometry(latLngs, "asphalt");
+            roadCandidates.push(buildCandidateFromLatLngs(latLngs, surf, surf === "trail" ? "Sentiero (ultima risorsa)" : "Asfalto / Strada"));
           }
         }
       } catch (e) {}
 
-      if (roadCandidates.length > 0) {
-        return roadCandidates.reduce((a, b) => (a.weightedScore < b.weightedScore ? a : b));
+      const pureRoad = roadCandidates.filter((c) => c.surface === "asphalt");
+      if (pureRoad.length > 0) {
+        return pureRoad.reduce((a, b) => (a.weightedScore < b.weightedScore ? a : b));
       }
 
-      // PRIORITÀ 2: Carrareccia / strada bianca (BRouter gravel / trekking)
+      // 2) Carrareccia / strada bianca (BRouter gravel)
       const trackCandidates = [];
-
-      for (const prof of ["gravel", "trekking"]) {
-        try {
-          const url = `https://brouter.de/brouter?lonlats=${startPt[1]},${startPt[0]}|${endPt[1]},${endPt[0]}&profile=${prof}&alternativeidx=0&format=geojson`;
-          const ctrl = new AbortController();
-          const timer = setTimeout(() => ctrl.abort(), 4000);
-          const resp = await fetch(url, { signal: ctrl.signal });
-          clearTimeout(timer);
-          if (resp.ok) {
-            const data = await resp.json();
-            const rawCoords = data?.features?.[0]?.geometry?.coordinates;
-            if (Array.isArray(rawCoords) && rawCoords.length > 1) {
-              const latLngs = rawCoords.map(([lon, lat]) => [lat, lon]);
-              latLngs.push([...endPt]);
-              trackCandidates.push(buildCandidateFromLatLngs(latLngs, "track", "Carrareccia"));
-            }
+      try {
+        const gravelUrl = `https://brouter.de/brouter?lonlats=${startPt[1]},${startPt[0]}|${endPt[1]},${endPt[0]}&profile=gravel&alternativeidx=0&format=geojson`;
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 4000);
+        const resp = await fetch(gravelUrl, { signal: ctrl.signal });
+        clearTimeout(timer);
+        if (resp.ok) {
+          const data = await resp.json();
+          const rawCoords = data?.features?.[0]?.geometry?.coordinates;
+          if (Array.isArray(rawCoords) && rawCoords.length > 1) {
+            const latLngs = rawCoords.map(([lon, lat]) => [lat, lon]);
+            latLngs.push([...endPt]);
+            const surf = detectRouteSurfaceFromGeometry(latLngs, "track");
+            trackCandidates.push(buildCandidateFromLatLngs(latLngs, surf, surf === "trail" ? "Sentiero (ultima risorsa)" : "Carrareccia"));
           }
-        } catch (e) {}
+        }
+      } catch (e) {}
+
+      const pureTrack = trackCandidates.filter((c) => c.surface === "track");
+      if (pureTrack.length > 0) {
+        return pureTrack.reduce((a, b) => (a.weightedScore < b.weightedScore ? a : b));
       }
 
-      if (trackCandidates.length > 0) {
-        return trackCandidates.reduce((a, b) => (a.weightedScore < b.weightedScore ? a : b));
+      const anyNonTrail = [...roadCandidates, ...trackCandidates].filter((c) => c.surface !== "trail");
+      if (anyNonTrail.length > 0) {
+        return anyNonTrail.reduce((a, b) => (a.weightedScore < b.weightedScore ? a : b));
       }
 
-      // PRIORITÀ 3 (solo se non c'è asfalto né carrareccia): Sentiero (BRouter mtb)
+      // 3) Sentiero (ultima risorsa) solo se non c'è asfalto né carrareccia
       try {
         const mtbUrl = `https://brouter.de/brouter?lonlats=${startPt[1]},${startPt[0]}|${endPt[1]},${endPt[0]}&profile=mtb&alternativeidx=0&format=geojson`;
         const ctrl = new AbortController();
@@ -5111,48 +5123,6 @@
           distanceKm: graphPath.distanceKm,
           source: graphPath.surfaceLabel || "Asfalto / Carrareccia"
         };
-      }
-
-      const activeRoute = activeRouteId ? getRouteById(activeRouteId) : null;
-      const rCoords = activeRoute?.coords;
-      if (Array.isArray(rCoords) && rCoords.length > 2) {
-        let bestStartIdx = 0;
-        let bestStartDist = Infinity;
-        let bestEndIdx = 0;
-        let bestEndDist = Infinity;
-
-        for (let i = 0; i < rCoords.length; i++) {
-          const ds = haversineMeters(startPt, rCoords[i]);
-          if (ds < bestStartDist) {
-            bestStartDist = ds;
-            bestStartIdx = i;
-          }
-          const de = haversineMeters(endPt, rCoords[i]);
-          if (de < bestEndDist) {
-            bestEndDist = de;
-            bestEndIdx = i;
-          }
-        }
-
-        if (bestStartDist < 1200 && bestEndDist < 1200 && bestStartIdx !== bestEndIdx) {
-          const segment = [startPt];
-          if (bestStartIdx < bestEndIdx) {
-            for (let i = bestStartIdx; i <= bestEndIdx; i++) segment.push(rCoords[i]);
-          } else {
-            for (let i = bestStartIdx; i >= bestEndIdx; i--) segment.push(rCoords[i]);
-          }
-          segment.push(endPt);
-
-          let meters = 0;
-          for (let i = 1; i < segment.length; i++) {
-            meters += haversineMeters(segment[i - 1], segment[i]);
-          }
-          return {
-            coords: segment,
-            distanceKm: +(meters / 1000).toFixed(1),
-            source: "Sentiero (ultima risorsa)"
-          };
-        }
       }
 
       return {
