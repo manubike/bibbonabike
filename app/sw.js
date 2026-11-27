@@ -2,6 +2,7 @@ const CACHE_NAME = "magona-offline-v2";
 const APP_SHELL = [
   "./",
   "./index.html",
+  "./manifest.json",
   "./logo.png",
   "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css",
   "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js",
@@ -55,8 +56,8 @@ self.addEventListener("fetch", (event) => {
         })
         .catch(() =>
           caches.match(req, { ignoreSearch: true })
-            .then((m) => m || caches.match("./index.html"))
-            .then((m) => m || caches.match("./"))
+            .then((m) => m || caches.match("./index.html", { ignoreSearch: true }))
+            .then((m) => m || caches.match("./", { ignoreSearch: true }))
         )
     );
     return;
@@ -64,7 +65,7 @@ self.addEventListener("fetch", (event) => {
 
   // Tasselli mappa, script e immagini: cache-first con salvataggio automatico
   event.respondWith(
-    caches.match(req, { ignoreSearch: false }).then((cached) => {
+    caches.match(req, { ignoreSearch: true }).then((cached) => {
       if (cached) return cached;
       return fetch(req)
         .then((networkResp) => {
@@ -74,7 +75,10 @@ self.addEventListener("fetch", (event) => {
           }
           return networkResp;
         })
-        .catch(() => caches.match(req, { ignoreSearch: true }).then((m) => m || new Response("", { status: 504 })));
+        .catch(() =>
+          caches.match(req, { ignoreSearch: true })
+            .then((m) => m || new Response("", { status: 504, statusText: "Offline" }))
+        );
     })
   );
 });
