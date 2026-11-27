@@ -108,7 +108,7 @@ async function updateLivePrice(triggerSource = 'auto') {
     if (totalAmountEl) totalAmountEl.textContent = "Calcolo...";
 
     try {
-        const response = await fetch("https://price-calculator.zonkeynet.workers.dev/calcola", {
+        const response = await fetch("https://bibbonabike-booking.vitiellomanuel1985.workers.dev/calcola", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -491,7 +491,7 @@ function initializeBookingForm() {
         formData.set("hcaptchaToken", hcaptchaToken);
 
         try {
-            const submitResponse = await fetch("https://workers-bibbonabike.zonkeynet.workers.dev/submit", {
+            const submitResponse = await fetch("https://bibbonabike-booking.vitiellomanuel1985.workers.dev/submit", {
                 method: "POST",
                 body: formData
             });
