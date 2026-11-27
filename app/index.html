@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<link rel="manifest" href="./manifest.json" />
+<meta name="theme-color" content="#141413" />
+<link rel="apple-touch-icon" href="./logo.png" />
 <title>Magona Bike Garage — Tour & Assistenza</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -2373,7 +2376,7 @@ description: "Boucle classique dans la forêt Macchia della Magona avec points d
 pt: {
 name: "Circuito Macchia della Magona",
 surface: "Floresta, singletrack e estradas florestais",
-description: "Volta clássica pela floresta Macchia della Magona com mirantes para o mar."
+description: "Volta clássica pela floresta Macchia disponível com mirantes para o mar."
 },
 zh: {
 name: "Macchia della Magona 环线",
@@ -6404,6 +6407,7 @@ const cache = await caches.open(OFFLINE_CACHE_NAME);
 const shellAssets = [
 "./",
 "./index.html",
+"./manifest.json",
 "./logo.png",
 "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css",
 "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js",
@@ -6483,10 +6487,17 @@ const eleNode = pt.querySelector("ele");
 if (eleNode) {
 const ele = parseFloat(eleNode.textContent);
 if (!Number.isNaN(ele)) {
-if (prevEle !== null && ele > prevEle) {
-elevGain += (ele - prevEle);
-}
+if (prevEle === null) {
 prevEle = ele;
+} else {
+const deltaEle = ele - prevEle;
+if (deltaEle >= 2.5) {
+elevGain += deltaEle;
+prevEle = ele;
+} else if (deltaEle <= -2.5) {
+prevEle = ele;
+}
+}
 }
 }
 }
@@ -7178,10 +7189,6 @@ return;
 await syncAllCloudStateOnBoot();
 });
 </script>
-</body>
-</html>
-
-
 <footer class="w-full text-center py-4 px-4 text-xs text-stone-500 border-t border-stone-200 mt-auto">
   <p>
     &copy; <span id="year"></span> Magona Bike Garage di Manuel Vitiello - www.bibbonabike.com. Tutti i diritti riservati.
@@ -7195,3 +7202,5 @@ await syncAllCloudStateOnBoot();
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
 </script>
+</body>
+</html>
