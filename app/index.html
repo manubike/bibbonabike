@@ -111,12 +111,6 @@
       z-index: 1;
       background-color: #f2efe9;
     }
-    #map-rotator.heading-up-active .leaflet-tile-container img.leaflet-tile {
-      outline: 1.5px solid #f2efe9;
-      outline-offset: -0.5px;
-      -webkit-backface-visibility: hidden;
-      backface-visibility: hidden;
-    }
     #map-rotator.heading-up-active .cyclist-gps-marker,
     #map-rotator.heading-up-active .poi-map-pin {
       transform: rotate(calc(var(--map-rot, 0deg) * -1));
@@ -1777,51 +1771,74 @@
       return { ok: resp.ok, status: resp.status, data };
     }
 
-    /* ================= BASE MAP LAYERS (OSM, OPENMTBMAP & SATELLITE) ================= */
+    /* ================= BASE MAP LAYERS ON CANVAS (ZERO TILE SEAMS WHEN ROTATED) ================= */
 
     const OSM_TILE_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
     const OPENMTBMAP_TILE_URL = "https://tile.openmtbmap.org/tile/{z}/{x}/{y}.png";
     const SATELLITE_TILE_URL = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
 
-    function createBaseTileLayer(layerKey) {
+    function getTileUrlForCoords(layerKey, coords) {
+      const z = coords.z;
+      const x = coords.x;
+      const y = coords.y;
       if (layerKey === "satellite") {
-        const satBase = L.tileLayer(SATELLITE_TILE_URL, {
-          maxZoom: 19,
-          attribution: "&copy; Esri, Maxar, Earthstar Geographics"
-        });
-        satBase.on("tileerror", (ev) => {
-          if (ev?.tile && ev.tile.dataset.fallbackApplied !== "1") {
-            ev.tile.dataset.fallbackApplied = "1";
-            const { x, y, z } = ev.coords || {};
-            if (typeof x === "number" && typeof y === "number" && typeof z === "number") {
-              ev.tile.src = `https://a.tile.openstreetmap.org/${z}/${x}/${y}.png`;
-            }
-          }
-        });
-        return satBase;
+        return `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`;
       }
-
       if (layerKey === "openmtbmap") {
-        const mtbLayer = L.tileLayer(OPENMTBMAP_TILE_URL, {
-          maxZoom: 18,
-          attribution: "&copy; OpenMTBMap &amp; OpenStreetMap"
-        });
-        mtbLayer.on("tileerror", (ev) => {
-          if (ev?.tile && ev.tile.dataset.fallbackApplied !== "1") {
-            ev.tile.dataset.fallbackApplied = "1";
-            const { x, y, z } = ev.coords || {};
-            if (typeof x === "number" && typeof y === "number" && typeof z === "number") {
-              ev.tile.src = `https://a.tile.openstreetmap.org/${z}/${x}/${y}.png`;
-            }
-          }
-        });
-        return mtbLayer;
+        return `https://tile.openmtbmap.org/tile/${z}/${x}/${y}.png`;
       }
+      const subs = ["a", "b", "c"];
+      const s = subs[Math.abs(x + y) % subs.length];
+      return `https://${s}.tile.openstreetmap.org/${z}/${x}/${y}.png`;
+    }
 
-      return L.tileLayer(OSM_TILE_URL, {
-        maxZoom: 19,
-        attribution: "&copy; OpenStreetMap"
+    function loadCanvasImage(url, fallbackUrl = null) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        let triedFallback = false;
+        img.onload = () => resolve(img);
+        img.onerror = () => {
+          if (!triedFallback && fallbackUrl && fallbackUrl !== url) {
+            triedFallback = true;
+            img.src = fallbackUrl;
+          } else {
+            resolve(null);
+          }
+        };
+        img.src = url;
       });
+    }
+
+    function createBaseTileLayer(layerKey) {
+      const CanvasGridLayer = L.GridLayer.extend({
+        createTile: function (coords, done) {
+          const tile = document.createElement("canvas");
+          const size = this.getTileSize();
+          tile.width = size.x;
+          tile.height = size.y;
+          const ctx = tile.getContext("2d");
+
+          if (ctx) {
+            ctx.fillStyle = "#f2efe9";
+            ctx.fillRect(0, 0, size.x, size.y);
+          }
+
+          const primaryUrl = getTileUrlForCoords(layerKey, coords);
+          const fallbackUrl = `https://a.tile.openstreetmap.org/${coords.z}/${coords.x}/${coords.y}.png`;
+
+          loadCanvasImage(primaryUrl, layerKey === "osm" ? null : fallbackUrl).then((img) => {
+            if (img && ctx) {
+              ctx.drawImage(img, 0, 0, size.x, size.y);
+            }
+            done(null, tile);
+          });
+
+          return tile;
+        }
+      });
+
+      return new CanvasGridLayer({ maxZoom: 19 });
     }
 
     function applyMapBaseLayer(layerKey) {
