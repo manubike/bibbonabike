@@ -567,7 +567,7 @@
       color: var(--accent-orange) !important;
     }
 
-    /* Form di Prenotazione Dark + Contenimento casella Data */
+    /* Form di Prenotazione Dark + Contenimento e Picker Data su PC */
     .form-card label,
     .form-card h4,
     .price-summary {
@@ -587,6 +587,15 @@
       overflow-x: clip !important;
     }
 
+    #noleggioForm .form-group.icon-input {
+      position: relative !important;
+    }
+
+    #noleggioForm .form-group.icon-input > i.fa-calendar-alt {
+      pointer-events: none !important;
+      z-index: 1 !important;
+    }
+
     .form-card input,
     .form-card select,
     .form-card textarea {
@@ -601,10 +610,29 @@
 
     #noleggioForm input[type="date"] {
       display: block !important;
+      position: relative !important;
+      z-index: 3 !important;
       width: 100% !important;
       max-width: 100% !important;
       min-width: 0 !important;
+      min-height: 42px !important;
+      padding-right: 12px !important;
+      color-scheme: dark !important;
+      cursor: pointer !important;
+      -webkit-appearance: auto !important;
+      appearance: auto !important;
       box-sizing: border-box !important;
+    }
+
+    #noleggioForm input[type="date"]::-webkit-calendar-picker-indicator {
+      display: block !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      pointer-events: auto !important;
+      cursor: pointer !important;
+      width: 22px !important;
+      height: 22px !important;
+      filter: invert(58%) sepia(86%) saturate(1850%) hue-rotate(350deg) brightness(102%) contrast(101%);
     }
 
     .form-card input:focus,
@@ -617,6 +645,22 @@
 
     .icon-input i {
       color: var(--accent-orange) !important;
+    }
+
+    /* Pulsante Verifica Email in stile arancio Magona */
+    #sendEmailOtpBtn {
+      background: linear-gradient(135deg, #ff7b1c 0%, #d95300 100%) !important;
+      color: #090a0c !important;
+      border: 1px solid rgba(255, 174, 112, 0.45) !important;
+      border-radius: 8px !important;
+      font-weight: 700 !important;
+      cursor: pointer !important;
+      box-shadow: 0 6px 16px rgba(255, 123, 28, 0.25) !important;
+    }
+
+    #sendEmailOtpBtn:hover:not(:disabled) {
+      filter: brightness(1.06) !important;
+      transform: translateY(-1px) !important;
     }
 
     /* Casella a tema sentieri Macchia della Magona */
@@ -1426,11 +1470,6 @@
             style="position: absolute; inset: 0; width: 100%; height: 100%; border: 0;"
           ></iframe>
         </div>
-        <p style="text-align: center; margin-top: 0.75rem; font-size: 0.9rem; color: #b0b8c2;">
-          <a href="https://www.trailforks.com/region/macchia-della-magona-25951/" target="_blank" rel="noopener noreferrer" style="color: #ff9442; text-decoration: underline;">
-            Apri Macchia della Magona su Trailforks
-          </a>
-        </p>
       </div>
     </section>
 
@@ -1645,18 +1684,10 @@
       </div>
     </div>
 
-    <!-- Galleria Foto -->
+    <!-- Galleria Foto (senza selettori Griglia / Tema / Libero) -->
     <section class="photo-slideshow" id="galleria">
       <h2 class="section-title"><i class="fas fa-images"></i> <span data-i18n="gallery_section_title">Galleria</span></h2>
       <div id="photoGallery" class="gridOverflow go-zoomFx go-masonry"></div>
-      <div class="slideshow-controls">
-        <button type="button" id="toggleLayout" class="btn-secondary layout-toggle" aria-pressed="true" aria-label="Cambia layout a griglia" title="Griglia">
-          <i class="fas fa-th"></i> <span class="label">Griglia</span>
-        </button>
-        <button type="button" id="changeThemeButton" class="btn-secondary layout-toggle" aria-pressed="false" aria-label="Cambia tema della lightbox" title="Tema">
-          <i class="fas fa-palette"></i> <span class="label">Tema</span>
-        </button>
-      </div>
     </section>
 
     <!-- Form Noleggio / Prenotazione -->
@@ -1683,7 +1714,7 @@
               </div>
 
               <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
-                <button type="button" id="sendEmailOtpBtn" class="btn-secondary" style="padding: 8px 12px; font-size: 0.85rem;">
+                <button type="button" id="sendEmailOtpBtn" class="btn-primary" style="padding: 8px 12px; font-size: 0.85rem;">
                   ✉️ Verifica Email
                 </button>
                 <span id="emailVerifiedBadge" style="font-size: 0.82rem; font-weight: 600; color: #ffab6b;">
@@ -1911,7 +1942,7 @@
     </div>
   </div>
 
-  <!-- Script Gestione Cookie, Header & Video -->
+  <!-- Script Gestione Cookie, Header, Video & Picker Data PC -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const weatherWidgetEl = document.getElementById('weatherWidget');
@@ -1941,6 +1972,32 @@
         };
         tryPlay();
         document.addEventListener('touchstart', tryPlay, { once: true, passive: true });
+      }
+
+      // Apertura calendario nativo su PC (Chrome / Edge)
+      const dateInput = document.getElementById('date');
+      const dateGroup = dateInput ? dateInput.closest('.form-group.icon-input') : null;
+      const dateIcon = dateGroup ? dateGroup.querySelector('i.fa-calendar-alt') : null;
+
+      function openDatePicker(e) {
+        if (!dateInput) return;
+        if (typeof dateInput.showPicker === 'function') {
+          try {
+            if (e) e.preventDefault();
+            dateInput.focus();
+            dateInput.showPicker();
+          } catch (_) {}
+        }
+      }
+
+      if (dateInput) {
+        dateInput.addEventListener('click', openDatePicker);
+      }
+      if (dateIcon) {
+        dateIcon.style.pointerEvents = 'auto';
+        dateIcon.style.cursor = 'pointer';
+        dateIcon.style.zIndex = '4';
+        dateIcon.addEventListener('click', openDatePicker);
       }
 
       const overlay = document.getElementById('cookie-banner-overlay');
@@ -3634,3 +3691,4 @@
   </script>
 </body>
 </html>
+
