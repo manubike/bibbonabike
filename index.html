@@ -64,7 +64,12 @@
   <link rel="stylesheet" href="style.css" />
 
   <!-- Stile Grafico Dark / Nero & Arancio Magona Bike Garage (Compatibile con tutti i CSS del progetto) -->
-  <style>
+  
+<!-- Favicon -->
+  <link rel="icon" href="img/icononly.png" type="image/png" />
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<style>
     :root {
       --bg-void: #070809;
       --bg-surface: #0c0e11;
@@ -79,6 +84,7 @@
       --border-subtle: rgba(255, 255, 255, 0.1);
       --border-strong: rgba(255, 123, 28, 0.42);
       --shadow-card: 0 18px 42px rgba(0, 0, 0, 0.72);
+      --header-height: 76px;
     }
 
     html {
@@ -92,6 +98,7 @@
       color: var(--text-primary) !important;
       font-family: 'Inter', Arial, sans-serif;
       margin: 0;
+      overflow-x: clip;
     }
 
     /* Banner Cookie su tema Nero */
@@ -120,6 +127,7 @@
       width: 92%;
       max-height: 85vh;
       overflow-y: auto;
+      box-sizing: border-box;
     }
 
     #cookie-consent-modal h2 {
@@ -212,11 +220,21 @@
       border-color: var(--border-strong);
     }
 
-    /* Header & Navigazione Dark Glass */
+    /* Header, Navigazione Dark Glass & Selettore Lingua */
     .site-header {
-      background: rgba(7, 8, 9, 0.84) !important;
+      background: rgba(7, 8, 9, 0.9) !important;
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border-subtle);
+      z-index: 1000;
+    }
+
+    .site-header .container {
+      display: flex !important;
+      align-items: center !important;
+      flex-wrap: wrap !important;
+      gap: 8px 12px !important;
+      position: relative !important;
+      box-sizing: border-box !important;
     }
 
     .site-header a,
@@ -230,210 +248,11 @@
       color: var(--accent-orange) !important;
     }
 
-    /* Hero & Overlay Montagne */
-    .hero {
-      position: relative;
-      background-color: var(--bg-void) !important;
-      overflow: hidden;
-    }
-
-    .hero-video {
-      position: relative;
-      z-index: 1;
-      display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .hero::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at 50% 45%, rgba(7, 8, 9, 0.14) 0%, rgba(7, 8, 9, 0.72) 100%);
-      pointer-events: none;
-      z-index: 2;
-    }
-
-    .hero-content {
-      position: relative;
-      z-index: 2;
-    }
-
-    .hero-mountain-overlay {
-      z-index: 3;
-      color: var(--bg-void) !important;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #ff7b1c 0%, #d95300 100%) !important;
-      color: #090a0c !important;
-      border: 1px solid rgba(255, 174, 112, 0.42) !important;
-      box-shadow: 0 10px 24px rgba(255, 123, 28, 0.26);
-      transition: transform 0.22s ease, box-shadow 0.22s ease, filter 0.22s ease;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 14px 30px rgba(255, 123, 28, 0.4);
-      filter: brightness(1.06);
-    }
-
-    .btn-secondary {
-      background-color: var(--bg-elevated) !important;
-      color: var(--text-primary) !important;
-      border: 1px solid var(--border-strong) !important;
-      transition: transform 0.2s ease, background-color 0.25s ease, border-color 0.25s ease;
-    }
-
-    .btn-secondary:hover {
-      background-color: var(--accent-orange) !important;
-      color: #090a0c !important;
-      transform: translateY(-1px);
-    }
-
-    /* Tutte le Sezioni su Nero Profondo (compatibile con services, officina, motori, tour, event, legend, slideshow, footer) */
-    main.container-full,
-    .services,
-    .officina-section,
-    .rental-section,
-    .tour-section,
-    .magona-section,
-    .trails-section,
-    .video-section,
-    .eventi-slider-section,
-    .photo-slideshow,
-    .form-section,
-    .footer-transition,
-    .footer-overlay,
-    .footer-bar {
-      background-color: var(--bg-void) !important;
-      color: var(--text-primary) !important;
-    }
-
-    .section-title {
-      color: var(--text-primary) !important;
-      letter-spacing: -0.02em;
-    }
-
-    .slash-anim {
-      background: linear-gradient(90deg, transparent, var(--accent-orange), transparent) !important;
-    }
-
-    /* Card, Slider, Drawer & Sentieri */
-    .service-card.enhanced,
-    .bike-card,
-    .tour-card,
-    .event-card,
-    .card-border-wrapper,
-    .form-card,
-    .drawer,
-    .legend-card,
-    .slideshow__slide-caption-text {
-      background-color: var(--bg-card) !important;
-      background-image: linear-gradient(165deg, var(--bg-elevated) 0%, var(--bg-card) 100%) !important;
-      color: var(--text-primary) !important;
-      border-color: var(--border-subtle) !important;
-      box-shadow: var(--shadow-card) !important;
-    }
-
-    .service-card.enhanced:hover,
-    .bike-card:hover,
-    .tour-card:hover {
-      border-color: var(--border-strong) !important;
-      transform: translateY(-4px);
-    }
-
-    .service-icon {
-      color: var(--accent-orange) !important;
-    }
-
-    .service-card p,
-    .officina-text p,
-    .bike-type,
-    .tour-card p,
-    .drawer-content p {
-      color: var(--text-secondary) !important;
-    }
-
-    /* Carosello Motori */
-    .logo-carousel-section,
-    .logo-carousel-container,
-    .logo-slide {
-      background-color: var(--bg-surface) !important;
-      border-color: var(--border-subtle) !important;
-    }
-
-    .logo-slide img {
-      filter: brightness(0.96) contrast(1.08);
-      transition: transform 0.25s ease, filter 0.25s ease;
-    }
-
-    .logo-slide:hover img {
-      transform: scale(1.06);
-      filter: brightness(1.14);
-    }
-
-    /* Sentieri Trailforks */
-    #trails a {
-      color: var(--text-secondary) !important;
-      transition: color 0.2s ease;
-    }
-
-    #trails a:hover {
-      color: var(--accent-orange) !important;
-    }
-
-    /* Form di Prenotazione Dark */
-    .form-card label,
-    .form-card h4,
-    .price-summary {
-      color: var(--text-primary) !important;
-    }
-
-    .form-card input,
-    .form-card select,
-    .form-card textarea {
-      background-color: var(--bg-void) !important;
-      color: var(--text-primary) !important;
-      border: 1px solid rgba(255, 255, 255, 0.16) !important;
-      border-radius: 8px;
-    }
-
-    .form-card input:focus,
-    .form-card select:focus,
-    .form-card textarea:focus {
-      outline: none;
-      border-color: var(--accent-orange) !important;
-      box-shadow: 0 0 0 3px rgba(255, 123, 28, 0.18);
-    }
-
-    .icon-input i {
-      color: var(--accent-orange) !important;
-    }
-
-    /* Drawer laterali, Chat & Scroll Top */
-    .drawer-overlay {
-      background-color: rgba(3, 4, 6, 0.8) !important;
-      backdrop-filter: blur(4px);
-    }
-
-    #chatBox {
-      background-color: var(--bg-elevated) !important;
-      color: var(--text-primary) !important;
-      border: 1px solid var(--border-strong) !important;
-    }
-
-    #chatInput {
-      background-color: var(--bg-void) !important;
-      color: var(--text-primary) !important;
-      border: 1px solid var(--border-subtle) !important;
-    }
-
-    #scrollToTop {
-      background-color: var(--bg-elevated) !important;
-      border: 1px solid var(--border-strong) !important;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
+    .site-header .lang-switcher {
+      position: relative !important;
+      z-index: 1002 !important;
+      flex-shrink: 0 !important;
+      margin-left: auto !important;
     }
 
     .lang-switcher select {
@@ -452,35 +271,62 @@
       border-color: var(--accent-orange-bright) !important;
     }
 
-
-    /* Fix overflow orizzontale casella Data nel form di prenotazione */
-    .form-card,
-    .form-card *,
-    .form-group,
-    .icon-input {
-      box-sizing: border-box !important;
-      max-width: 100% !important;
-      min-width: 0 !important;
+    .site-header .social-header {
+      position: relative !important;
+      z-index: 1001 !important;
+      flex-shrink: 0 !important;
     }
 
-    #noleggioForm .form-group {
-      overflow-x: clip !important;
-    }
-
-    #noleggioForm input[type="date"] {
-      display: block !important;
+    .site-header nav,
+    .site-header nav.open,
+    .site-header nav.active,
+    .site-header .nav-menu,
+    .site-header .nav-menu.open,
+    .site-header .nav-menu.active {
+      position: relative !important;
+      z-index: 1000 !important;
       width: 100% !important;
       max-width: 100% !important;
-      min-width: 0 !important;
-      box-sizing: border-box !important;
+      clear: both !important;
+      margin-top: 6px !important;
+      background: linear-gradient(180deg, #101318 0%, #070809 100%) !important;
+      background-color: #070809 !important;
+      background-image: none !important;
+      border-color: var(--border-strong) !important;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.85) !important;
     }
 
-    /* Ricentra hero-content e rimuove il pannello nero laterale sul video */
+    .site-header nav ul {
+      display: flex !important;
+      flex-wrap: wrap !important;
+      gap: 6px 12px !important;
+      padding: 10px 12px !important;
+      margin: 0 !important;
+      list-style: none !important;
+      background: transparent !important;
+    }
+
+    .site-header nav li a {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      white-space: nowrap !important;
+      color: var(--text-primary) !important;
+      background: transparent !important;
+    }
+
+    .site-header nav li a:hover {
+      color: var(--accent-orange-bright) !important;
+      background: rgba(255, 123, 28, 0.08) !important;
+    }
+
+    /* Hero trasparente e ricentrata sul video + Meteo nell'angolo in alto a destra sotto la barra nera */
     .hero {
       position: relative !important;
       width: 100% !important;
       max-width: 100vw !important;
       overflow: hidden !important;
+      background-color: var(--bg-void) !important;
     }
 
     .hero-video {
@@ -490,6 +336,7 @@
       height: 100% !important;
       object-fit: cover !important;
       z-index: 1 !important;
+      display: block !important;
     }
 
     .hero::after {
@@ -544,6 +391,198 @@
       margin: 0.75rem auto 0 !important;
     }
 
+    .hero-mountain-overlay {
+      z-index: 3 !important;
+      color: var(--bg-void) !important;
+    }
+
+    #weatherWidget,
+    .weather-widget {
+      position: fixed !important;
+      top: calc(var(--header-height, 76px) + 8px) !important;
+      right: 10px !important;
+      left: auto !important;
+      bottom: auto !important;
+      z-index: 950 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      padding: 6px 12px !important;
+      border-radius: 999px !important;
+      background: rgba(14, 17, 22, 0.92) !important;
+      border: 1px solid var(--border-strong) !important;
+      color: var(--text-primary) !important;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7) !important;
+      max-width: calc(100vw - 20px) !important;
+      box-sizing: border-box !important;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #ff7b1c 0%, #d95300 100%) !important;
+      color: #090a0c !important;
+      border: 1px solid rgba(255, 174, 112, 0.42) !important;
+      box-shadow: 0 10px 24px rgba(255, 123, 28, 0.26);
+      transition: transform 0.22s ease, box-shadow 0.22s ease, filter 0.22s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(255, 123, 28, 0.4);
+      filter: brightness(1.06);
+    }
+
+    .btn-secondary {
+      background-color: var(--bg-elevated) !important;
+      color: var(--text-primary) !important;
+      border: 1px solid var(--border-strong) !important;
+      transition: transform 0.2s ease, background-color 0.25s ease, border-color 0.25s ease;
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--accent-orange) !important;
+      color: #090a0c !important;
+      transform: translateY(-1px);
+    }
+
+    main.container-full,
+    .services,
+    .officina-section,
+    .rental-section,
+    .tour-section,
+    .magona-section,
+    .trails-section,
+    .video-section,
+    .eventi-slider-section,
+    .photo-slideshow,
+    .form-section,
+    .footer-transition,
+    .footer-overlay,
+    .footer-bar {
+      background-color: var(--bg-void) !important;
+      color: var(--text-primary) !important;
+    }
+
+    .section-title {
+      color: var(--text-primary) !important;
+      letter-spacing: -0.02em;
+    }
+
+    .slash-anim {
+      background: linear-gradient(90deg, transparent, var(--accent-orange), transparent) !important;
+    }
+
+    .service-card.enhanced,
+    .bike-card,
+    .tour-card,
+    .event-card,
+    .card-border-wrapper,
+    .form-card,
+    .drawer,
+    .legend-card,
+    .slideshow__slide-caption-text {
+      background-color: var(--bg-card) !important;
+      background-image: linear-gradient(165deg, var(--bg-elevated) 0%, var(--bg-card) 100%) !important;
+      color: var(--text-primary) !important;
+      border-color: var(--border-subtle) !important;
+      box-shadow: var(--shadow-card) !important;
+    }
+
+    .service-card.enhanced:hover,
+    .bike-card:hover,
+    .tour-card:hover {
+      border-color: var(--border-strong) !important;
+      transform: translateY(-4px);
+    }
+
+    .service-icon {
+      color: var(--accent-orange) !important;
+    }
+
+    .service-card p,
+    .officina-text p,
+    .bike-type,
+    .tour-card p,
+    .drawer-content p {
+      color: var(--text-secondary) !important;
+    }
+
+    .logo-carousel-section,
+    .logo-carousel-container,
+    .logo-slide {
+      background-color: var(--bg-surface) !important;
+      border-color: var(--border-subtle) !important;
+    }
+
+    .logo-slide img {
+      filter: brightness(0.96) contrast(1.08);
+      transition: transform 0.25s ease, filter 0.25s ease;
+    }
+
+    .logo-slide:hover img {
+      transform: scale(1.06);
+      filter: brightness(1.14);
+    }
+
+    #trails a {
+      color: var(--text-secondary) !important;
+      transition: color 0.2s ease;
+    }
+
+    #trails a:hover {
+      color: var(--accent-orange) !important;
+    }
+
+    /* Form di Prenotazione Dark + Contenimento casella Data */
+    .form-card label,
+    .form-card h4,
+    .price-summary {
+      color: var(--text-primary) !important;
+    }
+
+    .form-card,
+    .form-card *,
+    .form-group,
+    .icon-input {
+      box-sizing: border-box !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+    }
+
+    #noleggioForm .form-group {
+      overflow-x: clip !important;
+    }
+
+    .form-card input,
+    .form-card select,
+    .form-card textarea {
+      background-color: var(--bg-void) !important;
+      color: var(--text-primary) !important;
+      border: 1px solid rgba(255, 255, 255, 0.16) !important;
+      border-radius: 8px;
+      box-sizing: border-box !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+    }
+
+    #noleggioForm input[type="date"] {
+      display: block !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      box-sizing: border-box !important;
+    }
+
+    .form-card input:focus,
+    .form-card select:focus,
+    .form-card textarea:focus {
+      outline: none;
+      border-color: var(--accent-orange) !important;
+      box-shadow: 0 0 0 3px rgba(255, 123, 28, 0.18);
+    }
+
+    .icon-input i {
+      color: var(--accent-orange) !important;
+    }
 
     /* Casella a tema sentieri Macchia della Magona */
     .magona-trails-card {
@@ -666,112 +705,30 @@
       border: 1px solid rgba(220, 53, 69, 0.5);
     }
 
-
-    /* Fix menu mobile verde -> nero profondo e riposizionamento meteo visibile */
-    .site-header nav,
-    .site-header nav.open,
-    .site-header nav.active,
-    .site-header .nav-menu,
-    .site-header .nav-menu.open,
-    .site-header .nav-menu.active,
-    .site-header nav ul {
-      background: linear-gradient(180deg, #101318 0%, #070809 100%) !important;
-      background-color: #070809 !important;
-      background-image: none !important;
-      border-color: var(--border-strong) !important;
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.85) !important;
+    .drawer-overlay {
+      background-color: rgba(3, 4, 6, 0.8) !important;
+      backdrop-filter: blur(4px);
     }
 
-    .site-header nav li a {
+    #chatBox {
+      background-color: var(--bg-elevated) !important;
       color: var(--text-primary) !important;
-      background: transparent !important;
-    }
-
-    .site-header nav li a:hover {
-      color: var(--accent-orange-bright) !important;
-      background: rgba(255, 123, 28, 0.08) !important;
-    }
-/* Fix sovrapposizione menu e selettore lingua */
-    .site-header .container {
-      display: flex !important;
-      align-items: center !important;
-      flex-wrap: wrap !important;
-      gap: 10px 12px !important;
-      position: relative !important;
-    }
-
-    .site-header .lang-switcher {
-      position: relative !important;
-      z-index: 1002 !important;
-      flex-shrink: 0 !important;
-      margin-left: auto !important;
-    }
-
-    .site-header .social-header {
-      position: relative !important;
-      z-index: 1001 !important;
-      flex-shrink: 0 !important;
-    }
-
-    .site-header nav,
-    .site-header nav.open,
-    .site-header nav.active,
-    .site-header .nav-menu,
-    .site-header .nav-menu.open,
-    .site-header .nav-menu.active {
-      position: relative !important;
-      z-index: 1000 !important;
-      width: 100% !important;
-      max-width: 100% !important;
-      clear: both !important;
-      margin-top: 8px !important;
-    }
-
-    .site-header nav ul {
-      display: flex !important;
-      flex-wrap: wrap !important;
-      gap: 6px 12px !important;
-      padding: 10px 12px !important;
-      margin: 0 !important;
-      list-style: none !important;
-    }
-
-    .site-header nav li a {
-      display: inline-flex !important;
-      align-items: center !important;
-      gap: 6px !important;
-      white-space: nowrap !important;
-    }
-
-
-    /* Posizionamento meteo nell'angolo tra la barra nera in alto e il confine destro dello schermo */
-    #weatherWidget,
-    .weather-widget {
-      position: fixed !important;
-      top: calc(var(--header-height, 76px) + 10px) !important;
-      right: 12px !important;
-      left: auto !important;
-      bottom: auto !important;
-      z-index: 950 !important;
-      display: inline-flex !important;
-      align-items: center !important;
-      gap: 6px !important;
-      padding: 6px 12px !important;
-      border-radius: 999px !important;
-      background: rgba(14, 17, 22, 0.92) !important;
       border: 1px solid var(--border-strong) !important;
-      color: var(--text-primary) !important;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7) !important;
-      max-width: calc(100vw - 24px) !important;
-      box-sizing: border-box !important;
     }
 
+    #chatInput {
+      background-color: var(--bg-void) !important;
+      color: var(--text-primary) !important;
+      border: 1px solid var(--border-subtle) !important;
+    }
+
+    #scrollToTop {
+      background-color: var(--bg-elevated) !important;
+      border: 1px solid var(--border-strong) !important;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
+    }
   </style>
 
-  <!-- Favicon -->
-  <link rel="icon" href="img/icononly.png" type="image/png" />
-
-  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 </head>
 
 <body>
