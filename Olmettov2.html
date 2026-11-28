@@ -1570,7 +1570,7 @@
             });
           }
 
-          for (let x = 900; x < COURSE_LENGTH_LV5 - 900; x += 780) {
+          for (let x = 650; x < COURSE_LENGTH_LV5 - 700; x += 560) {
             const pIdx = Math.floor(x / 780);
             lv5Pigeons.push({
               id: pIdx,
@@ -1635,7 +1635,7 @@
 
         state.bike.x = 200;
         state.bike.y = getGroundY(200);
-        state.bike.vx = state.level === 4 ? 520 : ((state.level === 2 || state.level === 3) ? 230 : 0);
+        state.bike.vx = state.level === 4 ? 520 : ((state.level === 2 || state.level === 3 || state.level === 5) ? 210 : 0);
         state.bike.vy = 0;
         state.bike.onGround = true;
         state.bike.wheelAngle = 0;
@@ -2533,29 +2533,7 @@
           }
         }
 
-        if (isLv5) {
-          const gtaSky = ctx.createLinearGradient(0, 0, 0, height * 0.65);
-          gtaSky.addColorStop(0, '#1e1b4b');
-          gtaSky.addColorStop(0.45, '#be185d');
-          gtaSky.addColorStop(1, '#fb923c');
-          ctx.fillStyle = gtaSky;
-          ctx.fillRect(0, 0, width, height);
-
-          ctx.fillStyle = '#fde047';
-          ctx.beginPath();
-          ctx.arc(width * 0.78, height * 0.22, 32, 0, Math.PI * 2);
-          ctx.fill();
-
-          ctx.fillStyle = 'rgba(255, 228, 230, 0.35)';
-          for (let c = 0; c < 4; c++) {
-            const cx = ((c * 360 - state.cameraX * 0.08) % (width + 260) + (width + 260)) % (width + 260) - 130;
-            const cy = height * (0.15 + (c % 2) * 0.07);
-            ctx.beginPath();
-            ctx.arc(cx, cy, 22, 0, Math.PI * 2);
-            ctx.arc(cx + 22, cy - 5, 26, 0, Math.PI * 2);
-            ctx.fill();
-          }
-        } else if (!isLv2 && !isLv3) {
+        if (!isLv2 && !isLv3 && !isLv5) {
           for (let i = 0; i < npcs.length; i++) {
             const npc = npcs[i];
             if (!npc.talked && Math.abs(state.bike.x - npc.x) < 48) {
@@ -2849,7 +2827,7 @@
             const pig = lv5Pigeons[p];
             if (pig.squashed) continue;
             pig.x += pig.vx * dt;
-            if (Math.abs(pig.x - pig.baseX) > 110) {
+            if (Math.abs(pig.x - pig.baseX) > 95) {
               pig.vx = -pig.vx;
             }
             pig.hopPhase += dt * 7;
@@ -4912,7 +4890,37 @@
         const baseRoadScreenY = groundScreenTargetY - state.cameraBaseY;
         const riderScreenY = baseRoadScreenY + state.bike.y;
 
-        if (!isLv2 && !isLv3) {
+        if (isLv5) {
+          const gtaSky = ctx.createLinearGradient(0, 0, 0, height * 0.72);
+          gtaSky.addColorStop(0, '#1e1b4b');
+          gtaSky.addColorStop(0.45, '#be185d');
+          gtaSky.addColorStop(1, '#fb923c');
+          ctx.fillStyle = gtaSky;
+          ctx.fillRect(0, 0, width, height);
+
+          ctx.fillStyle = '#fde047';
+          ctx.beginPath();
+          ctx.arc(width * 0.78, height * 0.20, 32, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = 'rgba(255, 228, 230, 0.30)';
+          for (let c = 0; c < 4; c++) {
+            const cx = ((c * 360 - state.cameraX * 0.08) % (width + 260) + (width + 260)) % (width + 260) - 130;
+            const cy = height * (0.14 + (c % 2) * 0.06);
+            ctx.beginPath();
+            ctx.arc(cx, cy, 22, 0, Math.PI * 2);
+            ctx.arc(cx + 22, cy - 5, 26, 0, Math.PI * 2);
+            ctx.fill();
+          }
+
+          // Profilo palazzi storici & Cupola/Voltone di Livorno in lontananza
+          ctx.fillStyle = 'rgba(30, 27, 75, 0.55)';
+          for (let b = 0; b < width + 240; b += 120) {
+            const bx = ((b - state.cameraX * 0.14) % (width + 240) + (width + 240)) % (width + 240) - 120;
+            const bh = 70 + ((b * 17) % 55);
+            ctx.fillRect(bx, height * 0.72 - bh, 96, bh);
+          }
+        } else if (!isLv2 && !isLv3) {
           const skyGrad = ctx.createLinearGradient(0, 0, 0, height * 0.65);
           skyGrad.addColorStop(0, '#0369a1');
           skyGrad.addColorStop(0.55, '#38bdf8');
@@ -5071,7 +5079,7 @@
         ctx.stroke();
         ctx.setLineDash([]);
 
-        if (!isLv2 && !isLv3) {
+        if (!isLv2 && !isLv3 && !isLv5) {
           for (let b = 0; b < BELVEDERE_SPOTS.length; b++) {
             const spot = BELVEDERE_SPOTS[b];
             const bx = spot.x - state.cameraX;
@@ -5315,6 +5323,31 @@
             ctx.font = '900 11px Inter, sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText('💨 +150 🕊️', ex, ey - (0.55 - eff.life) * 35);
+            ctx.restore();
+          }
+
+          const finishX = COURSE_LENGTH_LV5 - state.cameraX;
+          if (finishX >= -220 && finishX <= width + 220) {
+            const finishY = baseRoadScreenY + getGroundY(COURSE_LENGTH_LV5);
+            ctx.save();
+            ctx.translate(finishX, finishY);
+            ctx.fillStyle = '#1e1b4b';
+            ctx.fillRect(-95, -135, 16, 135);
+            ctx.fillRect(79, -135, 16, 135);
+            ctx.fillStyle = '#be185d';
+            ctx.beginPath();
+            ctx.roundRect(-105, -162, 210, 34, 9);
+            ctx.fill();
+            ctx.strokeStyle = '#fde047';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+            ctx.fillStyle = '#fde047';
+            ctx.font = '900 11px Inter, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('PIAZZA GRANDE · LIVORNO GTA', 0, -147);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '700 8px Inter, sans-serif';
+            ctx.fillText('TRAGUARDO DER CENTRO, BOIA DÉ!', 0, -135);
             ctx.restore();
           }
 
