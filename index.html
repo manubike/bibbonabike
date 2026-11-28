@@ -1492,7 +1492,7 @@
         <p>
           <span data-i18n="hero_desc">Officina specializzata per E-Bike, diagnosi riparazione e aggiornamento per i motori dei marchi più conosciuti, noleggio E-MTB e ristoro a Bibbona, in provincia di Livorno.</span>
         </p>
-        <a href="noleggio.html#noleggio" class="btn-primary scroll-btn">
+        <a href="noleggio.html" class="btn-primary">
           <span class="icon-bike">🚴‍♂️</span> <span data-i18n="hero_cta">Prenota la tua E-MTB</span>
         </a>
       </div>
@@ -1997,12 +1997,16 @@
   <!-- Script Scroll to Top, Reveal Footer, Lazy hCaptcha e Animazione Titoli -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Scroll preciso al form di prenotazione su iOS / iPhone 14 Pro Max
-      const bookingTriggers = document.querySelectorAll('a[href="#noleggio"], .scroll-btn');
+      // Scroll preciso al form di prenotazione solo se il bersaglio esiste nella pagina corrente
+      const bookingTriggers = document.querySelectorAll('a[href="#noleggio"], a[href$="#noleggio"]');
       bookingTriggers.forEach((trigger) => {
         trigger.addEventListener('click', (e) => {
-          const href = trigger.getAttribute('href');
-          if (href !== '#noleggio' && !trigger.classList.contains('scroll-btn')) return;
+          const href = trigger.getAttribute('href') || '';
+          const hashIndex = href.indexOf('#');
+          if (hashIndex === -1) return;
+          const pagePart = href.slice(0, hashIndex);
+          const currentFile = window.location.pathname.split('/').pop() || 'index.html';
+          if (pagePart && pagePart !== currentFile) return;
           const targetEl = document.getElementById('noleggioForm') || document.getElementById('noleggio');
           if (!targetEl) return;
           e.preventDefault();
