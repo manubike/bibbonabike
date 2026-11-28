@@ -3112,7 +3112,6 @@
   <script src="js/weather.js"></script>
   <script src="js/contactButton.js"></script>
   <script src="js/slideshow_my.js"></script>
-
   <!-- Invio Prenotazione verso Cloudflare Worker (/submit) -->
   <script>
     (function () {
@@ -3130,6 +3129,9 @@
         if (!form) return;
         e.preventDefault();
         e.stopPropagation();
+        if (typeof e.stopImmediatePropagation === "function") {
+          e.stopImmediatePropagation();
+        }
 
         if (form.dataset.sending === "1") return;
 
@@ -3137,17 +3139,27 @@
         const emailVal = (document.getElementById("email")?.value || "").trim();
         const phoneVal = (document.getElementById("phone")?.value || "").trim();
         const bikeVal = (document.getElementById("bikeType")?.value || "").trim();
-        const qtyVal = Math.max(1, parseInt(document.getElementById("quantity")?.value || "1", 10) || 1);
+        const qtyRaw = parseInt(document.getElementById("quantity")?.value || "1", 10);
+        const qtyVal = Number.isFinite(qtyRaw) && qtyRaw > 0 ? qtyRaw : 1;
         const dateVal = (document.getElementById("date")?.value || "").trim();
-        const durationVal = (document.getElementById("duration")?.value || "1").trim();
+        const durationRaw = (document.getElementById("duration")?.value || "1").trim();
+        const durationNum = parseFloat(durationRaw);
+        const durationVal = Number.isFinite(durationNum) ? durationNum : durationRaw;
         const notesVal = (document.getElementById("notes")?.value || "").trim();
         const discountVal = (document.getElementById("codiceSconto")?.value || "").trim();
-        const totalVal = (document.getElementById("totalHidden")?.value || document.getElementById("totalAmount")?.textContent || "0.00").trim();
+        const totalText = (document.getElementById("totalHidden")?.value || document.getElementById("totalAmount")?.textContent || "0.00").trim();
+        const totalNum = parseFloat(totalText.replace(",", "."));
+        const totalVal = Number.isFinite(totalNum) ? Number(totalNum.toFixed(2)) : 0;
         const tourVal = (document.getElementById("tourSelected")?.value || "").trim();
         const accessories = Array.from(form.querySelectorAll('input[name="accessories"]:checked')).map((cb) => cb.value);
 
-        const tokenEl = form.querySelector('textarea[name="h-captcha-response"], input[name="h-captcha-response"]');
-        const captchaToken = tokenEl ? tokenEl.value.trim() : "";
+        const tokenEl = form.querySelector('textarea[name="h-captcha-response"], input[name="h-captcha-response"], textarea[name="g-recaptcha-response"], input[name="g-recaptcha-response"]');
+        let captchaToken = tokenEl ? tokenEl.value.trim() : "";
+        if (!captchaToken && window.hcaptcha && typeof window.hcaptcha.getResponse === "function") {
+          try {
+            captchaToken = String(window.hcaptcha.getResponse() || "").trim();
+          } catch (_) {}
+        }
 
         if (!nameVal || !emailVal || !phoneVal || !bikeVal || !dateVal) {
           setFeedback("Compila tutti i campi obbligatori: Nome e Cognome, Email, Telefono, Tipo di bici e Data.", false);
@@ -3168,13 +3180,20 @@
           date: dateVal,
           duration: durationVal,
           accessories: accessories,
-          tourSelected: tourVal,
           notes: notesVal,
           codiceSconto: discountVal,
           total: totalVal,
-          hCaptchaToken: captchaToken,
-          "h-captcha-response": captchaToken
+          totalFormatted: totalVal.toFixed(2)
         };
+
+        if (tourVal) {
+          payload.tourSelected = tourVal;
+        }
+        if (captchaToken) {
+          payload["h-captcha-response"] = captchaToken;
+          payload.hCaptchaToken = captchaToken;
+          payload.captchaToken = captchaToken;
+        }
 
         try {
           const resp = await fetch(WORKER_SUBMIT_URL, {
@@ -3194,13 +3213,16 @@
           if (resp.ok && (!data || data.ok !== false)) {
             setFeedback((data && (data.message || data.msg)) || "Richiesta inviata con successo! Ti contatteremo al più presto.", true);
             form.reset();
+            if (window.hcaptcha && typeof window.hcaptcha.reset === "function") {
+              try { window.hcaptcha.reset(); } catch (_) {}
+            }
             const totalSpan = document.getElementById("totalAmount");
             const totalHid = document.getElementById("totalHidden");
             if (totalSpan) totalSpan.textContent = "0.00";
             if (totalHid) totalHid.value = "0.00";
           } else {
-            const errMsg = (data && (data.error || data.message)) || ("Risposta del server non valida (HTTP " + resp.status + ").");
-            setFeedback(errMsg, false);
+            const serverMsg = (data && (data.error || data.message || data.detail)) || rawText || ("HTTP " + resp.status);
+            setFeedback("Risposta server (" + resp.status + "): " + serverMsg, false);
           }
         } catch (err) {
           setFeedback("Errore di rete durante l'invio al server di prenotazione. Verifica la connessione o contattaci al +39 331 345 3207.", false);
@@ -3214,14 +3236,6 @@
         const form = document.getElementById("noleggioForm");
         if (form) {
           form.addEventListener("submit", handleBookingSubmit, true);
-        }
-        const btn = document.getElementById("submitBookingBtn");
-        if (btn) {
-          btn.addEventListener("click", (e) => {
-            if (form) {
-              handleBookingSubmit(e);
-            }
-          }, true);
         }
       });
     })();
