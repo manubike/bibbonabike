@@ -59,8 +59,8 @@ let currentThemeIndex = 0; // Inizia dal tema 'light' (indice 0)
 // Mappa per i colori dei pulsanti del tema
 const themeButtonColors = {
     'light': { bgColor: '#e0e0e0', textColor: '#333333' }, // Grigio chiaro per sfondo, testo scuro
-    'dark': { bgColor: '#333333', textColor: '#ffffff' }, // Grigio scuro per sfondo, testo chiaro
-    'dim': { bgColor: '#606060', textColor: '#ffffff' },  // Grigio medio scuro, testo chiaro
+    'dark': { bgColor: '#333333', textColor: '#ffffff' },  // Grigio scuro per sfondo, testo chiaro
+    'dim': { bgColor: '#606060', textColor: '#ffffff' },   // Grigio medio scuro, testo chiaro
     'black': { bgColor: '#000000', textColor: '#ffffff' }  // Nero, testo chiaro
 };
 
@@ -70,7 +70,7 @@ const themeButtonColors = {
 
 /**
  * Funzione generica per popolare la griglia delle miniature.
- * Utilizza la nuova struttura { href, alt }.
+ * Utilizza la struttura { href, alt }.
  * @param {HTMLElement} container - L'elemento DOM che conterrà le miniature.
  * @param {Array<Object>} photos - L'array di oggetti immagine.
  */
@@ -79,7 +79,8 @@ function renderGallery(container, photos) {
         console.error("renderGallery: Container per la galleria non trovato.");
         return;
     }
-    container.innerHTML = photos.map((p, i) =>
+    const items = Array.isArray(photos) ? photos : [];
+    container.innerHTML = items.map((p, i) =>
         `<a href="${p.href}" class="go_gridItem" data-index="${i}">
             <img src="${p.href}" alt="${p.alt}" loading="lazy" width="300" height="200">
             <span class="go_caption go_caption-full">${p.alt}</span>
@@ -128,17 +129,12 @@ function changeLightboxTheme() {
     const newTheme = themes[currentThemeIndex];
 
     SSG.cfg.theme = newTheme;
-    updateThemeButtonColor(newTheme); // Aggiorna il colore del pulsante
+    updateThemeButtonColor(newTheme);
 
     if (isSsgLightboxOpen() && typeof SSG.close === 'function') {
         SSG.close();
-        setTimeout(() => {
-            // Se necessario, riaprire la lightbox qui con il nuovo tema.
-            // Per questo caso, ci affidiamo che il tema verrà applicato al prossimo avvio.
-        }, 300);
     }
 }
-
 
 // ============================================================================
 // FUNZIONI DI CARICAMENTO GALLERIA
@@ -157,9 +153,11 @@ function caricaGalleria(galleryData, galleryName, shouldRunSsgImmediately = fals
     const lightboxWasOpen = isSsgLightboxOpen();
 
     const proceedWithGalleryLoad = () => {
-        galleriaCorrente = galleryData;
+        galleriaCorrente = Array.isArray(galleryData) ? galleryData : [];
         renderGallery(galleryElement, galleriaCorrente);
-        localStorage.setItem('lastSelectedGallery', galleryName);
+        try {
+            localStorage.setItem('lastSelectedGallery', galleryName);
+        } catch (_) {}
 
         if (window.SSG && SSG.beforeRun) {
             SSG.beforeRun();
@@ -178,7 +176,7 @@ function caricaGalleria(galleryData, galleryName, shouldRunSsgImmediately = fals
     };
 
     if (lightboxWasOpen) {
-        if (typeof SSG.close === 'function') {
+        if (window.SSG && typeof SSG.close === 'function') {
             SSG.close();
             setTimeout(() => {
                 proceedWithGalleryLoad();
@@ -217,14 +215,14 @@ document.addEventListener("DOMContentLoaded", () => {
     galleryElement = document.getElementById("photoGallery");
 
     if (!galleryElement) {
-        console.error("DOMContentLoaded: Elemento #photoGallery non trovato. La galleria non sarà inizializzata.");
+        console.warn("DOMContentLoaded: Elemento #photoGallery non trovato in questa pagina.");
         return;
     }
 
     galleriaCorrente = galleriaPrincipaleImmagini;
     renderGallery(galleryElement, galleriaCorrente);
 
-    if (window.SSG) {
+    if (window.SSG && SSG.cfg) {
         Object.assign(SSG.cfg, {
             theme: 'light',
             scrollDuration: 500,
@@ -267,13 +265,12 @@ document.addEventListener("DOMContentLoaded", () => {
             exitLink: "Esci dalla galleria.",
             observeDOM: true,
             onImgLoad: function(data) {
-                // Funzione onImgLoad lasciata vuota, rimuovendo riferimenti esterni non più necessari.
+                // Callback lasciato vuoto
             }
         });
-        // Imposta il colore iniziale del pulsante tema in base al tema di default di SSG
         updateThemeButtonColor(SSG.cfg.theme);
     } else {
-        console.error("DOMContentLoaded: Story Show Gallery (SSG) non è disponibile. Assicurati che ssg.js sia caricato correttamente.");
+        console.warn("DOMContentLoaded: Story Show Gallery (SSG) non è disponibile.");
     }
 
     galleryElement.addEventListener("click", e => {
@@ -288,11 +285,12 @@ document.addEventListener("DOMContentLoaded", () => {
             if (window.SSG && SSG.beforeRun) {
                 SSG.beforeRun();
             }
-            
-            SSG.run({
-                imgs: galleriaCorrente,
-                startIndex: index
-            });
+            if (window.SSG && typeof SSG.run === "function") {
+                SSG.run({
+                    imgs: galleriaCorrente,
+                    startIndex: index
+                });
+            }
         } else {
             console.warn("EventListener (gallery click): Indice miniatura non valido (NaN).");
         }
@@ -301,31 +299,21 @@ document.addEventListener("DOMContentLoaded", () => {
     // Toggle layout della griglia
     const toggleBtn = document.getElementById("toggleLayout");
     if (toggleBtn) {
-        // Imposta lo stato iniziale del pulsante per riflettere che la galleria inizia in modalità libera (go-masonry)
         const isInitiallyMasonry = galleryElement.classList.contains("go-masonry");
         toggleBtn.classList.toggle("active", isInitiallyMasonry);
         toggleBtn.setAttribute("aria-pressed", isInitiallyMasonry);
 
         const label = toggleBtn.querySelector(".label");
-        // Se la galleria è inizialmente in modalità libera, il pulsante deve offrire l'opzione "Griglia"
         if (label) label.textContent = isInitiallyMasonry ? "Griglia" : "Libero";
 
         const icon = toggleBtn.querySelector("i");
-        // Se la galleria è inizialmente in modalità libera, il pulsante deve mostrare l'icona della griglia
         if (icon) icon.className = isInitiallyMasonry ? "fas fa-th" : "fas fa-border-all";
 
-
         toggleBtn.addEventListener("click", () => {
-            // isActive sarà true se go-masonry è ora presente (modalità libera)
             const isActive = galleryElement.classList.toggle("go-masonry");
-
             toggleBtn.classList.toggle("active", isActive);
             toggleBtn.setAttribute("aria-pressed", isActive);
-
-            // Se la galleria è ora in modalità libera (isActive è true), il pulsante deve offrire "Griglia"
             if (label) label.textContent = isActive ? "Griglia" : "Libero";
-
-            // Se la galleria è ora in modalità libera (isActive è true), il pulsante deve mostrare l'icona della griglia
             if (icon) icon.className = isActive ? "fas fa-th" : "fas fa-border-all";
         });
     } else {
@@ -336,7 +324,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (changeThemeBtn) {
         changeThemeBtn.addEventListener("click", changeLightboxTheme);
     } else {
-        console.warn("DOMContentLoaded: Elemento #changeThemeButton non trovato. Il pulsante di cambio tema non funzionerà.");
+        console.warn("DOMContentLoaded: Elemento #changeThemeButton non trovato.");
     }
 
     document.addEventListener("keydown", e => {
