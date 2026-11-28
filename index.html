@@ -1773,6 +1773,7 @@
             <label for="codiceSconto" data-i18n="lbl_discount">Codice Sconto</label>
             <i class="fas fa-tag"></i>
             <input type="text" id="codiceSconto" name="codiceSconto" />
+            <small id="discountFeedback" style="display:block; margin-top:4px; font-size:0.82rem; color:#6ee7a8;"></small>
           </div>
 
           <p class="price-summary">
@@ -2042,20 +2043,42 @@
     });
   </script>
 
-  <!-- Calcolo Totale Prenotazione (E-MTB 29: 50€/giorno, 35€ mezza giornata · E-MTB 24: 40€/giorno, 25€ mezza giornata) -->
+  <!-- Calcolo Totale Prenotazione Live (Bici, Accessori e Codici Sconto) -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const form = document.getElementById('noleggioForm');
       const bikeSelect = document.getElementById('bikeType');
       const quantityInput = document.getElementById('quantity');
       const durationSelect = document.getElementById('duration');
+      const discountInput = document.getElementById('codiceSconto');
+      const discountFeedback = document.getElementById('discountFeedback');
       const totalAmountSpan = document.getElementById('totalAmount');
       const totalHiddenInput = document.getElementById('totalHidden');
       const selectButtons = document.querySelectorAll('.bike-select');
 
+      const VALID_DISCOUNTS = {
+        MAGONA10: 10,
+        BIBBONA10: 10
+      };
+
       function computeRentalTotal() {
         if (!bikeSelect || !quantityInput || !durationSelect || !totalAmountSpan || !totalHiddenInput) {
           return;
+        }
+
+        const codeRaw = discountInput ? discountInput.value.trim().toUpperCase() : '';
+        const discountPct = Object.prototype.hasOwnProperty.call(VALID_DISCOUNTS, codeRaw) ? VALID_DISCOUNTS[codeRaw] : 0;
+
+        if (discountFeedback) {
+          if (discountPct > 0) {
+            discountFeedback.style.color = '#6ee7a8';
+            discountFeedback.textContent = `✓ Codice ${codeRaw} applicato (-${discountPct}%)`;
+          } else if (codeRaw.length > 0) {
+            discountFeedback.style.color = '#ffab6b';
+            discountFeedback.textContent = 'Codice non attivo (verrà comunque verificato dallo staff)';
+          } else {
+            discountFeedback.textContent = '';
+          }
         }
 
         const selectedOption = bikeSelect.options[bikeSelect.selectedIndex];
@@ -2080,7 +2103,11 @@
           if (acc.value === 'shotgun') accessoriesTotal += 15;
         });
 
-        const grandTotal = (unitPrice * qty) + accessoriesTotal;
+        let grandTotal = (unitPrice * qty) + accessoriesTotal;
+        if (discountPct > 0) {
+          grandTotal = grandTotal * (1 - discountPct / 100);
+        }
+
         const formatted = grandTotal.toFixed(2);
         totalAmountSpan.textContent = formatted;
         totalHiddenInput.value = formatted;
@@ -3378,10 +3405,10 @@
   <script src="js/contactButton.js"></script>
   <script src="js/slideshow_my.js"></script>
 
-  <!-- Invio Prenotazione verso Cloudflare Worker (/submit) -->
+  <!-- Invio Prenotazione diretto via Gmail (Google Apps Script) -->
   <script>
     (function () {
-      const WORKER_SUBMIT_URL = "https://bibbonabikeBooking.vitiellomanuel1985.workers.dev/submit";
+      const GMAIL_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxr9rRj5cSgnsSf6uNSRps70qwx4bEEEq-qWEjvUXprgcrhj2_pNo2-2ax1fWIXdcI/exec";
 
       function setFeedback(msg, isOk) {
         const el = document.getElementById("responseMessage");
@@ -3472,9 +3499,9 @@
         }
 
         try {
-          const resp = await fetch(WORKER_SUBMIT_URL, {
+          const resp = await fetch(GMAIL_SCRIPT_URL, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
             body: JSON.stringify(payload)
           });
 
@@ -3483,25 +3510,27 @@
           try {
             data = JSON.parse(rawText);
           } catch (_) {
-            data = { message: rawText };
+            data = { ok: false, error: rawText };
           }
 
-          if (resp.ok && (!data || data.ok !== false)) {
-            setFeedback((data && (data.message || data.msg)) || "Richiesta inviata con successo! Ti contatteremo al più presto.", true);
+          if (resp.ok && data && data.ok) {
+            setFeedback(data.message || "Richiesta inviata! Controlla la tua casella email per il riepilogo.", true);
             form.reset();
             if (window.hcaptcha && typeof window.hcaptcha.reset === "function") {
               try { window.hcaptcha.reset(); } catch (_) {}
             }
             const totalSpan = document.getElementById("totalAmount");
             const totalHid = document.getElementById("totalHidden");
+            const discFb = document.getElementById("discountFeedback");
             if (totalSpan) totalSpan.textContent = "0.00";
             if (totalHid) totalHid.value = "0.00";
+            if (discFb) discFb.textContent = "";
           } else {
-            const serverMsg = (data && (data.error || data.message || data.detail)) || rawText || ("HTTP " + resp.status);
-            setFeedback("Risposta server (" + resp.status + "): " + serverMsg, false);
+            const serverMsg = (data && (data.error || data.message)) || ("Errore HTTP " + resp.status);
+            setFeedback("Impossibile completare l'invio: " + serverMsg, false);
           }
         } catch (err) {
-          setFeedback("Errore di rete durante l'invio al server di prenotazione. Verifica la connessione o contattaci al +39 331 345 3207.", false);
+          setFeedback("Errore di rete durante l'invio. Verifica la connessione o scrivici su WhatsApp al +39 331 345 3207.", false);
         } finally {
           form.dataset.sending = "0";
           if (submitBtn) submitBtn.disabled = false;
