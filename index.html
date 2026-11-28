@@ -3181,140 +3181,69 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
   <script src="js/contactButton.js"></script>
   <script src="js/slideshow_my.js"></script>
 
-  <!-- Allineamento tasto Indicazioni su Piazza delle Querce 5, Bibbona, Livorno + Traduzione Pulsanti Contatto Officina -->
+  <!-- Allineamento tasto Indicazioni su Piazza delle Querce 5, Bibbona, Livorno -->
   <script>
     (function () {
       const DIRECTIONS_ADDRESS = "Piazza delle Querce 5, Bibbona, Livorno";
       const DIRECTIONS_URL = "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(DIRECTIONS_ADDRESS);
-      const PHONE_HREF = "tel:+393313453207";
-      const WHATSAPP_HREF = "https://wa.me/393313453207";
+      const BUTTON_LABEL = "Indicazioni";
       let isApplying = false;
 
-      function getLabels() {
-        const dict = typeof window.getBibbonaDict === "function" ? window.getBibbonaDict() : null;
-        return {
-          call: (dict && dict.btn_call) || "Chiama",
-          whatsapp: (dict && dict.btn_whatsapp_chat) || "Chatta su WhatsApp",
-          directions: (dict && dict.btn_directions) || "Indicazioni"
-        };
-      }
-
-      function syncWorkshopButtons() {
+      function applyDirectionsLink() {
         if (isApplying) return;
+        const mapEl = document.getElementById("mapLink");
+        if (!mapEl) return;
+
         isApplying = true;
         try {
-          const labels = getLabels();
-
-          // 1. Tasto Chiama (#phoneLink)
-          const phoneEl = document.getElementById("phoneLink");
-          if (phoneEl) {
-            let aPhone = phoneEl.tagName === "A" ? phoneEl : phoneEl.querySelector("a");
-            if (!aPhone) {
-              aPhone = document.createElement("a");
-              aPhone.className = "btn-secondary";
-              phoneEl.innerHTML = "";
-              phoneEl.appendChild(aPhone);
-            }
-            if (!aPhone.getAttribute("href") || aPhone.getAttribute("href") === "#") {
-              aPhone.href = PHONE_HREF;
-            }
-            aPhone.setAttribute("aria-label", labels.call);
-            aPhone.title = labels.call;
-            const iconPhone = aPhone.querySelector("i");
-            if (iconPhone) {
-              Array.from(aPhone.childNodes).forEach((n) => {
-                if (n !== iconPhone) aPhone.removeChild(n);
-              });
-              aPhone.appendChild(document.createTextNode(" " + labels.call));
-            } else if (aPhone.textContent.trim() !== labels.call) {
-              aPhone.textContent = labels.call;
-            }
+          let targetLink = mapEl.tagName === "A" ? mapEl : mapEl.querySelector("a");
+          if (!targetLink) {
+            targetLink = document.createElement("a");
+            targetLink.className = "btn-secondary";
+            mapEl.innerHTML = "";
+            mapEl.appendChild(targetLink);
           }
 
-          // 2. Tasto Chatta su WhatsApp (#whatsappLink)
-          const waEl = document.getElementById("whatsappLink");
-          if (waEl) {
-            let aWa = waEl.tagName === "A" ? waEl : waEl.querySelector("a");
-            if (!aWa) {
-              aWa = document.createElement("a");
-              aWa.className = "btn-secondary";
-              waEl.innerHTML = "";
-              waEl.appendChild(aWa);
-            }
-            if (!aWa.getAttribute("href") || aWa.getAttribute("href") === "#") {
-              aWa.href = WHATSAPP_HREF;
-              aWa.target = "_blank";
-              aWa.rel = "noopener noreferrer";
-            }
-            aWa.setAttribute("aria-label", labels.whatsapp);
-            aWa.title = labels.whatsapp;
-            const iconWa = aWa.querySelector("i");
-            if (iconWa) {
-              Array.from(aWa.childNodes).forEach((n) => {
-                if (n !== iconWa) aWa.removeChild(n);
-              });
-              aWa.appendChild(document.createTextNode(" " + labels.whatsapp));
-            } else if (aWa.textContent.trim() !== labels.whatsapp) {
-              aWa.textContent = labels.whatsapp;
-            }
+          targetLink.href = DIRECTIONS_URL;
+          targetLink.target = "_blank";
+          targetLink.rel = "noopener noreferrer";
+          targetLink.title = DIRECTIONS_ADDRESS;
+          targetLink.setAttribute("aria-label", BUTTON_LABEL);
+
+          // Rimuove eventuale testo extra lasciando esclusivamente "Indicazioni"
+          if (targetLink.textContent.trim() !== BUTTON_LABEL || targetLink.children.length > 0) {
+            targetLink.textContent = BUTTON_LABEL;
           }
 
-          // 3. Tasto Indicazioni (#mapLink) — solo testo tradotto senza indirizzo extra
-          const mapEl = document.getElementById("mapLink");
-          if (mapEl) {
-            let targetLink = mapEl.tagName === "A" ? mapEl : mapEl.querySelector("a");
-            if (!targetLink) {
-              targetLink = document.createElement("a");
-              targetLink.className = "btn-secondary";
-              mapEl.innerHTML = "";
-              mapEl.appendChild(targetLink);
-            }
-
-            targetLink.href = DIRECTIONS_URL;
-            targetLink.target = "_blank";
-            targetLink.rel = "noopener noreferrer";
-            targetLink.title = DIRECTIONS_ADDRESS;
-            targetLink.setAttribute("aria-label", labels.directions);
-
-            if (targetLink.textContent.trim() !== labels.directions || targetLink.children.length > 0) {
-              targetLink.textContent = labels.directions;
-            }
-
-            if (mapEl !== targetLink) {
-              Array.from(mapEl.childNodes).forEach((node) => {
-                if (node !== targetLink) {
-                  mapEl.removeChild(node);
-                }
-              });
-            }
+          if (mapEl !== targetLink) {
+            Array.from(mapEl.childNodes).forEach((node) => {
+              if (node !== targetLink) {
+                mapEl.removeChild(node);
+              }
+            });
           }
         } finally {
           isApplying = false;
         }
       }
 
-      window.syncBibbonaWorkshopButtons = syncWorkshopButtons;
-
       document.addEventListener("DOMContentLoaded", () => {
-        syncWorkshopButtons();
-        ["phoneLink", "whatsappLink", "mapLink"].forEach((id) => {
-          const el = document.getElementById(id);
-          if (el && "MutationObserver" in window) {
-            new MutationObserver(() => {
-              syncWorkshopButtons();
-            }).observe(el, { childList: true, subtree: true, characterData: true });
-          }
-        });
+        applyDirectionsLink();
+        const mapEl = document.getElementById("mapLink");
+        if (mapEl && "MutationObserver" in window) {
+          new MutationObserver(() => {
+            applyDirectionsLink();
+          }).observe(mapEl, { childList: true, subtree: true, characterData: true });
+        }
       });
 
       window.addEventListener("load", () => {
-        syncWorkshopButtons();
-        setTimeout(syncWorkshopButtons, 150);
-        setTimeout(syncWorkshopButtons, 500);
+        applyDirectionsLink();
+        setTimeout(applyDirectionsLink, 150);
+        setTimeout(applyDirectionsLink, 500);
       });
       window.addEventListener("bibbonabike:langchange", () => {
-        setTimeout(syncWorkshopButtons, 0);
-        setTimeout(syncWorkshopButtons, 80);
+        setTimeout(applyDirectionsLink, 0);
       });
     })();
   </script>
@@ -3775,41 +3704,7 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
     "pp_sec4_title": "4. Diritti dell'interessato (GDPR)",
     "pp_sec4_body": "Ai sensi del Regolamento UE 2016/679 (GDPR), puoi richiedere in qualsiasi momento accesso, rettifica, cancellazione o limitazione dei tuoi dati, revocare il consenso ai cookie non necessari o proporre reclamo all'autorità di controllo competente scrivendo a magonabikegarage@gmail.com o contattando Magona Bike Garage.",
     "pp_manage_cookies": "Gestisci Preferenze Cookie",
-    "pp_close_btn": "Chiudi",
-    "btn_call": "Chiama",
-    "btn_whatsapp_chat": "Chatta su WhatsApp",
-    "btn_directions": "Indicazioni",
-    "hero_slides": [
-      "Pedala e goditi la splendida natura incontaminata tra i sentieri della ValdiCecina",
-      "Noleggio E-MTB 29” e 24” pronte per ogni avventura tra boschi, borghi e mare",
-      "Officina specializzata E-Bike: diagnosi, aggiornamenti firmware e revisione sospensioni",
-      "Tour guidati con istruttori certificati alla scoperta della Macchia della Magona"
-    ],
-    "tour_discover_btn": "Scopri di più",
-    "tour_more_show": "Mostra altri tour",
-    "tour_more_hide": "Mostra meno tour",
-    "tours_catalog": {
-      "macchia della magona": {
-        "title": "Macchia della Magona Enduro & Trail",
-        "desc": "Esplora i migliori singletrack della Macchia della Magona tra boschi di lecci, panorami sulla costa e discese guidate adatte al tuo livello."
-      },
-      "bolgheri": {
-        "title": "Bolgheri, Vigneti & Strade Bianche",
-        "desc": "Itinerario panoramico tra i cipressi di Bolgheri, le colline dei vigneti e le strade bianche della Costa degli Etruschi con sosta degustazione."
-      },
-      "val di cecina": {
-        "title": "Borghi della Val di Cecina",
-        "desc": "Alla scoperta dei borghi storici di Casale Marittimo, Guardistallo e Montescudaio tra crinali panoramici e natura incontaminata."
-      },
-      "costa": {
-        "title": "Pineta & Costa degli Etruschi",
-        "desc": "Pedalata rilassante tra la pineta di Marina di Bibbona, i tomboli costieri e le riserve naturali affacciate sul mar Tirreno."
-      },
-      "volterra": {
-        "title": "Avventura E-MTB verso Volterra",
-        "desc": "Escursione completa tra calanchi, riserva di Monterufoli-Caselli e salite panoramiche fino alle mura etrusche di Volterra."
-      }
-    }
+    "pp_close_btn": "Chiudi"
   },
   "en": {
     "meta_title": "Magona Bike Garage – BibbonaBike",
@@ -3972,41 +3867,7 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
     "pp_sec4_title": "4. Your Rights under GDPR",
     "pp_sec4_body": "Under EU Regulation 2016/679 (GDPR), you may request access, rectification, erasure, or restriction of your data at any time, withdraw consent for non-essential cookies, or lodge a complaint with a supervisory authority by writing to magonabikegarage@gmail.com.",
     "pp_manage_cookies": "Manage Cookie Preferences",
-    "pp_close_btn": "Close",
-    "btn_call": "Call",
-    "btn_whatsapp_chat": "Chat on WhatsApp",
-    "btn_directions": "Directions",
-    "hero_slides": [
-      "Ride and enjoy the unspoiled nature along the trails of ValdiCecina",
-      "29” and 24” E-MTB rentals ready for every adventure across woods, villages and coast",
-      "Specialized E-Bike workshop: diagnostics, firmware updates and suspension servicing",
-      "Guided tours with certified instructors discovering the Macchia della Magona"
-    ],
-    "tour_discover_btn": "Learn more",
-    "tour_more_show": "Show more tours",
-    "tour_more_hide": "Show fewer tours",
-    "tours_catalog": {
-      "macchia della magona": {
-        "title": "Macchia della Magona Enduro & Trail",
-        "desc": "Explore the best singletracks of Macchia della Magona through holm oak woods, coastal viewpoints and guided descents tailored to your skill level."
-      },
-      "bolgheri": {
-        "title": "Bolgheri, Vineyards & Gravel Roads",
-        "desc": "Scenic route along Bolgheri's iconic cypress avenue, rolling vineyard hills and white gravel roads of the Etruscan Coast."
-      },
-      "val di cecina": {
-        "title": "Hilltop Villages of Val di Cecina",
-        "desc": "Discover the historic medieval villages of Casale Marittimo, Guardistallo and Montescudaio along panoramic ridges and unspoiled nature."
-      },
-      "costa": {
-        "title": "Pine Forest & Etruscan Coast",
-        "desc": "Relaxing ride through Marina di Bibbona's coastal pinewood, nature reserves and scenic trails overlooking the Tyrrhenian Sea."
-      },
-      "volterra": {
-        "title": "E-MTB Adventure to Volterra",
-        "desc": "Full-day excursion across clay badlands, the Monterufoli-Caselli reserve and panoramic climbs up to the Etruscan walls of Volterra."
-      }
-    }
+    "pp_close_btn": "Close"
   },
   "de": {
     "meta_title": "Magona Bike Garage – BibbonaBike",
@@ -4169,41 +4030,7 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
     "pp_sec4_title": "4. Ihre Rechte nach DSGVO",
     "pp_sec4_body": "Gemäß DSGVO (EU 2016/679) haben Sie jederzeit das Recht auf Auskunft, Berichtigung, Löschung oder Einschränkung Ihrer Daten, Widerruf erteilter Einwilligungen sowie Beschwerde bei einer Aufsichtsbehörde über magonabikegarage@gmail.com.",
     "pp_manage_cookies": "Cookie-Einstellungen verwalten",
-    "pp_close_btn": "Schließen",
-    "btn_call": "Anrufen",
-    "btn_whatsapp_chat": "Auf WhatsApp chatten",
-    "btn_directions": "Wegbeschreibung",
-    "hero_slides": [
-      "Radeln Sie und genießen Sie die unberührte Natur auf den Trails der ValdiCecina",
-      "29” und 24” E-MTB-Verleih bereit für jedes Abenteuer zwischen Wäldern, Dörfern und Meer",
-      "Spezialisierte E-Bike-Werkstatt: Diagnose, Firmware-Updates und Fahrwerksservice",
-      "Geführte Touren mit zertifizierten Guides durch die Macchia della Magona"
-    ],
-    "tour_discover_btn": "Mehr erfahren",
-    "tour_more_show": "Weitere Touren anzeigen",
-    "tour_more_hide": "Weniger Touren anzeigen",
-    "tours_catalog": {
-      "macchia della magona": {
-        "title": "Macchia della Magona Enduro & Trail",
-        "desc": "Entdecken Sie die besten Singletrails der Macchia della Magona durch Steineichenwälder, Küstenpanoramen und geführte Abfahrten."
-      },
-      "bolgheri": {
-        "title": "Bolgheri, Weinberge & Schotterwege",
-        "desc": "Panoramatour entlang der Zypressenallee von Bolgheri, durch Weinberge und über die weißen Schotterwege der Etruskerküste."
-      },
-      "val di cecina": {
-        "title": "Dörfer der Val di Cecina",
-        "desc": "Entdecken Sie die historischen Dörfer Casale Marittimo, Guardistallo und Montescudaio auf aussichtsreichen Höhenzügen."
-      },
-      "costa": {
-        "title": "Pinienwald & Etruskerküste",
-        "desc": "Entspannte Tour durch den Pinienwald von Marina di Bibbona und die Küstenreservate am Tyrrhenischen Meer."
-      },
-      "volterra": {
-        "title": "E-MTB-Abenteuer nach Volterra",
-        "desc": "Ganztagestour durch das Naturreservat Monterufoli-Caselli bis hinauf zu den etruskischen Mauern von Volterra."
-      }
-    }
+    "pp_close_btn": "Schließen"
   },
   "nl": {
     "meta_title": "Magona Bike Garage – BibbonaBike",
@@ -4366,41 +4193,7 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
     "pp_sec4_title": "4. Jouw rechten onder de AVG/GDPR",
     "pp_sec4_body": "Volgens de AVG/GDPR heb je recht op inzage, rectificatie, verwijdering of beperking van je gegevens, intrekking van toestemming en het indienen van een klacht via magonabikegarage@gmail.com.",
     "pp_manage_cookies": "Cookievoorkeuren beheren",
-    "pp_close_btn": "Sluiten",
-    "btn_call": "Bellen",
-    "btn_whatsapp_chat": "Chatten op WhatsApp",
-    "btn_directions": "Routebeschrijving",
-    "hero_slides": [
-      "Fiets en geniet van de ongerepte natuur op de paden van de ValdiCecina",
-      "29” en 24” E-MTB verhuur klaar voor elk avontuur tussen bossen, dorpen en zee",
-      "Gespecialiseerde E-Bike werkplaats: diagnose, firmware-updates en veringsservice",
-      "Begeleide tours met gecertificeerde gidsen door de Macchia della Magona"
-    ],
-    "tour_discover_btn": "Meer info",
-    "tour_more_show": "Meer tours tonen",
-    "tour_more_hide": "Minder tours tonen",
-    "tours_catalog": {
-      "macchia della magona": {
-        "title": "Macchia della Magona Enduro & Trail",
-        "desc": "Verken de beste singletracks van de Macchia della Magona door steeneikenbossen, kustpanorama's en begeleide afdalingen."
-      },
-      "bolgheri": {
-        "title": "Bolgheri, Wijngaarden & Grindwegen",
-        "desc": "Panoramische route langs de beroemde cipressenlaan van Bolgheri, wijngaardheuvels en witte grindwegen van de Etruskische Kust."
-      },
-      "val di cecina": {
-        "title": "Dorpen van de Val di Cecina",
-        "desc": "Ontdek de historische dorpen Casale Marittimo, Guardistallo en Montescudaio langs panoramische heuvelruggen."
-      },
-      "costa": {
-        "title": "Pijnboombos & Etruskische Kust",
-        "desc": "Ontspannen fietstocht door het pijnboombos van Marina di Bibbona en de natuurreservaten aan de Tyrreense Zee."
-      },
-      "volterra": {
-        "title": "E-MTB-avontuur naar Volterra",
-        "desc": "Volledige dagtocht door het reservaat Monterufoli-Caselli tot aan de Etruskische stadsmuren van Volterra."
-      }
-    }
+    "pp_close_btn": "Sluiten"
   },
   "es": {
     "meta_title": "Magona Bike Garage – BibbonaBike",
@@ -4563,41 +4356,7 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
     "pp_sec4_title": "4. Derechos del interesado (RGPD)",
     "pp_sec4_body": "Según el RGPD (UE 2016/679), puedes solicitar acceso, rectificación, supresión o limitación de tus datos, retirar tu consentimiento o reclamar ante la autoridad competente escribiendo a magonabikegarage@gmail.com.",
     "pp_manage_cookies": "Gestionar preferencias de cookies",
-    "pp_close_btn": "Cerrar",
-    "btn_call": "Llamar",
-    "btn_whatsapp_chat": "Chatear por WhatsApp",
-    "btn_directions": "Indicaciones",
-    "hero_slides": [
-      "Pedalea y disfruta de la espléndida naturaleza virgen entre los senderos de ValdiCecina",
-      "Alquiler de E-MTB de 29” y 24” listas para cada aventura entre bosques, pueblos y mar",
-      "Taller especializado en E-Bike: diagnóstico, actualizaciones de firmware y revisión de suspensiones",
-      "Tours guiados con instructores certificados descubriendo la Macchia della Magona"
-    ],
-    "tour_discover_btn": "Saber más",
-    "tour_more_show": "Mostrar más tours",
-    "tour_more_hide": "Mostrar menos tours",
-    "tours_catalog": {
-      "macchia della magona": {
-        "title": "Macchia della Magona Enduro & Trail",
-        "desc": "Explora los mejores senderos de la Macchia della Magona entre bosques de encinas, vistas a la costa y descensos guiados."
-      },
-      "bolgheri": {
-        "title": "Bolgheri, Viñedos y Caminos Blancos",
-        "desc": "Ruta panorámica entre los cipreses de Bolgheri, colinas de viñedos y caminos blancos de la Costa de los Etruscos."
-      },
-      "val di cecina": {
-        "title": "Pueblos de la Val di Cecina",
-        "desc": "Descubre los pueblos históricos de Casale Marittimo, Guardistallo y Montescudaio entre crestas panorámicas y naturaleza."
-      },
-      "costa": {
-        "title": "Pinar y Costa de los Etruscos",
-        "desc": "Paseo relajante por el pinar de Marina di Bibbona y las reservas naturales frente al mar Tirreno."
-      },
-      "volterra": {
-        "title": "Aventura E-MTB hacia Volterra",
-        "desc": "Excursión completa por la reserva de Monterufoli-Caselli hasta las murallas etruscas de Volterra."
-      }
-    }
+    "pp_close_btn": "Cerrar"
   },
   "fr": {
     "meta_title": "Magona Bike Garage – BibbonaBike",
@@ -4760,41 +4519,7 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
     "pp_sec4_title": "4. Vos droits selon le RGPD",
     "pp_sec4_body": "Conformément au RGPD (UE 2016/679), vous pouvez demander l'accès, la rectification, l'effacement ou la limitation de vos données, retirer votre consentement ou saisir l'autorité compétente via magonabikegarage@gmail.com.",
     "pp_manage_cookies": "Gérer les préférences cookies",
-    "pp_close_btn": "Fermer",
-    "btn_call": "Appeler",
-    "btn_whatsapp_chat": "Discuter sur WhatsApp",
-    "btn_directions": "Itinéraire",
-    "hero_slides": [
-      "Pédalez et profitez de la splendide nature préservée sur les sentiers de la ValdiCecina",
-      "Location de E-MTB 29” et 24” prêtes pour chaque aventure entre forêts, villages et mer",
-      "Atelier spécialisé E-Bike : diagnostic, mises à jour firmware et révision des suspensions",
-      "Circuits guidés avec moniteurs diplômés à la découverte de la Macchia della Magona"
-    ],
-    "tour_discover_btn": "En savoir plus",
-    "tour_more_show": "Afficher plus de circuits",
-    "tour_more_hide": "Afficher moins de circuits",
-    "tours_catalog": {
-      "macchia della magona": {
-        "title": "Macchia della Magona Enduro & Trail",
-        "desc": "Explorez les meilleurs singletracks de la Macchia della Magona entre forêts de chênes verts, panoramas côtiers et descentes guidées."
-      },
-      "bolgheri": {
-        "title": "Bolgheri, Vignobles & Chemins Blancs",
-        "desc": "Itinéraire panoramique parmi les cyprès de Bolgheri, les vignobles et les chemins blancs de la Côte des Étrusques."
-      },
-      "val di cecina": {
-        "title": "Villages de la Val di Cecina",
-        "desc": "À la découverte des villages historiques de Casale Marittimo, Guardistallo et Montescudaio entre crêtes panoramiques et nature."
-      },
-      "costa": {
-        "title": "Pinède & Côte des Étrusques",
-        "desc": "Balade détente dans la pinède de Marina di Bibbona et les réserves naturelles face à la mer Tyrrhénienne."
-      },
-      "volterra": {
-        "title": "Aventure E-MTB vers Volterra",
-        "desc": "Excursion complète à travers la réserve de Monterufoli-Caselli jusqu'aux remparts étrusques de Volterra."
-      }
-    }
+    "pp_close_btn": "Fermer"
   },
   "pt": {
     "meta_title": "Magona Bike Garage – BibbonaBike",
@@ -4957,41 +4682,7 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
     "pp_sec4_title": "4. Direitos do titular (RGPD)",
     "pp_sec4_body": "Nos termos do RGPD (UE 2016/679), pode solicitar acesso, retificação, apagamento ou limitação dos seus dados, retirar o consentimento ou apresentar reclamação junto da autoridade competente através de magonabikegarage@gmail.com.",
     "pp_manage_cookies": "Gerir preferências de cookies",
-    "pp_close_btn": "Fechar",
-    "btn_call": "Ligar",
-    "btn_whatsapp_chat": "Conversar no WhatsApp",
-    "btn_directions": "Direções",
-    "hero_slides": [
-      "Pedale e desfrute da esplêndida natureza intocada nos trilhos de ValdiCecina",
-      "Aluguer de E-MTB 29” e 24” prontas para cada aventura entre bosques, aldeias e mar",
-      "Oficina especializada em E-Bike: diagnóstico, atualizações de firmware e revisão de suspensões",
-      "Passeios guiados com instrutores certificados à descoberta da Macchia della Magona"
-    ],
-    "tour_discover_btn": "Saber mais",
-    "tour_more_show": "Mostrar mais passeios",
-    "tour_more_hide": "Mostrar menos passeios",
-    "tours_catalog": {
-      "macchia della magona": {
-        "title": "Macchia della Magona Enduro & Trail",
-        "desc": "Explore os melhores singletracks da Macchia della Magona entre bosques de azinheiras, vistas costeiras e descidas guiadas."
-      },
-      "bolgheri": {
-        "title": "Bolgheri, Vinhas & Estradas Brancas",
-        "desc": "Percurso panorâmico entre os ciprestes de Bolgheri, colinas de vinhas e caminhos de terra da Costa dos Etruscos."
-      },
-      "val di cecina": {
-        "title": "Aldeias do Val di Cecina",
-        "desc": "À descoberta das aldeias históricas de Casale Marittimo, Guardistallo e Montescudaio entre cristas panorâmicas e natureza."
-      },
-      "costa": {
-        "title": "Pinhal & Costa dos Etruscos",
-        "desc": "Passeio relaxante pelo pinhal de Marina di Bibbona e reservas naturais com vista para o mar Tirreno."
-      },
-      "volterra": {
-        "title": "Aventura E-MTB até Volterra",
-        "desc": "Excursão completa pela reserva de Monterufoli-Caselli até às muralhas etruscas de Volterra."
-      }
-    }
+    "pp_close_btn": "Fechar"
   },
   "zh": {
     "meta_title": "Magona Bike Garage – BibbonaBike",
@@ -5154,49 +4845,13 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
     "pp_sec4_title": "4. GDPR 数据主体权利",
     "pp_sec4_body": "根据欧盟 GDPR（2016/679）法规，您可随时联系 magonabikegarage@gmail.com 行使访问、更正、删除或限制处理数据的权利、撤回同意或向监管机构投诉。",
     "pp_manage_cookies": "管理 Cookie 偏好",
-    "pp_close_btn": "关闭",
-    "btn_call": "拨打电话",
-    "btn_whatsapp_chat": "WhatsApp 聊天",
-    "btn_directions": "路线导航",
-    "hero_slides": [
-      "骑行探索 ValdiCecina 原始自然风光与越野林道",
-      "29” 与 24” 电助力山地车租赁，随时开启森林、古镇与海岸探险",
-      "专业电助力车工坊：电机诊断、固件升级与前叉避震保养",
-      "认证向导带队骑行，深入探索 Macchia della Magona 越野路线区"
-    ],
-    "tour_discover_btn": "了解详情",
-    "tour_more_show": "查看更多骑行团",
-    "tour_more_hide": "收起部分骑行团",
-    "tours_catalog": {
-      "macchia della magona": {
-        "title": "Macchia della Magona 耐力与越野林道",
-        "desc": "穿越冬青栎森林，探索 Macchia della Magona 精华单轨林道、海岸观景点与向导领骑下坡路线。"
-      },
-      "bolgheri": {
-        "title": "Bolgheri 葡萄园与白石土路",
-        "desc": "沿着著名的 Bolgheri 柏树大道、葡萄园山丘与伊特鲁里亚海岸白石土路畅享全景骑行。"
-      },
-      "val di cecina": {
-        "title": "Val di Cecina 历史山城之旅",
-        "desc": "骑行探访 Casale Marittimo、Guardistallo 与 Montescudaio 等历史古镇，尽享山脊风光。"
-      },
-      "costa": {
-        "title": "海滨松林与伊特鲁里亚海岸",
-        "desc": "穿行于 Marina di Bibbona 海滨松林与自然保护区，沿着第勒尼安海享受轻松惬意的骑行。"
-      },
-      "volterra": {
-        "title": "Volterra 深度 E-MTB 探险",
-        "desc": "穿越 Monterufoli-Caselli 自然保护区与丘陵地貌，一路攀升至古老的 Volterra 伊特鲁里亚城墙。"
-      }
-    }
+    "pp_close_btn": "关闭"
   }
 };
 
       const SUPPORTED_LANGS = ["it", "en", "de", "nl", "es", "fr", "pt", "zh"];
       const LANG_STORAGE_KEY = "bibbonabike_lang";
       let currentLang = "it";
-      let heroSlideIndex = 0;
-      let isTranslatingDynamic = false;
 
       function resolveSupportedLang(rawLang) {
         if (!rawLang) return "it";
@@ -5208,116 +4863,6 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
         const target = langOverride ? resolveSupportedLang(langOverride) : currentLang;
         return SITE_I18N[target] || SITE_I18N.it;
       };
-
-      function matchTourCatalog(titleText, dict) {
-        const catalog = (dict && dict.tours_catalog) || {};
-        const norm = String(titleText || "").toLowerCase();
-        if (!norm) return null;
-        for (const key of Object.keys(catalog)) {
-          if (norm.includes(key)) {
-            return catalog[key];
-          }
-        }
-        // Controlla corrispondenza inversa anche con i titoli già tradotti nelle altre lingue
-        for (const lg of SUPPORTED_LANGS) {
-          const lgCat = (SITE_I18N[lg] && SITE_I18N[lg].tours_catalog) || {};
-          for (const key of Object.keys(lgCat)) {
-            const tTitle = String(lgCat[key].title || "").toLowerCase();
-            if (tTitle && (norm.includes(tTitle) || tTitle.includes(norm))) {
-              return catalog[key] || null;
-            }
-          }
-        }
-        return null;
-      }
-
-      function translateDynamicComponents(dict, fallbackDict) {
-        if (isTranslatingDynamic) return;
-        isTranslatingDynamic = true;
-        try {
-          // A. Slide Hero (#slideshow-title / slogan.js)
-          const slides = (dict && dict.hero_slides) || (fallbackDict && fallbackDict.hero_slides) || [];
-          const heroTitleEl = document.getElementById("slideshow-title");
-          if (heroTitleEl && slides.length > 0) {
-            const currentTxt = heroTitleEl.textContent.trim();
-            // Rileva se js/slogan.js ha cambiato slide in italiano e aggiorna l'indice
-            const itSlides = (fallbackDict && fallbackDict.hero_slides) || [];
-            const matchedItIdx = itSlides.findIndex((s) => currentTxt && (currentTxt === s || s.slice(0, 22) === currentTxt.slice(0, 22)));
-            if (matchedItIdx >= 0) {
-              heroSlideIndex = matchedItIdx;
-            }
-            const targetSlide = slides[heroSlideIndex % slides.length] || dict.hero_title;
-            if (targetSlide && heroTitleEl.textContent.trim() !== targetSlide) {
-              heroTitleEl.textContent = targetSlide;
-            }
-          }
-
-          // B. Card dinamiche dei Tour (.tour-cards)
-          const discoverLabel = (dict && dict.tour_discover_btn) || "Scopri di più";
-          document.querySelectorAll(".tour-cards .tour-card").forEach((card) => {
-            const h3 = card.querySelector("h3");
-            const p = card.querySelector("p");
-            const btn = card.querySelector("button, a.btn-primary, a.btn-secondary, .tour-btn");
-
-            if (h3) {
-              if (!h3.dataset.origTitle) {
-                h3.dataset.origTitle = h3.textContent.trim();
-              }
-              const matched = matchTourCatalog(h3.dataset.origTitle, dict);
-              if (matched && matched.title && h3.textContent.trim() !== matched.title) {
-                h3.textContent = matched.title;
-              }
-              if (p) {
-                if (!p.dataset.origDesc) {
-                  p.dataset.origDesc = p.textContent.trim();
-                }
-                if (matched && matched.desc && p.textContent.trim() !== matched.desc) {
-                  p.textContent = matched.desc;
-                }
-              }
-            }
-
-            if (btn && btn.textContent.trim() !== discoverLabel) {
-              btn.textContent = discoverLabel;
-            }
-          });
-
-          // C. Pulsante Mostra altri tour (#showMoreTours)
-          const showMoreBtn = document.getElementById("showMoreTours");
-          if (showMoreBtn) {
-            const expanded = showMoreBtn.getAttribute("aria-expanded") === "true";
-            const labelSpan = showMoreBtn.querySelector("span");
-            const targetMoreText = expanded
-              ? ((dict && dict.tour_more_hide) || "Mostra meno tour")
-              : ((dict && dict.tour_more_show) || (dict && dict.btn_more_tours) || "Mostra altri tour");
-            if (labelSpan && labelSpan.textContent.trim() !== targetMoreText) {
-              labelSpan.textContent = targetMoreText;
-            }
-          }
-
-          // D. Drawer dettagli Tour (#tourDrawer)
-          const drawerTitle = document.getElementById("tourDrawerTitle");
-          const drawerDesc = document.getElementById("tourDrawerDescription");
-          if (drawerTitle) {
-            const matchedDrawer = matchTourCatalog(drawerTitle.textContent.trim(), dict);
-            if (matchedDrawer) {
-              if (matchedDrawer.title && drawerTitle.textContent.trim() !== matchedDrawer.title) {
-                drawerTitle.textContent = matchedDrawer.title;
-              }
-              if (drawerDesc && matchedDrawer.desc && drawerDesc.textContent.trim() !== matchedDrawer.desc) {
-                drawerDesc.textContent = matchedDrawer.desc;
-              }
-            }
-          }
-
-          // E. Pulsanti contatto officina (#phoneLink, #whatsappLink, #mapLink)
-          if (typeof window.syncBibbonaWorkshopButtons === "function") {
-            window.syncBibbonaWorkshopButtons();
-          }
-        } finally {
-          isTranslatingDynamic = false;
-        }
-      }
 
       function applyFullPageTranslation(lang, options) {
         const opts = options || {};
@@ -5351,7 +4896,7 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
           const val = Object.prototype.hasOwnProperty.call(dict, key)
             ? dict[key]
             : (Object.prototype.hasOwnProperty.call(fallbackDict, key) ? fallbackDict[key] : null);
-          if (val === null || typeof val !== "string") return;
+          if (val === null) return;
 
           if (key === "otp_instructions_html") {
             el.innerHTML = val;
@@ -5368,7 +4913,7 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
           const key = el.getAttribute("data-i18n-title");
           if (!key) return;
           const val = dict[key] || fallbackDict[key];
-          if (!val || typeof val !== "string") return;
+          if (!val) return;
           el.setAttribute("title", val);
           if (el.hasAttribute("aria-label") || key.startsWith("aria_")) {
             el.setAttribute("aria-label", val);
@@ -5380,7 +4925,7 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
           const key = el.getAttribute("data-i18n-placeholder");
           if (!key) return;
           const val = dict[key] || fallbackDict[key];
-          if (val && typeof val === "string") {
+          if (val) {
             el.setAttribute("placeholder", val);
           }
         });
@@ -5390,7 +4935,7 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
           const key = el.getAttribute("data-i18n-alt");
           if (!key) return;
           const val = dict[key] || fallbackDict[key];
-          if (val && typeof val === "string") {
+          if (val) {
             el.setAttribute("alt", val);
           }
         });
@@ -5400,9 +4945,6 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
         if (badge && window.bibbonaEmailVerified) {
           badge.textContent = dict.otp_verified || fallbackDict.otp_verified;
         }
-
-        // 6. Traduce componenti generati dinamicamente (Slide Hero, Card Tour, Pulsanti Officina)
-        translateDynamicComponents(dict, fallbackDict);
 
         if (!opts.silentEvent) {
           window.dispatchEvent(new CustomEvent("bibbonabike:langchange", { detail: { lang: cleanLang } }));
@@ -5445,52 +4987,6 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
             applyFullPageTranslation(sel.value);
           });
         });
-
-        // Osserva cambiamenti dinamici su slide hero, card tour e drawer per mantenere la traduzione attiva
-        if ("MutationObserver" in window) {
-          const heroTitleEl = document.getElementById("slideshow-title");
-          if (heroTitleEl) {
-            new MutationObserver(() => {
-              if (isTranslatingDynamic) return;
-              heroSlideIndex = (heroSlideIndex + 1) % 4;
-              const dict = SITE_I18N[currentLang] || SITE_I18N.it;
-              translateDynamicComponents(dict, SITE_I18N.it);
-            }).observe(heroTitleEl, { childList: true, characterData: true, subtree: true });
-          }
-
-          const tourCardsEl = document.querySelector(".tour-cards");
-          if (tourCardsEl) {
-            new MutationObserver(() => {
-              if (isTranslatingDynamic) return;
-              const dict = SITE_I18N[currentLang] || SITE_I18N.it;
-              translateDynamicComponents(dict, SITE_I18N.it);
-            }).observe(tourCardsEl, { childList: true, subtree: true });
-          }
-
-          const tourDrawerEl = document.getElementById("tourDrawer");
-          if (tourDrawerEl) {
-            new MutationObserver(() => {
-              if (isTranslatingDynamic) return;
-              const dict = SITE_I18N[currentLang] || SITE_I18N.it;
-              translateDynamicComponents(dict, SITE_I18N.it);
-            }).observe(tourDrawerEl, { childList: true, subtree: true, attributes: true, attributeFilter: ["class"] });
-          }
-        }
-
-        // Rotazione periodica coerente delle slide hero nella lingua attiva
-        setInterval(() => {
-          const slides = (SITE_I18N[currentLang] && SITE_I18N[currentLang].hero_slides) || [];
-          const heroTitleEl = document.getElementById("slideshow-title");
-          if (heroTitleEl && slides.length > 0) {
-            heroSlideIndex = (heroSlideIndex + 1) % slides.length;
-            isTranslatingDynamic = true;
-            try {
-              heroTitleEl.textContent = slides[heroSlideIndex];
-            } finally {
-              isTranslatingDynamic = false;
-            }
-          }
-        }, 5000);
       });
 
       window.addEventListener("load", () => {
