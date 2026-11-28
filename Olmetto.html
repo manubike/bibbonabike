@@ -287,7 +287,7 @@
       const panoramaSubtitle = document.getElementById('panoramaSubtitle');
       const panoramaCanvas = document.getElementById('panoramaCanvas');
       const continuePanoramaBtn = document.getElementById('continuePanoramaBtn');
-      const pCtx = panoramaCanvas.getContext('2d');
+      const pCtx = panoramaCanvas ? panoramaCanvas.getContext('2d') : null;
 
       const audioToggleBtn = document.getElementById('audioToggleBtn');
       const audioIconOn = document.getElementById('audioIconOn');
@@ -379,86 +379,97 @@
       ];
 
       // =========================================================================
-      // TORBOBIKERS & FRASI LIVORNESI DI FUGA (LIVELLO 2)
+      // TORBOBIKERS: VESTITI DI NERO CON FOGLIA DI CANAPA SUL PETTO,
+      // MTB COME QUELLE DEL RIDER MA DI ALTRI COLORI, CASCHI IN TESTA
       // =========================================================================
       const TORBOBIKER_TEMPLATES = [
         {
           name: 'Torbobiker Poldo',
-          jersey: '#16a34a',
           helmet: '#facc15',
-          bikeColor: '#22c55e',
+          forkColor: '#22c55e',
+          frameLight: '#4ade80',
+          frameDark: '#14532d',
           lureQuote: '“O Olmetto, fèrmati! Tira ‘na boccata, dé!”',
           escapeQuote: '“No, mi vengono i vortici!”'
         },
         {
           name: 'Torbobiker Cencio',
-          jersey: '#ea580c',
-          helmet: '#0f172a',
-          bikeColor: '#f97316',
+          helmet: '#38bdf8',
+          forkColor: '#f97316',
+          frameLight: '#fb923c',
+          frameDark: '#7c2d12',
           lureQuote: '“Dai un tiro solo prima der canalone, grullo!”',
           escapeQuote: '“No se… poi rigozzo!”'
         },
         {
           name: 'Torbobiker Bibo',
-          jersey: '#0284c7',
-          helmet: '#38bdf8',
-          bikeColor: '#0ea5e9',
+          helmet: '#f472b6',
+          forkColor: '#06b6d4',
+          frameLight: '#22d3ee',
+          frameDark: '#164e63',
           lureQuote: '“Frena un secondo che s’accende in pineta!”',
           escapeQuote: '“Ma ti levi di ‘ulo!”'
         },
         {
           name: 'Torbobiker Teo',
-          jersey: '#9333ea',
-          helmet: '#e879f9',
-          bikeColor: '#a855f7',
+          helmet: '#a3e635',
+          forkColor: '#ec4899',
+          frameLight: '#f472b6',
+          frameDark: '#831843',
           lureQuote: '“Allora un ci siamo! Scendi dar mezzo e fuma!”',
           escapeQuote: '“Boia dé, levati che c’ho i freni caldi!”'
         },
         {
           name: 'Torbobiker Dindo',
-          jersey: '#dc2626',
-          helmet: '#fde047',
-          bikeColor: '#ef4444',
+          helmet: '#fb923c',
+          forkColor: '#eab308',
+          frameLight: '#facc15',
+          frameDark: '#713f12',
           lureQuote: '“Oh fenomenoooo, piglia due tiri prima der salto!”',
           escapeQuote: '“No, mi vengono i vortici!”'
         },
         {
           name: 'Torbobiker Faina',
-          jersey: '#0d9488',
-          helmet: '#f8fafc',
-          bikeColor: '#14b8a6',
+          helmet: '#2dd4bf',
+          forkColor: '#ef4444',
+          frameLight: '#f87171',
+          frameDark: '#7f1d1d',
           lureQuote: '“T’ho preparato un tromboncino da paura, dé!”',
           escapeQuote: '“No se… poi rigozzo!”'
         },
         {
           name: 'Torbobiker Randa',
-          jersey: '#ca8a04',
-          helmet: '#1e293b',
-          bikeColor: '#eab308',
+          helmet: '#fde047',
+          forkColor: '#3b82f6',
+          frameLight: '#60a5fa',
+          frameDark: '#1e3a8a',
           lureQuote: '“Dove tu scappi così a rotta di collo, grullo?”',
           escapeQuote: '“Ma ti levi di ‘ulo!”'
         },
         {
           name: 'Torbobiker Zanna',
-          jersey: '#4f46e5',
-          helmet: '#a3e635',
-          bikeColor: '#6366f1',
+          helmet: '#c084fc',
+          forkColor: '#10b981',
+          frameLight: '#34d399',
+          frameDark: '#064e3b',
           lureQuote: '“Fèrmati due minuti sotto le sughere, via su!”',
           escapeQuote: '“O grullo, io tiro dritto in baracchina, dé!”'
         },
         {
           name: 'Torbobiker Moro',
-          jersey: '#be123c',
-          helmet: '#cbd5e1',
-          bikeColor: '#f43f5e',
+          helmet: '#f87171',
+          forkColor: '#f59e0b',
+          frameLight: '#fbbf24',
+          frameDark: '#78350f',
           lureQuote: '“Tira ‘na boccata che poi tu voli sulle radici!”',
           escapeQuote: '“Mi gira già la testa solo a guardallo, boia dé!”'
         },
         {
           name: 'Torbobiker Capo',
-          jersey: '#15803d',
-          helmet: '#fb923c',
-          bikeColor: '#4ade80',
+          helmet: '#4ade80',
+          forkColor: '#e11d48',
+          frameLight: '#fb7185',
+          frameDark: '#881337',
           lureQuote: '“Ultimo bivio, dé! Fèrmati co’ i Torbobikers!”',
           escapeQuote: '“Ma ti levi di ‘ulo! Ci si vede all’aperitivo!”'
         }
@@ -484,8 +495,8 @@
         if (!audioEnabled) return;
         try {
           if (!audioCtx) {
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            if (AudioContext) audioCtx = new AudioContext();
+            const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+            if (AudioCtxClass) audioCtx = new AudioCtxClass();
           }
           if (audioCtx && audioCtx.state === 'suspended') {
             audioCtx.resume().catch(function () {});
@@ -639,7 +650,6 @@
 
       function getGroundY(worldX) {
         if (state.level === 2) {
-          // Discesa continua nel bosco con dossi, drop e pianoro finale alla Baracchina
           const clampedX = Math.max(0, Math.min(COURSE_LENGTH_LV2, worldX));
           const downhill = clampedX * 0.095;
           const trailBumps = Math.sin(clampedX * 0.0038) * 18 + Math.cos(clampedX * 0.0014) * 26;
@@ -655,7 +665,6 @@
           return y;
         }
 
-        // Livello 1: Lungomare con 5 collinette Belvedere
         let y = Math.sin(worldX * 0.0016) * 14 + Math.cos(worldX * 0.0007) * 10;
         for (let i = 0; i < BELVEDERE_SPOTS.length; i++) {
           const spot = BELVEDERE_SPOTS[i];
@@ -761,7 +770,6 @@
             if (!tooClose) leaves.push({ x: x, yOffset: -26, collected: false, phase: (x % 7) * 0.5 });
           }
         } else {
-          // LIVELLO 2: Sentiero nel bosco + 10 Torbobikers + radici/rocce da saltare
           for (let i = 0; i < FOREST_SECTORS.length; i++) {
             FOREST_SECTORS[i].passed = false;
           }
@@ -774,19 +782,21 @@
               baseX: torboPositions[i],
               x: torboPositions[i],
               vx: 0,
+              wheelAngle: i * 0.7,
+              pedalPhase: i * 1.3,
               name: tpl.name,
-              jersey: tpl.jersey,
               helmet: tpl.helmet,
-              bikeColor: tpl.bikeColor,
+              forkColor: tpl.forkColor,
+              frameLight: tpl.frameLight,
+              frameDark: tpl.frameDark,
               lureQuote: tpl.lureQuote,
               escapeQuote: tpl.escapeQuote,
-              status: 'WAITING', // WAITING | CHASING | ESCAPED | CAUGHT
+              status: 'WAITING',
               alertTimer: 0,
               smokePhase: i * 0.9
             });
           }
 
-          // Radici e tronchi sul sentiero (saltabili con SALTA per bonus stile)
           for (let x = 1500; x < COURSE_LENGTH_LV2 - 1400; x += 1850) {
             let nearTorbo = false;
             for (let t = 0; t < torbobikers.length; t++) {
@@ -802,7 +812,6 @@
             }
           }
 
-          // Alberi fitti del bosco (pini marittimi, lecci, felci)
           for (let x = 200; x < COURSE_LENGTH_LV2 + 500; x += 260) {
             const mod = Math.floor(x / 260) % 3;
             sceneryItems.push({
@@ -1413,7 +1422,6 @@
         } else if (keys.left) {
           state.bike.vx -= 860 * dt;
         } else {
-          // Nel bosco in discesa la bici mantiene più abbrivio
           const drag = isLv2 ? 0.55 : 0.25;
           state.bike.vx *= Math.pow(drag, dt);
           if (Math.abs(state.bike.vx) < 4) state.bike.vx = 0;
@@ -1445,7 +1453,6 @@
           }
         }
 
-        // La telecamera verticale segue il profilo del terreno (così i salti staccano visivamente la bici da terra!)
         state.cameraBaseY += (groundY - state.cameraBaseY) * Math.min(1, dt * 14);
 
         const targetPitch = state.bike.onGround ? slope : Math.max(-0.42, Math.min(0.42, state.bike.vy * 0.0007));
@@ -1458,7 +1465,6 @@
         }
 
         if (!isLv2) {
-          // LOGICA LIVELLO 1
           for (let c = 0; c < leaves.length; c++) {
             const leaf = leaves[c];
             const leafY = getGroundY(leaf.x) + leaf.yOffset;
@@ -1505,7 +1511,6 @@
             playSound('gelato');
           }
         } else {
-          // LOGICA LIVELLO 2: RADICI/ROCCE & TORBOBIKERS
           for (let o = 0; o < trailObstacles.length; o++) {
             const obs = trailObstacles[o];
             if (obs.cleared || obs.hit) continue;
@@ -1528,7 +1533,6 @@
             }
           }
 
-          // Settori progress bar Livello 2
           for (let s = 0; s < FOREST_SECTORS.length - 1; s++) {
             const sec = FOREST_SECTORS[s];
             if (!sec.passed && state.bike.x >= sec.x) {
@@ -1541,7 +1545,6 @@
             }
           }
 
-          // Torbobikers che provano a fermare Olmetto per fargli fumare uno spinello
           for (let t = 0; t < torbobikers.length; t++) {
             const tb = torbobikers[t];
             const distToRider = tb.x - state.bike.x;
@@ -1554,11 +1557,11 @@
 
             if (tb.status === 'CHASING') {
               tb.alertTimer -= dt;
-              // Il Torbobiker affianca e prova a stringere la traiettoria
               const chaseSpeed = Math.max(260, state.bike.vx * 0.72);
               tb.x += chaseSpeed * dt;
+              tb.wheelAngle += (chaseSpeed * dt) / 28;
+              tb.pedalPhase += (chaseSpeed * dt) / 36;
 
-              // Se Olmetto accelera forte, attiva il TURBO o salta via, scappa!
               const escapedAhead = state.bike.x - tb.x > 135;
               const highSpeedEscape = Math.abs(state.bike.x - tb.x) < 110 && (state.bike.vx > 515 || keys.turbo || !state.bike.onGround);
 
@@ -1570,11 +1573,10 @@
                 state.quipTimer = 2.7;
                 playSound('escape');
               } else if (Math.abs(state.bike.x - tb.x) < 42 && state.bike.vx <= 515 && state.bike.onGround) {
-                // Troppo lento: il Torbobiker riesce a fargli prendere una boccata -> vortici!
                 tb.status = 'CAUGHT';
                 state.vortexTimer = 3.4;
                 state.bike.vx = Math.max(190, state.bike.vx * 0.55);
-                state.quipText = '“No, mi vengono i vortici! No se… poi rigozzo!”';
+                state.quipText = 'No, mi vengono i vortici! No se… poi rigozzo!';
                 state.quipTimer = 3.2;
                 playSound('dizzy');
               } else if (tb.alertTimer <= 0 && state.bike.x > tb.x) {
@@ -1612,17 +1614,232 @@
       }
 
       // =========================================================================
-      // DISEGNO PERSONAGGI, BELVEDERE, BARACCHINA E SCENOGRAFIA
+      // FOGLIA DI CANAPA RIUTILIZZABILE (PETTO TORBOBIKERS & COLLECTIBLE LV1)
       // =========================================================================
+      function drawHempLeafShape(scaleFactor, fillMain, fillSide, strokeColor) {
+        ctx.save();
+        ctx.scale(scaleFactor, scaleFactor);
+
+        const blades = [
+          { angle: 0, len: 18, wid: 3.4, main: true },
+          { angle: -0.42, len: 15.5, wid: 3.1, main: false },
+          { angle: 0.42, len: 15.5, wid: 3.1, main: false },
+          { angle: -0.86, len: 12, wid: 2.7, main: false },
+          { angle: 0.86, len: 12, wid: 2.7, main: false },
+          { angle: -1.28, len: 8.5, wid: 2.2, main: false },
+          { angle: 1.28, len: 8.5, wid: 2.2, main: false }
+        ];
+
+        for (let i = 0; i < blades.length; i++) {
+          const b = blades[i];
+          ctx.save();
+          ctx.rotate(b.angle);
+
+          ctx.fillStyle = b.main ? fillMain : fillSide;
+          ctx.strokeStyle = strokeColor;
+          ctx.lineWidth = 0.8;
+
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.lineTo(b.wid * 0.85, -b.len * 0.25);
+          ctx.lineTo(b.wid * 0.45, -b.len * 0.32);
+          ctx.lineTo(b.wid, -b.len * 0.58);
+          ctx.lineTo(b.wid * 0.55, -b.len * 0.64);
+          ctx.lineTo(0, -b.len);
+          ctx.lineTo(-b.wid * 0.55, -b.len * 0.64);
+          ctx.lineTo(-b.wid, -b.len * 0.58);
+          ctx.lineTo(-b.wid * 0.45, -b.len * 0.32);
+          ctx.lineTo(-b.wid * 0.85, -b.len * 0.25);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.restore();
+        }
+
+        ctx.restore();
+      }
+
+      // =========================================================================
+      // MTB ENDURE CON TELAIO, FORCELLA FOX 38 E RUOTE PIRELLI SCORPION
+      // =========================================================================
+      function drawMtbChassis(wAngle, frameLight, frameDark, forkColor, brandLabel) {
+        const rearWheelX = -38;
+        const frontWheelX = 40;
+        const wheelY = -24;
+        const wheelR = 24;
+
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.35)';
+        ctx.beginPath();
+        ctx.ellipse(0, 2, 58, 6, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        function drawWheel(wx, wy, isRear) {
+          ctx.save();
+          ctx.translate(wx, wy);
+
+          ctx.strokeStyle = '#090d16';
+          ctx.lineWidth = 6.5;
+          ctx.beginPath();
+          ctx.arc(0, 0, wheelR - 3, 0, Math.PI * 2);
+          ctx.stroke();
+
+          ctx.strokeStyle = '#1e293b';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(0, 0, wheelR - 6.5, 0, Math.PI * 2);
+          ctx.stroke();
+
+          ctx.save();
+          ctx.rotate(wAngle);
+          ctx.strokeStyle = 'rgba(203, 213, 225, 0.55)';
+          ctx.lineWidth = 1.1;
+          for (let r = 0; r < 8; r++) {
+            const a = (r * Math.PI) / 4;
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(Math.cos(a) * (wheelR - 6), Math.sin(a) * (wheelR - 6));
+            ctx.stroke();
+          }
+
+          ctx.fillStyle = '#facc15';
+          ctx.font = '900 4.5px Inter, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('PIRELLI', 0, -(wheelR - 4.2));
+          ctx.fillText('SCORPION', 0, wheelR - 1.5);
+          ctx.restore();
+
+          ctx.fillStyle = isRear ? '#334155' : '#94a3b8';
+          ctx.beginPath();
+          ctx.arc(0, 0, isRear ? 8.5 : 6.5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#0f172a';
+          ctx.beginPath();
+          ctx.arc(0, 0, 3, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.restore();
+        }
+
+        drawWheel(rearWheelX, wheelY, true);
+        drawWheel(frontWheelX, wheelY, false);
+
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(frontWheelX, wheelY, wheelR + 3, -Math.PI * 0.78, -Math.PI * 0.36);
+        ctx.stroke();
+
+        const crownX = 25;
+        const crownY = -62;
+        ctx.strokeStyle = forkColor;
+        ctx.lineWidth = 4.5;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(crownX, crownY);
+        ctx.lineTo(31, -46);
+        ctx.stroke();
+
+        ctx.strokeStyle = '#090d16';
+        ctx.lineWidth = 5.5;
+        ctx.beginPath();
+        ctx.moveTo(31, -46);
+        ctx.lineTo(frontWheelX, wheelY);
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(35, -36);
+        ctx.rotate(1.18);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 4.5px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('FOX 38', 0, 0);
+        ctx.restore();
+
+        const bbX = -5;
+        const bbY = -24;
+        const seatTopX = -15;
+        const seatTopY = -56;
+        const headTopX = 23;
+        const headTopY = -66;
+
+        ctx.strokeStyle = frameLight;
+        ctx.lineWidth = 4.5;
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+        ctx.moveTo(rearWheelX, wheelY);
+        ctx.lineTo(bbX, bbY);
+        ctx.lineTo(seatTopX + 2, seatTopY + 8);
+        ctx.lineTo(rearWheelX, wheelY);
+        ctx.stroke();
+
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(-11, -48);
+        ctx.lineTo(2, -36);
+        ctx.stroke();
+
+        const frameGrad = ctx.createLinearGradient(seatTopX, headTopY, bbX, bbY);
+        frameGrad.addColorStop(0, frameLight);
+        frameGrad.addColorStop(0.5, forkColor);
+        frameGrad.addColorStop(1, frameDark);
+        ctx.strokeStyle = frameGrad;
+        ctx.lineWidth = 6.5;
+        ctx.beginPath();
+        ctx.moveTo(seatTopX, seatTopY);
+        ctx.lineTo(headTopX, headTopY);
+        ctx.lineTo(bbX, bbY);
+        ctx.closePath();
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(10, -45);
+        ctx.rotate(-0.98);
+        ctx.fillStyle = '#f8fafc';
+        ctx.font = '900 5.5px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(brandLabel, 0, 0);
+        ctx.restore();
+
+        ctx.save();
+        ctx.translate(5, -49);
+        ctx.rotate(-0.98);
+        ctx.fillStyle = '#1e293b';
+        ctx.beginPath();
+        ctx.roundRect(-7, -9, 14, 7, 2);
+        ctx.fill();
+        ctx.restore();
+
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 3.5;
+        ctx.beginPath();
+        ctx.moveTo(seatTopX, seatTopY);
+        ctx.lineTo(seatTopX - 3, seatTopY - 9);
+        ctx.stroke();
+        ctx.fillStyle = '#090d16';
+        ctx.beginPath();
+        ctx.roundRect(seatTopX - 12, seatTopY - 12, 18, 4.5, 2);
+        ctx.fill();
+
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 3.5;
+        ctx.beginPath();
+        ctx.moveTo(headTopX, headTopY);
+        ctx.lineTo(25, -73);
+        ctx.lineTo(21, -74);
+        ctx.stroke();
+
+        return { bbX: bbX, bbY: bbY };
+      }
+
       function drawBelvederePost(spot, screenX, screenY) {
         ctx.save();
         ctx.translate(screenX, screenY);
 
-        // Basamento e palo in legno
         ctx.fillStyle = '#78350f';
         ctx.fillRect(-4, -78, 8, 78);
 
-        // Cartello panoramico
         ctx.fillStyle = spot.visited ? '#15803d' : '#0369a1';
         ctx.beginPath();
         ctx.roundRect(-42, -98, 84, 30, 6);
@@ -1681,71 +1898,75 @@
         const slope = getGroundSlope(tb.x);
         ctx.rotate(slope);
 
-        // Ombra
-        ctx.fillStyle = 'rgba(15, 23, 42, 0.35)';
-        ctx.beginPath();
-        ctx.ellipse(0, 2, 46, 5, 0, 0, Math.PI * 2);
-        ctx.fill();
+        // MTB completa identica come struttura a quella del rider ma di altri colori
+        const cranks = drawMtbChassis(tb.wheelAngle, tb.frameLight, tb.frameDark, tb.forkColor, 'TORBO');
 
-        // Ruote MTB Torbobiker
-        const rWheelX = -28;
-        const fWheelX = 30;
-        const wY = -18;
-        const wR = 18;
-        [rWheelX, fWheelX].forEach(function (wx) {
-          ctx.strokeStyle = '#0f172a';
-          ctx.lineWidth = 5;
-          ctx.beginPath();
-          ctx.arc(wx, wY, wR - 2, 0, Math.PI * 2);
-          ctx.stroke();
-          ctx.fillStyle = '#475569';
-          ctx.beginPath();
-          ctx.arc(wx, wY, 4, 0, Math.PI * 2);
-          ctx.fill();
-        });
+        const hipX = -15;
+        const hipY = -66;
+        const shoulderX = 3;
+        const shoulderY = -98;
 
-        // Telaio bici
-        ctx.strokeStyle = tb.bikeColor;
-        ctx.lineWidth = 4.5;
+        const pedalX = cranks.bbX + Math.cos(tb.pedalPhase) * 9;
+        const pedalY = cranks.bbY + Math.sin(tb.pedalPhase) * 9;
+        const kneeX = (hipX + pedalX) * 0.5 + 10;
+        const kneeY = (hipY + pedalY) * 0.5 - 3;
+
+        // Gamba nera
+        ctx.strokeStyle = '#090d16';
+        ctx.lineWidth = 8.5;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
         ctx.beginPath();
-        ctx.moveTo(rWheelX, wY);
-        ctx.lineTo(-4, wY);
-        ctx.lineTo(-10, -42);
-        ctx.lineTo(18, -46);
-        ctx.lineTo(-4, wY);
-        ctx.moveTo(18, -46);
-        ctx.lineTo(fWheelX, wY);
+        ctx.moveTo(hipX, hipY);
+        ctx.lineTo(kneeX, kneeY);
+        ctx.lineTo(pedalX, pedalY - 3);
         ctx.stroke();
 
-        // Corpo ciclista
-        ctx.fillStyle = '#1e293b';
-        ctx.fillRect(-14, -50, 7, 24);
+        // Bustino nero con foglia di canapa verde sul petto
+        ctx.save();
+        const torsoAngle = Math.atan2(shoulderY - hipY, shoulderX - hipX) + Math.PI / 2;
+        ctx.translate((hipX + shoulderX) * 0.5, (hipY + shoulderY) * 0.5);
+        ctx.rotate(torsoAngle);
 
-        ctx.fillStyle = tb.jersey;
+        ctx.fillStyle = '#090d16';
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 1.4;
         ctx.beginPath();
-        ctx.roundRect(-16, -78, 18, 28, 5);
+        ctx.roundRect(-11, -18, 22, 36, 6);
         ctx.fill();
+        ctx.stroke();
+
+        // Foglia di canapa ben visibile sul petto
+        ctx.save();
+        ctx.translate(2, -1);
+        drawHempLeafShape(0.46, '#4ade80', '#16a34a', '#052e16');
+        ctx.restore();
+        ctx.restore();
 
         // Braccio teso con lo spinello verso Olmetto
-        const armWave = Math.sin(state.time * 7 + tb.id) * 3;
-        ctx.strokeStyle = tb.jersey;
-        ctx.lineWidth = 5.5;
+        const handX = 24;
+        const handY = -74 + Math.sin(state.time * 7 + tb.id) * 2.5;
+        const elbowX = (shoulderX + handX) * 0.5 - 2;
+        const elbowY = (shoulderY + handY) * 0.5 + 5;
+
+        ctx.strokeStyle = '#090d16';
+        ctx.lineWidth = 6.5;
         ctx.lineCap = 'round';
         ctx.beginPath();
-        ctx.moveTo(-4, -72);
-        ctx.lineTo(22, -68 + armWave);
+        ctx.moveTo(shoulderX, shoulderY + 3);
+        ctx.lineTo(elbowX, elbowY);
+        ctx.lineTo(handX, handY);
         ctx.stroke();
 
-        // Spinello con brace e nuvoletta di fumo
+        // Spinello acceso con fumo
         ctx.save();
-        ctx.translate(24, -68 + armWave);
-        ctx.rotate(-0.2);
+        ctx.translate(handX + 2, handY);
+        ctx.rotate(-0.22);
         ctx.fillStyle = '#f8fafc';
         ctx.fillRect(0, -1.5, 11, 3);
         ctx.fillStyle = '#f97316';
         ctx.fillRect(10, -1.5, 2.5, 3);
 
-        // Volute di fumo
         ctx.fillStyle = 'rgba(226, 232, 240, 0.72)';
         const smokeRise = (state.time * 18 + tb.smokePhase * 10) % 18;
         ctx.beginPath();
@@ -1754,22 +1975,43 @@
         ctx.fill();
         ctx.restore();
 
-        // Testa e casco
-        ctx.fillStyle = '#e09668';
+        // Testa con casco in testa
+        const headX = shoulderX + 4;
+        const headY = shoulderY - 14;
+        ctx.save();
+        ctx.translate(headX, headY);
+
+        ctx.fillStyle = '#d48456';
         ctx.beginPath();
-        ctx.arc(-4, -88, 9, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = tb.helmet;
-        ctx.beginPath();
-        ctx.arc(-4, -90, 9.5, Math.PI, 0);
+        ctx.arc(1, 2, 10, 0, Math.PI * 2);
         ctx.fill();
 
-        // Fumetto del Torbobiker finché non viene seminato
+        // Casco colorato con visiera
+        ctx.fillStyle = tb.helmet;
+        ctx.beginPath();
+        ctx.arc(0, -1, 12.5, Math.PI * 0.95, Math.PI * 0.05);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = '#090d16';
+        ctx.lineWidth = 1.6;
+        ctx.stroke();
+
+        ctx.fillStyle = tb.helmet;
+        ctx.beginPath();
+        ctx.moveTo(4, -9);
+        ctx.lineTo(18, -6);
+        ctx.lineTo(15, -2);
+        ctx.lineTo(3, -5);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.restore();
+
         if (tb.status === 'WAITING' || tb.status === 'CHASING') {
           const bob = Math.sin(state.time * 5 + tb.id) * 3;
           const label = tb.status === 'CHASING' ? tb.lureQuote.replace(/[“”]/g, '') : '🌿 Oh Olmetto, tira!';
           ctx.save();
-          ctx.translate(0, -118 + bob);
+          ctx.translate(0, -124 + bob);
           ctx.font = '800 9.5px Inter, sans-serif';
           const tw = ctx.measureText(label).width + 16;
           ctx.fillStyle = tb.status === 'CHASING' ? 'rgba(22, 101, 52, 0.92)' : 'rgba(15, 23, 42, 0.88)';
@@ -1793,7 +2035,6 @@
         ctx.save();
         ctx.translate(screenX, screenY);
 
-        // Struttura chiosco in legno / baracchina livornese
         ctx.fillStyle = '#78350f';
         ctx.beginPath();
         ctx.roundRect(-84, -116, 168, 116, 10);
@@ -1802,14 +2043,12 @@
         ctx.lineWidth = 3;
         ctx.stroke();
 
-        // Tendone a righe giallo/bianco
         const stripeW = 14;
         for (let i = 0; i < 12; i++) {
           ctx.fillStyle = i % 2 === 0 ? '#f59e0b' : '#fef3c7';
           ctx.fillRect(-84 + i * stripeW, -90, stripeW, 18);
         }
 
-        // Insegna luminosa
         ctx.fillStyle = '#064e3b';
         ctx.beginPath();
         ctx.roundRect(-78, -142, 156, 26, 8);
@@ -1822,13 +2061,11 @@
         ctx.textAlign = 'center';
         ctx.fillText('BARACCHINA · APERITIVO', 0, -126);
 
-        // Bancone e bicchieri di spritz / patatine
         ctx.fillStyle = '#fef3c7';
         ctx.fillRect(-68, -46, 136, 46);
         ctx.fillStyle = '#92400e';
         ctx.fillRect(-72, -50, 144, 6);
 
-        // Calici spritz arancioni sul bancone
         const glassesX = [-44, -18, 12, 38];
         for (let g = 0; g < glassesX.length; g++) {
           const gx = glassesX[g];
@@ -1905,7 +2142,6 @@
           ctx.fillStyle = '#475569';
           ctx.beginPath();
           ctx.arc(0, hy - 5, 9.2, Math.PI, 0);
-          pCtx && null;
           ctx.fill();
           ctx.fillStyle = '#cbd5e1';
           ctx.fillRect(-7, hy - 12, 14, 3.5);
@@ -1928,192 +2164,27 @@
         ctx.save();
         ctx.translate(screenX, screenY);
 
-        // Effetto vortici temporaneo se il Torbobiker riesce a rallentarlo
         if (state.vortexTimer > 0) {
           ctx.rotate(Math.sin(state.time * 16) * 0.05);
         }
         ctx.rotate(pitch);
 
-        const rearWheelX = -38;
-        const frontWheelX = 40;
-        const wheelY = -24;
-        const wheelR = 24;
-
-        ctx.fillStyle = 'rgba(15, 23, 42, 0.35)';
-        ctx.beginPath();
-        ctx.ellipse(0, 2, 58, 6, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        function drawWheel(wx, wy, isRear) {
-          ctx.save();
-          ctx.translate(wx, wy);
-
-          ctx.strokeStyle = '#090d16';
-          ctx.lineWidth = 6.5;
-          ctx.beginPath();
-          ctx.arc(0, 0, wheelR - 3, 0, Math.PI * 2);
-          ctx.stroke();
-
-          ctx.strokeStyle = '#1e293b';
-          ctx.lineWidth = 2;
-          ctx.beginPath();
-          ctx.arc(0, 0, wheelR - 6.5, 0, Math.PI * 2);
-          ctx.stroke();
-
-          ctx.save();
-          ctx.rotate(wheelAngle);
-          ctx.strokeStyle = 'rgba(203, 213, 225, 0.55)';
-          ctx.lineWidth = 1.1;
-          for (let r = 0; r < 8; r++) {
-            const a = (r * Math.PI) / 4;
-            ctx.beginPath();
-            ctx.moveTo(0, 0);
-            ctx.lineTo(Math.cos(a) * (wheelR - 6), Math.sin(a) * (wheelR - 6));
-            ctx.stroke();
-          }
-
-          ctx.fillStyle = '#facc15';
-          ctx.font = '900 4.5px Inter, sans-serif';
-          ctx.textAlign = 'center';
-          ctx.fillText('PIRELLI', 0, -(wheelR - 4.2));
-          ctx.fillText('SCORPION', 0, wheelR - 1.5);
-          ctx.restore();
-
-          ctx.fillStyle = isRear ? '#334155' : '#94a3b8';
-          ctx.beginPath();
-          ctx.arc(0, 0, isRear ? 8.5 : 6.5, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.fillStyle = '#0f172a';
-          ctx.beginPath();
-          ctx.arc(0, 0, 3, 0, Math.PI * 2);
-          ctx.fill();
-
-          ctx.restore();
-        }
-
-        drawWheel(rearWheelX, wheelY, true);
-        drawWheel(frontWheelX, wheelY, false);
-
-        ctx.strokeStyle = '#0f172a';
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.arc(frontWheelX, wheelY, wheelR + 3, -Math.PI * 0.78, -Math.PI * 0.36);
-        ctx.stroke();
-
-        const crownX = 25;
-        const crownY = -62;
-        ctx.strokeStyle = '#d97706';
-        ctx.lineWidth = 4.5;
-        ctx.lineCap = 'round';
-        ctx.beginPath();
-        ctx.moveTo(crownX, crownY);
-        ctx.lineTo(31, -46);
-        ctx.stroke();
-
-        ctx.strokeStyle = '#090d16';
-        ctx.lineWidth = 5.5;
-        ctx.beginPath();
-        ctx.moveTo(31, -46);
-        ctx.lineTo(frontWheelX, wheelY);
-        ctx.stroke();
-
-        ctx.save();
-        ctx.translate(35, -36);
-        ctx.rotate(1.18);
-        ctx.fillStyle = '#ffffff';
-        ctx.font = '900 4.5px Inter, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('FOX 38', 0, 0);
-        ctx.restore();
-
-        const bbX = -5;
-        const bbY = -24;
-        const seatTopX = -15;
-        const seatTopY = -56;
-        const headTopX = 23;
-        const headTopY = -66;
-
-        ctx.strokeStyle = '#6d28d9';
-        ctx.lineWidth = 4.5;
-        ctx.lineJoin = 'round';
-        ctx.beginPath();
-        ctx.moveTo(rearWheelX, wheelY);
-        ctx.lineTo(bbX, bbY);
-        ctx.lineTo(seatTopX + 2, seatTopY + 8);
-        ctx.lineTo(rearWheelX, wheelY);
-        ctx.stroke();
-
-        ctx.strokeStyle = '#1e293b';
-        ctx.lineWidth = 4;
-        ctx.beginPath();
-        ctx.moveTo(-11, -48);
-        ctx.lineTo(2, -36);
-        ctx.stroke();
-
-        const frameGrad = ctx.createLinearGradient(seatTopX, headTopY, bbX, bbY);
-        frameGrad.addColorStop(0, '#8b5cf6');
-        frameGrad.addColorStop(0.5, '#6d28d9');
-        frameGrad.addColorStop(1, '#4c1d95');
-        ctx.strokeStyle = frameGrad;
-        ctx.lineWidth = 6.5;
-        ctx.beginPath();
-        ctx.moveTo(seatTopX, seatTopY);
-        ctx.lineTo(headTopX, headTopY);
-        ctx.lineTo(bbX, bbY);
-        ctx.closePath();
-        ctx.stroke();
-
-        ctx.save();
-        ctx.translate(10, -45);
-        ctx.rotate(-0.98);
-        ctx.fillStyle = '#f8fafc';
-        ctx.font = '900 5.5px Inter, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('ORBEA', 0, 0);
-        ctx.restore();
-
-        ctx.save();
-        ctx.translate(5, -49);
-        ctx.rotate(-0.98);
-        ctx.fillStyle = '#1e293b';
-        ctx.beginPath();
-        ctx.roundRect(-7, -9, 14, 7, 2);
-        ctx.fill();
-        ctx.restore();
-
-        ctx.strokeStyle = '#0f172a';
-        ctx.lineWidth = 3.5;
-        ctx.beginPath();
-        ctx.moveTo(seatTopX, seatTopY);
-        ctx.lineTo(seatTopX - 3, seatTopY - 9);
-        ctx.stroke();
-        ctx.fillStyle = '#090d16';
-        ctx.beginPath();
-        ctx.roundRect(seatTopX - 12, seatTopY - 12, 18, 4.5, 2);
-        ctx.fill();
-
-        ctx.strokeStyle = '#0f172a';
-        ctx.lineWidth = 3.5;
-        ctx.beginPath();
-        ctx.moveTo(headTopX, headTopY);
-        ctx.lineTo(25, -73);
-        ctx.lineTo(21, -74);
-        ctx.stroke();
+        const cranks = drawMtbChassis(wheelAngle, '#8b5cf6', '#4c1d95', '#d97706', 'ORBEA');
 
         const hipX = -15;
         const hipY = -66;
         const shoulderX = 3;
         const shoulderY = -98;
 
-        const pedalX = bbX + Math.cos(pedalPhase) * 9;
-        const pedalY = bbY + Math.sin(pedalPhase) * 9;
+        const pedalX = cranks.bbX + Math.cos(pedalPhase) * 9;
+        const pedalY = cranks.bbY + Math.sin(pedalPhase) * 9;
         const kneeX = (hipX + pedalX) * 0.5 + 10;
         const kneeY = (hipY + pedalY) * 0.5 - 3;
 
         ctx.strokeStyle = '#1e293b';
         ctx.lineWidth = 3;
         ctx.beginPath();
-        ctx.moveTo(bbX, bbY);
+        ctx.moveTo(cranks.bbX, cranks.bbY);
         ctx.lineTo(pedalX, pedalY);
         ctx.stroke();
 
@@ -2251,7 +2322,6 @@
         ctx.lineTo(3, -2);
         ctx.stroke();
 
-        // Stelline/spirale vortici sopra il casco se rallentato dal Torbobiker
         if (state.vortexTimer > 0) {
           ctx.strokeStyle = '#a3e635';
           ctx.lineWidth = 1.8;
@@ -2286,7 +2356,6 @@
           const toastBob = Math.sin(state.time * 6) * 4;
           ctx.save();
           ctx.translate(headX + 20, headY + 2 + toastBob);
-          // Calice di Spritz in mano
           ctx.fillStyle = '#f97316';
           ctx.beginPath();
           ctx.moveTo(-6, -4);
@@ -2303,7 +2372,6 @@
           ctx.moveTo(-4, 14);
           ctx.lineTo(4, 14);
           ctx.stroke();
-          // Fettina d'arancia
           ctx.fillStyle = '#facc15';
           ctx.beginPath();
           ctx.arc(5, -4, 3, 0, Math.PI * 2);
@@ -2337,51 +2405,7 @@
         ctx.save();
         ctx.translate(cx, cy + bob);
         ctx.rotate(sway);
-
-        const blades = [
-          { angle: 0, len: 18, wid: 3.4, main: true },
-          { angle: -0.42, len: 15.5, wid: 3.1, main: false },
-          { angle: 0.42, len: 15.5, wid: 3.1, main: false },
-          { angle: -0.86, len: 12, wid: 2.7, main: false },
-          { angle: 0.86, len: 12, wid: 2.7, main: false },
-          { angle: -1.28, len: 8.5, wid: 2.2, main: false },
-          { angle: 1.28, len: 8.5, wid: 2.2, main: false }
-        ];
-
-        for (let i = 0; i < blades.length; i++) {
-          const b = blades[i];
-          ctx.save();
-          ctx.rotate(b.angle);
-
-          ctx.fillStyle = b.main ? '#22c55e' : '#16a34a';
-          ctx.strokeStyle = '#14532d';
-          ctx.lineWidth = 0.8;
-
-          ctx.beginPath();
-          ctx.moveTo(0, 0);
-          ctx.lineTo(b.wid * 0.85, -b.len * 0.25);
-          ctx.lineTo(b.wid * 0.45, -b.len * 0.32);
-          ctx.lineTo(b.wid, -b.len * 0.58);
-          ctx.lineTo(b.wid * 0.55, -b.len * 0.64);
-          ctx.lineTo(0, -b.len);
-          ctx.lineTo(-b.wid * 0.55, -b.len * 0.64);
-          ctx.lineTo(-b.wid, -b.len * 0.58);
-          ctx.lineTo(-b.wid * 0.45, -b.len * 0.32);
-          ctx.lineTo(-b.wid * 0.85, -b.len * 0.25);
-          ctx.closePath();
-          ctx.fill();
-          ctx.stroke();
-
-          ctx.strokeStyle = '#86efac';
-          ctx.lineWidth = 0.7;
-          ctx.beginPath();
-          ctx.moveTo(0, -1);
-          ctx.lineTo(0, -b.len * 0.85);
-          ctx.stroke();
-
-          ctx.restore();
-        }
-
+        drawHempLeafShape(1.0, '#22c55e', '#16a34a', '#14532d');
         ctx.strokeStyle = '#15803d';
         ctx.lineWidth = 2.2;
         ctx.lineCap = 'round';
@@ -2389,7 +2413,6 @@
         ctx.moveTo(0, 0);
         ctx.lineTo(0, 6);
         ctx.stroke();
-
         ctx.restore();
       }
 
@@ -2524,9 +2547,6 @@
         const riderScreenY = baseRoadScreenY + state.bike.y;
 
         if (!isLv2) {
-          // =====================================================================
-          // SFONDO LIVELLO 1: MARE E LUNGOMARE DI LIVORNO
-          // =====================================================================
           const skyGrad = ctx.createLinearGradient(0, 0, 0, height * 0.65);
           skyGrad.addColorStop(0, '#0369a1');
           skyGrad.addColorStop(0.55, '#38bdf8');
@@ -2567,9 +2587,6 @@
             }
           }
         } else {
-          // =====================================================================
-          // SFONDO LIVELLO 2: BOSCO MEDITERRANEO IN DISCESA + RAGGI DI SOLE
-          // =====================================================================
           const forestSkyGrad = ctx.createLinearGradient(0, 0, 0, height * 0.75);
           forestSkyGrad.addColorStop(0, '#064e3b');
           forestSkyGrad.addColorStop(0.5, '#047857');
@@ -2577,7 +2594,6 @@
           ctx.fillStyle = forestSkyGrad;
           ctx.fillRect(0, 0, width, height);
 
-          // Raggi di sole filtrati tra i pini
           ctx.save();
           ctx.fillStyle = 'rgba(254, 240, 138, 0.11)';
           for (let r = 0; r < 5; r++) {
@@ -2592,7 +2608,6 @@
           }
           ctx.restore();
 
-          // Sagome alberi sfondo lontano (parallasse 0.16)
           ctx.fillStyle = '#065f46';
           for (let bg = 0; bg < width + 220; bg += 110) {
             const tx = ((bg - state.cameraX * 0.16) % (width + 220) + (width + 220)) % (width + 220) - 110;
@@ -2602,12 +2617,10 @@
             ctx.fill();
           }
 
-          // Chioma superiore del bosco
           ctx.fillStyle = '#022c22';
           ctx.fillRect(0, 0, width, height * 0.08);
         }
 
-        // Elementi scenografici lungo il percorso
         for (let s = 0; s < sceneryItems.length; s++) {
           const item = sceneryItems[s];
           const sx = item.x - state.cameraX;
@@ -2655,7 +2668,6 @@
           ctx.restore();
         }
 
-        // Terreno (asfalto lungomare nel Lv1, sentiero sterrato nel bosco nel Lv2)
         ctx.fillStyle = isLv2 ? '#451a03' : '#1e293b';
         ctx.beginPath();
         ctx.moveTo(-20, height + 40);
@@ -2726,7 +2738,6 @@
             }
           }
         } else {
-          // Ostacoli sul sentiero
           for (let o = 0; o < trailObstacles.length; o++) {
             const obs = trailObstacles[o];
             const ox = obs.x - state.cameraX;
@@ -2735,13 +2746,11 @@
             }
           }
 
-          // Baracchina finale per l'aperitivo
           const barX = COURSE_LENGTH_LV2 - state.cameraX;
           if (barX >= -200 && barX <= width + 200) {
             drawBaracchinaAperitivo(barX, baseRoadScreenY + getGroundY(COURSE_LENGTH_LV2));
           }
 
-          // Torbobikers
           for (let t = 0; t < torbobikers.length; t++) {
             const tb = torbobikers[t];
             const tx = tb.x - state.cameraX;
@@ -2751,7 +2760,6 @@
           }
         }
 
-        // Particelle terra/polvere ruote
         for (let d = 0; d < dustParticles.length; d++) {
           const p = dustParticles[d];
           const px = p.x - state.cameraX;
@@ -2772,7 +2780,6 @@
           celebration
         );
 
-        // Banner celebrativo finale
         if (state.mode === 'END_STOP' || state.mode === 'VICTORY') {
           ctx.save();
           const pulse = 1 + Math.sin(state.time * 4) * 0.04;
