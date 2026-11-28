@@ -1,19 +1,19 @@
 /* ==========================================================================
-   FILE ESTERNO: seo-bici.js
-   Inclusione in index.html (fuori dal core, sopra o sotto il codice principale):
-   <script src="/js/seo-bici.js"></script>
+   FILE ESTERNO: js/seo-bici.js
+   Gestisce Keywords estese e Dati Strutturati JSON-LD (BikeStore)
+   preservando titolo e descrizione specifici di ciascuna pagina HTML.
    ========================================================================== */
 
 (function () {
   const SITE_CONFIG = {
     name: "Magona Bike Garage - Val di Cecina Biking",
     url: "https://www.bibbonabike.com/",
-    image: "https://www.bibbonabike.com/immagini/anteprima-bici.jpg",
+    image: "https://bibbonabike.com/img/Magona_Bike_preview.png",
     locale: "it_IT",
-    title: "Magona Bike Garage | Officina Bici, E-Bike, Noleggio, MTB, Corsa, Gravel e Ricambi a Bibbona",
-    description:
+    defaultTitle: "Magona Bike Garage – BibbonaBike",
+    defaultDescription:
       "Officina specializzata bici ed e-bike, noleggio, tour guidati, ricambi e accessori a Bibbona (Val di Cecina, Costa degli Etruschi). Assistenza motori Bosch, Shimano, Brose, Yamaha, TQ, Mahle, Bafang e sospensioni RockShox e Fox.",
-    injectJsonLdAtBottomOfBody: true // true = inietta lo schema in fondo al body; false = in head
+    injectJsonLdAtBottomOfBody: true
   };
 
   const CATEGORIES_AND_TERMS = [
@@ -38,7 +38,8 @@
     "occhiali bici", "ciclocomputer GPS", "rulli smart", "luci bici", "lucchetti",
     "borse bikepacking", "portaborracce",
     "officina bici Bibbona", "noleggio e-bike Bibbona", "tour MTB Val di Cecina",
-    "assistenza e-bike Costa degli Etruschi", "revisione sospensioni MTB"
+    "assistenza e-bike Costa degli Etruschi", "revisione sospensioni MTB",
+    "Macchia della Magona Trail Area"
   ];
 
   const BIKE_BRANDS = [
@@ -59,7 +60,8 @@
 
   const MOTOR_BRANDS = [
     "Bosch eBike Systems", "Shimano STEPS", "Brose", "Yamaha", "Fazua",
-    "Mahle", "Bafang", "Polini E-P3", "TQ", "DJI Avinox", "Oli eBike Systems"
+    "Mahle", "Bafang", "Polini E-P3", "TQ", "DJI Avinox", "Oli eBike Systems",
+    "Panasonic", "Hyena", "FSA"
   ];
 
   const PARTS_AND_ACCESSORY_BRANDS = [
@@ -86,9 +88,12 @@
     new Set([...BIKE_BRANDS, ...MOTOR_BRANDS, ...PARTS_AND_ACCESSORY_BRANDS])
   );
 
-  function upsertMeta(attrName, attrValue, content) {
+  function upsertMeta(attrName, attrValue, content, onlyIfEmpty) {
     if (!content) return;
     let el = document.querySelector(`meta[${attrName}="${attrValue}"]`);
+    if (el && onlyIfEmpty && el.getAttribute("content")) {
+      return;
+    }
     if (!el) {
       el = document.createElement("meta");
       el.setAttribute(attrName, attrValue);
@@ -98,27 +103,35 @@
   }
 
   function injectSeoTags() {
-    document.title = SITE_CONFIG.title;
+    if (!document.title) {
+      document.title = SITE_CONFIG.defaultTitle;
+    }
 
-    upsertMeta("name", "description", SITE_CONFIG.description);
+    const pageTitle = document.title;
+    const descEl = document.querySelector('meta[name="description"]');
+    const pageDesc = (descEl && descEl.getAttribute("content")) || SITE_CONFIG.defaultDescription;
+    const pageUrl = window.location.href || SITE_CONFIG.url;
+
+    upsertMeta("name", "description", pageDesc, true);
     upsertMeta(
       "name",
       "keywords",
-      [...CATEGORIES_AND_TERMS, ...ALL_BRANDS].join(", ")
+      [...CATEGORIES_AND_TERMS, ...ALL_BRANDS].join(", "),
+      false
     );
 
-    upsertMeta("property", "og:type", "website");
-    upsertMeta("property", "og:locale", SITE_CONFIG.locale);
-    upsertMeta("property", "og:site_name", SITE_CONFIG.name);
-    upsertMeta("property", "og:title", SITE_CONFIG.title);
-    upsertMeta("property", "og:description", SITE_CONFIG.description);
-    upsertMeta("property", "og:url", SITE_CONFIG.url);
-    upsertMeta("property", "og:image", SITE_CONFIG.image);
+    upsertMeta("property", "og:type", "website", true);
+    upsertMeta("property", "og:locale", SITE_CONFIG.locale, true);
+    upsertMeta("property", "og:site_name", SITE_CONFIG.name, true);
+    upsertMeta("property", "og:title", pageTitle, true);
+    upsertMeta("property", "og:description", pageDesc, true);
+    upsertMeta("property", "og:url", pageUrl, true);
+    upsertMeta("property", "og:image", SITE_CONFIG.image, true);
 
-    upsertMeta("name", "twitter:card", "summary_large_image");
-    upsertMeta("name", "twitter:title", SITE_CONFIG.title);
-    upsertMeta("name", "twitter:description", SITE_CONFIG.description);
-    upsertMeta("name", "twitter:image", SITE_CONFIG.image);
+    upsertMeta("name", "twitter:card", "summary_large_image", true);
+    upsertMeta("name", "twitter:title", pageTitle, true);
+    upsertMeta("name", "twitter:description", pageDesc, true);
+    upsertMeta("name", "twitter:image", SITE_CONFIG.image, true);
   }
 
   function injectJsonLd() {
@@ -129,7 +142,7 @@
       "@context": "https://schema.org",
       "@type": "BikeStore",
       name: SITE_CONFIG.name,
-      description: SITE_CONFIG.description,
+      description: SITE_CONFIG.defaultDescription,
       url: SITE_CONFIG.url,
       image: SITE_CONFIG.image,
       address: {
