@@ -691,29 +691,7 @@
       color: var(--accent-orange-bright) !important;
       background: rgba(255, 123, 28, 0.08) !important;
     }
-
-    #weatherWidget,
-    .weather-widget {
-      position: absolute !important;
-      top: auto !important;
-      right: auto !important;
-      left: 16px !important;
-      bottom: 18px !important;
-      z-index: 6 !important;
-      display: inline-flex !important;
-      align-items: center !important;
-      gap: 6px !important;
-      padding: 6px 12px !important;
-      border-radius: 999px !important;
-      background: rgba(14, 17, 22, 0.9) !important;
-      border: 1px solid var(--border-strong) !important;
-      color: var(--text-primary) !important;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.65) !important;
-      max-width: calc(100% - 32px) !important;
-    }
-
-
-    /* Fix sovrapposizione menu e selettore lingua */
+/* Fix sovrapposizione menu e selettore lingua */
     .site-header .container {
       display: flex !important;
       align-items: center !important;
@@ -763,6 +741,29 @@
       align-items: center !important;
       gap: 6px !important;
       white-space: nowrap !important;
+    }
+
+
+    /* Posizionamento meteo nell'angolo tra la barra nera in alto e il confine destro dello schermo */
+    #weatherWidget,
+    .weather-widget {
+      position: fixed !important;
+      top: calc(var(--header-height, 76px) + 10px) !important;
+      right: 12px !important;
+      left: auto !important;
+      bottom: auto !important;
+      z-index: 950 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      padding: 6px 12px !important;
+      border-radius: 999px !important;
+      background: rgba(14, 17, 22, 0.92) !important;
+      border: 1px solid var(--border-strong) !important;
+      color: var(--text-primary) !important;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7) !important;
+      max-width: calc(100vw - 24px) !important;
+      box-sizing: border-box !important;
     }
 
   </style>
@@ -1646,6 +1647,20 @@
       if (weatherWidgetEl) {
         weatherWidgetEl.classList.remove('hidden');
       }
+
+      const syncWeatherHeaderOffset = () => {
+        const hdr = document.getElementById("header");
+        if (hdr) {
+          document.documentElement.style.setProperty("--header-height", hdr.offsetHeight + "px");
+        }
+      };
+      syncWeatherHeaderOffset();
+      window.addEventListener("resize", syncWeatherHeaderOffset);
+      window.addEventListener("bibbonabike:langchange", syncWeatherHeaderOffset);
+      if ("ResizeObserver" in window && document.getElementById("header")) {
+        new ResizeObserver(syncWeatherHeaderOffset).observe(document.getElementById("header"));
+      }
+
 
       const heroVideo = document.querySelector('.hero-video');
       if (heroVideo) {
