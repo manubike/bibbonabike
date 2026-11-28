@@ -140,7 +140,7 @@
       <div class="bg-slate-900/80 rounded-xl p-3 border border-slate-700/80 mb-3">
         <p id="npcQuoteText" class="text-sm sm:text-[15px] font-semibold text-slate-100 leading-relaxed">“Boia dé, icché tu fai?”</p>
       </div>
-      <div class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-amber-300 mb-2">Rispondi a tono:</div>
+      <div class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-amber-300 mb-2">Rispondi a tono, dé:</div>
       <div id="dialogueOptions" class="flex flex-col gap-2"></div>
     </div>
   </div>
@@ -153,48 +153,51 @@
         <span id="panoramaCountdown" class="px-2.5 py-1 rounded-full bg-slate-800 text-white text-xs font-black">5.0s</span>
       </div>
       <h3 id="panoramaTitle" class="text-base sm:text-xl font-black text-white leading-tight mb-0.5">Terrazza Mascagni</h3>
-      <p id="panoramaSubtitle" class="text-xs sm:text-sm text-slate-300 mb-3 leading-snug">In cima alla collinetta! (+250 pts)</p>
+      <p id="panoramaSubtitle" class="text-xs sm:text-sm text-slate-300 mb-3 leading-snug">In cima alla collinetta, boia dé! (+250 pts)</p>
       <div class="relative rounded-2xl overflow-hidden border-2 border-white shadow-xl bg-sky-900 aspect-[4/3] w-full">
         <canvas id="panoramaCanvas" class="w-full h-full block"></canvas>
       </div>
       <button id="continuePanoramaBtn" type="button" class="mt-3 w-full py-2.5 px-4 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-500 to-pink-500 hover:brightness-110 active:scale-95 text-slate-950 font-black text-sm sm:text-base uppercase tracking-wider shadow-lg transition cursor-pointer">
-        🚴‍♂️ Avanti →
+        🚴‍♂️ Via su, pedala →
       </button>
     </div>
   </div>
 
   <!-- SCHERMATA INIZIALE CON SELEZIONE LIVELLO -->
-  <div id="startScreen" class="fixed inset-0 z-40 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md">
-    <div class="glass-hud rounded-3xl p-5 sm:p-6 max-w-md w-full text-center shadow-2xl border-2 border-purple-400/60">
+  <div id="startScreen" class="fixed inset-0 z-40 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md overflow-y-auto">
+    <div class="glass-hud rounded-3xl p-5 sm:p-6 max-w-md w-full text-center shadow-2xl border-2 border-purple-400/60 my-auto">
       <div class="text-xs sm:text-sm font-black uppercase tracking-widest text-lime-300 mb-0.5">Olmetto Rider</div>
-      <h1 class="text-xl sm:text-2xl font-black text-white leading-tight mb-3">No…Stai a Milanooooo!</h1>
+      <h1 class="text-xl sm:text-2xl font-black text-white leading-tight mb-3">No…Stai a Milanooooo, dé!</h1>
       <div class="relative rounded-2xl overflow-hidden border-2 border-white/80 shadow-xl bg-sky-900 aspect-[4/3] w-full mb-4">
         <canvas id="startHeroCanvas" class="w-full h-full block"></canvas>
       </div>
-      <div class="flex flex-col gap-2.5">
-        <button id="startBtn" type="button" class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-purple-600 via-lime-500 to-amber-400 hover:brightness-110 active:scale-95 text-slate-950 font-black text-sm sm:text-base uppercase tracking-wider shadow-xl transition cursor-pointer">
+      <div class="flex flex-col gap-2">
+        <button id="startBtn" type="button" class="w-full py-3 px-5 rounded-2xl bg-gradient-to-r from-purple-600 via-lime-500 to-amber-400 hover:brightness-110 active:scale-95 text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wider shadow-xl transition cursor-pointer">
           🌊 Livello 1 · Lungomare di Livorno
         </button>
-        <button id="startLv2Btn" type="button" class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 via-lime-400 to-amber-400 hover:brightness-110 active:scale-95 text-slate-950 font-black text-sm sm:text-base uppercase tracking-wider shadow-xl transition cursor-pointer">
-          🌲 Livello 2 · Discesa nel Bosco &amp; Torbobikers
+        <button id="startLv2Btn" type="button" class="w-full py-3 px-5 rounded-2xl bg-gradient-to-r from-emerald-500 via-lime-400 to-amber-400 hover:brightness-110 active:scale-95 text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wider shadow-xl transition cursor-pointer">
+          🌲 Livello 2 · Discesa ner Bosco &amp; Torbobikers
         </button>
-        <button id="startLv3Btn" type="button" class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-purple-600 hover:brightness-110 active:scale-95 text-white font-black text-sm sm:text-base uppercase tracking-wider shadow-xl transition cursor-pointer">
-          🚵‍♂️ Livello 3 · Macchia della Magona &amp; Magona Bike Garage
+        <button id="startLv3Btn" type="button" class="w-full py-3 px-5 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-purple-600 hover:brightness-110 active:scale-95 text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-xl transition cursor-pointer">
+          🚵‍♂️ Livello 3 · Macchia della Magona &amp; Bike Garage
+        </button>
+        <button id="startLv4Btn" type="button" class="w-full py-3 px-5 rounded-2xl bg-gradient-to-r from-rose-600 via-amber-500 to-yellow-400 hover:brightness-110 active:scale-95 text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wider shadow-xl transition cursor-pointer">
+          🐗 Livello 4 · Massa Marittima &amp; Pappardelle
         </button>
       </div>
     </div>
   </div>
 
-  <!-- SCHERMATA FINALE LIVELLO 1 E LIVELLO 2 -->
+  <!-- SCHERMATA FINALE LIVELLO 1, 2, 3 E 4 -->
   <div id="victoryScreen" class="hidden fixed inset-0 z-40 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
     <div id="victoryCard" class="glass-hud rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl border-2 border-pink-400/70">
       <div id="victoryEmoji" class="text-5xl mb-2">🍦🌊🏆</div>
       <div id="victoryBadge" class="inline-block px-3 py-1 rounded-full bg-pink-500/20 border border-pink-400/40 text-pink-300 text-[11px] font-black uppercase tracking-wider mb-2">
         Gelateria L’Orizzonte · Traguardo!
       </div>
-      <h2 id="victoryTitle" class="text-2xl sm:text-3xl font-black text-white mb-1">NO… STAI A MILANO!</h2>
+      <h2 id="victoryTitle" class="text-2xl sm:text-3xl font-black text-white mb-1">NO… STAI A MILANO, DÉ!</h2>
       <p id="victoryDesc" class="text-xs sm:text-sm text-slate-300 mb-5">
-        Boia dé, hai fatto tutti e 5 i Belvedere delle collinette, risposto per le rime ai 10 livornesi e ti sei gustato il gelato alla Gelateria L’Orizzonte!
+        Boia dé, hai fatto tutti e 5 i Belvedere delle collinette, risposto per le rime ai 10 livornesi e ti sei gustato ir gelato alla Gelateria L’Orizzonte!
       </p>
       <div class="grid grid-cols-3 gap-2 mb-6">
         <div class="bg-slate-900/80 rounded-2xl p-3 border border-slate-700">
@@ -212,7 +215,7 @@
       </div>
       <div class="flex flex-col gap-2.5">
         <button id="nextLevelBtn" type="button" class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-emerald-400 via-lime-400 to-amber-400 hover:brightness-110 active:scale-95 text-slate-950 font-black text-sm sm:text-base uppercase tracking-wider shadow-xl transition cursor-pointer">
-          🌲 Vai al Livello 2 · Discesa nel Bosco!
+          🌲 Vai ar Livello 2 · Discesa ner Bosco!
         </button>
         <button id="restartBtn" type="button" class="w-full py-3 px-6 rounded-2xl bg-slate-800/90 hover:bg-slate-700 active:scale-95 text-white font-black text-xs sm:text-sm uppercase tracking-wider border border-slate-600 transition cursor-pointer">
           🔄 Rigioca questo Livello
@@ -225,8 +228,8 @@
   <div id="touchControls" class="fixed bottom-8 left-3 right-3 z-20 flex items-center justify-between gap-2 max-w-4xl mx-auto pointer-events-none">
     <div class="flex items-center gap-2 pointer-events-auto">
       <button id="btnBrake" type="button" class="control-btn glass-hud w-16 h-16 sm:w-20 sm:h-16 rounded-2xl flex flex-col items-center justify-center shadow-lg border border-white/15">
-        <span class="text-lg">◀️</span>
-        <span class="text-[10px] font-black tracking-wider text-slate-200">FRENA</span>
+        <span id="btnBrakeIcon" class="text-lg">◀️</span>
+        <span id="btnBrakeLabel" class="text-[10px] font-black tracking-wider text-slate-200">FRENA</span>
       </button>
       <button id="btnJump" type="button" class="control-btn glass-hud w-16 h-16 sm:w-20 sm:h-16 rounded-2xl flex flex-col items-center justify-center shadow-lg border border-white/15">
         <span class="text-lg">🔼</span>
@@ -240,8 +243,8 @@
         <span class="text-[10px] font-black tracking-wider text-purple-300">TURBO</span>
       </button>
       <button id="btnPedal" type="button" class="control-btn w-24 h-16 sm:w-28 sm:h-16 rounded-2xl bg-gradient-to-r from-purple-600 to-lime-500 flex flex-col items-center justify-center shadow-xl border border-white/25">
-        <span class="text-lg">⏩</span>
-        <span class="text-[10px] font-black tracking-wider text-white">PEDALA</span>
+        <span id="btnPedalIcon" class="text-lg">⏩</span>
+        <span id="btnPedalLabel" class="text-[10px] font-black tracking-wider text-white">PEDALA</span>
       </button>
     </div>
   </div>
@@ -360,6 +363,7 @@
       const startBtn = document.getElementById('startBtn');
       const startLv2Btn = document.getElementById('startLv2Btn');
       const startLv3Btn = document.getElementById('startLv3Btn');
+      const startLv4Btn = document.getElementById('startLv4Btn');
 
       const victoryScreen = document.getElementById('victoryScreen');
       const victoryCard = document.getElementById('victoryCard');
@@ -391,51 +395,72 @@
       const audioIconOff = document.getElementById('audioIconOff');
 
       const btnBrake = document.getElementById('btnBrake');
+      const btnBrakeIcon = document.getElementById('btnBrakeIcon');
+      const btnBrakeLabel = document.getElementById('btnBrakeLabel');
       const btnJump = document.getElementById('btnJump');
       const btnTurbo = document.getElementById('btnTurbo');
       const btnPedal = document.getElementById('btnPedal');
+      const btnPedalIcon = document.getElementById('btnPedalIcon');
+      const btnPedalLabel = document.getElementById('btnPedalLabel');
 
       // =========================================================================
-      // CONFIGURAZIONI LIVELLO 1 (LUNGOMARE) & LIVELLO 2 (BOSCO TORBOBIKERS)
+      // CONFIGURAZIONI LIVELLI 1, 2, 3 E 4 (MASSA MARITTIMA)
       // =========================================================================
       const COURSE_LENGTH_LV1 = 25000;
       const COURSE_LENGTH_LV2 = 28000;
       const COURSE_LENGTH_LV3 = 30000;
+      const COURSE_LENGTH_LV4 = 32000;
       const END_STOP_DURATION = 10.0;
       const BELVEDERE_PAUSE_DURATION = 5.0;
 
       const BELVEDERE_SPOTS = [
-        { id: 0, x: 5000, name: 'Terrazza Mascagni', subtitle: 'In cima alla prima collinetta vista scacchiera!', visited: false },
-        { id: 1, x: 10000, name: 'Baracchina Bianca', subtitle: 'Seconda collinetta panoramica sul mare!', visited: false },
-        { id: 2, x: 15000, name: 'Rotonda d’Ardenza', subtitle: 'Terza collinetta tra pini marittimi e scogli!', visited: false },
-        { id: 3, x: 20000, name: 'Scogli dell’Accademia', subtitle: 'Quarta collinetta sul Tirreno!', visited: false },
-        { id: 4, x: 24200, name: 'Belvedere Antignano', subtitle: 'Quinta e ultima vetta prima del gelato!', visited: false }
+        { id: 0, x: 5000, name: 'Terrazza Mascagni', subtitle: 'In cima alla prima collinetta vista scacchiera, boia dé!', visited: false },
+        { id: 1, x: 10000, name: 'Baracchina Bianca', subtitle: 'Seconda collinetta panoramica sur mare, dé!', visited: false },
+        { id: 2, x: 15000, name: 'Rotonda d’Ardenza', subtitle: 'Terza collinetta tra pini marittimi e scogli, via su!', visited: false },
+        { id: 3, x: 20000, name: 'Scogli dell’Accademia', subtitle: 'Quarta collinetta sur Tirreno, boia dé!', visited: false },
+        { id: 4, x: 24200, name: 'Belvedere Antignano', subtitle: 'Quinta e ultima vetta prima der gelato all’Orizzonte!', visited: false }
       ];
 
       const FOREST_SECTORS = [
         { id: 0, x: 5600, name: 'Pineta Alta · Ingresso Trail', passed: false },
         { id: 1, x: 11200, name: 'Canaloni delle Radici', passed: false },
-        { id: 2, x: 16800, name: 'Bivio dei Torbobikers', passed: false },
+        { id: 2, x: 16800, name: 'Bivio de’ Torbobikers', passed: false },
         { id: 3, x: 22400, name: 'Discesa delle Sughere', passed: false },
-        { id: 4, x: 28000, name: 'Baracchina del Bosco & Mare', passed: false }
+        { id: 4, x: 28000, name: 'Baracchina der Bosco & Mare', passed: false }
       ];
 
       const MAGONA_SECTORS = [
         { id: 0, x: 6000, name: 'Campo di Sasso · Sponde Alte', passed: false },
-        { id: 1, x: 12000, name: 'Curvoni del Botro', passed: false },
+        { id: 1, x: 12000, name: 'Curvoni der Botro', passed: false },
         { id: 2, x: 18000, name: 'Paraboliche delle Sughere', passed: false },
-        { id: 3, x: 24000, name: 'Sponde Veloci per Bibbona', passed: false },
-        { id: 4, x: 30000, name: 'Magona Bike Garage · Birra!', passed: false }
+        { id: 3, x: 24000, name: 'Sponde Veloci pe’ Bibbona', passed: false },
+        { id: 4, x: 30000, name: 'Magona Bike Garage · Birra, dé!', passed: false }
+      ];
+
+      const MASSA_SECTORS = [
+        { id: 0, x: 6400, name: 'Canyon di Massa · Curve Strette', passed: false },
+        { id: 1, x: 12800, name: 'Salto der Poggio & Parabolica', passed: false },
+        { id: 2, x: 19200, name: 'Serpentone delle Colline Metallifere', passed: false },
+        { id: 3, x: 25600, name: 'Discesa Finale verso Massa Marittima', passed: false },
+        { id: 4, x: 32000, name: 'Bike Garage and more · Pappardelle!', passed: false }
+      ];
+
+      // FRASI RIGOROSAMENTE IN DIALETTO LIVORNESE DOC
+      const RIDER_QUIPS_LV4 = [
+        'Boia dé, che serpentone a Massa Marittima!',
+        'Piega a foho in curva e giù dar salto, dé!',
+        'Sento già i’ profumo delle pappardelle ar cinghiale, boia dé!',
+        'Gasse aperto verso Bike Garage and more, via su, grullo!'
       ];
 
       const MAGONA_BERM_NAMES = [
         'Sponda Campo di Sasso',
-        'Curva Parabolica del Botro',
+        'Curva Parabolica der Botro',
         'Tornante delle Sughere',
-        'Sponda Alta Poggio al Pruno',
-        'Curvone del Leccio',
+        'Sponda Alta Poggio ar Pruno',
+        'Curvone der Leccio',
         'Parabolica Sentiero 14',
-        'Sponda del Torrente Acquerta',
+        'Sponda der Torrente Acquerta',
         'Curva in Contropendenza',
         'Sponda Velox Macchia',
         'Parabolica Finale Bibbona'
@@ -443,15 +468,15 @@
 
       const RIDER_QUIPS_LV3 = [
         'Boia dé, che piega in sponda!',
-        'O sveglia, guarda che parabolica alla Magona!',
-        'Gasse aperto tra le sughere, dé!',
-        'Via su verso il Magona Bike Garage a bere ‘na birra!'
+        'O sveglia, guarda che parabolica alla Magona, dé!',
+        'Gasse aperto tra le sughere, boia dé!',
+        'Via su verso ir Magona Bike Garage a bere ‘na birra, dé!'
       ];
 
       const LIVORNESE_BOAR_HITS = [
         '“Boia dé, ma o che tu se’ un cinghiale o ‘na ruspa, grullo?!”',
-        '“O maiale d’un cinghiale, levati dar sentiero, boia dé!”',
-        '“Allora un ci siamo, o bestia! Ti mando a fa’ in sugo, dé!”'
+        '“O maiale d’un cinghiale, levati dar sentiero di ‘ulo, boia dé!”',
+        '“Allora un ci siamo, o bestia! Ti mando a fa’ in sugo con le pappardelle, dé!”'
       ];
 
       const LIVORNESE_CONTROSENSO_INSULTS = [
@@ -463,69 +488,68 @@
 
       const LIVORNESE_PANINO_QUIPS = [
         '“Boia dé, che panino ripieno! Ora sì che si ragiona, dé!”',
-        '“O sveglia, ripieno da paura! Gasse a foho pe’ la birra!”',
-        '“Che bomba di panino, boia dé! Si va dritti a Bibbona!”'
+        '“O sveglia, ripieno da paura! Gasse a foho pe’ la birra, dé!”',
+        '“Che bomba di panino, boia dé! Si va dritti a Bibbona, via su!”'
       ];
 
       // =========================================================================
-      // 10 NPC LIVORNESI LIVELLO 1
+      // 10 NPC LIVORNESI LIVELLO 1 (100% VERNACOLO LIVORNESE)
       // =========================================================================
       const NPC_TEMPLATES = [
         {
-          name: 'Beppe der Porto', role: 'Pescatore', avatar: '🎣', shirt: '#0284c7', pants: '#1e293b', hair: '#94a3b8',
+          name: 'Beppe der Porto', role: 'Pescatore der Molo', avatar: '🎣', shirt: '#0284c7', pants: '#1e293b', hair: '#94a3b8',
           quote: '“Boia dé, icché tu fai con codesta bici viola? Tu pari un razzo der Molo Novo!”',
-          replies: ['“Dé, levati dar mezzo che c’ho er turbo!”', '“Boia dé, o un tu la vedi che è un’Orbea?”']
+          replies: ['“Dé, levati dar mezzo che c’ho ir turbo!”', '“Boia dé, o un tu la vedi che è un’Orbea?”']
         },
         {
-          name: 'Gino della Venezia', role: 'Barcaiolo', avatar: '⚓', shirt: '#f59e0b', pants: '#0f172a', hair: '#1e293b',
+          name: 'Gino della Venezia', role: 'Barcaiolo der Fosso', avatar: '⚓', shirt: '#f59e0b', pants: '#0f172a', hair: '#1e293b',
           quote: '“Ir mi’ nonno con la Graziella andava più forte di te, grullo!”',
-          replies: ['“Tingiti meno i ’apelli!”', '“Ma icché tu dici, o grullo! Guarda come vola!”']
+          replies: ['“Tingiti meno i ’apelli, dé!”', '“Ma icché tu dici, o grullo! Guarda come vola, boia dé!”']
         },
         {
           name: 'Sora Tosca', role: 'Signora der Lungomare', avatar: '👒', shirt: '#ec4899', pants: '#4c1d95', hair: '#e2e8f0',
-          quote: '“Allora un ci siamo, dé! Tu m’hai spettinato i’ riporto cor vento!”',
-          replies: ['“Scusa sora Tosca, dé, c’è libeccio oggi!”', '“Mettiti la cuffia, via su, che qui si viaggia!”']
+          quote: '“Allora un ci siamo, dé! Tu m’hai spettinato i’ riporto cor libeccio!”',
+          replies: ['“Scusa sora Tosca, dé, c’è libeccio oggi!”', '“Mettiti la cuffia, via su, che qui si viaggia, dé!”']
         },
         {
-          name: 'Nando der Cacciucco', role: 'Oste', avatar: '🍲', shirt: '#dc2626', pants: '#1e293b', hair: '#475569',
+          name: 'Nando der Cacciucco', role: 'Oste di Livorno', avatar: '🍲', shirt: '#dc2626', pants: '#1e293b', hair: '#475569',
           quote: '“O dove tu corri? Fermati a farti un ponce alla livornese, dé!”',
-          replies: ['“Prima vado a fare il gelato all’Orizzonte, boia dé!”', '“Dopo er quinto Belvedere torno a magnà!”']
+          replies: ['“Prima vado a fammi ir gelato all’Orizzonte, boia dé!”', '“Dopo ir quinto Belvedere torno a magnà, dé!”']
         },
         {
           name: 'Il Grullo d’Ardenza', role: 'Ciclista della Domenica', avatar: '🚴', shirt: '#10b981', pants: '#111827', hair: '#78350f',
           quote: '“Allora un ci siamo! La salita della collinetta un tu la reggi, dé!”',
-          replies: ['“O sveglia! Questa c’ha er motore, un è mica come la tua!”', '“Boia dé, stammi a ruota se tu ci riesci!”']
+          replies: ['“O sveglia! Questa c’ha ir motore, un è mica come la tua, dé!”', '“Boia dé, stammi a ruota se tu ci riesci, grullo!”']
         },
         {
-          name: 'Tiziano der Bagno Pancaldi', role: 'Bagnino', avatar: '🛟', shirt: '#eab308', pants: '#991b1b', hair: '#0f172a',
+          name: 'Tiziano der Bagno Pancaldi', role: 'Bagnino der Viale', avatar: '🛟', shirt: '#eab308', pants: '#991b1b', hair: '#0f172a',
           quote: '“Oh fenomenoooo, guarda che qui un si fanno le impennate, dé!”',
-          replies: ['“Tingiti meno i ’apelli!”', '“Boia dé, guarda e impara, grullo!”']
+          replies: ['“Tingiti meno i ’apelli, dé!”', '“Boia dé, guarda e impara, grullo!”']
         },
         {
-          name: 'Lillo der Mercato', role: 'Fruttivendolo', avatar: '🍉', shirt: '#16a34a', pants: '#1e293b', hair: '#64748b',
-          quote: '“Icché tu c’hai nella borraccia, l’acqua der fosso Reale?”',
-          replies: ['“C’ho la benzina der livornese vero, boia dé!”', '“Pensa a pesà i cocomeri, via su!”']
+          name: 'Lillo der Mercato', role: 'Fruttivendolo Centrale', avatar: '🍉', shirt: '#16a34a', pants: '#1e293b', hair: '#64748b',
+          quote: '“Icché tu c’hai nella borraccia, l’acqua der Fosso Reale, dé?”',
+          replies: ['“C’ho la benzina der livornese vero, boia dé!”', '“Pensa a pesà i cocomeri, via su, grullo!”']
         },
         {
           name: 'Mirella d’Antignano', role: 'Turista Scettica', avatar: '🕶️', shirt: '#8b5cf6', pants: '#1e1b4b', hair: '#facc15',
           quote: '“Scusi, ma questo lungomare sembra quasi l’Idroscalo di Milano…”',
-          replies: ['“NO… STAI A MILANO! Ma vattene a vedé er mare, boia dé!”', '“Allora un ci siamo! Qui è Livorno, dé!”']
+          replies: ['“NO… STAI A MILANO! Ma vattene a vedé ir mare, boia dé!”', '“Allora un ci siamo! Qui è Livorno, dé!”']
         },
         {
-          name: 'Cesare der Calambrone', role: 'Surfista', avatar: '🏄', shirt: '#06b6d4', pants: '#0f172a', hair: '#d97706',
+          name: 'Cesare der Calambrone', role: 'Surfista der Tirreno', avatar: '🏄', shirt: '#06b6d4', pants: '#0f172a', hair: '#d97706',
           quote: '“Bella pe’ te Olmetto, dé! Che stile co’ quei guanti gialli!”',
-          replies: ['“Grande boia dé, ci si becca alla Gelateria L’Orizzonte!”', '“Via su, oggi mare forza olio!”']
+          replies: ['“Grande boia dé, ci si becca alla Gelateria L’Orizzonte!”', '“Via su, oggi mare forza olio, dé!”']
         },
         {
-          name: 'Zio Otello', role: 'Pensionato DOC', avatar: '🧢', shirt: '#64748b', pants: '#0f172a', hair: '#f8fafc',
+          name: 'Zio Otello', role: 'Pensionato Livornese DOC', avatar: '🧢', shirt: '#64748b', pants: '#0f172a', hair: '#f8fafc',
           quote: '“Bravo figliolo, dé! Però quando tu arrivi all’Orizzonte fai due gusti!”',
-          replies: ['“Anche tre zio Otello, boia dé, crema, pistacchio e panna!”', '“Garantito al limone, via su!”']
+          replies: ['“Anche tre zio Otello, boia dé, crema, pistacchio e panna!”', '“Garantito ar limone, via su, dé!”']
         }
       ];
 
       // =========================================================================
-      // TORBOBIKERS: VESTITI DI NERO CON FOGLIA DI CANAPA SUL PETTO,
-      // MTB COME QUELLE DEL RIDER MA DI ALTRI COLORI, CASCHI IN TESTA
+      // TORBOBIKERS (LIVORNESE DOC)
       // =========================================================================
       const TORBOBIKER_TEMPLATES = [
         {
@@ -535,7 +559,7 @@
           frameLight: '#4ade80',
           frameDark: '#14532d',
           lureQuote: '“O Olmetto, fèrmati! Tira ‘na boccata, dé!”',
-          escapeQuote: '“No, mi vengono i vortici!”'
+          escapeQuote: '“No, mi vengono i vortici, boia dé!”'
         },
         {
           name: 'Torbobiker Cencio',
@@ -544,7 +568,7 @@
           frameLight: '#fb923c',
           frameDark: '#7c2d12',
           lureQuote: '“Dai un tiro solo prima der canalone, grullo!”',
-          escapeQuote: '“No se… poi rigozzo!”'
+          escapeQuote: '“No se… poi rigozzo, dé!”'
         },
         {
           name: 'Torbobiker Bibo',
@@ -552,8 +576,8 @@
           forkColor: '#06b6d4',
           frameLight: '#22d3ee',
           frameDark: '#164e63',
-          lureQuote: '“Frena un secondo che s’accende in pineta!”',
-          escapeQuote: '“Ma ti levi di ‘ulo!”'
+          lureQuote: '“Frena un secondo che s’accende in pineta, dé!”',
+          escapeQuote: '“Ma ti levi di ‘ulo, boia dé!”'
         },
         {
           name: 'Torbobiker Teo',
@@ -561,7 +585,7 @@
           forkColor: '#ec4899',
           frameLight: '#f472b6',
           frameDark: '#831843',
-          lureQuote: '“Allora un ci siamo! Scendi dar mezzo e fuma!”',
+          lureQuote: '“Allora un ci siamo! Scendi dar mezzo e fuma, dé!”',
           escapeQuote: '“Boia dé, levati che c’ho i freni caldi!”'
         },
         {
@@ -570,8 +594,8 @@
           forkColor: '#eab308',
           frameLight: '#facc15',
           frameDark: '#713f12',
-          lureQuote: '“Oh fenomenoooo, piglia due tiri prima der salto!”',
-          escapeQuote: '“No, mi vengono i vortici!”'
+          lureQuote: '“Oh fenomenoooo, piglia due tiri prima der salto, dé!”',
+          escapeQuote: '“No, mi vengono i vortici, grullo!”'
         },
         {
           name: 'Torbobiker Faina',
@@ -580,7 +604,7 @@
           frameLight: '#f87171',
           frameDark: '#7f1d1d',
           lureQuote: '“T’ho preparato un tromboncino da paura, dé!”',
-          escapeQuote: '“No se… poi rigozzo!”'
+          escapeQuote: '“No se… poi rigozzo, boia dé!”'
         },
         {
           name: 'Torbobiker Randa',
@@ -589,7 +613,7 @@
           frameLight: '#60a5fa',
           frameDark: '#1e3a8a',
           lureQuote: '“Dove tu scappi così a rotta di collo, grullo?”',
-          escapeQuote: '“Ma ti levi di ‘ulo!”'
+          escapeQuote: '“Ma ti levi di ‘ulo, via su!”'
         },
         {
           name: 'Torbobiker Zanna',
@@ -597,7 +621,7 @@
           forkColor: '#10b981',
           frameLight: '#34d399',
           frameDark: '#064e3b',
-          lureQuote: '“Fèrmati due minuti sotto le sughere, via su!”',
+          lureQuote: '“Fèrmati due minuti sotto le sughere, via su, dé!”',
           escapeQuote: '“O grullo, io tiro dritto in baracchina, dé!”'
         },
         {
@@ -606,7 +630,7 @@
           forkColor: '#f59e0b',
           frameLight: '#fbbf24',
           frameDark: '#78350f',
-          lureQuote: '“Tira ‘na boccata che poi tu voli sulle radici!”',
+          lureQuote: '“Tira ‘na boccata che poi tu voli sulle radici, dé!”',
           escapeQuote: '“Mi gira già la testa solo a guardallo, boia dé!”'
         },
         {
@@ -616,22 +640,22 @@
           frameLight: '#fb7185',
           frameDark: '#881337',
           lureQuote: '“Ultimo bivio, dé! Fèrmati co’ i Torbobikers!”',
-          escapeQuote: '“Ma ti levi di ‘ulo! Ci si vede all’aperitivo!”'
+          escapeQuote: '“Ma ti levi di ‘ulo! Ci si vede all’aperitivo, dé!”'
         }
       ];
 
       const RIDER_QUIPS_LV1 = [
-        'Boia dé, che spettacolo!', 'Che gasse, dé!', 'O svegliaaa!',
-        'Che stile l’Orbea!', 'Forza Livorno, dé!', 'Via su verso l’Orizzonte!', 'Boia dé, che vista!'
+        'Boia dé, che spettacolo!', 'Che gasse, dé!', 'O svegliaaa, grullo!',
+        'Che stile l’Orbea, dé!', 'Forza Livorno, boia dé!', 'Via su verso l’Orizzonte, dé!', 'Boia dé, che vista!'
       ];
 
       const RIDER_QUIPS_LV2 = [
-        'Boia dé, che discesa!', 'Lascia correre la Fox 38!', 'O svegliaaa, giù a foho!',
-        'Via su verso la baracchina!', 'Che flow nel bosco, dé!', 'Freni caldi e gasse aperto!'
+        'Boia dé, che discesa!', 'Lascia correre la Fox 38, dé!', 'O svegliaaa, giù a foho!',
+        'Via su verso la baracchina, dé!', 'Che flow ner bosco, boia dé!', 'Freni caldi e gasse aperto, dé!'
       ];
 
       // =========================================================================
-      // AUDIO SYNTH (CON GESTIONE SICURA ERRORI)
+      // AUDIO SYNTH
       // =========================================================================
       let audioEnabled = false;
       let audioCtx = null;
@@ -748,6 +772,8 @@
         torboEscapedCount: 0,
         bermCarvedCount: 0,
         paniniCount: 0,
+        lv4JumpsCount: 0,
+        lv4BonusCount: 0,
         panoramaTimer: 0,
         currentBelvedere: null,
         endStopTimer: 0,
@@ -763,7 +789,11 @@
           onGround: true,
           wheelAngle: 0,
           pedalPhase: 0,
-          pitch: 0
+          pitch: 0,
+          laneX: 0,
+          lean: 0,
+          zHeight: 0,
+          vz: 0
         },
         cameraX: 0,
         cameraBaseY: 0
@@ -796,9 +826,46 @@
       let leaves = [];
       let dustParticles = [];
 
+      // Elementi dedicati al Livello 4 (Massa Marittima 3D visto da dietro)
+      let lv4Ramps = [];
+      let lv4Obstacles = [];
+      let lv4Bonuses = [];
+      let lv4Trees = [];
+
       function getCourseLength() {
+        if (state.level === 4) return COURSE_LENGTH_LV4;
         if (state.level === 3) return COURSE_LENGTH_LV3;
         return state.level === 2 ? COURSE_LENGTH_LV2 : COURSE_LENGTH_LV1;
+      }
+
+      // Funzioni tracciato sinuoso 3D per Livello 4 (Massa Marittima)
+      function getLv4TrackCenter(zPos) {
+        const clamped = Math.max(0, Math.min(COURSE_LENGTH_LV4, zPos));
+        const baseCurve = Math.sin(clamped * 0.00115) * 440 + Math.cos(clamped * 0.00052) * 320 + Math.sin(clamped * 0.0023) * 145;
+        if (clamped > COURSE_LENGTH_LV4 - 1600) {
+          const t = Math.min(1, Math.max(0, (clamped - (COURSE_LENGTH_LV4 - 1600)) / 1200));
+          const smooth = t * t * (3 - 2 * t);
+          return baseCurve * (1 - smooth);
+        }
+        return baseCurve;
+      }
+
+      function getLv4TrackElevation(zPos) {
+        const clamped = Math.max(0, Math.min(COURSE_LENGTH_LV4, zPos));
+        let elev = Math.sin(clamped * 0.0017) * 58 + Math.cos(clamped * 0.00075) * 44;
+        for (let i = 0; i < lv4Ramps.length; i++) {
+          const r = lv4Ramps[i];
+          const dz = clamped - r.z;
+          if (dz > -140 && dz < 45) {
+            const prog = (dz + 140) / 185;
+            elev += Math.pow(prog, 1.5) * 46;
+          }
+        }
+        if (clamped > COURSE_LENGTH_LV4 - 1200) {
+          const t = Math.min(1, Math.max(0, (clamped - (COURSE_LENGTH_LV4 - 1200)) / 1000));
+          elev *= (1 - t);
+        }
+        return elev;
       }
 
       function getGroundY(worldX) {
@@ -869,7 +936,9 @@
         const lv = state.level;
         if (hudLevelPill) {
           hudLevelPill.textContent = 'LV ' + lv;
-          if (lv === 3) {
+          if (lv === 4) {
+            hudLevelPill.className = 'px-1.5 py-0.5 rounded-md bg-rose-500/25 border border-rose-400/40 text-[9px] font-black text-rose-300 uppercase';
+          } else if (lv === 3) {
             hudLevelPill.className = 'px-1.5 py-0.5 rounded-md bg-amber-500/25 border border-amber-400/40 text-[9px] font-black text-amber-300 uppercase';
           } else if (lv === 2) {
             hudLevelPill.className = 'px-1.5 py-0.5 rounded-md bg-emerald-500/25 border border-emerald-400/40 text-[9px] font-black text-emerald-300 uppercase';
@@ -878,7 +947,9 @@
           }
         }
         if (hudLocationLabel) {
-          if (lv === 3) {
+          if (lv === 4) {
+            hudLocationLabel.textContent = 'Massa Marittima · Canyon & Trail';
+          } else if (lv === 3) {
             hudLocationLabel.textContent = 'Macchia della Magona · Bibbona';
           } else if (lv === 2) {
             hudLocationLabel.textContent = 'Bosco · Discesa Torbobikers';
@@ -889,25 +960,50 @@
         if (switchLevelHudBtn) {
           if (lv === 1) {
             switchLevelHudBtn.textContent = '🌲 Lv.2';
-            switchLevelHudBtn.title = 'Passa al Livello 2 (Bosco)';
+            switchLevelHudBtn.title = 'Passa ar Livello 2 (Bosco)';
           } else if (lv === 2) {
             switchLevelHudBtn.textContent = '🚵 Lv.3';
-            switchLevelHudBtn.title = 'Passa al Livello 3 (Macchia della Magona)';
+            switchLevelHudBtn.title = 'Passa ar Livello 3 (Macchia della Magona)';
+          } else if (lv === 3) {
+            switchLevelHudBtn.textContent = '🐗 Lv.4';
+            switchLevelHudBtn.title = 'Passa ar Livello 4 (Massa Marittima)';
           } else {
             switchLevelHudBtn.textContent = '🌊 Lv.1';
-            switchLevelHudBtn.title = 'Passa al Livello 1 (Lungomare)';
+            switchLevelHudBtn.title = 'Passa ar Livello 1 (Lungomare)';
+          }
+        }
+
+        if (btnBrake && btnBrakeIcon && btnBrakeLabel && btnPedalIcon && btnPedalLabel) {
+          if (lv === 4) {
+            btnBrake.classList.remove('w-16', 'h-16', 'sm:w-20', 'sm:h-16', 'rounded-2xl');
+            btnBrake.classList.add('w-12', 'h-12', 'sm:w-14', 'sm:h-14', 'rounded-xl');
+            btnBrakeIcon.className = 'text-sm leading-none';
+            btnBrakeLabel.className = 'text-[8px] font-black tracking-wider text-slate-200 leading-tight';
+            btnBrakeIcon.textContent = '⬅️';
+            btnBrakeLabel.textContent = 'SINISTRA';
+            btnPedalIcon.textContent = '➡️';
+            btnPedalLabel.textContent = 'DESTRA';
+          } else {
+            btnBrake.classList.remove('w-12', 'h-12', 'sm:w-14', 'sm:h-14', 'rounded-xl');
+            btnBrake.classList.add('w-16', 'h-16', 'sm:w-20', 'sm:h-16', 'rounded-2xl');
+            btnBrakeIcon.className = 'text-lg';
+            btnBrakeLabel.className = 'text-[10px] font-black tracking-wider text-slate-200';
+            btnBrakeIcon.textContent = '◀️';
+            btnBrakeLabel.textContent = 'FRENA';
+            btnPedalIcon.textContent = '⏩';
+            btnPedalLabel.textContent = 'PEDALA';
           }
         }
 
         for (let m = 0; m < 4; m++) {
           const mBadge = document.getElementById('milestone' + m);
           if (mBadge) {
-            mBadge.textContent = lv === 3 ? '🥖' : (lv === 2 ? '🌲' : String(m + 1));
+            mBadge.textContent = lv === 4 ? '🚀' : (lv === 3 ? '🥖' : (lv === 2 ? '🌲' : String(m + 1)));
           }
         }
         const endBadge = document.getElementById('milestone4');
         if (endBadge) {
-          endBadge.textContent = lv === 3 ? '🍺' : (lv === 2 ? '🍹' : '🍦');
+          endBadge.textContent = lv === 4 ? '🍝' : (lv === 3 ? '🍺' : (lv === 2 ? '🍹' : '🍦'));
         }
       }
 
@@ -922,13 +1018,17 @@
         sceneryItems = [];
         leaves = [];
         dustParticles = [];
+        lv4Ramps = [];
+        lv4Obstacles = [];
+        lv4Bonuses = [];
+        lv4Trees = [];
 
         configureHudForLevel();
 
         for (let i = 0; i < 5; i++) {
           const badge = document.getElementById('milestone' + i);
           if (badge) {
-            badge.classList.remove('bg-amber-400', 'bg-emerald-400', 'text-slate-950');
+            badge.classList.remove('bg-amber-400', 'bg-emerald-400', 'bg-rose-400', 'text-slate-950');
             badge.classList.add('bg-slate-900');
           }
         }
@@ -1036,8 +1136,7 @@
               leaves.push({ x: x, yOffset: -86, collected: false, phase: (x % 7) * 0.5 });
             }
           }
-        } else {
-          // LIVELLO 3: Macchia della Magona · Curve e sponde · Cinghiali e ciclisti controsenso · Panini ripieni · Birra al Magona Bike Garage
+        } else if (state.level === 3) {
           for (let i = 0; i < MAGONA_SECTORS.length; i++) {
             MAGONA_SECTORS[i].passed = false;
           }
@@ -1054,7 +1153,6 @@
             });
           }
 
-          // Cinghiali della Macchia della Magona
           const boarPositions = [1900, 4600, 7400, 10400, 13400, 16400, 19400, 22400, 25400];
           for (let i = 0; i < boarPositions.length; i++) {
             magonaBoars.push({
@@ -1067,7 +1165,6 @@
             });
           }
 
-          // Ciclisti controsenso che salgono contromano verso Olmetto
           const wrongWayPositions = [3800, 6800, 9800, 12800, 15800, 18800, 21800, 24800];
           const jerseyPalette = ['#e11d48', '#2563eb', '#d97706', '#9333ea', '#0d9488'];
           for (let c = 0; c < wrongWayPositions.length; c++) {
@@ -1083,7 +1180,6 @@
             });
           }
 
-          // Panini ripieni sospesi in aria da prendere saltando
           const fillings = ['PORCHETTA & CIPOLLA', 'SALAME & PECORINO', 'FRITTATA & VERDURE', 'COPPA & CARCIOFI'];
           for (let x = 1350; x < COURSE_LENGTH_LV3 - 1000; x += 1200) {
             paniniItems.push({
@@ -1095,13 +1191,67 @@
             });
           }
 
-          // Vegetazione della Macchia della Magona
           for (let x = 200; x < COURSE_LENGTH_LV3 + 500; x += 250) {
             const mod = Math.floor(x / 250) % 3;
             sceneryItems.push({
               x: x,
               type: mod === 0 ? 'oak' : (mod === 1 ? 'forestPine' : 'bush'),
               scale: 0.90 + ((x * 17) % 35) / 100
+            });
+          }
+        } else if (state.level === 4) {
+          // LIVELLO 4: Massa Marittima · Canyon & Trail in terza persona da dietro
+          for (let i = 0; i < MASSA_SECTORS.length; i++) {
+            MASSA_SECTORS[i].passed = false;
+          }
+
+          // Rampe / Kick di terra lungo il trail
+          for (let z = 2200; z < COURSE_LENGTH_LV4 - 2200; z += 2700) {
+            const laneOffset = Math.sin(z * 0.002) * 38;
+            lv4Ramps.push({
+              z: z,
+              laneOffset: laneOffset,
+              jumped: false
+            });
+          }
+
+          // Tronchi e cinghiali da schivare sterzando o saltare
+          for (let z = 1600; z < COURSE_LENGTH_LV4 - 2000; z += 1950) {
+            let nearRamp = false;
+            for (let r = 0; r < lv4Ramps.length; r++) {
+              if (Math.abs(lv4Ramps[r].z - z) < 350) nearRamp = true;
+            }
+            if (!nearRamp) {
+              const side = (Math.floor(z / 1950) % 3 - 1) * 52;
+              lv4Obstacles.push({
+                z: z,
+                laneOffset: side,
+                type: (Math.floor(z / 1950) % 2 === 0) ? 'log' : 'boar',
+                resolved: false
+              });
+            }
+          }
+
+          // Bonus sospesi dopo le rampe o in traiettoria ideale
+          for (let z = 2280; z < COURSE_LENGTH_LV4 - 2100; z += 2700) {
+            const laneOffset = Math.sin(z * 0.002) * 38;
+            lv4Bonuses.push({
+              z: z + 70,
+              laneOffset: laneOffset,
+              collected: false,
+              phase: (z % 9) * 0.4
+            });
+          }
+
+          // Alberi e rocce ai lati del sentiero di Massa Marittima
+          for (let z = 300; z < COURSE_LENGTH_LV4 + 1200; z += 280) {
+            const side = (Math.floor(z / 280) % 2 === 0) ? -1 : 1;
+            const distFromEdge = 175 + ((z * 19) % 140);
+            lv4Trees.push({
+              z: z,
+              sideOffset: side * distFromEdge,
+              type: (Math.floor(z / 280) % 3 === 0) ? 'cypress' : ((Math.floor(z / 280) % 3 === 1) ? 'oak' : 'rock'),
+              scale: 0.85 + ((z * 11) % 35) / 100
             });
           }
         }
@@ -1122,29 +1272,37 @@
         state.torboEscapedCount = 0;
         state.bermCarvedCount = 0;
         state.paniniCount = 0;
+        state.lv4JumpsCount = 0;
+        state.lv4BonusCount = 0;
         state.panoramaTimer = 0;
         state.currentBelvedere = null;
         state.endStopTimer = 0;
         state.activeNpc = null;
         state.vortexTimer = 0;
 
-        if (state.level === 3) {
+        if (state.level === 4) {
+          state.quipText = 'Massa Marittima, boia dé! Sterza sulle curve, salta i kick e via alle pappardelle!';
+        } else if (state.level === 3) {
           state.quipText = 'Macchia della Magona, boia dé! Salta pe’ i panini e occhio ai grulli controsenso!';
         } else if (state.level === 2) {
           state.quipText = 'Giù ner bosco a foho, dé! Scappa da’ Torbobikers!';
         } else {
           state.quipText = 'Boia dé, si parte verso l’Orizzonte, via su!';
         }
-        state.quipTimer = 3.0;
+        state.quipTimer = 3.2;
 
         state.bike.x = 200;
         state.bike.y = getGroundY(200);
-        state.bike.vx = (state.level === 2 || state.level === 3) ? 230 : 0;
+        state.bike.vx = state.level === 4 ? 520 : ((state.level === 2 || state.level === 3) ? 230 : 0);
         state.bike.vy = 0;
         state.bike.onGround = true;
         state.bike.wheelAngle = 0;
         state.bike.pedalPhase = 0;
         state.bike.pitch = 0;
+        state.bike.laneX = 0;
+        state.bike.lean = 0;
+        state.bike.zHeight = 0;
+        state.bike.vz = 0;
         state.cameraX = 0;
         state.cameraBaseY = state.bike.y;
 
@@ -1171,6 +1329,11 @@
           startGame(3);
         });
       }
+      if (startLv4Btn) {
+        startLv4Btn.addEventListener('click', function () {
+          startGame(4);
+        });
+      }
       if (restartBtn) {
         restartBtn.addEventListener('click', function () {
           startGame(state.level);
@@ -1178,19 +1341,41 @@
       }
       if (nextLevelBtn) {
         nextLevelBtn.addEventListener('click', function () {
-          const nextLv = state.level === 1 ? 2 : (state.level === 2 ? 3 : 1);
+          const nextLv = state.level === 1 ? 2 : (state.level === 2 ? 3 : (state.level === 3 ? 4 : 1));
           startGame(nextLv);
         });
       }
       if (switchLevelHudBtn) {
         switchLevelHudBtn.addEventListener('click', function () {
-          const nextLv = state.level === 1 ? 2 : (state.level === 2 ? 3 : 1);
+          const nextLv = state.level === 1 ? 2 : (state.level === 2 ? 3 : (state.level === 3 ? 4 : 1));
           startGame(nextLv);
         });
       }
 
       function triggerJump() {
         if (state.mode !== 'PLAYING') return;
+        if (state.level === 4) {
+          if (state.bike.onGround) {
+            let onKick = false;
+            for (let i = 0; i < lv4Ramps.length; i++) {
+              if (Math.abs(state.bike.x - lv4Ramps[i].z) < 160) {
+                onKick = true;
+                if (!lv4Ramps[i].jumped) {
+                  lv4Ramps[i].jumped = true;
+                  state.lv4JumpsCount++;
+                  state.score += 180;
+                  state.quipText = 'Che stacco dar kick di Massa, boia dé! (+180 pts)';
+                  state.quipTimer = 2.0;
+                }
+                break;
+              }
+            }
+            state.bike.vz = onKick ? 460 : 355;
+            state.bike.onGround = false;
+            playSound('jump');
+          }
+          return;
+        }
         if (state.bike.onGround) {
           state.bike.vy = -575;
           state.bike.onGround = false;
@@ -1352,11 +1537,11 @@
             victoryBadge.className = 'inline-block px-3 py-1 rounded-full bg-pink-500/20 border border-pink-400/40 text-pink-300 text-[11px] font-black uppercase tracking-wider mb-2';
             victoryBadge.textContent = 'Gelateria L’Orizzonte · Traguardo!';
           }
-          if (victoryTitle) victoryTitle.textContent = 'NO… STAI A MILANO!';
-          if (victoryDesc) victoryDesc.textContent = 'Boia dé, hai fatto tutti e 5 i Belvedere delle collinette, risposto per le rime ai 10 livornesi e ti sei gustato il gelato alla Gelateria L’Orizzonte!';
+          if (victoryTitle) victoryTitle.textContent = 'NO… STAI A MILANO, DÉ!';
+          if (victoryDesc) victoryDesc.textContent = 'Boia dé, hai fatto tutti e 5 i Belvedere delle collinette, risposto per le rime ai 10 livornesi e ti sei gustato ir gelato alla Gelateria L’Orizzonte!';
           if (finalMetricLabel) finalMetricLabel.textContent = 'Belvedere';
           if (finalBelvedereEl) finalBelvedereEl.textContent = state.belvedereCount + ' / 5';
-          if (nextLevelBtn) nextLevelBtn.textContent = '🌲 Vai al Livello 2 · Discesa nel Bosco!';
+          if (nextLevelBtn) nextLevelBtn.textContent = '🌲 Vai ar Livello 2 · Discesa ner Bosco!';
         } else if (state.level === 2) {
           if (victoryCard) victoryCard.className = 'glass-hud rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl border-2 border-emerald-400/75';
           if (victoryEmoji) victoryEmoji.textContent = '🍹🌅🏆';
@@ -1365,22 +1550,34 @@
             victoryBadge.textContent = 'Aperitivo in Baracchina · Traguardo!';
           }
           if (victoryTitle) victoryTitle.textContent = 'BOIA DÉ, SCAMPATO!';
-          if (victoryDesc) victoryDesc.textContent = 'Sei sceso a foho dal bosco, hai seminato i Torbobikers senza farti venire i vortici e ti godi l’aperitivo in baracchina!';
+          if (victoryDesc) victoryDesc.textContent = 'Sei sceso a foho dar bosco, hai seminato i Torbobikers senza fatti venì i vortici e ti godi l’aperitivo in baracchina, dé!';
           if (finalMetricLabel) finalMetricLabel.textContent = 'Torbo Seminati';
           if (finalBelvedereEl) finalBelvedereEl.textContent = state.torboEscapedCount + ' / ' + torbobikers.length;
-          if (nextLevelBtn) nextLevelBtn.textContent = '🚵 Vai al Livello 3 · Macchia della Magona!';
-        } else {
+          if (nextLevelBtn) nextLevelBtn.textContent = '🚵 Vai ar Livello 3 · Macchia della Magona!';
+        } else if (state.level === 3) {
           if (victoryCard) victoryCard.className = 'glass-hud rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl border-2 border-amber-400/80';
           if (victoryEmoji) victoryEmoji.textContent = '🍺🚵‍♂️🏆';
           if (victoryBadge) {
             victoryBadge.className = 'inline-block px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-[11px] font-black uppercase tracking-wider mb-2';
             victoryBadge.textContent = 'Magona Bike Garage · Bibbona!';
           }
-          if (victoryTitle) victoryTitle.textContent = 'BIRRA AL GARAGE, DÉ!';
-          if (victoryDesc) victoryDesc.textContent = 'Hai fatto le curve e le sponde della Macchia della Magona, saltato i cinghiali e i grulli controsenso, presi i panini e brindato con una birra al Magona Bike Garage di Bibbona!';
+          if (victoryTitle) victoryTitle.textContent = 'BIRRA AR GARAGE, DÉ!';
+          if (victoryDesc) victoryDesc.textContent = 'Hai fatto le curve e le sponde della Macchia della Magona, saltato i cinghiali e i grulli controsenso, presi i panini e brindato con ‘na birra ar Magona Bike Garage di Bibbona, dé!';
           if (finalMetricLabel) finalMetricLabel.textContent = 'Panini Presi';
           if (finalBelvedereEl) finalBelvedereEl.textContent = state.paniniCount + ' / ' + paniniItems.length;
-          if (nextLevelBtn) nextLevelBtn.textContent = '🌊 Torna al Livello 1 · Lungomare';
+          if (nextLevelBtn) nextLevelBtn.textContent = '🐗 Vai ar Livello 4 · Massa Marittima!';
+        } else {
+          if (victoryCard) victoryCard.className = 'glass-hud rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl border-2 border-rose-400/80';
+          if (victoryEmoji) victoryEmoji.textContent = '🍝🐗🏆';
+          if (victoryBadge) {
+            victoryBadge.className = 'inline-block px-3 py-1 rounded-full bg-rose-500/20 border border-rose-400/40 text-rose-300 text-[11px] font-black uppercase tracking-wider mb-2';
+            victoryBadge.textContent = 'Bike Garage and more · Massa Marittima!';
+          }
+          if (victoryTitle) victoryTitle.textContent = 'PAPPARDELLE AR CINGHIALE, DÉ!';
+          if (victoryDesc) victoryDesc.textContent = 'Hai domato le curve e i salti der trail di Massa Marittima e sei arrivato da Bike Garage and more dove ti aspettano le pappardelle ar cinghiale fumanti, boia dé!';
+          if (finalMetricLabel) finalMetricLabel.textContent = 'Salti & Bonus';
+          if (finalBelvedereEl) finalBelvedereEl.textContent = (state.lv4JumpsCount + state.lv4BonusCount) + ' / ' + (lv4Ramps.length + lv4Bonuses.length);
+          if (nextLevelBtn) nextLevelBtn.textContent = '🌊 Torna ar Livello 1 · Lungomare';
         }
 
         if (victoryScreen) victoryScreen.classList.remove('hidden');
@@ -1667,12 +1864,18 @@
             if (nextLandmarkText) nextLandmarkText.textContent = '🍹 Traguardo: Aperitivo in Baracchina';
             if (nextLandmarkDist) nextLandmarkDist.textContent = distBar + ' m';
           }
-        } else {
+        } else if (state.level === 3) {
           const distGarage = Math.max(0, Math.round((COURSE_LENGTH_LV3 - state.bike.x) / 10));
           if (nextLandmarkText) {
             nextLandmarkText.textContent = '🥖 Panini: ' + state.paniniCount + '/' + paniniItems.length + ' · Sponde: ' + state.bermCarvedCount + '/' + magonaBerms.length + ' · Birra Garage';
           }
           if (nextLandmarkDist) nextLandmarkDist.textContent = distGarage + ' m';
+        } else {
+          const distMassa = Math.max(0, Math.round((COURSE_LENGTH_LV4 - state.bike.x) / 10));
+          if (nextLandmarkText) {
+            nextLandmarkText.textContent = '🐗 Salti: ' + state.lv4JumpsCount + '/' + lv4Ramps.length + ' · Bonus: ' + state.lv4BonusCount + ' · Bike Garage & Pappardelle';
+          }
+          if (nextLandmarkDist) nextLandmarkDist.textContent = distMassa + ' m';
         }
       }
 
@@ -1729,6 +1932,146 @@
 
         if (state.mode !== 'PLAYING') return;
 
+        // =====================================================================
+        // FISICA DEDICATA AL LIVELLO 4 (PROSPETTIVA DA DIETRO A MASSA MARITTIMA)
+        // =====================================================================
+        if (state.level === 4) {
+          const prevZ = state.bike.x;
+          const prevTrackCenter = getLv4TrackCenter(prevZ);
+          const targetForwardSpeed = keys.turbo ? 940 : 620;
+          state.bike.vx += (targetForwardSpeed - state.bike.vx) * Math.min(1, dt * 4.5);
+          state.bike.x = Math.min(COURSE_LENGTH_LV4, state.bike.x + state.bike.vx * dt);
+
+          const newTrackCenter = getLv4TrackCenter(state.bike.x);
+          const curveShift = newTrackCenter - prevTrackCenter;
+          state.bike.laneX -= curveShift * 0.78;
+
+          const steerInput = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
+          const steerSpeed = 340;
+          state.bike.laneX += steerInput * steerSpeed * dt;
+
+          const targetLean = steerInput * 0.36 + Math.max(-0.22, Math.min(0.22, curveShift * 0.015));
+          state.bike.lean += (targetLean - state.bike.lean) * Math.min(1, dt * 10);
+
+          const maxTrackHalfW = 128;
+          if (Math.abs(state.bike.laneX) > maxTrackHalfW) {
+            state.bike.laneX = Math.max(-165, Math.min(165, state.bike.laneX));
+            state.bike.vx *= Math.pow(0.28, dt);
+            if (state.quipTimer <= 0 && Math.random() < dt * 4) {
+              state.quipText = 'Boia dé, rientra ner sentiero di Massa, grullo!';
+              state.quipTimer = 1.4;
+            }
+          }
+
+          if (!state.bike.onGround) {
+            state.bike.vz -= 1150 * dt;
+            state.bike.zHeight += state.bike.vz * dt;
+            if (state.bike.zHeight <= 0) {
+              state.bike.zHeight = 0;
+              state.bike.vz = 0;
+              state.bike.onGround = true;
+            }
+          } else {
+            for (let r = 0; r < lv4Ramps.length; r++) {
+              const ramp = lv4Ramps[r];
+              if (!ramp.jumped && Math.abs(state.bike.x - ramp.z) < 42 && Math.abs(state.bike.laneX - ramp.laneOffset) < 52) {
+                ramp.jumped = true;
+                state.lv4JumpsCount++;
+                state.score += 180;
+                state.bike.vz = 410;
+                state.bike.onGround = false;
+                playSound('jump');
+                state.quipText = 'Volo dar kick di Massa Marittima, dé! (+180 pts)';
+                state.quipTimer = 1.9;
+              }
+            }
+          }
+
+          state.bike.wheelAngle += (state.bike.vx * dt) / 28;
+          state.bike.pedalPhase += (state.bike.vx * dt) / 36;
+
+          for (let s = 0; s < MASSA_SECTORS.length - 1; s++) {
+            const sec = MASSA_SECTORS[s];
+            if (!sec.passed && state.bike.x >= sec.x) {
+              sec.passed = true;
+              const badge = document.getElementById('milestone' + s);
+              if (badge) {
+                badge.classList.remove('bg-slate-900');
+                badge.classList.add('bg-rose-400', 'text-slate-950');
+              }
+            }
+          }
+
+          for (let b = 0; b < lv4Bonuses.length; b++) {
+            const bon = lv4Bonuses[b];
+            if (bon.collected) continue;
+            if (Math.abs(state.bike.x - bon.z) < 55 && Math.abs(state.bike.laneX - bon.laneOffset) < 48 && state.bike.zHeight > 22) {
+              bon.collected = true;
+              state.lv4BonusCount++;
+              state.score += 200;
+              playSound('npc');
+              state.quipText = 'Pigliato ar volo sopra Massa Marittima, dé! (+200 pts)';
+              state.quipTimer = 1.8;
+            }
+          }
+
+          for (let o = 0; o < lv4Obstacles.length; o++) {
+            const obs = lv4Obstacles[o];
+            if (obs.resolved) continue;
+            if (Math.abs(state.bike.x - obs.z) < 42) {
+              if (Math.abs(state.bike.laneX - obs.laneOffset) < 42) {
+                if (state.bike.zHeight > 30) {
+                  obs.resolved = true;
+                  state.score += 140;
+                  playSound('escape');
+                  state.quipText = 'Saltato di netto, boia dé! (+140 pts)';
+                  state.quipTimer = 1.6;
+                } else {
+                  obs.resolved = true;
+                  state.bike.vx = Math.max(220, state.bike.vx * 0.45);
+                  playSound('dizzy');
+                  state.quipText = obs.type === 'boar'
+                    ? 'O cinghiale di Massa, levati dar trail di ‘ulo, boia dé!'
+                    : 'Boia dé, che tronco in mezzo alla curva, grullo!';
+                  state.quipTimer = 2.1;
+                }
+              } else if (state.bike.x > obs.z + 35) {
+                obs.resolved = true;
+              }
+            }
+          }
+
+          if (state.quipTimer <= 0 && state.bike.vx > 560 && Math.random() < dt * 0.24) {
+            state.quipText = RIDER_QUIPS_LV4[Math.floor(Math.random() * RIDER_QUIPS_LV4.length)];
+            state.quipTimer = 2.2;
+          }
+
+          if (state.bike.x >= COURSE_LENGTH_LV4) {
+            state.bike.x = COURSE_LENGTH_LV4;
+            state.bike.vx = 0;
+            state.bike.laneX = 0;
+            state.bike.lean = 0;
+            state.bike.zHeight = 0;
+            state.bike.onGround = true;
+            state.score += 600;
+            state.mode = 'END_STOP';
+            state.endStopTimer = END_STOP_DURATION;
+            const endBadge = document.getElementById('milestone4');
+            if (endBadge) {
+              endBadge.classList.remove('bg-slate-900');
+              endBadge.classList.add('bg-rose-400', 'text-slate-950');
+            }
+            resetKeys();
+            playSound('gelato');
+          }
+
+          updateHud();
+          return;
+        }
+
+        // =====================================================================
+        // FISICA LIVELLI 1, 2 E 3
+        // =====================================================================
         const isLv2 = state.level === 2;
         const isLv3 = state.level === 3;
         const isTrail = isLv2 || isLv3;
@@ -1784,7 +2127,6 @@
         }
 
         if (!isLv3) {
-          // Raccolta foglioline di cannabis in volo saltando (attiva su Livello 1 e Livello 2)
           for (let c = 0; c < leaves.length; c++) {
             const leaf = leaves[c];
             if (leaf.collected) continue;
@@ -1804,7 +2146,6 @@
         }
 
         if (!isLv2 && !isLv3) {
-
           for (let i = 0; i < npcs.length; i++) {
             const npc = npcs[i];
             if (!npc.talked && Math.abs(state.bike.x - npc.x) < 48) {
@@ -1941,7 +2282,6 @@
             playSound('gelato');
           }
         } else if (isLv3) {
-          // Settori progress bar Livello 3
           for (let s = 0; s < MAGONA_SECTORS.length - 1; s++) {
             const sec = MAGONA_SECTORS[s];
             if (!sec.passed && state.bike.x >= sec.x) {
@@ -1954,7 +2294,6 @@
             }
           }
 
-          // Panini ripieni sospesi da prendere saltando
           for (let p = 0; p < paniniItems.length; p++) {
             const panino = paniniItems[p];
             if (panino.collected) continue;
@@ -1973,7 +2312,6 @@
             }
           }
 
-          // Sponde paraboliche nella Macchia della Magona
           for (let b = 0; b < magonaBerms.length; b++) {
             const berm = magonaBerms[b];
             if (berm.carved || berm.missed) continue;
@@ -2005,7 +2343,6 @@
             }
           }
 
-          // Pericolo 1: Cinghiali (saltabili con SALTA per bonus +150 pts, altrimenti urto con frase/offesa livornese)
           for (let i = 0; i < magonaBoars.length; i++) {
             const boar = magonaBoars[i];
             if (boar.cleared || boar.hit) continue;
@@ -2020,7 +2357,7 @@
                 boar.cleared = true;
                 state.score += 150;
                 playSound('escape');
-                state.quipText = 'Saltato i’ cinghiale, boia dé! (+150 pts)';
+                state.quipText = 'Saltato i’ cinghiale di netto, boia dé! (+150 pts)';
                 state.quipTimer = 1.8;
               } else {
                 boar.hit = true;
@@ -2033,7 +2370,6 @@
             }
           }
 
-          // Pericolo 2: Ciclisti controsenso (saltabili con SALTA per +180 pts, altrimenti urto con offese pese livornesi)
           for (let c = 0; c < wrongWayCyclists.length; c++) {
             const wc = wrongWayCyclists[c];
             if (wc.resolved) continue;
@@ -2064,7 +2400,6 @@
             }
           }
 
-          // Traguardo: Magona Bike Garage di Bibbona per una Birra
           if (state.bike.x >= COURSE_LENGTH_LV3) {
             state.bike.x = COURSE_LENGTH_LV3;
             state.bike.vx = 0;
@@ -2089,7 +2424,720 @@
       }
 
       // =========================================================================
-      // FOGLIA DI CANAPA RIUTILIZZABILE (PETTO TORBOBIKERS & COLLECTIBLE LV1)
+      // DISEGNO CINGHIALE DETTAGLIATO (PER LIVELLO 3 E LIVELLO 4)
+      // =========================================================================
+      function drawDetailedBoar(scaleFactor, legSwing, facingRight) {
+        ctx.save();
+        ctx.scale(scaleFactor * (facingRight ? -1 : 1), scaleFactor);
+
+        // Ombra a terra
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.42)';
+        ctx.beginPath();
+        ctx.ellipse(0, 2, 30, 6.5, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Zampe posteriori (lato lontano)
+        ctx.strokeStyle = '#1c1917';
+        ctx.lineWidth = 4.5;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(14, -12);
+        ctx.lineTo(17 - legSwing, -2);
+        ctx.moveTo(-11, -11);
+        ctx.lineTo(-9 + legSwing, -2);
+        ctx.stroke();
+
+        // Codino arricciato sul posteriore
+        ctx.strokeStyle = '#292524';
+        ctx.lineWidth = 2.6;
+        ctx.beginPath();
+        ctx.moveTo(24, -22);
+        ctx.bezierCurveTo(31, -26, 33, -19, 27, -18);
+        ctx.stroke();
+
+        // Corpo massiccio e peloso del cinghiale
+        const bodyGrad = ctx.createLinearGradient(0, -34, 0, -6);
+        bodyGrad.addColorStop(0, '#292524');
+        bodyGrad.addColorStop(0.5, '#44403c');
+        bodyGrad.addColorStop(1, '#1c1917');
+        ctx.fillStyle = bodyGrad;
+        ctx.beginPath();
+        ctx.moveTo(-18, -12);
+        ctx.quadraticCurveTo(-22, -26, -6, -30);
+        ctx.quadraticCurveTo(10, -31, 24, -22);
+        ctx.quadraticCurveTo(27, -12, 18, -8);
+        ctx.lineTo(-14, -8);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = '#0c0a09';
+        ctx.lineWidth = 1.6;
+        ctx.stroke();
+
+        // Cresta di setole irte lungo la schiena
+        ctx.fillStyle = '#0c0a09';
+        ctx.beginPath();
+        ctx.moveTo(-12, -28);
+        ctx.lineTo(-8, -35);
+        ctx.lineTo(-4, -29);
+        ctx.lineTo(0, -36);
+        ctx.lineTo(4, -29);
+        ctx.lineTo(9, -34);
+        ctx.lineTo(14, -27);
+        ctx.lineTo(19, -31);
+        ctx.lineTo(22, -23);
+        ctx.closePath();
+        ctx.fill();
+
+        // Testa robusta con muso allungato e grifo
+        ctx.fillStyle = '#3f3b37';
+        ctx.beginPath();
+        ctx.moveTo(-12, -27);
+        ctx.lineTo(-33, -18);
+        ctx.lineTo(-34, -11);
+        ctx.lineTo(-16, -8);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = '#0c0a09';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // Orecchio peloso appuntito
+        ctx.fillStyle = '#1c1917';
+        ctx.beginPath();
+        ctx.moveTo(-13, -26);
+        ctx.lineTo(-9, -36);
+        ctx.lineTo(-4, -26);
+        ctx.closePath();
+        ctx.fill();
+
+        // Grifo rosa scuro / narici
+        ctx.fillStyle = '#9f5848';
+        ctx.beginPath();
+        ctx.ellipse(-34, -14.5, 3.2, 4.4, -0.15, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#1c1917';
+        ctx.beginPath();
+        ctx.arc(-34.5, -15.5, 1, 0, Math.PI * 2);
+        ctx.arc(-33.8, -13.2, 1, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Zanna bianca ricurva ben visibile
+        ctx.fillStyle = '#fefce8';
+        ctx.strokeStyle = '#a16207';
+        ctx.lineWidth = 0.8;
+        ctx.beginPath();
+        ctx.moveTo(-26, -11);
+        ctx.quadraticCurveTo(-32, -13, -31, -21);
+        ctx.quadraticCurveTo(-27, -16, -23, -11);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Occhio fiero con sopracciglio aggrottato
+        ctx.fillStyle = '#fef08a';
+        ctx.beginPath();
+        ctx.arc(-20, -20, 2.3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#090d16';
+        ctx.beginPath();
+        ctx.arc(-20.4, -20, 1.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#0c0a09';
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.moveTo(-23, -22.5);
+        ctx.lineTo(-17, -21.2);
+        ctx.stroke();
+
+        // Zampe anteriori (lato vicino) con zoccoli
+        ctx.strokeStyle = '#292524';
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.moveTo(11, -11);
+        ctx.lineTo(13 + legSwing, -1);
+        ctx.moveTo(-14, -10);
+        ctx.lineTo(-16 - legSwing, -1);
+        ctx.stroke();
+
+        ctx.fillStyle = '#090d16';
+        ctx.fillRect(10 + legSwing, -2.5, 5, 2.5);
+        ctx.fillRect(-19 - legSwing, -2.5, 5, 2.5);
+
+        ctx.restore();
+      }
+
+      // =========================================================================
+      // RENDERING LIVELLO 4: PROSPETTIVA DA DIETRO (DIETRO LE SPALLE DEL RIDER)
+      // MASSA MARITTIMA -> BIKE GARAGE AND MORE (PAPPARDELLE AR CINGHIALE)
+      // =========================================================================
+      function drawRearViewRider(screenX, screenY, lean, zHeight, pedalPhase, isCelebrating) {
+        ctx.save();
+        ctx.translate(screenX, screenY);
+
+        const shadowScale = Math.max(0.45, 1 - zHeight * 0.0045);
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.45)';
+        ctx.beginPath();
+        ctx.ellipse(0, 4, 34 * shadowScale, 11 * shadowScale, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.translate(0, -zHeight);
+        ctx.rotate(lean);
+
+        const pedalBob = Math.sin(pedalPhase) * 3;
+
+        ctx.fillStyle = '#090d16';
+        ctx.beginPath();
+        ctx.roundRect(-11, -56, 22, 56, 9);
+        ctx.fill();
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.fillStyle = '#334155';
+        const treadOffset = (state.bike.wheelAngle * 14) % 14;
+        for (let ty = -50 + treadOffset; ty < -6; ty += 14) {
+          ctx.fillRect(-8, ty, 5, 4);
+          ctx.fillRect(3, ty + 5, 5, 4);
+        }
+
+        ctx.strokeStyle = '#7c3aed';
+        ctx.lineWidth = 6;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(-12, -30);
+        ctx.lineTo(-7, -64);
+        ctx.moveTo(12, -30);
+        ctx.lineTo(7, -64);
+        ctx.stroke();
+
+        ctx.fillStyle = '#090d16';
+        ctx.beginPath();
+        ctx.ellipse(0, -67, 13, 6, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.roundRect(-22, -98 + pedalBob * 0.4, 44, 34, 10);
+        ctx.fill();
+
+        ctx.strokeStyle = '#111827';
+        ctx.lineWidth = 11;
+        ctx.beginPath();
+        ctx.moveTo(-14, -74);
+        ctx.lineTo(-18, -42 + pedalBob);
+        ctx.moveTo(14, -74);
+        ctx.lineTo(18, -42 - pedalBob);
+        ctx.stroke();
+
+        ctx.fillStyle = '#1e293b';
+        ctx.beginPath();
+        ctx.roundRect(-24, -44 + pedalBob, 12, 8, 3);
+        ctx.roundRect(12, -44 - pedalBob, 12, 8, 3);
+        ctx.fill();
+
+        ctx.strokeStyle = '#090d16';
+        ctx.lineWidth = 5.5;
+        ctx.beginPath();
+        ctx.moveTo(-48, -94);
+        ctx.quadraticCurveTo(0, -90, 48, -94);
+        ctx.stroke();
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.roundRect(-26, -142 + pedalBob * 0.3, 52, 48, 12);
+        ctx.clip();
+
+        ctx.fillStyle = '#090d16';
+        ctx.fillRect(-26, -142, 52, 16);
+        ctx.fillStyle = '#5b21b6';
+        ctx.fillRect(-26, -126, 52, 11);
+        ctx.fillStyle = '#c4b5fd';
+        ctx.fillRect(-26, -115, 52, 11);
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(-26, -104, 52, 12);
+
+        ctx.save();
+        ctx.translate(0, -116);
+        drawHempLeafShape(0.68, '#84cc16', '#4ade80', '#052e16');
+        ctx.restore();
+        ctx.restore();
+
+        ctx.strokeStyle = '#7c3aed';
+        ctx.lineWidth = 10;
+        ctx.beginPath();
+        ctx.moveTo(-24, -132);
+        ctx.lineTo(-44, -95);
+        ctx.moveTo(24, -132);
+        ctx.lineTo(44, -95);
+        ctx.stroke();
+
+        ctx.fillStyle = '#d97706';
+        ctx.beginPath();
+        ctx.arc(-45, -94, 6, 0, Math.PI * 2);
+        ctx.arc(45, -94, 6, 0, Math.PI * 2);
+        ctx.fill();
+
+        const headY = -159 + pedalBob * 0.25;
+        ctx.fillStyle = '#090d16';
+        ctx.beginPath();
+        ctx.arc(0, headY, 19, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        ctx.arc(0, headY - 3, 15, Math.PI * 1.15, Math.PI * 1.85);
+        ctx.stroke();
+
+        ctx.fillStyle = '#84cc16';
+        ctx.fillRect(-18.5, headY - 3, 37, 5);
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(-5, headY - 4, 10, 7);
+
+        if (isCelebrating) {
+          const plateBob = Math.sin(state.time * 6) * 4;
+          ctx.save();
+          ctx.translate(46, -136 + plateBob);
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.ellipse(0, 6, 22, 7, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#cbd5e1';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+
+          ctx.strokeStyle = '#facc15';
+          ctx.lineWidth = 3.2;
+          ctx.beginPath();
+          ctx.moveTo(-12, 3);
+          ctx.quadraticCurveTo(0, -4, 12, 3);
+          ctx.moveTo(-10, 5);
+          ctx.quadraticCurveTo(2, -1, 10, 5);
+          ctx.stroke();
+
+          ctx.fillStyle = '#7c2d12';
+          ctx.beginPath();
+          ctx.arc(-4, 2, 4, 0, Math.PI * 2);
+          ctx.arc(4, 2, 4, 0, Math.PI * 2);
+          ctx.arc(0, 0, 4.5, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.78)';
+          ctx.lineWidth = 1.6;
+          const steam = (state.time * 16) % 12;
+          ctx.beginPath();
+          ctx.moveTo(-5, -6 - steam * 0.4);
+          ctx.lineTo(-3, -14 - steam * 0.4);
+          ctx.moveTo(4, -7 - steam * 0.4);
+          ctx.lineTo(6, -15 - steam * 0.4);
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        if (state.quipTimer > 0 && state.quipText) {
+          ctx.save();
+          ctx.translate(0, headY - 34);
+          ctx.font = '800 11px Inter, sans-serif';
+          const textW = ctx.measureText(state.quipText).width + 20;
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
+          ctx.beginPath();
+          ctx.roundRect(-textW / 2, -12, textW, 22, 9);
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(251, 191, 36, 0.85)';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+          ctx.fillStyle = '#fef08a';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(state.quipText, 0, -1);
+          ctx.restore();
+        }
+
+        ctx.restore();
+      }
+
+      function renderLevel4RearView(width, height) {
+        const riderZ = state.bike.x;
+        const playerCenter = getLv4TrackCenter(riderZ);
+        const playerElev = getLv4TrackElevation(riderZ);
+
+        // 1. Cielo caldo maremmano sopra Massa Marittima
+        const skyGrad = ctx.createLinearGradient(0, 0, 0, height * 0.46);
+        skyGrad.addColorStop(0, '#0c4a6e');
+        skyGrad.addColorStop(0.55, '#0284c7');
+        skyGrad.addColorStop(1, '#fde68a');
+        ctx.fillStyle = skyGrad;
+        ctx.fillRect(0, 0, width, height * 0.48);
+
+        ctx.fillStyle = '#fef08a';
+        ctx.beginPath();
+        ctx.arc(width * 0.78, height * 0.16, 30, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Colline di Massa Marittima con torre medievale sull'orizzonte
+        const horizonBaseY = height * 0.37;
+        const hillShift = -(playerCenter * 0.12) % width;
+        ctx.fillStyle = '#14532d';
+        ctx.beginPath();
+        ctx.moveTo(0, height * 0.46);
+        for (let hx = -100; hx <= width + 100; hx += 80) {
+          const hy = horizonBaseY - Math.sin((hx - hillShift) * 0.006) * 26 - Math.cos((hx - hillShift) * 0.013) * 14;
+          ctx.lineTo(hx, hy);
+        }
+        ctx.lineTo(width + 100, height * 0.46);
+        ctx.closePath();
+        ctx.fill();
+
+        const townX = width * 0.5 + (hillShift * 0.35);
+        const townY = horizonBaseY - 18;
+        ctx.fillStyle = '#78350f';
+        ctx.fillRect(townX - 36, townY - 12, 72, 16);
+        ctx.fillRect(townX - 24, townY - 34, 12, 24);
+        ctx.fillStyle = '#9a3412';
+        ctx.beginPath();
+        ctx.moveTo(townX + 6, townY - 12);
+        ctx.lineTo(townX + 22, townY - 26);
+        ctx.lineTo(townX + 38, townY - 12);
+        ctx.closePath();
+        ctx.fill();
+
+        // 2. Proiezione prospettica pseudo-3D del sentiero che si snoda davanti al rider
+        const camZ = riderZ - 190;
+        const camY = playerElev + 168 + state.bike.zHeight * 0.45;
+        const camX = playerCenter + state.bike.laneX * 0.52;
+        const focal = Math.min(width, height) * 0.72;
+        const nearDist = 170;
+        const farDist = 3300;
+        const step = 38;
+
+        function project3D(worldX, worldY, worldZ) {
+          const dz = worldZ - camZ;
+          if (dz <= 40) return null;
+          const scale = focal / dz;
+          const sx = width * 0.5 + (worldX - camX) * scale;
+          const sy = height * 0.36 + (camY - worldY) * scale;
+          return { sx: sx, sy: sy, scale: scale, dz: dz };
+        }
+
+        const slices = [];
+        for (let d = farDist; d >= nearDist; d -= step) {
+          const z = riderZ + d - 190;
+          const trackX = getLv4TrackCenter(z);
+          const trackY = getLv4TrackElevation(z);
+          const pCenter = project3D(trackX, trackY, z);
+          if (pCenter) {
+            slices.push({
+              z: z,
+              trackX: trackX,
+              trackY: trackY,
+              sx: pCenter.sx,
+              sy: pCenter.sy,
+              scale: pCenter.scale,
+              halfRoadW: 145 * pCenter.scale
+            });
+          }
+        }
+
+        // Assicura che l'area sotto lo slice più vicino fino al fondo schermo sia sempre coperta
+        if (slices.length > 0) {
+          const lastSlice = slices[slices.length - 1];
+          if (lastSlice.sy < height + 10) {
+            slices.push({
+              z: lastSlice.z - step,
+              trackX: lastSlice.trackX,
+              trackY: lastSlice.trackY,
+              sx: lastSlice.sx,
+              sy: height + 12,
+              scale: lastSlice.scale * 1.15,
+              halfRoadW: lastSlice.halfRoadW * 1.15
+            });
+          }
+        }
+
+        for (let i = 0; i < slices.length - 1; i++) {
+          const s1 = slices[i];
+          const s2 = slices[i + 1];
+          const band = Math.floor(s2.z / 120) % 2 === 0;
+
+          ctx.fillStyle = band ? '#15803d' : '#166534';
+          ctx.fillRect(0, s1.sy, width, Math.max(2, s2.sy - s1.sy + 1.5));
+
+          ctx.fillStyle = band ? '#78350f' : '#92400e';
+          ctx.beginPath();
+          ctx.moveTo(s1.sx - s1.halfRoadW * 1.18, s1.sy);
+          ctx.lineTo(s1.sx + s1.halfRoadW * 1.18, s1.sy);
+          ctx.lineTo(s2.sx + s2.halfRoadW * 1.18, s2.sy);
+          ctx.lineTo(s2.sx - s2.halfRoadW * 1.18, s2.sy);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.fillStyle = band ? '#b45309' : '#9a3412';
+          ctx.beginPath();
+          ctx.moveTo(s1.sx - s1.halfRoadW, s1.sy);
+          ctx.lineTo(s1.sx + s1.halfRoadW, s1.sy);
+          ctx.lineTo(s2.sx + s2.halfRoadW, s2.sy);
+          ctx.lineTo(s2.sx - s2.halfRoadW, s2.sy);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.fillStyle = band ? 'rgba(254, 243, 199, 0.22)' : 'rgba(120, 53, 15, 0.25)';
+          ctx.beginPath();
+          ctx.moveTo(s1.sx - s1.halfRoadW * 0.16, s1.sy);
+          ctx.lineTo(s1.sx + s1.halfRoadW * 0.16, s1.sy);
+          ctx.lineTo(s2.sx + s2.halfRoadW * 0.16, s2.sy);
+          ctx.lineTo(s2.sx - s2.halfRoadW * 0.16, s2.sy);
+          ctx.closePath();
+          ctx.fill();
+        }
+
+        const renderList = [];
+
+        for (let t = 0; t < lv4Trees.length; t++) {
+          const tr = lv4Trees[t];
+          if (tr.z > camZ + 80 && tr.z < camZ + farDist) {
+            const wx = getLv4TrackCenter(tr.z) + tr.sideOffset;
+            const wy = getLv4TrackElevation(tr.z);
+            renderList.push({ z: tr.z, kind: 'tree', item: tr, wx: wx, wy: wy });
+          }
+        }
+
+        for (let r = 0; r < lv4Ramps.length; r++) {
+          const rm = lv4Ramps[r];
+          if (rm.z > camZ + 60 && rm.z < camZ + farDist) {
+            const wx = getLv4TrackCenter(rm.z) + rm.laneOffset;
+            const wy = getLv4TrackElevation(rm.z);
+            renderList.push({ z: rm.z, kind: 'ramp', item: rm, wx: wx, wy: wy });
+          }
+        }
+
+        for (let o = 0; o < lv4Obstacles.length; o++) {
+          const ob = lv4Obstacles[o];
+          if (!ob.resolved && ob.z > camZ + 60 && ob.z < camZ + farDist) {
+            const wx = getLv4TrackCenter(ob.z) + ob.laneOffset;
+            const wy = getLv4TrackElevation(ob.z);
+            renderList.push({ z: ob.z, kind: 'obstacle', item: ob, wx: wx, wy: wy });
+          }
+        }
+
+        for (let b = 0; b < lv4Bonuses.length; b++) {
+          const bn = lv4Bonuses[b];
+          if (!bn.collected && bn.z > camZ + 60 && bn.z < camZ + farDist) {
+            const wx = getLv4TrackCenter(bn.z) + bn.laneOffset;
+            const wy = getLv4TrackElevation(bn.z) + 52 + Math.sin(state.time * 4 + bn.phase) * 6;
+            renderList.push({ z: bn.z, kind: 'bonus', item: bn, wx: wx, wy: wy });
+          }
+        }
+
+        if (COURSE_LENGTH_LV4 > camZ + 80 && COURSE_LENGTH_LV4 < camZ + farDist + 400) {
+          const wx = getLv4TrackCenter(COURSE_LENGTH_LV4);
+          const wy = getLv4TrackElevation(COURSE_LENGTH_LV4);
+          renderList.push({ z: COURSE_LENGTH_LV4, kind: 'garage', wx: wx, wy: wy });
+        }
+
+        renderList.sort(function (a, b) {
+          return b.z - a.z;
+        });
+
+        for (let i = 0; i < renderList.length; i++) {
+          const obj = renderList[i];
+          const p = project3D(obj.wx, obj.wy, obj.z);
+          if (!p) continue;
+          const sc = p.scale;
+
+          if (obj.kind === 'tree') {
+            ctx.save();
+            ctx.translate(p.sx, p.sy);
+            ctx.scale(sc * obj.item.scale, sc * obj.item.scale);
+            if (obj.item.type === 'cypress') {
+              ctx.fillStyle = '#451a03';
+              ctx.fillRect(-5, -40, 10, 40);
+              ctx.fillStyle = '#14532d';
+              ctx.beginPath();
+              ctx.ellipse(0, -115, 22, 85, 0, 0, Math.PI * 2);
+              ctx.fill();
+              ctx.fillStyle = '#166534';
+              ctx.beginPath();
+              ctx.ellipse(-4, -120, 13, 72, 0, 0, Math.PI * 2);
+              ctx.fill();
+            } else if (obj.item.type === 'oak') {
+              ctx.fillStyle = '#5c2d16';
+              ctx.fillRect(-8, -95, 16, 95);
+              ctx.fillStyle = '#15803d';
+              ctx.beginPath();
+              ctx.arc(0, -115, 48, 0, Math.PI * 2);
+              ctx.arc(-28, -100, 32, 0, Math.PI * 2);
+              ctx.arc(28, -100, 32, 0, Math.PI * 2);
+              ctx.fill();
+            } else {
+              ctx.fillStyle = '#78716c';
+              ctx.beginPath();
+              ctx.moveTo(-28, 0);
+              ctx.lineTo(-14, -32);
+              ctx.lineTo(14, -36);
+              ctx.lineTo(30, 0);
+              ctx.closePath();
+              ctx.fill();
+            }
+            ctx.restore();
+          } else if (obj.kind === 'ramp') {
+            ctx.save();
+            ctx.translate(p.sx, p.sy);
+            ctx.scale(sc, sc);
+            ctx.fillStyle = '#d97706';
+            ctx.beginPath();
+            ctx.moveTo(-48, 0);
+            ctx.lineTo(-34, -26);
+            ctx.lineTo(34, -26);
+            ctx.lineTo(48, 0);
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = '#fef08a';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            ctx.fillStyle = '#fef08a';
+            ctx.font = '900 13px Inter, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('▲ SALTO ▲', 0, -8);
+            ctx.restore();
+          } else if (obj.kind === 'obstacle') {
+            ctx.save();
+            ctx.translate(p.sx, p.sy);
+            ctx.scale(sc, sc);
+            if (obj.item.type === 'log') {
+              ctx.fillStyle = '#451a03';
+              ctx.beginPath();
+              ctx.roundRect(-42, -22, 84, 22, 9);
+              ctx.fill();
+              ctx.strokeStyle = '#92400e';
+              ctx.lineWidth = 2.5;
+              ctx.stroke();
+            } else {
+              // Cinghiale vero di Massa Marittima con setole, grugno e zanne
+              const trot = Math.sin(state.time * 10 + obj.z) * 3.5;
+              drawDetailedBoar(1.35, trot, false);
+            }
+            ctx.restore();
+          } else if (obj.kind === 'bonus') {
+            ctx.save();
+            ctx.translate(p.sx, p.sy);
+            ctx.scale(sc * 1.35, sc * 1.35);
+            drawWeedLeaf(0, 0, 0, Math.sin(state.time * 4) * 0.15);
+            ctx.restore();
+          } else if (obj.kind === 'garage') {
+            ctx.save();
+            ctx.translate(p.sx, p.sy);
+            ctx.scale(sc * 1.45, sc * 1.45);
+
+            ctx.fillStyle = '#1e293b';
+            ctx.beginPath();
+            ctx.roundRect(-145, -165, 290, 165, 12);
+            ctx.fill();
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            ctx.fillStyle = '#090d16';
+            ctx.beginPath();
+            ctx.roundRect(-132, -206, 264, 44, 10);
+            ctx.fill();
+            ctx.strokeStyle = '#facc15';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            ctx.fillStyle = '#facc15';
+            ctx.font = '900 15px Inter, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('BIKE GARAGE AND MORE', 0, -186);
+            ctx.fillStyle = '#f8fafc';
+            ctx.font = '800 10px Inter, sans-serif';
+            ctx.fillText('MASSA MARITTIMA · PAPPARDELLE AR CINGHIALE', 0, -170);
+
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(-124, -120, 110, 120);
+            ctx.strokeStyle = '#84cc16';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(-92, -78, 16, 0, Math.PI * 2);
+            ctx.arc(-48, -78, 16, 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.fillStyle = '#78350f';
+            ctx.fillRect(10, -54, 116, 54);
+            ctx.fillStyle = '#fef3c7';
+            ctx.fillRect(4, -60, 128, 8);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.ellipse(68, -64, 28, 8, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#facc15';
+            ctx.lineWidth = 3.5;
+            ctx.beginPath();
+            ctx.moveTo(52, -66);
+            ctx.quadraticCurveTo(68, -74, 84, -66);
+            ctx.stroke();
+            ctx.fillStyle = '#7c2d12';
+            ctx.beginPath();
+            ctx.arc(68, -68, 7, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+          }
+        }
+
+        const riderProj = project3D(playerCenter + state.bike.laneX, playerElev, riderZ);
+        const riderSX = riderProj ? riderProj.sx : width * 0.5;
+        const riderSY = riderProj ? riderProj.sy : height * 0.84;
+        const isCeleb = state.mode === 'END_STOP' || state.mode === 'VICTORY';
+
+        drawRearViewRider(
+          riderSX,
+          riderSY,
+          state.bike.lean,
+          state.bike.zHeight * 0.85,
+          state.bike.pedalPhase,
+          isCeleb
+        );
+
+        if (isCeleb) {
+          ctx.save();
+          const pulse = 1 + Math.sin(state.time * 4) * 0.04;
+          ctx.translate(width * 0.5, height * 0.24);
+          ctx.scale(pulse, pulse);
+
+          const fontSize = Math.max(20, Math.min(46, Math.floor(width * 0.052)));
+          ctx.font = '900 ' + fontSize + 'px Inter, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+
+          const headline = 'PAPPARDELLE AR CINGHIALE, DÉ!';
+          ctx.lineWidth = Math.max(5, fontSize * 0.16);
+          ctx.strokeStyle = '#0f172a';
+          ctx.strokeText(headline, 0, 0);
+
+          const textGrad = ctx.createLinearGradient(0, -fontSize * 0.5, 0, fontSize * 0.5);
+          textGrad.addColorStop(0, '#fef08a');
+          textGrad.addColorStop(0.5, '#f97316');
+          textGrad.addColorStop(1, '#ef4444');
+          ctx.fillStyle = textGrad;
+          ctx.fillText(headline, 0, 0);
+
+          if (state.mode === 'END_STOP') {
+            ctx.font = '800 14px Inter, sans-serif';
+            ctx.fillStyle = '#ffffff';
+            ctx.strokeStyle = 'rgba(15, 23, 42, 0.85)';
+            ctx.lineWidth = 4;
+            const subLabel = '🍝 Bike Garage and more · Massa Marittima · ' + Math.ceil(state.endStopTimer) + 's';
+            ctx.strokeText(subLabel, 0, fontSize * 0.85);
+            ctx.fillText(subLabel, 0, fontSize * 0.85);
+          }
+          ctx.restore();
+        }
+      }
+
+      // =========================================================================
+      // FOGLIA DI CANAPA RIUTILIZZABILE
       // =========================================================================
       function drawHempLeafShape(scaleFactor, fillMain, fillSide, strokeColor) {
         ctx.save();
@@ -2136,7 +3184,7 @@
       }
 
       // =========================================================================
-      // MTB ENDURE CON TELAIO, FORCELLA FOX 38 E RUOTE PIRELLI SCORPION
+      // MTB ENDURO
       // =========================================================================
       function drawMtbChassis(wAngle, frameLight, frameDark, forkColor, brandLabel) {
         const rearWheelX = -38;
@@ -2329,7 +3377,7 @@
         ctx.fillText('BELVEDERE #' + (spot.id + 1), 0, -85);
         ctx.font = '700 7px Inter, sans-serif';
         ctx.fillStyle = '#fef08a';
-        ctx.fillText(spot.visited ? 'SELFIE FATTO!' : 'VISTA MARE', 0, -75);
+        ctx.fillText(spot.visited ? 'SELFIE FATTO, DÉ!' : 'VISTA MARE', 0, -75);
 
         ctx.restore();
       }
@@ -2373,7 +3421,6 @@
         const slope = getGroundSlope(tb.x);
         ctx.rotate(slope);
 
-        // MTB completa identica come struttura a quella del rider ma di altri colori
         const cranks = drawMtbChassis(tb.wheelAngle, tb.frameLight, tb.frameDark, tb.forkColor, 'TORBO');
 
         const hipX = -15;
@@ -2386,7 +3433,6 @@
         const kneeX = (hipX + pedalX) * 0.5 + 10;
         const kneeY = (hipY + pedalY) * 0.5 - 3;
 
-        // Gamba nera
         ctx.strokeStyle = '#090d16';
         ctx.lineWidth = 8.5;
         ctx.lineCap = 'round';
@@ -2397,7 +3443,6 @@
         ctx.lineTo(pedalX, pedalY - 3);
         ctx.stroke();
 
-        // Bustino nero con foglia di canapa verde sul petto
         ctx.save();
         const torsoAngle = Math.atan2(shoulderY - hipY, shoulderX - hipX) + Math.PI / 2;
         ctx.translate((hipX + shoulderX) * 0.5, (hipY + shoulderY) * 0.5);
@@ -2411,14 +3456,12 @@
         ctx.fill();
         ctx.stroke();
 
-        // Foglia di canapa ben visibile sul petto
         ctx.save();
         ctx.translate(2, -1);
         drawHempLeafShape(0.46, '#4ade80', '#16a34a', '#052e16');
         ctx.restore();
         ctx.restore();
 
-        // Braccio teso con lo spinello verso Olmetto
         const handX = 24;
         const handY = -74 + Math.sin(state.time * 7 + tb.id) * 2.5;
         const elbowX = (shoulderX + handX) * 0.5 - 2;
@@ -2433,7 +3476,6 @@
         ctx.lineTo(handX, handY);
         ctx.stroke();
 
-        // Spinello acceso con fumo
         ctx.save();
         ctx.translate(handX + 2, handY);
         ctx.rotate(-0.22);
@@ -2450,7 +3492,6 @@
         ctx.fill();
         ctx.restore();
 
-        // Testa con casco in testa
         const headX = shoulderX + 4;
         const headY = shoulderY - 14;
         ctx.save();
@@ -2461,7 +3502,6 @@
         ctx.arc(1, 2, 10, 0, Math.PI * 2);
         ctx.fill();
 
-        // Casco integrale con calotta, mentoniera protettiva e visiera
         ctx.fillStyle = '#090d16';
         ctx.beginPath();
         ctx.arc(0, 0, 13.5, 0, Math.PI * 2);
@@ -2476,7 +3516,6 @@
         ctx.lineWidth = 1.6;
         ctx.stroke();
 
-        // Mentoniera integrale rinforzata
         ctx.fillStyle = '#090d16';
         ctx.beginPath();
         ctx.moveTo(0, 3);
@@ -2494,7 +3533,6 @@
         ctx.lineTo(9, 9);
         ctx.stroke();
 
-        // Visiera superiore del casco integrale
         ctx.fillStyle = tb.helmet;
         ctx.beginPath();
         ctx.moveTo(3, -10);
@@ -2508,7 +3546,7 @@
 
         if (tb.status === 'WAITING' || tb.status === 'CHASING') {
           const bob = Math.sin(state.time * 5 + tb.id) * 3;
-          const label = tb.status === 'CHASING' ? tb.lureQuote.replace(/[“”]/g, '') : '🌿 Oh Olmetto, tira!';
+          const label = tb.status === 'CHASING' ? tb.lureQuote.replace(/[“”]/g, '') : '🌿 Oh Olmetto, tira, dé!';
           ctx.save();
           ctx.translate(0, -124 + bob);
           ctx.font = '800 9.5px Inter, sans-serif';
@@ -2535,7 +3573,6 @@
         const bob = Math.sin(state.time * 4 + panino.phase) * 4;
         ctx.translate(screenX, screenY + bob);
 
-        // Alone caldo intorno al panino ripieno sospeso in aria
         const glowGrad = ctx.createRadialGradient(0, -4, 2, 0, -4, 24);
         glowGrad.addColorStop(0, 'rgba(253, 224, 71, 0.55)');
         glowGrad.addColorStop(1, 'rgba(245, 158, 11, 0)');
@@ -2544,13 +3581,11 @@
         ctx.arc(0, -4, 24, 0, Math.PI * 2);
         ctx.fill();
 
-        // Calotta inferiore del panino
         ctx.fillStyle = '#d97706';
         ctx.beginPath();
         ctx.roundRect(-16, 0, 32, 8, 4);
         ctx.fill();
 
-        // Ripieno abbondante (affettato/verdura/formaggio)
         ctx.fillStyle = '#dc2626';
         ctx.fillRect(-14, -4, 28, 4);
         ctx.fillStyle = '#22c55e';
@@ -2558,7 +3593,6 @@
         ctx.fillStyle = '#fef08a';
         ctx.fillRect(-13, -9, 26, 2.5);
 
-        // Calotta superiore croccante con semi
         ctx.fillStyle = '#f59e0b';
         ctx.beginPath();
         ctx.ellipse(0, -11, 17, 7, 0, Math.PI, 0);
@@ -2580,7 +3614,6 @@
         ctx.save();
         ctx.translate(screenX, screenY);
 
-        // Sponda parabolica ben definita con rampa d'ingresso, parete inclinata (bank) e uscita
         const outerGrad = ctx.createLinearGradient(0, -68, 0, 10);
         outerGrad.addColorStop(0, '#9a3412');
         outerGrad.addColorStop(0.5, '#78350f');
@@ -2595,7 +3628,6 @@
         ctx.closePath();
         ctx.fill();
 
-        // Fascia interna compattata dalla ruota (canale di appoggio della sponda)
         ctx.fillStyle = berm.carved ? '#b45309' : '#7c2d12';
         ctx.beginPath();
         ctx.moveTo(-78, 4);
@@ -2607,7 +3639,6 @@
         ctx.closePath();
         ctx.fill();
 
-        // Cresta superiore scolpita con bordo ben marcato
         ctx.strokeStyle = berm.carved ? '#fde047' : '#fb923c';
         ctx.lineWidth = 3.2;
         ctx.beginPath();
@@ -2616,7 +3647,6 @@
         ctx.bezierCurveTo(42, -58, 52, 0, 88, 3);
         ctx.stroke();
 
-        // Solchi trasversali dei tasselli lungo la sponda
         ctx.strokeStyle = 'rgba(28, 25, 23, 0.45)';
         ctx.lineWidth = 1.4;
         for (let g = -3; g <= 3; g++) {
@@ -2628,7 +3658,6 @@
           ctx.stroke();
         }
 
-        // Paletto e cartello curva della Macchia della Magona
         ctx.fillStyle = '#5c2d16';
         ctx.fillRect(62, -74, 5, 74);
         ctx.fillStyle = berm.carved ? '#15803d' : '#f59e0b';
@@ -2650,68 +3679,8 @@
         ctx.save();
         ctx.translate(screenX, screenY);
         ctx.rotate(getGroundSlope(boar.x));
-
         const legSwing = Math.sin(boar.legPhase) * 5;
-
-        // Ombra
-        ctx.fillStyle = 'rgba(15, 23, 42, 0.35)';
-        ctx.beginPath();
-        ctx.ellipse(0, 2, 24, 5, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Zampe scure
-        ctx.strokeStyle = '#1c1917';
-        ctx.lineWidth = 4.5;
-        ctx.lineCap = 'round';
-        ctx.beginPath();
-        ctx.moveTo(-10, -10);
-        ctx.lineTo(-12 + legSwing, 0);
-        ctx.moveTo(-3, -10);
-        ctx.lineTo(-1 - legSwing, 0);
-        ctx.moveTo(8, -10);
-        ctx.lineTo(10 - legSwing, 0);
-        ctx.moveTo(14, -10);
-        ctx.lineTo(12 + legSwing, 0);
-        ctx.stroke();
-
-        // Corpo setoloso marrone scuro
-        ctx.fillStyle = '#451a03';
-        ctx.strokeStyle = '#1c1917';
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.ellipse(0, -16, 20, 12, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.stroke();
-
-        // Cresta dorsale irsuta
-        ctx.fillStyle = '#292524';
-        ctx.beginPath();
-        ctx.moveTo(-14, -25);
-        ctx.lineTo(-4, -30);
-        ctx.lineTo(6, -28);
-        ctx.lineTo(14, -24);
-        ctx.closePath();
-        ctx.fill();
-
-        // Muso rivolto a sinistra e zanna bianca
-        ctx.fillStyle = '#57534e';
-        ctx.beginPath();
-        ctx.ellipse(-20, -15, 8, 6, -0.1, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = '#f8fafc';
-        ctx.beginPath();
-        ctx.moveTo(-24, -12);
-        ctx.lineTo(-28, -19);
-        ctx.lineTo(-21, -12);
-        ctx.closePath();
-        ctx.fill();
-
-        // Occhio rosso vigile
-        ctx.fillStyle = '#ef4444';
-        ctx.beginPath();
-        ctx.arc(-18, -18, 2, 0, Math.PI * 2);
-        ctx.fill();
-
+        drawDetailedBoar(1.0, legSwing, false);
         ctx.restore();
       }
 
@@ -2720,7 +3689,6 @@
         ctx.translate(screenX, screenY);
         ctx.rotate(getGroundSlope(wc.x));
 
-        // Ciclista controsenso rivolto verso sinistra (contro Olmetto)
         const rearWX = -26;
         const frontWX = 26;
         const wY = -17;
@@ -2760,7 +3728,6 @@
         ctx.lineTo(frontWX, wY);
         ctx.stroke();
 
-        // Gamba e busto rivolti a sinistra
         const pedalX = 4 + Math.cos(wc.pedalPhase) * 7;
         const pedalY = wY + Math.sin(wc.pedalPhase) * 7;
         ctx.strokeStyle = '#0f172a';
@@ -2777,7 +3744,6 @@
         ctx.roundRect(-8, -70, 16, 26, 5);
         ctx.fill();
 
-        // Braccia sul manubrio a sinistra
         ctx.strokeStyle = '#e09668';
         ctx.lineWidth = 4.5;
         ctx.beginPath();
@@ -2785,7 +3751,6 @@
         ctx.lineTo(-20, -52);
         ctx.stroke();
 
-        // Testa e casco
         ctx.fillStyle = '#e09668';
         ctx.beginPath();
         ctx.arc(-2, -79, 8, 0, Math.PI * 2);
@@ -2795,7 +3760,6 @@
         ctx.arc(-2, -81, 8.5, Math.PI, 0);
         ctx.fill();
 
-        // Avviso controsenso sopra la testa
         if (!wc.resolved) {
           const bob = Math.sin(state.time * 5 + wc.id) * 3;
           ctx.fillStyle = 'rgba(127, 29, 29, 0.92)';
@@ -3272,7 +4236,6 @@
         ctx.save();
         ctx.translate(cx, cy + bob);
 
-        // Alone luminoso morbido per renderla ben visibile in aria (anche nel bosco)
         const glowGrad = ctx.createRadialGradient(0, -6, 2, 0, -6, 22);
         glowGrad.addColorStop(0, 'rgba(190, 242, 100, 0.55)');
         glowGrad.addColorStop(1, 'rgba(34, 197, 94, 0)');
@@ -3345,7 +4308,7 @@
           ctx.font = '800 9px Inter, sans-serif';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
-          ctx.fillText('Dé, aoh!', 0, -78 + bob);
+          ctx.fillText('Boia dé!', 0, -78 + bob);
         }
 
         ctx.restore();
@@ -3415,6 +4378,12 @@
 
         ctx.save();
         ctx.scale(dpr, dpr);
+
+        if (state.level === 4) {
+          renderLevel4RearView(width, height);
+          ctx.restore();
+          return;
+        }
 
         const isLv2 = state.level === 2;
         const isLv3 = state.level === 3;
@@ -3597,8 +4566,6 @@
             drawGelateriaOrizzonte(gelatoX, baseRoadScreenY + getGroundY(COURSE_LENGTH_LV1));
           }
 
-
-
           for (let i = 0; i < npcs.length; i++) {
             const npc = npcs[i];
             const nx = npc.x - state.cameraX;
@@ -3668,7 +4635,6 @@
           }
         }
 
-        // Foglioline di cannabis sospese in aria da prendere saltando (Livello 1 e Livello 2)
         for (let c = 0; c < leaves.length; c++) {
           const leaf = leaves[c];
           if (leaf.collected) continue;
@@ -3711,24 +4677,24 @@
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
 
-          const headline = isLv3 ? 'BIRRA AL MAGONA BIKE GARAGE!' : (isLv2 ? 'APERITIVO IN BARACCHINA!' : 'NO… STAI A MILANO!');
+          const headline = isLv3 ? 'BIRRA AR MAGONA BIKE GARAGE, DÉ!' : (isLv2 ? 'APERITIVO IN BARACCHINA, DÉ!' : 'NO… STAI A MILANO, DÉ!');
           ctx.lineWidth = Math.max(5, fontSize * 0.16);
           ctx.strokeStyle = '#0f172a';
           ctx.strokeText(headline, 0, 0);
 
           const textGrad = ctx.createLinearGradient(0, -fontSize * 0.5, 0, fontSize * 0.5);
           if (isLv3) {
-            textGrad.addColorStop(0, '#fef08a');
-            textGrad.addColorStop(0.5, '#f59e0b');
-            textGrad.addColorStop(1, '#84cc16');
+            textGrad.addColorStop(0, '#fde047');
+            textGrad.addColorStop(0.5, '#f97316');
+            textGrad.addColorStop(1, '#a3e635');
           } else if (isLv2) {
             textGrad.addColorStop(0, '#fef08a');
-            textGrad.addColorStop(0.5, '#fb923c');
-            textGrad.addColorStop(1, '#34d399');
+            textGrad.addColorStop(0.5, '#34d399');
+            textGrad.addColorStop(1, '#fb923c');
           } else {
             textGrad.addColorStop(0, '#fef08a');
-            textGrad.addColorStop(0.5, '#f97316');
-            textGrad.addColorStop(1, '#ec4899');
+            textGrad.addColorStop(0.5, '#f472b6');
+            textGrad.addColorStop(1, '#38bdf8');
           }
           ctx.fillStyle = textGrad;
           ctx.fillText(headline, 0, 0);
@@ -3741,693 +4707,608 @@
             const subLabel = isLv3
               ? '🍺 Magona Bike Garage · Bibbona · ' + Math.ceil(state.endStopTimer) + 's'
               : (isLv2
-                ? '🍹 Spritz & Patatine in Baracchina · ' + Math.ceil(state.endStopTimer) + 's'
+                ? '🍹 Aperitivo in Baracchina · ' + Math.ceil(state.endStopTimer) + 's'
                 : '🍦 Gelateria L’Orizzonte · ' + Math.ceil(state.endStopTimer) + 's');
             ctx.strokeText(subLabel, 0, fontSize * 0.85);
             ctx.fillText(subLabel, 0, fontSize * 0.85);
           }
+
           ctx.restore();
         }
 
         ctx.restore();
       }
 
-      // =========================================================================
-      // ILLUSTRAZIONE ANIMATA SCHERMATA START (FEDELE ALLA FOTO)
-      // =========================================================================
-      function renderStartHeroAnimation(t) {
-        if (!startHeroCtx || !startHeroCanvas || !startScreen || startScreen.classList.contains('hidden')) return;
-        const w = 480;
-        const h = 360;
+      function renderStartHero() {
+        if (!startHeroCtx || !startHeroCanvas) return;
+        const w = 400;
+        const h = 300;
         if (startHeroCanvas.width !== w || startHeroCanvas.height !== h) {
           startHeroCanvas.width = w;
           startHeroCanvas.height = h;
         }
-        const c = startHeroCtx;
-        c.save();
 
-        // 1. CIELO AZZURRO CON CIRRI E NUVOLE SFILACCIATE
-        const skyGrad = c.createLinearGradient(0, 0, 0, h * 0.28);
-        skyGrad.addColorStop(0, '#1e40af');
-        skyGrad.addColorStop(0.55, '#3b82f6');
-        skyGrad.addColorStop(1, '#93c5fd');
-        c.fillStyle = skyGrad;
-        c.fillRect(0, 0, w, h * 0.28);
+        const t = state.time || 0;
+        const breath = Math.sin(t * 2.6) * 2.2;
+        const handWave = Math.sin(t * 3.8) * 2.5;
+        const cloudDrift = (t * 6) % 90;
+        const waveShimmer = Math.sin(t * 3.2);
 
-        const drift = Math.sin(t * 0.35) * 5;
-        c.fillStyle = 'rgba(255, 255, 255, 0.82)';
-        const cirrusClouds = [
-          [16 + drift, 26, 30, 6], [52 + drift, 22, 36, 7], [92 + drift, 17, 32, 6],
-          [138 + drift, 13, 25, 5], [292 - drift * 0.6, 28, 34, 6], [334 - drift * 0.6, 22, 40, 7],
-          [382 - drift * 0.6, 16, 36, 6], [428 - drift * 0.6, 11, 30, 5],
-          [22 + drift * 0.5, 48, 28, 4], [358 - drift * 0.5, 44, 30, 5]
-        ];
-        for (let i = 0; i < cirrusClouds.length; i++) {
-          c.beginPath();
-          c.ellipse(cirrusClouds[i][0], cirrusClouds[i][1], cirrusClouds[i][2], cirrusClouds[i][3], -0.14, 0, Math.PI * 2);
-          c.fill();
-        }
+        startHeroCtx.save();
 
-        // Scritta "RIDE AND CHILL" in alto come nella foto
-        c.save();
-        const titlePulse = 1 + Math.sin(t * 2.2) * 0.015;
-        c.translate(w * 0.51, 13);
-        c.scale(titlePulse, titlePulse);
-        c.font = '900 18px Inter, sans-serif';
-        c.textAlign = 'center';
-        c.textBaseline = 'middle';
-        c.fillStyle = 'rgba(255, 255, 255, 0.92)';
-        c.fillText('RIDE AND CHILL', 0, 0);
-        c.restore();
+        // 1. Cielo azzurro terso con nuvole soffici e profilo delle colline/isole all'orizzonte
+        const skyGrad = startHeroCtx.createLinearGradient(0, 0, 0, h * 0.30);
+        skyGrad.addColorStop(0, '#0ea5e9');
+        skyGrad.addColorStop(0.55, '#38bdf8');
+        skyGrad.addColorStop(1, '#bae6fd');
+        startHeroCtx.fillStyle = skyGrad;
+        startHeroCtx.fillRect(0, 0, w, h * 0.30);
 
-        // Promontorio all'orizzonte a sinistra
-        c.fillStyle = '#3b6cb7';
-        c.beginPath();
-        c.moveTo(0, h * 0.225);
-        c.quadraticCurveTo(w * 0.09, h * 0.255, w * 0.21, h * 0.275);
-        c.lineTo(0, h * 0.275);
-        c.closePath();
-        c.fill();
+        // Nuvole chiare nel cielo
+        const drawSoftCloud = function (cx, cy, sc) {
+          startHeroCtx.save();
+          startHeroCtx.translate(cx, cy);
+          startHeroCtx.scale(sc, sc);
+          startHeroCtx.fillStyle = 'rgba(240, 249, 255, 0.82)';
+          startHeroCtx.beginPath();
+          startHeroCtx.arc(-18, 3, 11, 0, Math.PI * 2);
+          startHeroCtx.arc(-6, -2, 15, 0, Math.PI * 2);
+          startHeroCtx.arc(9, -1, 13, 0, Math.PI * 2);
+          startHeroCtx.arc(21, 3, 10, 0, Math.PI * 2);
+          startHeroCtx.fill();
+          startHeroCtx.restore();
+        };
+        drawSoftCloud(((75 + cloudDrift) % (w + 120)) - 60, h * 0.08, 1.05);
+        drawSoftCloud(((235 + cloudDrift * 0.7) % (w + 120)) - 60, h * 0.06, 1.2);
+        drawSoftCloud(((355 + cloudDrift * 0.85) % (w + 120)) - 60, h * 0.11, 0.9);
 
-        // 2. MARE BLU INTENSO CON SCINTILLII D'ACQUA ANIMATI
-        const horizonY = h * 0.275;
-        const seaGrad = c.createLinearGradient(0, horizonY, 0, h * 0.78);
-        seaGrad.addColorStop(0, '#1e40af');
-        seaGrad.addColorStop(0.45, '#1d4ed8');
-        seaGrad.addColorStop(0.82, '#0284c7');
+        // Profilo collinare / isola sulla sinistra dell'orizzonte marino
+        startHeroCtx.fillStyle = '#3b6e8c';
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(0, h * 0.285);
+        startHeroCtx.lineTo(0, h * 0.215);
+        startHeroCtx.quadraticCurveTo(w * 0.04, h * 0.21, w * 0.085, h * 0.245);
+        startHeroCtx.quadraticCurveTo(w * 0.14, h * 0.25, w * 0.195, h * 0.278);
+        startHeroCtx.lineTo(w * 0.195, h * 0.285);
+        startHeroCtx.closePath();
+        startHeroCtx.fill();
+
+        // 2. Mare blu intenso con riflessi e increspature animate
+        const seaGrad = startHeroCtx.createLinearGradient(0, h * 0.275, 0, h * 0.76);
+        seaGrad.addColorStop(0, '#0369a1');
+        seaGrad.addColorStop(0.25, '#0284c7');
+        seaGrad.addColorStop(0.68, '#0ea5e9');
         seaGrad.addColorStop(1, '#38bdf8');
-        c.fillStyle = seaGrad;
-        c.fillRect(0, horizonY, w, h * 0.52);
+        startHeroCtx.fillStyle = seaGrad;
+        startHeroCtx.fillRect(0, h * 0.275, w, h * 0.485);
 
-        for (let i = 0; i < 120; i++) {
-          const band = (i % 20) / 20;
-          const sx = 12 + ((i * 37) % Math.floor(w * (0.46 + band * 0.46)));
-          const sy = horizonY + 5 + band * (h * 0.45);
-          const twinkle = 0.22 + 0.72 * Math.max(0, Math.sin(t * 4.5 + i * 1.9));
-          c.fillStyle = 'rgba(255, 255, 255, ' + twinkle.toFixed(2) + ')';
-          const len = (sx < w * 0.35 ? 10 : 6) + (i % 7);
-          c.fillRect(sx, sy, len, 1.5);
+        for (let row = 0; row < 28; row++) {
+          const ry = h * 0.29 + row * 4.4;
+          const alpha = 0.14 + (row / 28) * 0.24;
+          startHeroCtx.fillStyle = 'rgba(224, 242, 254, ' + alpha.toFixed(2) + ')';
+          for (let col = 0; col < 14; col++) {
+            const shift = Math.sin(t * 2.2 + row * 0.7 + col) * 6 + waveShimmer * 2;
+            const rx = ((col * 34 + (row % 2) * 16 + shift) % (w + 40) + (w + 40)) % (w + 40) - 20;
+            const rw = 8 + ((row + col) % 4) * 5;
+            startHeroCtx.fillRect(rx, ry, rw, 1.4);
+          }
         }
 
-        c.fillStyle = 'rgba(56, 189, 248, 0.55)';
-        c.beginPath();
-        c.ellipse(w * 0.62, h * 0.75, 115, 18, 0.08, 0, Math.PI * 2);
-        c.fill();
+        // 3. Costiera rocciosa e macchia mediterranea in basso
+        startHeroCtx.fillStyle = '#5c4b3b';
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(0, h * 0.88);
+        startHeroCtx.quadraticCurveTo(w * 0.22, h * 0.82, w * 0.48, h * 0.85);
+        startHeroCtx.quadraticCurveTo(w * 0.75, h * 0.78, w, h * 0.68);
+        startHeroCtx.lineTo(w, h);
+        startHeroCtx.lineTo(0, h);
+        startHeroCtx.closePath();
+        startHeroCtx.fill();
 
-        // 3. SCOGLIERA ROCCIOSA CHIARA IN PRIMO PIANO E MACCHIA LATERALE
-        const rockBaseGrad = c.createLinearGradient(0, h * 0.64, 0, h);
-        rockBaseGrad.addColorStop(0, '#e7dcc8');
-        rockBaseGrad.addColorStop(0.45, '#cbbba0');
-        rockBaseGrad.addColorStop(0.85, '#9c8c74');
-        rockBaseGrad.addColorStop(1, '#6e6250');
-        c.fillStyle = rockBaseGrad;
-        c.beginPath();
-        c.moveTo(0, h * 0.63);
-        c.quadraticCurveTo(w * 0.18, h * 0.65, w * 0.36, h * 0.69);
-        c.quadraticCurveTo(w * 0.62, h * 0.75, w, h * 0.81);
-        c.lineTo(w, h);
-        c.lineTo(0, h);
-        c.closePath();
-        c.fill();
-
-        c.fillStyle = '#dfd2bc';
-        c.beginPath();
-        c.moveTo(0, h * 0.86);
-        c.quadraticCurveTo(w * 0.32, h * 0.80, w * 0.68, h * 0.88);
-        c.lineTo(w, h * 0.93);
-        c.lineTo(w, h);
-        c.lineTo(0, h);
-        c.closePath();
-        c.fill();
-
-        c.strokeStyle = 'rgba(71, 61, 48, 0.55)';
-        c.lineWidth = 2;
-        c.beginPath();
-        c.moveTo(0, h * 0.85);
-        c.quadraticCurveTo(w * 0.35, h * 0.79, w * 0.72, h * 0.89);
-        c.moveTo(28, h * 0.93);
-        c.lineTo(195, h * 0.91);
-        c.lineTo(315, h * 0.96);
-        c.stroke();
-
-        const bushes = [
-          [22, h * 0.71, 24, 11, '#3f6212'],
-          [55, h * 0.74, 28, 12, '#4d7c0f'],
-          [18, h * 0.81, 30, 13, '#365314'],
-          [258, h * 0.77, 26, 11, '#4d7c0f'],
-          [428, h * 0.76, 36, 16, '#57534e'],
-          [454, h * 0.83, 30, 14, '#3f6212']
+        // Rocce chiare calcaree e ciuffi d'erba/macchia
+        const rockClusters = [
+          [24, h * 0.91, 28, 12, '#a89f91'],
+          [66, h * 0.87, 22, 9, '#8c7d6b'],
+          [112, h * 0.88, 26, 10, '#b5aa99'],
+          [165, h * 0.86, 20, 8, '#786856'],
+          [238, h * 0.85, 24, 9, '#9e907e'],
+          [285, h * 0.82, 32, 12, '#b5aa99'],
+          [340, h * 0.77, 36, 13, '#8c7d6b'],
+          [382, h * 0.72, 26, 10, '#a89f91']
         ];
-        for (let b = 0; b < bushes.length; b++) {
-          c.fillStyle = bushes[b][4];
-          c.beginPath();
-          c.ellipse(bushes[b][0], bushes[b][1], bushes[b][2], bushes[b][3], -0.1, 0, Math.PI * 2);
-          c.fill();
+        for (let rk = 0; rk < rockClusters.length; rk++) {
+          const rc = rockClusters[rk];
+          startHeroCtx.fillStyle = rc[4];
+          startHeroCtx.beginPath();
+          startHeroCtx.ellipse(rc[0], rc[1], rc[2], rc[3], -0.08, 0, Math.PI * 2);
+          startHeroCtx.fill();
         }
 
-        // 4. RIDER IN PIEDI DIETRO LA BICI (POSA DELLA FOTO + SHAKA ANIMATO)
-        const rx = w * 0.495;
-        const groundFootY = h * 0.835;
-        const breathe = Math.sin(t * 2.5) * 1.8;
+        // Vegetazione verde a sinistra e a destra
+        const bushSway = Math.sin(t * 2.4) * 2;
+        startHeroCtx.fillStyle = '#3f6212';
+        startHeroCtx.beginPath();
+        startHeroCtx.ellipse(w * 0.05 + bushSway * 0.5, h * 0.88, 34, 18, -0.2, 0, Math.PI * 2);
+        startHeroCtx.ellipse(w * 0.84 + bushSway * 0.4, h * 0.75, 52, 18, -0.25, 0, Math.PI * 2);
+        startHeroCtx.ellipse(w * 0.94 + bushSway * 0.6, h * 0.71, 38, 15, -0.2, 0, Math.PI * 2);
+        startHeroCtx.fill();
 
-        c.fillStyle = 'rgba(41, 37, 36, 0.38)';
-        c.beginPath();
-        c.ellipse(rx + 6, groundFootY + 26, 175, 13, 0.05, 0, Math.PI * 2);
-        c.fill();
+        startHeroCtx.fillStyle = '#65a30d';
+        startHeroCtx.beginPath();
+        startHeroCtx.ellipse(w * 0.80 + bushSway * 0.4, h * 0.77, 34, 11, -0.2, 0, Math.PI * 2);
+        startHeroCtx.ellipse(w * 0.14 + bushSway * 0.3, h * 0.93, 24, 9, 0.1, 0, Math.PI * 2);
+        startHeroCtx.fill();
 
-        c.fillStyle = '#111827';
-        c.beginPath();
-        c.moveTo(rx - 32, groundFootY - 125 + breathe);
-        c.lineTo(rx - 4, groundFootY - 125 + breathe);
-        c.lineTo(rx - 36, groundFootY - 22);
-        c.lineTo(rx - 62, groundFootY - 22);
-        c.closePath();
-        c.fill();
+        // 4. Rider in piedi dietro la bici viola (con lieve animazione di respiro e mano)
+        const rx = w * 0.475;
+        const rFootY = h * 0.865 + breath * 0.25;
 
-        c.beginPath();
-        c.moveTo(rx - 4, groundFootY - 125 + breathe);
-        c.lineTo(rx + 26, groundFootY - 125 + breathe);
-        c.lineTo(rx + 14, groundFootY - 4);
-        c.lineTo(rx - 12, groundFootY - 4);
-        c.closePath();
-        c.fill();
+        // Gambe e scarponi neri da MTB
+        startHeroCtx.fillStyle = '#111827';
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(rx - 22, rFootY - 96);
+        startHeroCtx.lineTo(rx - 2, rFootY - 96);
+        startHeroCtx.lineTo(rx - 14, rFootY - 44);
+        startHeroCtx.lineTo(rx - 30, rFootY - 46);
+        startHeroCtx.closePath();
+        startHeroCtx.fill();
 
-        c.fillStyle = '#090d16';
-        c.beginPath();
-        c.ellipse(rx - 52, groundFootY - 18, 15, 7, -0.15, 0, Math.PI * 2);
-        c.ellipse(rx + 4, groundFootY - 2, 13, 8, 0.25, 0, Math.PI * 2);
-        c.fill();
-        c.strokeStyle = '#94a3b8';
-        c.lineWidth = 1.5;
-        c.beginPath();
-        c.moveTo(rx - 65, groundFootY - 15);
-        c.lineTo(rx - 39, groundFootY - 15);
-        c.moveTo(rx - 7, groundFootY + 4);
-        c.lineTo(rx + 15, groundFootY + 4);
-        c.stroke();
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(rx + 2, rFootY - 96);
+        startHeroCtx.lineTo(rx + 22, rFootY - 96);
+        startHeroCtx.lineTo(rx + 14, rFootY - 42);
+        startHeroCtx.lineTo(rx - 2, rFootY - 42);
+        startHeroCtx.closePath();
+        startHeroCtx.fill();
 
-        const torsoTopY = groundFootY - 208 + breathe;
-        const torsoH = 88;
-        const torsoW = 64;
-        c.save();
-        c.beginPath();
-        c.roundRect(rx - torsoW / 2, torsoTopY, torsoW, torsoH, 10);
-        c.clip();
+        // Scarpe scure con suola
+        startHeroCtx.fillStyle = '#090d16';
+        startHeroCtx.beginPath();
+        startHeroCtx.roundRect(rx - 32, rFootY - 48, 18, 12, 3);
+        startHeroCtx.roundRect(rx - 2, rFootY - 44, 18, 12, 3);
+        startHeroCtx.fill();
 
-        c.fillStyle = '#090d16';
-        c.fillRect(rx - torsoW / 2, torsoTopY, torsoW, torsoH * 0.34);
-        c.fillStyle = '#4c1d95';
-        c.fillRect(rx - torsoW / 2, torsoTopY + torsoH * 0.34, torsoW, torsoH * 0.21);
-        c.fillStyle = '#c4b5fd';
-        c.fillRect(rx - torsoW / 2, torsoTopY + torsoH * 0.55, torsoW, torsoH * 0.23);
-        c.fillStyle = '#f8fafc';
-        c.fillRect(rx - torsoW / 2, torsoTopY + torsoH * 0.78, torsoW, torsoH * 0.22);
+        // Maglia tecnica: maniche e spalle nere con logo FOX verde lime centrale, fascia lilla e fondo bianco
+        const torsoTopY = rFootY - 152 + breath * 0.45;
+        startHeroCtx.fillStyle = '#090d16';
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(rx - 28, torsoTopY + 4);
+        startHeroCtx.quadraticCurveTo(rx, torsoTopY - 4, rx + 28, torsoTopY + 4);
+        startHeroCtx.lineTo(rx + 23, torsoTopY + 56);
+        startHeroCtx.lineTo(rx - 23, torsoTopY + 56);
+        startHeroCtx.closePath();
+        startHeroCtx.fill();
 
-        c.fillStyle = '#090d16';
-        c.fillRect(rx - torsoW / 2, torsoTopY, 8, torsoH);
-        c.fillRect(rx + torsoW / 2 - 8, torsoTopY, 8, torsoH);
+        // Banda lilla-viola centrale sulla maglia
+        startHeroCtx.fillStyle = '#a78bfa';
+        startHeroCtx.fillRect(rx - 17, torsoTopY + 26, 34, 15);
 
-        c.fillStyle = '#84cc16';
-        c.beginPath();
-        c.moveTo(rx - 10, torsoTopY + 10);
-        c.lineTo(rx - 4, torsoTopY + 16);
-        c.lineTo(rx + 4, torsoTopY + 16);
-        c.lineTo(rx + 10, torsoTopY + 10);
-        c.lineTo(rx + 6, torsoTopY + 23);
-        c.lineTo(rx, torsoTopY + 27);
-        c.lineTo(rx - 6, torsoTopY + 23);
-        c.closePath();
-        c.fill();
+        // Parte inferiore bianca della maglia
+        startHeroCtx.fillStyle = '#f8fafc';
+        startHeroCtx.fillRect(rx - 18, torsoTopY + 41, 36, 15);
 
-        c.strokeStyle = '#1e293b';
-        c.lineWidth = 6.5;
-        c.beginPath();
-        c.moveTo(rx - 18, torsoTopY);
-        c.lineTo(rx - 20, torsoTopY + 42);
-        c.moveTo(rx + 18, torsoTopY);
-        c.lineTo(rx + 20, torsoTopY + 42);
-        c.stroke();
-        c.restore();
+        // Logo FOX verde lime sul petto
+        startHeroCtx.fillStyle = '#84cc16';
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(rx - 11, torsoTopY + 12);
+        startHeroCtx.lineTo(rx - 4, torsoTopY + 15);
+        startHeroCtx.lineTo(rx, torsoTopY + 11);
+        startHeroCtx.lineTo(rx + 4, torsoTopY + 15);
+        startHeroCtx.lineTo(rx + 11, torsoTopY + 12);
+        startHeroCtx.lineTo(rx + 8, torsoTopY + 21);
+        startHeroCtx.lineTo(rx, torsoTopY + 25);
+        startHeroCtx.lineTo(rx - 8, torsoTopY + 21);
+        startHeroCtx.closePath();
+        startHeroCtx.fill();
 
-        c.fillStyle = '#090d16';
-        c.beginPath();
-        c.arc(rx - 33, torsoTopY + 12, 12, 0, Math.PI * 2);
-        c.arc(rx + 33, torsoTopY + 12, 12, 0, Math.PI * 2);
-        c.fill();
-        c.fillStyle = '#84cc16';
-        c.beginPath();
-        c.arc(rx - 37, torsoTopY + 12, 5, 0, Math.PI * 2);
-        c.arc(rx + 37, torsoTopY + 12, 5, 0, Math.PI * 2);
-        c.fill();
+        // Zaino / idratazione scuro sulle spalle
+        startHeroCtx.fillStyle = '#1e293b';
+        startHeroCtx.beginPath();
+        startHeroCtx.roundRect(rx - 16, torsoTopY + 2, 32, 22, 6);
+        startHeroCtx.fill();
 
-        const shakaWave = Math.sin(t * 6.0) * 0.14;
-        c.lineCap = 'round';
-        c.lineJoin = 'round';
-        c.strokeStyle = '#090d16';
-        c.lineWidth = 13;
-        c.beginPath();
-        c.moveTo(rx - 34, torsoTopY + 14);
-        c.lineTo(rx - 46, torsoTopY + 38);
-        c.stroke();
+        // Braccio destro (verso sinistra della foto) con mano/guanto senape-ocra in segno rilassato
+        startHeroCtx.strokeStyle = '#090d16';
+        startHeroCtx.lineWidth = 10;
+        startHeroCtx.lineCap = 'round';
+        startHeroCtx.lineJoin = 'round';
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(rx - 26, torsoTopY + 8);
+        startHeroCtx.lineTo(rx - 42, torsoTopY + 28);
+        startHeroCtx.lineTo(rx - 25, torsoTopY + 34 + handWave * 0.4);
+        startHeroCtx.stroke();
 
-        c.strokeStyle = '#7c3aed';
-        c.lineWidth = 12;
-        c.beginPath();
-        c.moveTo(rx - 46, torsoTopY + 38);
-        c.lineTo(rx - 39, torsoTopY + 52);
-        c.stroke();
+        // Guanto destro color senape/giallo
+        startHeroCtx.fillStyle = '#eab308';
+        startHeroCtx.beginPath();
+        startHeroCtx.arc(rx - 24, torsoTopY + 35 + handWave * 0.4, 6.5, 0, Math.PI * 2);
+        startHeroCtx.fill();
 
-        c.strokeStyle = '#f8fafc';
-        c.lineWidth = 11.5;
-        c.beginPath();
-        c.moveTo(rx - 39, torsoTopY + 52);
-        c.lineTo(rx - 30, torsoTopY + 56);
-        c.stroke();
+        // Braccio sinistro (verso destra della foto) che tiene il manubrio con guanto scuro/senape
+        const handleX = w * 0.675;
+        const handleY = h * 0.415 + breath * 0.2;
+        startHeroCtx.strokeStyle = '#090d16';
+        startHeroCtx.lineWidth = 10;
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(rx + 26, torsoTopY + 8);
+        startHeroCtx.lineTo(rx + 46, torsoTopY + 26);
+        startHeroCtx.lineTo(handleX, handleY);
+        startHeroCtx.stroke();
 
-        c.save();
-        c.translate(rx - 28, torsoTopY + 56);
-        c.rotate(shakaWave);
-        c.fillStyle = '#d97706';
-        c.beginPath();
-        c.roundRect(-7, -6, 15, 13, 4);
-        c.fill();
-        c.strokeStyle = '#d97706';
-        c.lineWidth = 3.8;
-        c.beginPath();
-        c.moveTo(-2, -5);
-        c.lineTo(-4, -15);
-        c.moveTo(7, -1);
-        c.lineTo(18, -3);
-        c.stroke();
-        c.restore();
+        // Casco integrale nero opaco, maschera/occhiali verde-azzurro e barba
+        const helmetY = torsoTopY - 19 + breath * 0.3;
+        startHeroCtx.fillStyle = '#090d16';
+        startHeroCtx.beginPath();
+        startHeroCtx.arc(rx, helmetY, 18.5, 0, Math.PI * 2);
+        startHeroCtx.fill();
 
-        const barHandX = rx + 68;
-        const barHandY = torsoTopY + 72;
-        c.strokeStyle = '#090d16';
-        c.lineWidth = 13;
-        c.beginPath();
-        c.moveTo(rx + 34, torsoTopY + 14);
-        c.lineTo(rx + 48, torsoTopY + 38);
-        c.stroke();
+        // Visiera superiore del casco integrale
+        startHeroCtx.fillStyle = '#1e293b';
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(rx - 19, helmetY - 7);
+        startHeroCtx.lineTo(rx + 19, helmetY - 7);
+        startHeroCtx.lineTo(rx + 15, helmetY - 13);
+        startHeroCtx.lineTo(rx - 15, helmetY - 13);
+        startHeroCtx.closePath();
+        startHeroCtx.fill();
 
-        c.strokeStyle = '#7c3aed';
-        c.lineWidth = 12;
-        c.beginPath();
-        c.moveTo(rx + 48, torsoTopY + 38);
-        c.lineTo(rx + 58, torsoTopY + 56);
-        c.stroke();
+        // Mentoniera del casco integrale con aperture laterali
+        startHeroCtx.fillStyle = '#090d16';
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(rx - 14, helmetY + 4);
+        startHeroCtx.lineTo(rx + 14, helmetY + 4);
+        startHeroCtx.lineTo(rx + 9, helmetY + 19);
+        startHeroCtx.lineTo(rx - 9, helmetY + 19);
+        startHeroCtx.closePath();
+        startHeroCtx.fill();
 
-        c.strokeStyle = '#f8fafc';
-        c.lineWidth = 11;
-        c.beginPath();
-        c.moveTo(rx + 58, torsoTopY + 56);
-        c.lineTo(barHandX, barHandY);
-        c.stroke();
+        startHeroCtx.fillStyle = '#334155';
+        startHeroCtx.fillRect(rx - 10, helmetY + 8, 6, 4);
+        startHeroCtx.fillRect(rx + 4, helmetY + 8, 6, 4);
 
-        c.fillStyle = '#d97706';
-        c.beginPath();
-        c.arc(barHandX, barHandY, 7, 0, Math.PI * 2);
-        c.fill();
-        c.fillStyle = '#090d16';
-        c.fillRect(barHandX - 5, barHandY - 6, 10, 4);
+        // Maschera / occhiali con lente verde lime e azzurra
+        const lensGrad = startHeroCtx.createLinearGradient(rx - 13, helmetY - 4, rx + 13, helmetY + 4);
+        lensGrad.addColorStop(0, '#84cc16');
+        lensGrad.addColorStop(0.5, '#2dd4bf');
+        lensGrad.addColorStop(1, '#38bdf8');
+        startHeroCtx.fillStyle = lensGrad;
+        startHeroCtx.beginPath();
+        startHeroCtx.roundRect(rx - 13.5, helmetY - 4.5, 12.5, 8.5, 2.5);
+        startHeroCtx.roundRect(rx + 1, helmetY - 4.5, 12.5, 8.5, 2.5);
+        startHeroCtx.fill();
+        startHeroCtx.fillStyle = '#090d16';
+        startHeroCtx.fillRect(rx - 1.5, helmetY - 3.5, 3, 6.5);
 
-        const headY = torsoTopY - 23;
-        c.save();
-        c.translate(rx, headY);
-        c.rotate(Math.sin(t * 2.0) * 0.025);
+        // Barba castana visibile sotto la maschera
+        startHeroCtx.fillStyle = '#5c3a21';
+        startHeroCtx.beginPath();
+        startHeroCtx.arc(rx, helmetY + 8, 6.5, 0, Math.PI);
+        startHeroCtx.fill();
 
-        c.fillStyle = '#090d16';
-        c.beginPath();
-        c.arc(0, 0, 21, 0, Math.PI * 2);
-        c.fill();
+        // 5. MTB Enduro Orbea viola metallizzato in primo piano (ruote Pirelli Scorpion + forcella Fox 38 Kashima)
+        const rearWX = w * 0.305;
+        const frontWX = w * 0.765;
+        const wheelY = h * 0.735 + breath * 0.15;
+        const wheelR = 54;
+        const spin = t * 1.4;
 
-        c.strokeStyle = '#64748b';
-        c.lineWidth = 2;
-        c.beginPath();
-        c.arc(0, -3, 18, Math.PI * 1.15, Math.PI * 1.85);
-        c.stroke();
+        // Ombra morbida sotto le ruote sulle rocce
+        startHeroCtx.fillStyle = 'rgba(15, 23, 42, 0.35)';
+        startHeroCtx.beginPath();
+        startHeroCtx.ellipse(w * 0.53, wheelY + wheelR + 2, 125, 10, -0.05, 0, Math.PI * 2);
+        startHeroCtx.fill();
 
-        c.fillStyle = '#1e293b';
-        c.beginPath();
-        c.moveTo(-16, -11);
-        c.lineTo(16, -11);
-        c.lineTo(12, -20);
-        c.lineTo(-12, -20);
-        c.closePath();
-        c.fill();
+        const drawHeroWheel = function (wx, wy) {
+          startHeroCtx.save();
+          startHeroCtx.translate(wx, wy);
 
-        c.fillStyle = '#090d16';
-        c.beginPath();
-        c.moveTo(-17, 4);
-        c.lineTo(17, 4);
-        c.lineTo(11, 22);
-        c.lineTo(-11, 22);
-        c.closePath();
-        c.fill();
+          // Copertone tassellato nero
+          startHeroCtx.strokeStyle = '#090d16';
+          startHeroCtx.lineWidth = 11;
+          startHeroCtx.beginPath();
+          startHeroCtx.arc(0, 0, wheelR - 4, 0, Math.PI * 2);
+          startHeroCtx.stroke();
 
-        c.fillStyle = '#d48456';
-        c.beginPath();
-        c.arc(0, 8, 6.8, 0, Math.PI * 2);
-        c.fill();
-        c.fillStyle = '#475569';
-        c.fillRect(-4, 9, 8, 2.5);
-        c.fillStyle = '#1e293b';
-        c.fillRect(-3, 13, 6, 3);
+          // Cerchio interno
+          startHeroCtx.strokeStyle = '#1e293b';
+          startHeroCtx.lineWidth = 3;
+          startHeroCtx.beginPath();
+          startHeroCtx.arc(0, 0, wheelR - 10, 0, Math.PI * 2);
+          startHeroCtx.stroke();
 
-        const shimmer = Math.sin(t * 3.5) * 0.25;
-        const gGrad = c.createLinearGradient(-14, -6, 14, 4);
-        gGrad.addColorStop(0, '#84cc16');
-        gGrad.addColorStop(Math.max(0.15, Math.min(0.85, 0.5 + shimmer)), '#38bdf8');
-        gGrad.addColorStop(1, '#f97316');
-        c.fillStyle = gGrad;
-        c.beginPath();
-        c.roundRect(-14, -7, 28, 11, 3);
-        c.fill();
-        c.strokeStyle = '#0f172a';
-        c.lineWidth = 1.6;
-        c.stroke();
-        c.restore();
-
-        // 5. MTB ORBEA VIOLA IN PRIMO PIANO
-        const rearWX = rx - 118;
-        const rearWY = groundFootY - 12;
-        const frontWX = rx + 132;
-        const frontWY = groundFootY + 2;
-        const wR = 45;
-
-        function drawPhotoWheel(wx, wy, isRear) {
-          c.save();
-          c.translate(wx, wy);
-
-          c.strokeStyle = '#090d16';
-          c.lineWidth = 10;
-          c.beginPath();
-          c.arc(0, 0, wR - 4, 0, Math.PI * 2);
-          c.stroke();
-
-          c.strokeStyle = '#334155';
-          c.lineWidth = 2.4;
-          c.beginPath();
-          c.arc(0, 0, wR - 9.5, 0, Math.PI * 2);
-          c.stroke();
-
-          c.strokeStyle = 'rgba(203, 213, 225, 0.45)';
-          c.lineWidth = 1.1;
-          for (let r = 0; r < 12; r++) {
-            const a = (r * Math.PI) / 6;
-            c.beginPath();
-            c.moveTo(0, 0);
-            c.lineTo(Math.cos(a) * (wR - 9), Math.sin(a) * (wR - 9));
-            c.stroke();
+          // Raggi rotanti
+          startHeroCtx.save();
+          startHeroCtx.rotate(spin);
+          startHeroCtx.strokeStyle = 'rgba(226, 232, 240, 0.55)';
+          startHeroCtx.lineWidth = 1.2;
+          for (let sp = 0; sp < 14; sp++) {
+            const ang = (sp * Math.PI) / 7;
+            startHeroCtx.beginPath();
+            startHeroCtx.moveTo(0, 0);
+            startHeroCtx.lineTo(Math.cos(ang) * (wheelR - 10), Math.sin(ang) * (wheelR - 10));
+            startHeroCtx.stroke();
           }
+          startHeroCtx.restore();
 
-          c.strokeStyle = '#cbd5e1';
-          c.lineWidth = 1.6;
-          c.beginPath();
-          c.arc(0, 0, 14, 0, Math.PI * 2);
-          c.stroke();
+          // Scritta gialla PIRELLI sul fianco del copertone
+          startHeroCtx.save();
+          startHeroCtx.rotate(-0.45 + spin * 0.25);
+          startHeroCtx.fillStyle = '#facc15';
+          startHeroCtx.font = '900 7.5px Inter, sans-serif';
+          startHeroCtx.textAlign = 'center';
+          startHeroCtx.fillText('PIRELLI', 0, -(wheelR - 5.5));
+          startHeroCtx.restore();
 
-          c.fillStyle = '#facc15';
-          c.font = '900 6.5px Inter, sans-serif';
-          c.textAlign = 'center';
-          c.fillText('PIRELLI', 0, -(wR - 6.2));
-          c.fillText('SCORPION', 0, wR - 2.2);
+          // Scritta gialla SCORPION in basso
+          startHeroCtx.save();
+          startHeroCtx.rotate(0.25 + spin * 0.25);
+          startHeroCtx.fillStyle = '#facc15';
+          startHeroCtx.font = '900 7px Inter, sans-serif';
+          startHeroCtx.textAlign = 'center';
+          startHeroCtx.fillText('SCORPION', 0, wheelR - 1.5);
+          startHeroCtx.restore();
 
-          if (isRear) {
-            c.fillStyle = '#1e293b';
-            c.beginPath();
-            c.arc(0, 0, 16, 0, Math.PI * 2);
-            c.fill();
-            c.strokeStyle = '#64748b';
-            c.lineWidth = 1.5;
-            c.stroke();
-          }
+          // Mozzo centrale e disco freno
+          startHeroCtx.strokeStyle = '#94a3b8';
+          startHeroCtx.lineWidth = 1.4;
+          startHeroCtx.beginPath();
+          startHeroCtx.arc(0, 0, 17, 0, Math.PI * 2);
+          startHeroCtx.stroke();
 
-          c.fillStyle = '#0f172a';
-          c.beginPath();
-          c.arc(0, 0, 5, 0, Math.PI * 2);
-          c.fill();
-          c.restore();
-        }
+          startHeroCtx.fillStyle = '#475569';
+          startHeroCtx.beginPath();
+          startHeroCtx.arc(0, 0, 8, 0, Math.PI * 2);
+          startHeroCtx.fill();
 
-        drawPhotoWheel(rearWX, rearWY, true);
-        drawPhotoWheel(frontWX, frontWY, false);
+          startHeroCtx.restore();
+        };
 
-        c.strokeStyle = '#090d16';
-        c.lineWidth = 4.5;
-        c.beginPath();
-        c.arc(frontWX, frontWY, wR + 4, -Math.PI * 0.78, -Math.PI * 0.34);
-        c.stroke();
+        drawHeroWheel(rearWX, wheelY);
+        drawHeroWheel(frontWX, wheelY);
 
-        const crownX = rx + 76;
-        const crownY = frontWY - 76;
-        const midForkX = rx + 97;
-        const midForkY = frontWY - 44;
+        // Forcella FOX 38: steli dorati Kashima e foderi neri con scritta bianca FOX 38
+        const crownX = w * 0.642;
+        const crownY = h * 0.505 + breath * 0.2;
+        const midForkX = w * 0.688;
+        const midForkY = h * 0.605 + breath * 0.18;
 
-        c.strokeStyle = '#d97706';
-        c.lineWidth = 7.5;
-        c.lineCap = 'round';
-        c.beginPath();
-        c.moveTo(crownX, crownY);
-        c.lineTo(midForkX, midForkY);
-        c.stroke();
+        startHeroCtx.strokeStyle = '#eab308';
+        startHeroCtx.lineWidth = 7.5;
+        startHeroCtx.lineCap = 'round';
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(crownX, crownY);
+        startHeroCtx.lineTo(midForkX, midForkY);
+        startHeroCtx.stroke();
 
-        c.strokeStyle = '#090d16';
-        c.lineWidth = 9.5;
-        c.beginPath();
-        c.moveTo(midForkX, midForkY);
-        c.lineTo(frontWX, frontWY);
-        c.stroke();
+        startHeroCtx.strokeStyle = '#090d16';
+        startHeroCtx.lineWidth = 9.5;
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(midForkX, midForkY);
+        startHeroCtx.lineTo(frontWX, wheelY);
+        startHeroCtx.stroke();
 
-        c.save();
-        c.translate(rx + 111, frontWY - 25);
-        c.rotate(1.03);
-        c.fillStyle = '#ffffff';
-        c.font = '900 7px Inter, sans-serif';
-        c.textAlign = 'center';
-        c.fillText('FOX 38', 0, 0);
-        c.restore();
+        startHeroCtx.save();
+        startHeroCtx.translate(w * 0.722, h * 0.665 + breath * 0.16);
+        startHeroCtx.rotate(1.14);
+        startHeroCtx.fillStyle = '#f8fafc';
+        startHeroCtx.font = '900 8px Inter, sans-serif';
+        startHeroCtx.textAlign = 'center';
+        startHeroCtx.fillText('FOX 38', 0, 0);
+        startHeroCtx.restore();
 
-        const bbX = rx - 18;
-        const bbY = rearWY + 6;
-        const seatX = rx - 34;
-        const seatY = rearWY - 54;
-        const headX = rx + 72;
-        const headYFrame = frontWY - 84;
+        // Telaio full-suspension viola metallizzato ORBEA
+        const bbX = w * 0.495;
+        const bbY = wheelY - 2;
+        const seatTopX = w * 0.455;
+        const seatTopY = h * 0.562 + breath * 0.22;
+        const headTopX = w * 0.632;
+        const headTopY = h * 0.485 + breath * 0.2;
 
-        c.strokeStyle = '#7c3aed';
-        c.lineWidth = 7.5;
-        c.lineJoin = 'round';
-        c.beginPath();
-        c.moveTo(rearWX, rearWY);
-        c.lineTo(bbX, bbY);
-        c.lineTo(seatX + 6, seatY + 18);
-        c.lineTo(rearWX, rearWY);
-        c.stroke();
+        const purpleGrad = startHeroCtx.createLinearGradient(seatTopX, headTopY, frontWX, wheelY);
+        purpleGrad.addColorStop(0, '#9333ea');
+        purpleGrad.addColorStop(0.5, '#7e22ce');
+        purpleGrad.addColorStop(1, '#581c87');
 
-        c.strokeStyle = '#1e293b';
-        c.lineWidth = 6.5;
-        c.beginPath();
-        c.moveTo(seatX + 8, seatY + 20);
-        c.lineTo(bbX + 10, bbY - 18);
-        c.stroke();
+        // Carro posteriore e link sospensione viola
+        startHeroCtx.strokeStyle = '#7e22ce';
+        startHeroCtx.lineWidth = 8.5;
+        startHeroCtx.lineJoin = 'round';
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(rearWX, wheelY);
+        startHeroCtx.lineTo(bbX, bbY);
+        startHeroCtx.lineTo(seatTopX + 8, seatTopY + 18);
+        startHeroCtx.lineTo(rearWX, wheelY);
+        startHeroCtx.stroke();
 
-        const fGrad = c.createLinearGradient(seatX, headYFrame, bbX, bbY);
-        fGrad.addColorStop(0, '#9333ea');
-        fGrad.addColorStop(0.5, '#6d28d9');
-        fGrad.addColorStop(1, '#4c1d95');
-        c.strokeStyle = fGrad;
-        c.lineWidth = 11;
-        c.beginPath();
-        c.moveTo(seatX, seatY);
-        c.lineTo(headX, headYFrame);
-        c.lineTo(bbX, bbY);
-        c.closePath();
-        c.stroke();
+        // Triangolo anteriore massiccio viola ORBEA
+        startHeroCtx.fillStyle = purpleGrad;
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(seatTopX + 2, seatTopY + 12);
+        startHeroCtx.lineTo(headTopX + 5, headTopY);
+        startHeroCtx.lineTo(headTopX - 3, headTopY + 14);
+        startHeroCtx.lineTo(bbX + 12, bbY + 5);
+        startHeroCtx.lineTo(bbX - 8, bbY + 3);
+        startHeroCtx.closePath();
+        startHeroCtx.fill();
 
-        c.save();
-        c.translate(rx + 28, rearWY - 30);
-        c.rotate(-0.82);
-        c.fillStyle = '#ffffff';
-        c.font = '900 8.5px Inter, sans-serif';
-        c.textAlign = 'center';
-        c.fillText('ORBEA', 0, 0);
-        c.restore();
+        // Scritta bianca ORBEA lungo l'obliquo
+        startHeroCtx.save();
+        startHeroCtx.translate(w * 0.558, h * 0.618 + breath * 0.18);
+        startHeroCtx.rotate(-0.82);
+        startHeroCtx.fillStyle = '#f8fafc';
+        startHeroCtx.font = '900 8.5px Inter, sans-serif';
+        startHeroCtx.textAlign = 'center';
+        startHeroCtx.fillText('ORBEA', 0, 0);
+        startHeroCtx.restore();
 
-        c.save();
-        c.translate(rx + 21, rearWY - 40);
-        c.rotate(-0.82);
-        c.fillStyle = '#1e293b';
-        c.beginPath();
-        c.roundRect(-11, -14, 22, 11, 3);
-        c.fill();
-        c.fillStyle = '#475569';
-        c.fillRect(10, -11, 4, 5);
-        c.restore();
+        // Borraccia nera fissata sul telaio
+        startHeroCtx.save();
+        startHeroCtx.translate(w * 0.562, h * 0.588 + breath * 0.18);
+        startHeroCtx.rotate(-0.65);
+        startHeroCtx.fillStyle = '#1e293b';
+        startHeroCtx.beginPath();
+        startHeroCtx.roundRect(-8, -14, 16, 26, 4);
+        startHeroCtx.fill();
+        startHeroCtx.fillStyle = '#090d16';
+        startHeroCtx.fillRect(-6, -17, 12, 4);
+        startHeroCtx.restore();
 
-        c.fillStyle = '#090d16';
-        c.beginPath();
-        c.arc(bbX, bbY, 11, 0, Math.PI * 2);
-        c.fill();
-        c.strokeStyle = '#94a3b8';
-        c.lineWidth = 1.6;
-        c.beginPath();
-        c.moveTo(rearWX, rearWY - 12);
-        c.lineTo(bbX, bbY - 9);
-        c.moveTo(rearWX, rearWY + 12);
-        c.lineTo(bbX, bbY + 9);
-        c.stroke();
+        // Reggisella telescopico e sella nera
+        startHeroCtx.strokeStyle = '#1e293b';
+        startHeroCtx.lineWidth = 6;
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(seatTopX + 4, seatTopY + 14);
+        startHeroCtx.lineTo(seatTopX - 4, seatTopY - 8);
+        startHeroCtx.stroke();
 
-        c.strokeStyle = '#1e293b';
-        c.lineWidth = 5;
-        c.beginPath();
-        c.moveTo(bbX, bbY);
-        c.lineTo(bbX - 14, bbY + 26);
-        c.stroke();
+        startHeroCtx.fillStyle = '#090d16';
+        startHeroCtx.beginPath();
+        startHeroCtx.roundRect(seatTopX - 18, seatTopY - 12, 26, 6.5, 3);
+        startHeroCtx.fill();
 
-        c.strokeStyle = '#090d16';
-        c.lineWidth = 5;
-        c.beginPath();
-        c.moveTo(seatX, seatY);
-        c.lineTo(seatX - 4, seatY - 14);
-        c.stroke();
-        c.fillStyle = '#090d16';
-        c.beginPath();
-        c.roundRect(seatX - 18, seatY - 18, 28, 7, 3);
-        c.fill();
+        // Guarnitura, pedivella e catena
+        startHeroCtx.strokeStyle = '#334155';
+        startHeroCtx.lineWidth = 2.5;
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(rearWX, wheelY + 3);
+        startHeroCtx.lineTo(bbX, bbY + 3);
+        startHeroCtx.stroke();
 
-        c.strokeStyle = '#090d16';
-        c.lineWidth = 5;
-        c.beginPath();
-        c.moveTo(headX, headYFrame);
-        c.lineTo(barHandX, barHandY);
-        c.stroke();
+        startHeroCtx.fillStyle = '#1e293b';
+        startHeroCtx.beginPath();
+        startHeroCtx.arc(bbX, bbY, 8.5, 0, Math.PI * 2);
+        startHeroCtx.fill();
 
-        c.strokeStyle = '#0f172a';
-        c.lineWidth = 1.6;
-        c.beginPath();
-        c.moveTo(barHandX + 4, barHandY + 2);
-        c.quadraticCurveTo(frontWX - 24, frontWY - 65, midForkX + 4, midForkY + 4);
-        c.stroke();
+        startHeroCtx.strokeStyle = '#090d16';
+        startHeroCtx.lineWidth = 4.5;
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(bbX, bbY);
+        startHeroCtx.lineTo(bbX + 12, bbY + 22);
+        startHeroCtx.stroke();
 
-        c.restore();
+        // Cavo freno curvo sul manubrio
+        startHeroCtx.strokeStyle = '#090d16';
+        startHeroCtx.lineWidth = 1.6;
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(handleX, handleY);
+        startHeroCtx.quadraticCurveTo(w * 0.72, h * 0.45, w * 0.73, h * 0.58);
+        startHeroCtx.stroke();
+
+        startHeroCtx.restore();
       }
-      let lastTimestamp = performance.now();
-      function gameLoop(now) {
+
+      // =========================================================================
+      // GESTIONE COOKIE & PRIVACY POLICY
+      // =========================================================================
+      const COOKIE_STORAGE_KEY = 'olmetto_rider_cookie_consent_v1';
+      const cookieConsentModal = document.getElementById('cookieConsentModal');
+      const analyticsCookieCheckbox = document.getElementById('analyticsCookieCheckbox');
+      const cookieRejectBtn = document.getElementById('cookieRejectBtn');
+      const cookieSaveCustomBtn = document.getElementById('cookieSaveCustomBtn');
+      const cookieAcceptAllBtn = document.getElementById('cookieAcceptAllBtn');
+      const policyModal = document.getElementById('policyModal');
+      const openPolicyBtn = document.getElementById('openPolicyBtn');
+      const consentOpenPolicyLink = document.getElementById('consentOpenPolicyLink');
+      const closePolicyBtn = document.getElementById('closePolicyBtn');
+      const closePolicyBottomBtn = document.getElementById('closePolicyBottomBtn');
+      const openCookiePrefsBtn = document.getElementById('openCookiePrefsBtn');
+
+      function getSavedCookieConsent() {
         try {
-          const dt = Math.min(0.05, Math.max(0.001, (now - lastTimestamp) / 1000));
-          lastTimestamp = now;
-          update(dt);
-          render();
-          if (state.mode === 'START') {
-            renderStartHeroAnimation(now / 1000);
-          }
+          const raw = window.localStorage.getItem(COOKIE_STORAGE_KEY);
+          return raw ? JSON.parse(raw) : null;
         } catch (err) {
-          // Mantiene attivo il loop
+          return null;
         }
+      }
+
+      function saveCookieConsent(analyticsAccepted) {
+        const payload = {
+          necessary: true,
+          analytics: Boolean(analyticsAccepted),
+          timestamp: new Date().toISOString()
+        };
+        try {
+          window.localStorage.setItem(COOKIE_STORAGE_KEY, JSON.stringify(payload));
+        } catch (err) {
+          // Ignora restrizioni storage in modalità privata
+        }
+        if (cookieConsentModal) cookieConsentModal.classList.add('hidden');
+      }
+
+      function initCookieConsent() {
+        const saved = getSavedCookieConsent();
+        if (!saved && cookieConsentModal) {
+          cookieConsentModal.classList.remove('hidden');
+        } else if (saved && analyticsCookieCheckbox) {
+          analyticsCookieCheckbox.checked = Boolean(saved.analytics);
+        }
+      }
+
+      if (cookieRejectBtn) {
+        cookieRejectBtn.addEventListener('click', function () {
+          if (analyticsCookieCheckbox) analyticsCookieCheckbox.checked = false;
+          saveCookieConsent(false);
+        });
+      }
+
+      if (cookieSaveCustomBtn) {
+        cookieSaveCustomBtn.addEventListener('click', function () {
+          saveCookieConsent(analyticsCookieCheckbox ? analyticsCookieCheckbox.checked : false);
+        });
+      }
+
+      if (cookieAcceptAllBtn) {
+        cookieAcceptAllBtn.addEventListener('click', function () {
+          if (analyticsCookieCheckbox) analyticsCookieCheckbox.checked = true;
+          saveCookieConsent(true);
+        });
+      }
+
+      function openPolicy() {
+        if (policyModal) policyModal.classList.remove('hidden');
+      }
+
+      function closePolicy() {
+        if (policyModal) policyModal.classList.add('hidden');
+      }
+
+      if (openPolicyBtn) openPolicyBtn.addEventListener('click', openPolicy);
+      if (consentOpenPolicyLink) consentOpenPolicyLink.addEventListener('click', openPolicy);
+      if (closePolicyBtn) closePolicyBtn.addEventListener('click', closePolicy);
+      if (closePolicyBottomBtn) closePolicyBottomBtn.addEventListener('click', closePolicy);
+
+      if (openCookiePrefsBtn) {
+        openCookiePrefsBtn.addEventListener('click', function () {
+          const saved = getSavedCookieConsent();
+          if (analyticsCookieCheckbox) {
+            analyticsCookieCheckbox.checked = saved ? Boolean(saved.analytics) : false;
+          }
+          if (cookieConsentModal) cookieConsentModal.classList.remove('hidden');
+        });
+      }
+
+      // =========================================================================
+      // GAME LOOP PRINCIPALE
+      // =========================================================================
+      let lastFrameTime = performance.now();
+
+      function gameLoop(now) {
+        const dt = Math.min(0.05, Math.max(0.001, (now - lastFrameTime) / 1000));
+        lastFrameTime = now;
+
+        update(dt);
+        render();
+        if (state.mode === 'START') {
+          renderStartHero();
+        }
+
         requestAnimationFrame(gameLoop);
       }
 
       populateWorld();
-      state.bike.y = getGroundY(state.bike.x);
-      state.cameraBaseY = state.bike.y;
-      updateHud();
-      renderStartHeroAnimation(0);
+      initCookieConsent();
       requestAnimationFrame(gameLoop);
-    })();
-  </script>
-
-  <script>
-    (function () {
-      'use strict';
-      var STORAGE_KEY = 'olmetto_rider_cookie_consent_v1';
-      var consentModal = document.getElementById('cookieConsentModal');
-      var policyModal = document.getElementById('policyModal');
-      var analyticsCheckbox = document.getElementById('analyticsCookieCheckbox');
-
-      function readConsent() {
-        try {
-          var raw = window.localStorage.getItem(STORAGE_KEY);
-          if (raw) return JSON.parse(raw);
-        } catch (e) {}
-        var match = document.cookie.match(new RegExp('(?:^|; )' + STORAGE_KEY + '=([^;]*)'));
-        if (match) {
-          try {
-            return JSON.parse(decodeURIComponent(match[1]));
-          } catch (e) {}
-        }
-        return null;
-      }
-
-      function saveConsent(analyticsAllowed) {
-        var payload = JSON.stringify({
-          necessary: true,
-          analytics: Boolean(analyticsAllowed),
-          timestamp: new Date().toISOString()
-        });
-        try {
-          window.localStorage.setItem(STORAGE_KEY, payload);
-        } catch (e) {}
-        try {
-          var maxAge = 60 * 60 * 24 * 180;
-          document.cookie = STORAGE_KEY + '=' + encodeURIComponent(payload) + '; path=/; max-age=' + maxAge + '; SameSite=Lax';
-        } catch (e) {}
-        if (consentModal) consentModal.classList.add('hidden');
-      }
-
-      function openConsentModal() {
-        var existing = readConsent();
-        if (analyticsCheckbox) {
-          analyticsCheckbox.checked = existing ? Boolean(existing.analytics) : false;
-        }
-        if (consentModal) consentModal.classList.remove('hidden');
-      }
-
-      function openPolicyModal() {
-        if (policyModal) policyModal.classList.remove('hidden');
-      }
-
-      function closePolicyModal() {
-        if (policyModal) policyModal.classList.add('hidden');
-      }
-
-      var openPolicyBtn = document.getElementById('openPolicyBtn');
-      var openCookiePrefsBtn = document.getElementById('openCookiePrefsBtn');
-      var consentOpenPolicyLink = document.getElementById('consentOpenPolicyLink');
-      var closePolicyBtn = document.getElementById('closePolicyBtn');
-      var closePolicyBottomBtn = document.getElementById('closePolicyBottomBtn');
-      var cookieAcceptAllBtn = document.getElementById('cookieAcceptAllBtn');
-      var cookieRejectBtn = document.getElementById('cookieRejectBtn');
-      var cookieSaveCustomBtn = document.getElementById('cookieSaveCustomBtn');
-
-      if (openPolicyBtn) openPolicyBtn.addEventListener('click', openPolicyModal);
-      if (openCookiePrefsBtn) openCookiePrefsBtn.addEventListener('click', openConsentModal);
-      if (consentOpenPolicyLink) consentOpenPolicyLink.addEventListener('click', openPolicyModal);
-      if (closePolicyBtn) closePolicyBtn.addEventListener('click', closePolicyModal);
-      if (closePolicyBottomBtn) closePolicyBottomBtn.addEventListener('click', closePolicyModal);
-
-      if (cookieAcceptAllBtn) {
-        cookieAcceptAllBtn.addEventListener('click', function () {
-          if (analyticsCheckbox) analyticsCheckbox.checked = true;
-          saveConsent(true);
-        });
-      }
-      if (cookieRejectBtn) {
-        cookieRejectBtn.addEventListener('click', function () {
-          if (analyticsCheckbox) analyticsCheckbox.checked = false;
-          saveConsent(false);
-        });
-      }
-      if (cookieSaveCustomBtn) {
-        cookieSaveCustomBtn.addEventListener('click', function () {
-          saveConsent(analyticsCheckbox ? analyticsCheckbox.checked : false);
-        });
-      }
-
-      // Alla prima apertura mostra subito la richiesta cookie e policy
-      if (!readConsent()) {
-        openConsentModal();
-      }
     })();
   </script>
 </body>
