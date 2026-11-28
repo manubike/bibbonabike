@@ -204,7 +204,7 @@
       </div>
     </div>
     <div class="visit-counter-sep" aria-hidden="true"></div>
-    <div class="visit-counter-item" title="Panetti di hashish (1 panetto ogni 1.000 foglie)">
+    <div class="visit-counter-item" title="Panetti di hashish (1 panetto ogni 100 foglie)">
       <svg class="w-5 h-5 shrink-0" viewBox="0 0 32 24" aria-hidden="true">
         <rect x="2" y="4" width="28" height="16" rx="4" fill="#5c3317" stroke="#d97706" stroke-width="1.5"/>
         <rect x="4" y="6" width="24" height="12" rx="2.5" fill="#7c441e" stroke="rgba(251,191,36,0.35)" stroke-width="0.8"/>
@@ -1477,6 +1477,7 @@
         ensureAudio();
         resetKeys();
         populateWorld();
+        recordGameStartAndUpdateCounter();
 
         state.mode = 'PLAYING';
         state.startTime = performance.now();
@@ -5543,12 +5544,14 @@
 
 
       // =========================================================================
-      // CONTATORE VISITE (FOGLIE & PANETTI IN LOCALSTORAGE)
+      // CONTATORE GLOBALE PARTITE AVVIATE (FOGLIE & PANETTI · SYNC + LOCALSTORAGE)
       // =========================================================================
       const LEAVES_STORAGE_KEY = 'olmetto_rider_leaves_count_v1';
+      const GLOBAL_COUNTER_ENDPOINT = 'https://api.counterapi.dev/v1/olmetto_rider_bibbonabike_v1/games_started';
       const leavesCounterValueEl = document.getElementById('leavesCounterValue');
       const blocksCounterValueEl = document.getElementById('blocksCounterValue');
       let memoryLeavesFallback = 0;
+      let latestGlobalLeaves = null;
 
       function formatReadableCount(num) {
         const safe = Math.max(0, Math.floor(Number(num) || 0));
@@ -5561,7 +5564,7 @@
 
       function computeHashBlocks(leavesCount) {
         const safeLeaves = Math.max(0, Math.floor(Number(leavesCount) || 0));
-        return Math.floor(safeLeaves / 1000);
+        return Math.floor(safeLeaves / 100);
       }
 
       function readStoredLeaves() {
@@ -5596,16 +5599,74 @@
         }
       }
 
-      function recordVisitAndUpdateCounter() {
-        const currentLeaves = readStoredLeaves();
-        const nextLeaves = currentLeaves + 1;
+      function parseRemoteCounterValue(data) {
+        if (!data || typeof data !== 'object') return null;
+        const cand = (typeof data.count === 'number')
+          ? data.count
+          : ((typeof data.value === 'number') ? data.value : null);
+        if (typeof cand === 'number' && Number.isFinite(cand) && cand >= 0) {
+          return Math.floor(cand);
+        }
+        return null;
+      }
+
+      function syncGlobalCounterRead() {
+        if (typeof fetch !== 'function') return;
+        fetch(GLOBAL_COUNTER_ENDPOINT + '/', { method: 'GET', cache: 'no-store' })
+          .then(function (res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+          })
+          .then(function (data) {
+            const remoteVal = parseRemoteCounterValue(data);
+            if (remoteVal !== null) {
+              const baseline = Math.max(remoteVal, latestGlobalLeaves || 0);
+              latestGlobalLeaves = baseline;
+              writeStoredLeaves(baseline);
+              renderVisitCounter(baseline);
+            }
+          })
+          .catch(function () {
+            // Mantiene il valore locale/cache in caso di rete assente o bloccata
+          });
+      }
+
+      function syncGlobalCounterIncrement(expectedMin) {
+        if (typeof fetch !== 'function') return;
+        fetch(GLOBAL_COUNTER_ENDPOINT + '/up', { method: 'GET', cache: 'no-store' })
+          .then(function (res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+          })
+          .then(function (data) {
+            const remoteVal = parseRemoteCounterValue(data);
+            if (remoteVal !== null) {
+              const merged = Math.max(remoteVal, expectedMin || 0, latestGlobalLeaves || 0);
+              latestGlobalLeaves = merged;
+              writeStoredLeaves(merged);
+              renderVisitCounter(merged);
+            }
+          })
+          .catch(function () {
+            // Mantiene l'incremento ottimistico locale se la rete non risponde
+          });
+      }
+
+      function recordGameStartAndUpdateCounter() {
+        const baseCurrent = Math.max(readStoredLeaves(), latestGlobalLeaves || 0);
+        const nextLeaves = baseCurrent + 1;
+        latestGlobalLeaves = nextLeaves;
         writeStoredLeaves(nextLeaves);
         renderVisitCounter(nextLeaves);
+        syncGlobalCounterIncrement(nextLeaves);
         return nextLeaves;
       }
 
       populateWorld();
-      recordVisitAndUpdateCounter();
+      const initialLeaves = readStoredLeaves();
+      latestGlobalLeaves = initialLeaves;
+      renderVisitCounter(initialLeaves);
+      syncGlobalCounterRead();
       initCookieConsent();
       requestAnimationFrame(gameLoop);
     })();
