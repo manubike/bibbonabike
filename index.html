@@ -352,7 +352,7 @@
       max-width: 100% !important;
       overflow: hidden !important;
       background-color: var(--bg-void) !important;
-      padding-top: 28px !important;
+      padding-top: 30px !important;
     }
 
     .hero-video {
@@ -384,7 +384,7 @@
       z-index: 2 !important;
       width: 100% !important;
       margin: 0 auto !important;
-      padding: 2.25rem 1.25rem 2.75rem !important;
+      padding: 2.35rem 1.25rem 2.75rem !important;
       display: flex !important;
       flex-direction: column !important;
       align-items: center !important;
@@ -396,7 +396,7 @@
     .hero-logo {
       position: relative !important;
       z-index: 2 !important;
-      margin-top: 14px !important;
+      margin-top: 16px !important;
       display: block !important;
     }
 
@@ -1705,6 +1705,33 @@
             <label for="email" data-i18n="lbl_email">Email *</label>
             <i class="fa fa-envelope"></i>
             <input type="email" id="email" name="email" autocomplete="email" required />
+
+            <div id="emailVerificationBox" style="margin-top: 8px; padding: 10px 12px; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.12);">
+              <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                <button type="button" id="sendEmailOtpBtn" class="btn-secondary" style="padding: 8px 12px; font-size: 0.85rem;">
+                  ✉️ Verifica Email
+                </button>
+                <span id="emailVerifiedBadge" style="font-size: 0.82rem; font-weight: 600; color: #ffab6b;">
+                  Email non ancora verificata
+                </span>
+              </div>
+
+              <div id="otpStepRow" style="display: none; margin-top: 10px; gap: 8px; flex-wrap: wrap; align-items: center;">
+                <input
+                  type="text"
+                  id="emailOtpInput"
+                  inputmode="numeric"
+                  maxlength="6"
+                  placeholder="Codice a 6 cifre"
+                  style="flex: 1 1 150px; min-width: 140px; padding: 8px 10px;"
+                />
+                <button type="button" id="confirmEmailOtpBtn" class="btn-primary" style="padding: 8px 14px; font-size: 0.85rem;">
+                  Conferma Codice
+                </button>
+              </div>
+
+              <small id="emailVerifyMsg" style="display: block; margin-top: 6px; font-size: 0.82rem; color: #b0b8c2;"></small>
+            </div>
           </div>
 
           <div class="form-group icon-input">
@@ -3420,16 +3447,77 @@
   <script src="js/contactButton.js"></script>
   <script src="js/slideshow_my.js"></script>
 
-  <!-- Invio Prenotazione diretto via Gmail (Google Apps Script) -->
+  <!-- Verifica Email OTP & Invio Prenotazione diretto via Gmail (Google Apps Script) -->
   <script>
     (function () {
       const GMAIL_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxr9rRj5cSgnsSf6uNSRps70qwx4bEEEq-qWEjvUXprgcrhj2_pNo2-2ax1fWIXdcI/exec";
+
+      let verifiedEmailValue = "";
 
       function setFeedback(msg, isOk) {
         const el = document.getElementById("responseMessage");
         if (!el) return;
         el.style.color = isOk === true ? "#6ee7a8" : (isOk === false ? "#ff8a95" : "#ffab6b");
         el.textContent = msg;
+      }
+
+      function setVerifyStatus(msg, color) {
+        const el = document.getElementById("emailVerifyMsg");
+        if (!el) return;
+        el.style.color = color || "#b0b8c2";
+        el.textContent = msg;
+      }
+
+      function markVerified(email) {
+        verifiedEmailValue = String(email || "").trim().toLowerCase();
+        window.bibbonaEmailVerified = true;
+        window.bibbonaVerifiedEmailAddress = verifiedEmailValue;
+        const badge = document.getElementById("emailVerifiedBadge");
+        const stepRow = document.getElementById("otpStepRow");
+        if (badge) {
+          badge.style.color = "#6ee7a8";
+          badge.textContent = "✓ Email verificata";
+        }
+        if (stepRow) {
+          stepRow.style.display = "none";
+        }
+        setVerifyStatus("Indirizzo confermato: ora puoi inviare la prenotazione.", "#6ee7a8");
+      }
+
+      function resetVerificationState(customNote) {
+        verifiedEmailValue = "";
+        window.bibbonaEmailVerified = false;
+        window.bibbonaVerifiedEmailAddress = "";
+        const badge = document.getElementById("emailVerifiedBadge");
+        const otpInp = document.getElementById("emailOtpInput");
+        if (badge) {
+          badge.style.color = "#ffab6b";
+          badge.textContent = "Email non ancora verificata";
+        }
+        if (otpInp) {
+          otpInp.value = "";
+        }
+        if (customNote) {
+          setVerifyStatus(customNote, "#ffab6b");
+        } else {
+          setVerifyStatus("", "#b0b8c2");
+        }
+      }
+
+      async function postScriptAction(payload) {
+        const resp = await fetch(GMAIL_SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+        const rawText = await resp.text();
+        let data = null;
+        try {
+          data = JSON.parse(rawText);
+        } catch (_) {
+          data = { ok: false, error: rawText || ("HTTP " + resp.status) };
+        }
+        return { resp, data };
       }
 
       async function handleBookingSubmit(e) {
@@ -3478,6 +3566,12 @@
           return;
         }
 
+        const normalizedEmail = emailVal.toLowerCase();
+        if (!window.bibbonaEmailVerified || window.bibbonaVerifiedEmailAddress !== normalizedEmail) {
+          setFeedback("Verifica prima il tuo indirizzo email cliccando su 'Verifica Email' e inserendo il codice a 6 cifre.", false);
+          return;
+        }
+
         const hcaptchaRendered = Boolean(document.querySelector("#hcaptcha iframe"));
         if (hcaptchaRendered && !captchaToken) {
           setFeedback("Completa la verifica di sicurezza hCaptcha prima di inviare la richiesta.", false);
@@ -3490,8 +3584,9 @@
         setFeedback("Invio richiesta in corso...", null);
 
         const payload = {
+          action: "submit_booking",
           name: nameVal,
-          email: emailVal,
+          email: normalizedEmail,
           phone: phoneVal,
           bikeType: bikeVal,
           quantity: qtyVal,
@@ -3514,23 +3609,14 @@
         }
 
         try {
-          const resp = await fetch(GMAIL_SCRIPT_URL, {
-            method: "POST",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify(payload)
-          });
-
-          const rawText = await resp.text();
-          let data = null;
-          try {
-            data = JSON.parse(rawText);
-          } catch (_) {
-            data = { ok: false, error: rawText };
-          }
+          const { resp, data } = await postScriptAction(payload);
 
           if (resp.ok && data && data.ok) {
             setFeedback(data.message || "Richiesta inviata! Controlla la tua casella email per il riepilogo.", true);
             form.reset();
+            resetVerificationState("");
+            const stepRow = document.getElementById("otpStepRow");
+            if (stepRow) stepRow.style.display = "none";
             if (window.hcaptcha && typeof window.hcaptcha.reset === "function") {
               try { window.hcaptcha.reset(); } catch (_) {}
             }
@@ -3554,6 +3640,77 @@
 
       document.addEventListener("DOMContentLoaded", () => {
         const form = document.getElementById("noleggioForm");
+        const emailInput = document.getElementById("email");
+        const sendOtpBtn = document.getElementById("sendEmailOtpBtn");
+        const confirmOtpBtn = document.getElementById("confirmEmailOtpBtn");
+        const otpInput = document.getElementById("emailOtpInput");
+        const stepRow = document.getElementById("otpStepRow");
+
+        if (emailInput) {
+          emailInput.addEventListener("input", () => {
+            const current = emailInput.value.trim().toLowerCase();
+            if (verifiedEmailValue && current !== verifiedEmailValue) {
+              resetVerificationState("Hai modificato l'email: effettua nuovamente la verifica.");
+            }
+          });
+        }
+
+        if (sendOtpBtn) {
+          sendOtpBtn.addEventListener("click", async () => {
+            const emailVal = (emailInput?.value || "").trim().toLowerCase();
+            if (!emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(emailVal)) {
+              setVerifyStatus("Inserisci prima un indirizzo email valido.", "#ff8a95");
+              return;
+            }
+
+            sendOtpBtn.disabled = true;
+            setVerifyStatus("Invio codice di verifica in corso...", "#ffab6b");
+            try {
+              const { resp, data } = await postScriptAction({ action: "send_code", email: emailVal });
+              if (resp.ok && data && data.ok) {
+                if (stepRow) stepRow.style.display = "flex";
+                if (otpInput) {
+                  otpInput.value = "";
+                  otpInput.focus();
+                }
+                setVerifyStatus(data.message || "Codice inviato! Controlla la tua casella email.", "#6ee7a8");
+              } else {
+                setVerifyStatus((data && data.error) || "Impossibile inviare il codice.", "#ff8a95");
+              }
+            } catch (_) {
+              setVerifyStatus("Errore di rete durante l'invio del codice.", "#ff8a95");
+            } finally {
+              sendOtpBtn.disabled = false;
+            }
+          });
+        }
+
+        if (confirmOtpBtn) {
+          confirmOtpBtn.addEventListener("click", async () => {
+            const emailVal = (emailInput?.value || "").trim().toLowerCase();
+            const codeVal = (otpInput?.value || "").trim();
+            if (!/^\d{6}$/.test(codeVal)) {
+              setVerifyStatus("Inserisci il codice a 6 cifre ricevuto via email.", "#ff8a95");
+              return;
+            }
+
+            confirmOtpBtn.disabled = true;
+            setVerifyStatus("Verifica codice in corso...", "#ffab6b");
+            try {
+              const { resp, data } = await postScriptAction({ action: "verify_code", email: emailVal, code: codeVal });
+              if (resp.ok && data && data.ok && data.verified) {
+                markVerified(emailVal);
+              } else {
+                setVerifyStatus((data && data.error) || "Codice non valido.", "#ff8a95");
+              }
+            } catch (_) {
+              setVerifyStatus("Errore di rete durante la verifica del codice.", "#ff8a95");
+            } finally {
+              confirmOtpBtn.disabled = false;
+            }
+          });
+        }
+
         if (form) {
           form.addEventListener("submit", handleBookingSubmit, true);
         }
@@ -3562,4 +3719,3 @@
   </script>
 </body>
 </html>
-
