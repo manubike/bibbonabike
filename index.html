@@ -328,7 +328,6 @@
     .card-border-wrapper,
     .form-card,
     .drawer,
-    .elenco-sentieri-centrato,
     .legend-card,
     .slideshow__slide-caption-text {
       background-color: var(--bg-card) !important;
@@ -543,6 +542,128 @@
       align-items: center !important;
       justify-content: center !important;
       margin: 0.75rem auto 0 !important;
+    }
+
+
+    /* Casella a tema sentieri Macchia della Magona */
+    .magona-trails-card {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      border-radius: 14px;
+      background: linear-gradient(165deg, var(--bg-elevated) 0%, var(--bg-card) 100%) !important;
+      border: 1px solid var(--border-strong) !important;
+      box-shadow: var(--shadow-card) !important;
+      box-sizing: border-box;
+    }
+
+    .magona-trails-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem 1.25rem;
+      padding-bottom: 1rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .magona-trails-eyebrow {
+      display: inline-block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--accent-orange-bright);
+      margin-bottom: 0.25rem;
+    }
+
+    .magona-trails-title {
+      margin: 0;
+      font-size: 1.2rem;
+      color: var(--text-primary);
+    }
+
+    .magona-trails-note {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .magona-trails-table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      background-color: var(--bg-void);
+    }
+
+    .magona-trails-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.92rem;
+    }
+
+    .magona-trails-table th {
+      padding: 0.85rem 1rem;
+      background-color: var(--bg-surface);
+      color: var(--accent-orange-bright);
+      font-weight: 600;
+      border-bottom: 1px solid var(--border-strong);
+      white-space: nowrap;
+    }
+
+    .magona-trails-table td {
+      padding: 0.78rem 1rem;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      vertical-align: middle;
+    }
+
+    .magona-trails-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .magona-trails-table tbody tr:hover {
+      background-color: rgba(255, 123, 28, 0.05);
+    }
+
+    .magona-trails-table td a {
+      color: var(--text-primary) !important;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .magona-trails-table td a:hover {
+      color: var(--accent-orange-bright) !important;
+      text-decoration: underline;
+    }
+
+    .trail-diff {
+      display: inline-block;
+      padding: 0.22rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .trail-diff.diff-easy {
+      background-color: rgba(46, 139, 87, 0.22);
+      color: #6ee7a8;
+      border: 1px solid rgba(46, 139, 87, 0.5);
+    }
+
+    .trail-diff.diff-medium {
+      background-color: rgba(255, 123, 28, 0.18);
+      color: #ffab6b;
+      border: 1px solid rgba(255, 123, 28, 0.45);
+    }
+
+    .trail-diff.diff-hard {
+      background-color: rgba(220, 53, 69, 0.22);
+      color: #ff8a95;
+      border: 1px solid rgba(220, 53, 69, 0.5);
     }
 
   </style>
@@ -964,28 +1085,121 @@
           </a>
         </p>
       </div>
-    </section>
-
-    <!-- Trails Section -->
+    </section>    <!-- Trails Section -->
     <section id="trails" class="trails-section">
-      <div class="elenco-sentieri-centrato">
-        <ul>
-          <li><a href="https://www.trailforks.com/trails/dh1-bis/" target="_blank" rel="noopener noreferrer">Percorso 1 Bis (Livello Facile) Solo discesa</a></li>
-          <li><a href="https://www.trailforks.com/trails/percorso-3-dh/" target="_blank" rel="noopener noreferrer">Percorso 3 (Livello Medio) Solo discesa</a></li>
-          <li><a href="https://www.trailforks.com/trails/percorso-4-dh/" target="_blank" rel="noopener noreferrer">Percorso 4 (Livello Medio) Solo discesa</a></li>
-          <li><a href="https://www.trailforks.com/trails/percorso-6/" target="_blank" rel="noopener noreferrer">Percorso 6 (Livello Medio) Solo discesa</a></li>
-          <li><a href="https://www.trailforks.com/trails/percorso-7/" target="_blank" rel="noopener noreferrer">Percorso 7 (Livello Difficile) Solo discesa</a></li>
-          <li><a href="https://www.trailforks.com/trails/7-bis/" target="_blank" rel="noopener noreferrer">Percorso 7 Bis (Livello Medio) Solo discesa</a></li>
-          <li><a href="https://www.trailforks.com/trails/percorso-8/" target="_blank" rel="noopener noreferrer">Percorso 8 (Livello Medio) Entrambe le direzioni</a></li>
-          <li><a href="https://www.trailforks.com/trails/percorso-9-bis/" target="_blank" rel="noopener noreferrer">Percorso 9 Bis (Livello Facile) Solo discesa</a></li>
-          <li><a href="https://www.trailforks.com/trails/il-ciliegio-619279/" target="_blank" rel="noopener noreferrer">Percorso 10 Bis (Livello Medio) Solo discesa</a></li>
-          <li><a href="https://www.trailforks.com/trails/percorso-11/" target="_blank" rel="noopener noreferrer">Percorso 11 (Livello Medio) Solo discesa</a></li>
-          <li><a href="https://www.trailforks.com/trails/11-bis/" target="_blank" rel="noopener noreferrer">Percorso 11 Bis (Livello Difficile) Solo discesa</a></li>
-          <li><a href="https://www.trailforks.com/trails/magona-13/" target="_blank" rel="noopener noreferrer">Percorso 13 (Livello Difficile) Solo discesa</a></li>
-          <li><a href="https://www.trailforks.com/trails/percorso-19/" target="_blank" rel="noopener noreferrer">Percorso 13 Bis (Livello Medio) Solo discesa</a></li>
-          <li><a href="https://www.trailforks.com/trails/immaginetta/" target="_blank" rel="noopener noreferrer">Percorso 14 (Livello Difficile) Solo discesa</a></li>
-          <li><a href="https://www.trailforks.com/trails/percorso-14-446103/" target="_blank" rel="noopener noreferrer">Percorso 14 Bis (Livello Medio) Solo discesa</a></li>
-        </ul>
+      <div class="magona-trails-card">
+        <div class="magona-trails-header">
+          <div>
+            <span class="magona-trails-eyebrow"><i class="fas fa-mountain"></i> Macchia della Magona · Bibbona</span>
+            <h3 class="magona-trails-title">Scheda Sentieri Trail Area</h3>
+          </div>
+          <span class="magona-trails-note">Dati da Trailforks (dove disponibili; per gli altri si rimanda al link diretto)</span>
+        </div>
+
+        <div class="magona-trails-table-wrap">
+          <table class="magona-trails-table">
+            <thead>
+              <tr>
+                <th>Trail</th>
+                <th>Lunghezza</th>
+                <th>Dislivello</th>
+                <th>Difficoltà</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><a href="https://www.trailforks.com/trails/dh1-bis/" target="_blank" rel="noopener noreferrer">Percorso 1 Bis (Solo discesa)</a></td>
+                <td>Vedi Trailforks</td>
+                <td>Vedi Trailforks</td>
+                <td><span class="trail-diff diff-easy">Facile</span></td>
+              </tr>
+              <tr>
+                <td><a href="https://www.trailforks.com/trails/percorso-3-dh/" target="_blank" rel="noopener noreferrer">Percorso 3 (Solo discesa)</a></td>
+                <td>Vedi Trailforks</td>
+                <td>Vedi Trailforks</td>
+                <td><span class="trail-diff diff-medium">Medio</span></td>
+              </tr>
+              <tr>
+                <td><a href="https://www.trailforks.com/trails/percorso-4-dh/" target="_blank" rel="noopener noreferrer">Percorso 4 (Solo discesa)</a></td>
+                <td>1,46 km (4.777 ft)</td>
+                <td>-177 m (-580 ft)</td>
+                <td><span class="trail-diff diff-medium">Medio</span></td>
+              </tr>
+              <tr>
+                <td><a href="https://www.trailforks.com/trails/percorso-6/" target="_blank" rel="noopener noreferrer">Percorso 6 (Solo discesa)</a></td>
+                <td>1,61 km (1 mi)</td>
+                <td>-183 m (-600 ft)</td>
+                <td><span class="trail-diff diff-medium">Medio</span></td>
+              </tr>
+              <tr>
+                <td><a href="https://www.trailforks.com/trails/percorso-7/" target="_blank" rel="noopener noreferrer">Percorso 7 (Solo discesa)</a></td>
+                <td>1,61 km (1 mi)</td>
+                <td>-96 m / +9 m (-316 / +28 ft)</td>
+                <td><span class="trail-diff diff-hard">Difficile</span></td>
+              </tr>
+              <tr>
+                <td><a href="https://www.trailforks.com/trails/7-bis/" target="_blank" rel="noopener noreferrer">Percorso 7 Bis (Solo discesa)</a></td>
+                <td>Vedi Trailforks</td>
+                <td>Vedi Trailforks</td>
+                <td><span class="trail-diff diff-medium">Medio (Blue Rate)</span></td>
+              </tr>
+              <tr>
+                <td><a href="https://www.trailforks.com/trails/percorso-8/" target="_blank" rel="noopener noreferrer">Percorso 8 (Entrambe le direzioni)</a></td>
+                <td>3,22 km (2 mi)</td>
+                <td>-164 m / +7 m (-538 / +24 ft)</td>
+                <td><span class="trail-diff diff-medium">Medio</span></td>
+              </tr>
+              <tr>
+                <td><a href="https://www.trailforks.com/trails/percorso-9-bis/" target="_blank" rel="noopener noreferrer">Percorso 9 Bis (Solo discesa)</a></td>
+                <td>Vedi Trailforks</td>
+                <td>Vedi Trailforks</td>
+                <td><span class="trail-diff diff-easy">Facile</span></td>
+              </tr>
+              <tr>
+                <td><a href="https://www.trailforks.com/trails/il-ciliegio-619279/" target="_blank" rel="noopener noreferrer">Percorso 10 Bis · Il Ciliegio (Solo discesa)</a></td>
+                <td>Vedi Trailforks</td>
+                <td>Vedi Trailforks</td>
+                <td><span class="trail-diff diff-medium">Medio</span></td>
+              </tr>
+              <tr>
+                <td><a href="https://www.trailforks.com/trails/percorso-11/" target="_blank" rel="noopener noreferrer">Percorso 11 (Solo discesa)</a></td>
+                <td>1,45 km (4.751 ft)</td>
+                <td>-117 m (-384 ft)</td>
+                <td><span class="trail-diff diff-medium">Medio</span></td>
+              </tr>
+              <tr>
+                <td><a href="https://www.trailforks.com/trails/11-bis/" target="_blank" rel="noopener noreferrer">Percorso 11 Bis (Solo discesa)</a></td>
+                <td>0,66 km (2.152 ft)</td>
+                <td>-87 m (-287 ft)</td>
+                <td><span class="trail-diff diff-hard">Difficile</span></td>
+              </tr>
+              <tr>
+                <td><a href="https://www.trailforks.com/trails/magona-13/" target="_blank" rel="noopener noreferrer">Percorso 13 (Solo discesa)</a></td>
+                <td>Vedi Trailforks</td>
+                <td>Vedi Trailforks</td>
+                <td><span class="trail-diff diff-hard">Difficile</span></td>
+              </tr>
+              <tr>
+                <td><a href="https://www.trailforks.com/trails/percorso-19/" target="_blank" rel="noopener noreferrer">Percorso 13 Bis (Solo discesa)</a></td>
+                <td>Vedi Trailforks</td>
+                <td>Vedi Trailforks</td>
+                <td><span class="trail-diff diff-medium">Medio</span></td>
+              </tr>
+              <tr>
+                <td><a href="https://www.trailforks.com/trails/immaginetta/" target="_blank" rel="noopener noreferrer">Percorso 14 · Immaginetta (Solo discesa)</a></td>
+                <td>1,61 km (1 mi)</td>
+                <td>-108 m / +10 m (-356 / +34 ft)</td>
+                <td><span class="trail-diff diff-hard">Difficile</span></td>
+              </tr>
+              <tr>
+                <td><a href="https://www.trailforks.com/trails/percorso-14-446103/" target="_blank" rel="noopener noreferrer">Percorso 14 Bis (Solo discesa)</a></td>
+                <td>Vedi Trailforks</td>
+                <td>Vedi Trailforks</td>
+                <td><span class="trail-diff diff-medium">Medio</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
 
