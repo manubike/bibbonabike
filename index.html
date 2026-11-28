@@ -1216,6 +1216,19 @@
   <div id="cookie-banner-overlay" role="dialog" aria-modal="true" aria-labelledby="cookieModalTitle">
     <div id="cookie-consent-modal">
       <h2 id="cookieModalTitle" data-i18n="cookie_title">Gestione Cookie per BibbonaBike.com</h2>
+            <div class="modal-lang-row" style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px 0 14px;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);">
+        <label for="cookieLangSelect" style="font-size:0.85rem;font-weight:600;color:#b0b8c2;margin:0;" data-i18n="lbl_lang">Lingua / Language</label>
+        <select id="cookieLangSelect" class="modal-lang-select" title="Lingua / Language" data-i18n-title="lbl_lang" style="background:#14171c;color:#f4f6f8;border:1px solid rgba(255,123,28,0.42);border-radius:8px;padding:6px 10px;font-size:0.85rem;font-weight:600;cursor:pointer;">
+          <option value="it">🇮🇹 Italiano</option>
+          <option value="en">🇬🇧 English</option>
+          <option value="de">🇩🇪 Deutsch</option>
+          <option value="nl">🇳🇱 Nederlands</option>
+          <option value="es">🇪🇸 Español</option>
+          <option value="fr">🇫🇷 Français</option>
+          <option value="pt">🇵🇹 Português</option>
+          <option value="zh">🇨🇳 中文</option>
+        </select>
+      </div>
       <p data-i18n="cookie_intro">
         Utilizziamo i cookie per garantirti la migliore esperienza di noleggio e prenotazione. Puoi scegliere quali categorie accettare:
       </p>
@@ -1458,24 +1471,6 @@
           </div>
         </div>
 
-        <div class="c-header-home_footer">
-          <div class="o-container">
-            <div class="c-header-home_controls -nomobile o-button-group">
-              <div class="js-parallax is-inview" data-speed="1" data-position="top" data-target="#js-header">
-                <button class="o-button -white -square -left js-slider-home-button js-slider-home-prev" type="button" aria-label="Slide precedente" title="Slide precedente" data-i18n-title="aria_prev_slide">
-                  <span class="o-button_label">
-                    <svg class="o-button_icon" role="img"><use xlink:href="#arrow-prev"></use></svg>
-                  </span>
-                </button>
-                <button class="o-button -white -square js-slider-home-button js-slider-home-next" type="button" aria-label="Slide successiva" title="Slide successiva" data-i18n-title="aria_next_slide">
-                  <span class="o-button_label">
-                    <svg class="o-button_icon" role="img"><use xlink:href="#arrow-next"></use></svg>
-                  </span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
       </section>
     </div>
 
@@ -2092,6 +2087,20 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
       <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:12px; margin-bottom:16px;">
         <h2 id="privacyModalTitle" style="margin:0; color:#ff7b1c; font-size:1.35rem;" data-i18n="pp_title">Privacy e Cookie Policy – BibbonaBike.com</h2>
         <button type="button" id="closePrivacyModalBtn" aria-label="Chiudi Privacy e Cookie Policy" data-i18n-title="pp_close_btn" style="background:#14171c; color:#f4f6f8; border:1px solid rgba(255,255,255,0.16); border-radius:8px; width:36px; height:36px; font-size:1.2rem; cursor:pointer; line-height:1;">&times;</button>
+      </div>
+
+            <div class="modal-lang-row" style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 14px;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);">
+        <label for="privacyLangSelect" style="font-size:0.85rem;font-weight:600;color:#b0b8c2;margin:0;" data-i18n="lbl_lang">Lingua / Language</label>
+        <select id="privacyLangSelect" class="modal-lang-select" title="Lingua / Language" data-i18n-title="lbl_lang" style="background:#14171c;color:#f4f6f8;border:1px solid rgba(255,123,28,0.42);border-radius:8px;padding:6px 10px;font-size:0.85rem;font-weight:600;cursor:pointer;">
+          <option value="it">🇮🇹 Italiano</option>
+          <option value="en">🇬🇧 English</option>
+          <option value="de">🇩🇪 Deutsch</option>
+          <option value="nl">🇳🇱 Nederlands</option>
+          <option value="es">🇪🇸 Español</option>
+          <option value="fr">🇫🇷 Français</option>
+          <option value="pt">🇵🇹 Português</option>
+          <option value="zh">🇨🇳 中文</option>
+        </select>
       </div>
 
       <div id="privacyModalBody" style="font-size:0.93rem; line-height:1.55; color:#b0b8c2;">
@@ -3271,6 +3280,297 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
         if (form) {
           form.addEventListener("submit", handleBookingSubmit, true);
         }
+      });
+    })();
+  </script>
+
+  <!-- Sincronizzazione tendina 8 lingue tra Cookie Banner, Privacy Policy e Sito -->
+  <script>
+    (function () {
+      const MODAL_I18N = {
+        it: {
+          cookie_title: "Gestione Cookie per BibbonaBike.com",
+          cookie_intro: "Utilizziamo i cookie per garantirti la migliore esperienza di noleggio e prenotazione. Puoi scegliere quali categorie accettare:",
+          cookie_cat_nec_title: "Cookie Tecnici e Necessari",
+          cookie_cat_nec_desc: "Essenziali per il funzionamento del sito (es. carrello, login, sicurezza, gestione della prenotazione). Non possono essere disattivati.",
+          cookie_cat_ana_title: "Cookie Statistici e Analitici",
+          cookie_cat_ana_desc: "Ci aiutano a capire come i visitatori interagiscono con il sito e a migliorarlo (es. Google Analytics).",
+          cookie_cat_mkt_title: "Cookie di Marketing e Profilazione",
+          cookie_cat_mkt_desc: "Utilizzati per mostrarti annunci pertinenti sui social media o altri siti web.",
+          cookie_more_info: "Per maggiori dettagli, consulta la nostra",
+          cookie_policy_link: "Privacy e Cookie Policy",
+          cookie_reject_all: "Rifiuta Tutto",
+          cookie_save_prefs: "Salva Preferenze",
+          cookie_accept_all: "Accetta Tutto",
+          pp_title: "Privacy e Cookie Policy – BibbonaBike.com",
+          pp_controller_lbl: "Titolare del trattamento:",
+          pp_controller_body: "Magona Bike Garage – BibbonaBike.com, Via del Mandorlo 1, 57020 Bibbona (LI), Italia · P.IVA: 02075750493 · Email: magonabikegarage@gmail.com · Tel./WhatsApp: +39 331 345 3207.",
+          pp_sec1_title: "1. Dati raccolti e finalità del trattamento",
+          pp_sec1_body: "Raccogliamo i dati inseriti nel modulo di prenotazione (nome e cognome, email, numero di telefono, modello di bici scelto, data, durata, quantità, accessori, codice sconto ed eventuali note) esclusivamente per gestire preventivi, noleggi, tour, eventi e richieste di assistenza officina, oltre che per adempiere a obblighi amministrativi o di legge.",
+          pp_sec2_title: "2. Sicurezza, hCaptcha e conservazione dati",
+          pp_sec2_body: "Il modulo utilizza hCaptcha per prevenire invii automatizzati e spam. I dati di prenotazione vengono trasmessi in modo sicuro per la gestione della richiesta e conservati per il tempo necessario a evadere il servizio e per gli eventuali obblighi normativi applicabili.",
+          pp_sec3_title: "3. Categorie di cookie e preferenze",
+          pp_sec3_body: "Il sito distingue tra cookie tecnici/necessari (sempre attivi per il funzionamento e la memorizzazione delle scelte), cookie statistici/analitici e cookie di marketing/profilazione, attivabili solo previo consenso espresso tramite il banner.",
+          pp_sec4_title: "4. Diritti dell'interessato (GDPR)",
+          pp_sec4_body: "Ai sensi del Regolamento UE 2016/679 (GDPR), puoi richiedere in qualsiasi momento accesso, rettifica, cancellazione o limitazione dei tuoi dati, revocare il consenso ai cookie non necessari o proporre reclamo all'autorità di controllo competente scrivendo a magonabikegarage@gmail.com o contattando Magona Bike Garage.",
+          pp_manage_cookies: "Gestisci Preferenze Cookie",
+          pp_close_btn: "Chiudi"
+        },
+        en: {
+          cookie_title: "Cookie Settings for BibbonaBike.com",
+          cookie_intro: "We use cookies to give you the best rental and booking experience. You can choose which categories to accept:",
+          cookie_cat_nec_title: "Technical & Necessary Cookies",
+          cookie_cat_nec_desc: "Essential for site operation (e.g. booking flow, security, preferences). Cannot be disabled.",
+          cookie_cat_ana_title: "Analytics & Statistics Cookies",
+          cookie_cat_ana_desc: "Help us understand how visitors interact with the site and improve it (e.g. Google Analytics).",
+          cookie_cat_mkt_title: "Marketing & Profiling Cookies",
+          cookie_cat_mkt_desc: "Used to show relevant ads on social media or other websites.",
+          cookie_more_info: "For more details, please read our",
+          cookie_policy_link: "Privacy & Cookie Policy",
+          cookie_reject_all: "Reject All",
+          cookie_save_prefs: "Save Preferences",
+          cookie_accept_all: "Accept All",
+          pp_title: "Privacy & Cookie Policy – BibbonaBike.com",
+          pp_controller_lbl: "Data Controller:",
+          pp_controller_body: "Magona Bike Garage – BibbonaBike.com, Via del Mandorlo 1, 57020 Bibbona (LI), Italy · VAT: 02075750493 · Email: magonabikegarage@gmail.com · Tel./WhatsApp: +39 331 345 3207.",
+          pp_sec1_title: "1. Data Collected & Purposes",
+          pp_sec1_body: "We collect the information entered in the booking form (full name, email, phone number, selected bike model, date, duration, quantity, accessories, promo code, and notes) solely to handle quotes, rentals, tours, events, and workshop requests, as well as legal or administrative obligations.",
+          pp_sec2_title: "2. Security, hCaptcha & Retention",
+          pp_sec2_body: "The form uses hCaptcha to prevent automated submissions and spam. Booking data is transmitted securely to process your request and retained for as long as needed to provide the service and comply with applicable regulations.",
+          pp_sec3_title: "3. Cookie Categories & Preferences",
+          pp_sec3_body: "The site distinguishes between technical/necessary cookies (always active for operation and saving choices), analytics cookies, and marketing cookies, which are enabled only with explicit consent via the banner.",
+          pp_sec4_title: "4. Your Rights under GDPR",
+          pp_sec4_body: "Under EU Regulation 2016/679 (GDPR), you may request access, rectification, erasure, or restriction of your data at any time, withdraw consent for non-essential cookies, or lodge a complaint with a supervisory authority by writing to magonabikegarage@gmail.com.",
+          pp_manage_cookies: "Manage Cookie Preferences",
+          pp_close_btn: "Close"
+        },
+        de: {
+          cookie_title: "Cookie-Einstellungen für BibbonaBike.com",
+          cookie_intro: "Wir verwenden Cookies für das beste Buchungs- und Verleiherlebnis. Wählen Sie aus, welche Kategorien Sie akzeptieren möchten:",
+          cookie_cat_nec_title: "Technische & notwendige Cookies",
+          cookie_cat_nec_desc: "Erforderlich für den Betrieb der Website (z. B. Buchung, Sicherheit, Einstellungen). Können nicht deaktiviert werden.",
+          cookie_cat_ana_title: "Statistik- & Analyse-Cookies",
+          cookie_cat_ana_desc: "Helfen uns zu verstehen, wie Besucher die Website nutzen, um sie zu verbessern (z. B. Google Analytics).",
+          cookie_cat_mkt_title: "Marketing- & Profiling-Cookies",
+          cookie_cat_mkt_desc: "Werden genutzt, um relevante Anzeigen auf sozialen Medien oder anderen Websites anzuzeigen.",
+          cookie_more_info: "Weitere Informationen finden Sie in unserer",
+          cookie_policy_link: "Datenschutz- & Cookie-Richtlinie",
+          cookie_reject_all: "Alle ablehnen",
+          cookie_save_prefs: "Auswahl speichern",
+          cookie_accept_all: "Alle akzeptieren",
+          pp_title: "Datenschutz- & Cookie-Richtlinie – BibbonaBike.com",
+          pp_controller_lbl: "Verantwortlicher:",
+          pp_controller_body: "Magona Bike Garage – BibbonaBike.com, Via del Mandorlo 1, 57020 Bibbona (LI), Italien · USt-IdNr.: 02075750493 · E-Mail: magonabikegarage@gmail.com · Tel./WhatsApp: +39 331 345 3207.",
+          pp_sec1_title: "1. Erhobene Daten & Zwecke",
+          pp_sec1_body: "Wir verarbeiten die im Buchungsformular angegebenen Daten (Name, E-Mail, Telefonnummer, E-Bike-Modell, Datum, Dauer, Anzahl, Zubehör, Rabattcode und Hinweise) ausschließlich zur Bearbeitung von Anfragen, Verleih, Touren, Events und Werkstattservices sowie gesetzlicher Pflichten.",
+          pp_sec2_title: "2. Sicherheit, hCaptcha & Speicherdauer",
+          pp_sec2_body: "Das Formular nutzt hCaptcha zum Schutz vor Spam und automatisierten Anfragen. Daten werden sicher übertragen und so lange gespeichert, wie es für die Leistungserbringung und gesetzliche Vorgaben erforderlich ist.",
+          pp_sec3_title: "3. Cookie-Kategorien & Einstellungen",
+          pp_sec3_body: "Unterschieden wird zwischen technisch notwendigen Cookies (stets aktiv), Statistik-Cookies und Marketing-Cookies, die nur nach ausdrücklicher Zustimmung über das Banner aktiviert werden.",
+          pp_sec4_title: "4. Ihre Rechte nach DSGVO",
+          pp_sec4_body: "Gemäß DSGVO (EU 2016/679) haben Sie jederzeit das Recht auf Auskunft, Berichtigung, Löschung oder Einschränkung Ihrer Daten, Widerruf erteilter Einwilligungen sowie Beschwerde bei einer Aufsichtsbehörde über magonabikegarage@gmail.com.",
+          pp_manage_cookies: "Cookie-Einstellungen verwalten",
+          pp_close_btn: "Schließen"
+        },
+        nl: {
+          cookie_title: "Cookie-instellingen voor BibbonaBike.com",
+          cookie_intro: "We gebruiken cookies voor de beste verhuur- en boekings­ervaring. Kies welke categorieën je wilt accepteren:",
+          cookie_cat_nec_title: "Technische & noodzakelijke cookies",
+          cookie_cat_nec_desc: "Essentieel voor de werking van de site (zoals boeken, beveiliging en voorkeuren). Kunnen niet worden uitgeschakeld.",
+          cookie_cat_ana_title: "Analytische & statistische cookies",
+          cookie_cat_ana_desc: "Helpen ons begrijpen hoe bezoekers de site gebruiken en deze te verbeteren (bijv. Google Analytics).",
+          cookie_cat_mkt_title: "Marketing- & profileringscookies",
+          cookie_cat_mkt_desc: "Gebruikt om relevante advertenties te tonen op sociale media of andere websites.",
+          cookie_more_info: "Lees voor meer informatie ons",
+          cookie_policy_link: "Privacy- & Cookiebeleid",
+          cookie_reject_all: "Alles weigeren",
+          cookie_save_prefs: "Voorkeuren opslaan",
+          cookie_accept_all: "Alles accepteren",
+          pp_title: "Privacy- & Cookiebeleid – BibbonaBike.com",
+          pp_controller_lbl: "Verwerkingsverantwoordelijke:",
+          pp_controller_body: "Magona Bike Garage – BibbonaBike.com, Via del Mandorlo 1, 57020 Bibbona (LI), Italië · BTW: 02075750493 · E-mail: magonabikegarage@gmail.com · Tel./WhatsApp: +39 331 345 3207.",
+          pp_sec1_title: "1. Verzamelde gegevens & doeleinden",
+          pp_sec1_body: "We verwerken gegevens uit het boekingsformulier (naam, e-mail, telefoonnummer, fietsmodel, datum, duur, aantal, accessoires, kortingscode en opmerkingen) uitsluitend voor offertes, verhuur, tours, evenementen, werkplaats en wettelijke verplichtingen.",
+          pp_sec2_title: "2. Beveiliging, hCaptcha & bewaartermijn",
+          pp_sec2_body: "Het formulier gebruikt hCaptcha tegen spam en geautomatiseerde aanvragen. Gegevens worden veilig verzonden en bewaard zolang nodig voor de dienstverlening en wettelijke regels.",
+          pp_sec3_title: "3. Cookiecategorieën & voorkeuren",
+          pp_sec3_body: "Er wordt onderscheid gemaakt tussen noodzakelijke cookies (altijd actief), analytische cookies en marketingcookies, die pas na uitdrukkelijke toestemming via de banner worden geactiveerd.",
+          pp_sec4_title: "4. Jouw rechten onder de AVG/GDPR",
+          pp_sec4_body: "Volgens de AVG/GDPR heb je recht op inzage, rectificatie, verwijdering of beperking van je gegevens, intrekking van toestemming en het indienen van een klacht via magonabikegarage@gmail.com.",
+          pp_manage_cookies: "Cookievoorkeuren beheren",
+          pp_close_btn: "Sluiten"
+        },
+        es: {
+          cookie_title: "Gestión de Cookies para BibbonaBike.com",
+          cookie_intro: "Utilizamos cookies para ofrecerte la mejor experiencia de alquiler y reserva. Elige qué categorías deseas aceptar:",
+          cookie_cat_nec_title: "Cookies Técnicas y Necesarias",
+          cookie_cat_nec_desc: "Esenciales para el funcionamiento del sitio (reserva, seguridad, preferencias). No se pueden desactivar.",
+          cookie_cat_ana_title: "Cookies Analíticas y Estadísticas",
+          cookie_cat_ana_desc: "Nos ayudan a entender cómo interactúan los visitantes con el sitio y mejorarlo (p. ej. Google Analytics).",
+          cookie_cat_mkt_title: "Cookies de Marketing y Perfilado",
+          cookie_cat_mkt_desc: "Se utilizan para mostrar anuncios relevantes en redes sociales u otros sitios web.",
+          cookie_more_info: "Para más detalles, consulta nuestra",
+          cookie_policy_link: "Política de Privacidad y Cookies",
+          cookie_reject_all: "Rechazar todo",
+          cookie_save_prefs: "Guardar preferencias",
+          cookie_accept_all: "Aceptar todo",
+          pp_title: "Política de Privacidad y Cookies – BibbonaBike.com",
+          pp_controller_lbl: "Responsable del tratamiento:",
+          pp_controller_body: "Magona Bike Garage – BibbonaBike.com, Via del Mandorlo 1, 57020 Bibbona (LI), Italia · NIF/IVA: 02075750493 · Correo: magonabikegarage@gmail.com · Tel./WhatsApp: +39 331 345 3207.",
+          pp_sec1_title: "1. Datos recopilados y finalidades",
+          pp_sec1_body: "Recopilamos los datos del formulario de reserva (nombre y apellidos, correo, teléfono, modelo de bici, fecha, duración, cantidad, accesorios, código de descuento y notas) únicamente para gestionar presupuestos, alquileres, tours, eventos, taller y obligaciones legales.",
+          pp_sec2_title: "2. Seguridad, hCaptcha y conservación",
+          pp_sec2_body: "El formulario utiliza hCaptcha para prevenir envíos automatizados y spam. Los datos se transmiten de forma segura y se conservan el tiempo necesario para prestar el servicio y cumplir la normativa.",
+          pp_sec3_title: "3. Categorías de cookies y preferencias",
+          pp_sec3_body: "Se distinguen las cookies técnicas/necesarias (siempre activas), analíticas y de marketing, activadas solo con tu consentimiento explícito desde el banner.",
+          pp_sec4_title: "4. Derechos del interesado (RGPD)",
+          pp_sec4_body: "Según el RGPD (UE 2016/679), puedes solicitar acceso, rectificación, supresión o limitación de tus datos, retirar tu consentimiento o reclamar ante la autoridad competente escribiendo a magonabikegarage@gmail.com.",
+          pp_manage_cookies: "Gestionar preferencias de cookies",
+          pp_close_btn: "Cerrar"
+        },
+        fr: {
+          cookie_title: "Gestion des Cookies pour BibbonaBike.com",
+          cookie_intro: "Nous utilisons des cookies pour vous offrir la meilleure expérience de location et de réservation. Choisissez les catégories à accepter :",
+          cookie_cat_nec_title: "Cookies Techniques et Nécessaires",
+          cookie_cat_nec_desc: "Indispensables au fonctionnement du site (réservation, sécurité, préférences). Ils ne peuvent pas être désactivés.",
+          cookie_cat_ana_title: "Cookies Statistiques et Analytiques",
+          cookie_cat_ana_desc: "Nous aident à comprendre l'utilisation du site et à l'améliorer (ex. Google Analytics).",
+          cookie_cat_mkt_title: "Cookies Marketing et de Profilage",
+          cookie_cat_mkt_desc: "Utilisés pour afficher des publicités pertinentes sur les réseaux sociaux ou d'autres sites.",
+          cookie_more_info: "Pour en savoir plus, consultez notre",
+          cookie_policy_link: "Politique de Confidentialité et Cookies",
+          cookie_reject_all: "Tout refuser",
+          cookie_save_prefs: "Enregistrer les préférences",
+          cookie_accept_all: "Tout accepter",
+          pp_title: "Politique de Confidentialité et Cookies – BibbonaBike.com",
+          pp_controller_lbl: "Responsable du traitement :",
+          pp_controller_body: "Magona Bike Garage – BibbonaBike.com, Via del Mandorlo 1, 57020 Bibbona (LI), Italie · N° TVA : 02075750493 · E-mail : magonabikegarage@gmail.com · Tél./WhatsApp : +39 331 345 3207.",
+          pp_sec1_title: "1. Données collectées et finalités",
+          pp_sec1_body: "Nous recueillons les données du formulaire de réservation (nom et prénom, e-mail, téléphone, modèle de vélo, date, durée, quantité, accessoires, code promo et remarques) uniquement pour gérer devis, locations, circuits, événements, atelier et obligations légales.",
+          pp_sec2_title: "2. Sécurité, hCaptcha et conservation",
+          pp_sec2_body: "Le formulaire utilise hCaptcha contre le spam et les envois automatisés. Les données sont transmises de manière sécurisée et conservées le temps nécessaire au service et aux obligations légales.",
+          pp_sec3_title: "3. Catégories de cookies et préférences",
+          pp_sec3_body: "Le site distingue les cookies techniques/nécessaires (toujours actifs), analytiques et marketing, activés uniquement avec votre consentement explicite via le bandeau.",
+          pp_sec4_title: "4. Vos droits selon le RGPD",
+          pp_sec4_body: "Conformément au RGPD (UE 2016/679), vous pouvez demander l'accès, la rectification, l'effacement ou la limitation de vos données, retirer votre consentement ou saisir l'autorité compétente via magonabikegarage@gmail.com.",
+          pp_manage_cookies: "Gérer les préférences cookies",
+          pp_close_btn: "Fermer"
+        },
+        pt: {
+          cookie_title: "Gestão de Cookies para BibbonaBike.com",
+          cookie_intro: "Utilizamos cookies para garantir a melhor experiência de aluguer e reserva. Escolha as categorias que pretende aceitar:",
+          cookie_cat_nec_title: "Cookies Técnicos e Necessários",
+          cookie_cat_nec_desc: "Essenciais para o funcionamento do site (reservas, segurança, preferências). Não podem ser desativados.",
+          cookie_cat_ana_title: "Cookies Estatísticos e Analíticos",
+          cookie_cat_ana_desc: "Ajudam a compreender como os visitantes interagem com o site e a melhorá-lo (ex.: Google Analytics).",
+          cookie_cat_mkt_title: "Cookies de Marketing e Definição de Perfis",
+          cookie_cat_mkt_desc: "Utilizados para mostrar anúncios relevantes nas redes sociais ou noutros websites.",
+          cookie_more_info: "Para mais detalhes, consulte a nossa",
+          cookie_policy_link: "Política de Privacidade e Cookies",
+          cookie_reject_all: "Rejeitar tudo",
+          cookie_save_prefs: "Guardar preferências",
+          cookie_accept_all: "Aceitar tudo",
+          pp_title: "Política de Privacidade e Cookies – BibbonaBike.com",
+          pp_controller_lbl: "Responsável pelo tratamento:",
+          pp_controller_body: "Magona Bike Garage – BibbonaBike.com, Via del Mandorlo 1, 57020 Bibbona (LI), Itália · NIF/IVA: 02075750493 · Email: magonabikegarage@gmail.com · Tel./WhatsApp: +39 331 345 3207.",
+          pp_sec1_title: "1. Dados recolhidos e finalidades",
+          pp_sec1_body: "Recolhemos os dados do formulário de reserva (nome e apelido, email, telefone, modelo de bicicleta, data, duração, quantidade, acessórios, código de desconto e notas) exclusivamente para gerir orçamentos, alugueres, passeios, eventos, oficina e obrigações legais.",
+          pp_sec2_title: "2. Segurança, hCaptcha e conservação",
+          pp_sec2_body: "O formulário utiliza hCaptcha para prevenir envios automatizados e spam. Os dados são transmitidos em segurança e conservados pelo tempo necessário para o serviço e cumprimento legal.",
+          pp_sec3_title: "3. Categorias de cookies e preferências",
+          pp_sec3_body: "Distinguimos cookies técnicos/necessários (sempre ativos), analíticos e de marketing, ativados apenas mediante consentimento explícito no banner.",
+          pp_sec4_title: "4. Direitos do titular (RGPD)",
+          pp_sec4_body: "Nos termos do RGPD (UE 2016/679), pode solicitar acesso, retificação, apagamento ou limitação dos seus dados, retirar o consentimento ou apresentar reclamação junto da autoridade competente através de magonabikegarage@gmail.com.",
+          pp_manage_cookies: "Gerir preferências de cookies",
+          pp_close_btn: "Fechar"
+        },
+        zh: {
+          cookie_title: "BibbonaBike.com Cookie 设置",
+          cookie_intro: "我们使用 Cookie 为您提供最佳的租车与预约体验。您可以选择接受以下类别：",
+          cookie_cat_nec_title: "技术与必要 Cookie",
+          cookie_cat_nec_desc: "保障网站正常运行所必需（如预约流程、安全与偏好设置），无法关闭。",
+          cookie_cat_ana_title: "统计与分析 Cookie",
+          cookie_cat_ana_desc: "帮助我们了解访客如何使用网站并持续改进（例如 Google Analytics）。",
+          cookie_cat_mkt_title: "营销与个性化 Cookie",
+          cookie_cat_mkt_desc: "用于在社交媒体或其他网站展示相关广告。",
+          cookie_more_info: "了解更多详情，请参阅我们的",
+          cookie_policy_link: "隐私与 Cookie 政策",
+          cookie_reject_all: "全部拒绝",
+          cookie_save_prefs: "保存偏好",
+          cookie_accept_all: "全部接受",
+          pp_title: "隐私与 Cookie 政策 – BibbonaBike.com",
+          pp_controller_lbl: "数据处理控制方：",
+          pp_controller_body: "Magona Bike Garage – BibbonaBike.com, Via del Mandorlo 1, 57020 Bibbona (LI), 意大利 · 税号: 02075750493 · 邮箱: magonabikegarage@gmail.com · 电话/WhatsApp: +39 331 345 3207。",
+          pp_sec1_title: "1. 收集的数据与处理目的",
+          pp_sec1_body: "我们收集预约表单中的信息（姓名、邮箱、电话、车型、日期、时长、数量、配件、优惠码及备注），仅用于处理报价、租车、骑行团、活动、维修服务以及履行法定或行政义务。",
+          pp_sec2_title: "2. 安全、hCaptcha 与数据留存",
+          pp_sec2_body: "表单使用 hCaptcha 防范垃圾提交与自动化滥用。预约数据通过安全方式传输，并在提供服务及满足适用法规所需的期限内保存。",
+          pp_sec3_title: "3. Cookie 类别与偏好",
+          pp_sec3_body: "本站区分技术/必要 Cookie（始终启用）、统计分析 Cookie 与营销 Cookie；非必要 Cookie 仅在您通过横幅明确同意后启用。",
+          pp_sec4_title: "4. GDPR 数据主体权利",
+          pp_sec4_body: "根据欧盟 GDPR（2016/679）法规，您可随时联系 magonabikegarage@gmail.com 行使访问、更正、删除或限制处理数据的权利、撤回同意或向监管机构投诉。",
+          pp_manage_cookies: "管理 Cookie 偏好",
+          pp_close_btn: "关闭"
+        }
+      };
+
+      const SUPPORTED = ["it", "en", "de", "nl", "es", "fr", "pt", "zh"];
+
+      function applyModalLanguage(lang) {
+        const cleanLang = SUPPORTED.includes(lang) ? lang : "it";
+        const dict = MODAL_I18N[cleanLang] || MODAL_I18N.it;
+
+        document.querySelectorAll(".modal-lang-select").forEach((sel) => {
+          if (sel.value !== cleanLang) {
+            sel.value = cleanLang;
+          }
+        });
+
+        const containers = [
+          document.getElementById("cookie-consent-modal"),
+          document.getElementById("privacy-policy-modal")
+        ];
+
+        containers.forEach((root) => {
+          if (!root) return;
+          root.querySelectorAll("[data-i18n]").forEach((el) => {
+            const key = el.getAttribute("data-i18n");
+            if (Object.prototype.hasOwnProperty.call(dict, key)) {
+              el.textContent = dict[key];
+            }
+          });
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const siteSel = document.getElementById("siteLangSelect");
+        const modalSels = Array.from(document.querySelectorAll(".modal-lang-select"));
+
+        const initialLang = (siteSel && siteSel.value) || localStorage.getItem("bibbonabike_lang") || "it";
+        applyModalLanguage(initialLang);
+
+        modalSels.forEach((sel) => {
+          sel.addEventListener("change", () => {
+            const chosen = sel.value;
+            applyModalLanguage(chosen);
+            if (siteSel && siteSel.value !== chosen) {
+              siteSel.value = chosen;
+              siteSel.dispatchEvent(new Event("change", { bubbles: true }));
+            }
+            window.dispatchEvent(new CustomEvent("bibbonabike:langchange", { detail: { lang: chosen } }));
+          });
+        });
+
+        if (siteSel) {
+          siteSel.addEventListener("change", () => {
+            applyModalLanguage(siteSel.value);
+          });
+        }
+
+        window.addEventListener("bibbonabike:langchange", (ev) => {
+          const nextLang = (ev && ev.detail && ev.detail.lang) || (siteSel && siteSel.value) || "it";
+          applyModalLanguage(nextLang);
+        });
       });
     })();
   </script>
