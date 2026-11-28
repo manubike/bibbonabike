@@ -666,6 +666,52 @@
       border: 1px solid rgba(220, 53, 69, 0.5);
     }
 
+
+    /* Fix menu mobile verde -> nero profondo e riposizionamento meteo visibile */
+    .site-header nav,
+    .site-header nav.open,
+    .site-header nav.active,
+    .site-header .nav-menu,
+    .site-header .nav-menu.open,
+    .site-header .nav-menu.active,
+    .site-header nav ul {
+      background: linear-gradient(180deg, #101318 0%, #070809 100%) !important;
+      background-color: #070809 !important;
+      background-image: none !important;
+      border-color: var(--border-strong) !important;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.85) !important;
+    }
+
+    .site-header nav li a {
+      color: var(--text-primary) !important;
+      background: transparent !important;
+    }
+
+    .site-header nav li a:hover {
+      color: var(--accent-orange-bright) !important;
+      background: rgba(255, 123, 28, 0.08) !important;
+    }
+
+    #weatherWidget,
+    .weather-widget {
+      position: absolute !important;
+      top: 14px !important;
+      right: 14px !important;
+      left: auto !important;
+      bottom: auto !important;
+      z-index: 5 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      padding: 6px 12px !important;
+      border-radius: 999px !important;
+      background: rgba(14, 17, 22, 0.88) !important;
+      border: 1px solid var(--border-strong) !important;
+      color: var(--text-primary) !important;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.65) !important;
+      max-width: calc(100% - 28px) !important;
+    }
+
   </style>
 
   <!-- Favicon -->
@@ -1542,6 +1588,12 @@
   <!-- Script Gestione Cookie -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+
+      const weatherWidgetEl = document.getElementById('weatherWidget');
+      if (weatherWidgetEl) {
+        weatherWidgetEl.classList.remove('hidden');
+      }
+
       const heroVideo = document.querySelector('.hero-video');
       if (heroVideo) {
         heroVideo.muted = true;
