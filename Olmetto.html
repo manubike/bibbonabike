@@ -379,22 +379,22 @@
       ];
 
       const LIVORNESE_BOAR_HITS = [
-        '“Boia dé, ma che tu sei un cinghiale o ‘na ruspa, grullo?!”',
-        '“O maiale d’un cinghiale, levati dar sentiero, dé!”',
-        '“Allora un ci siamo, o bestia! Ti mando a fare in sugo!”'
+        '“Boia dé, ma o che tu se’ un cinghiale o ‘na ruspa, grullo?!”',
+        '“O maiale d’un cinghiale, levati dar sentiero, boia dé!”',
+        '“Allora un ci siamo, o bestia! Ti mando a fa’ in sugo, dé!”'
       ];
 
       const LIVORNESE_CONTROSENSO_INSULTS = [
-        '“Ma tu sei grullo fritto, o ciclista d’un cazzo?! Vai controsenso, boia dé!”',
-        '“O coglione, ma un tu lo vedi che tu sei controsenso?! Levati di ‘ulo, dé!”',
-        '“Ma che tu c’hai i’ cervello ne’ ‘ulo a venì controsenso così, grullo?!”',
-        '“Boia dé, o rincoglionito, gira la bici che qui si scende, un si sale controsenso!”'
+        '“Ma o che tu se’ grullo fritto, o ciclista d’un cazzo?! Tu va’ controsenso, boia dé!”',
+        '“O coglione, ma o un tu lo vedi che tu se’ controsenso?! Levati di ‘ulo, boia dé!”',
+        '“Ma o che tu c’hai i’ cervello ne’ ‘ulo a venì controsenso così, grullo?!”',
+        '“Boia dé, o rincoglionito, gira la bici che qui si scende, ‘un si sale controsenso!”'
       ];
 
       const LIVORNESE_PANINO_QUIPS = [
-        '“Boia dé, che panino ripieno! Ora si ragiona!”',
-        '“O sveglia, ripieno da paura! Gasse per la birra!”',
-        '“Che bomba di panino, dé! Si va dritti a Bibbona!”'
+        '“Boia dé, che panino ripieno! Ora sì che si ragiona, dé!”',
+        '“O sveglia, ripieno da paura! Gasse a foho pe’ la birra!”',
+        '“Che bomba di panino, boia dé! Si va dritti a Bibbona!”'
       ];
 
       // =========================================================================
@@ -1059,11 +1059,11 @@
         state.vortexTimer = 0;
 
         if (state.level === 3) {
-          state.quipText = 'Macchia della Magona! Salta pe’ i panini e occhio ai grulli controsenso!';
+          state.quipText = 'Macchia della Magona, boia dé! Salta pe’ i panini e occhio ai grulli controsenso!';
         } else if (state.level === 2) {
-          state.quipText = 'Giù nel bosco! Scappa dai Torbobikers!';
+          state.quipText = 'Giù ner bosco a foho, dé! Scappa da’ Torbobikers!';
         } else {
-          state.quipText = 'Boia dé, si parte verso l’Orizzonte!';
+          state.quipText = 'Boia dé, si parte verso l’Orizzonte, via su!';
         }
         state.quipTimer = 3.0;
 
@@ -1726,7 +1726,7 @@
               leaf.collected = true;
               state.score += 100;
               playSound('npc');
-              state.quipText = 'Fogliolina presa al volo! (+100 pts)';
+              state.quipText = 'Pigliata ar volo, boia dé! (+100 pts)';
               state.quipTimer = 1.5;
               updateHud();
             }
@@ -1779,13 +1779,13 @@
                 obs.cleared = true;
                 state.score += 100;
                 playSound('npc');
-                state.quipText = 'Saltata di netto! (+100 pts)';
+                state.quipText = 'Saltata via su di netto, dé! (+100 pts)';
                 state.quipTimer = 1.4;
               } else {
                 obs.hit = true;
                 state.bike.vx *= 0.45;
                 spawnDust(obs.x, getGroundY(obs.x), 8, 'rgba(120, 83, 52, 0.85)');
-                state.quipText = 'Boia dé, che radice!';
+                state.quipText = 'Boia dé, o che radice era, grullo?!';
                 state.quipTimer = 1.6;
               }
             }
@@ -1834,7 +1834,7 @@
                 tb.status = 'CAUGHT';
                 state.vortexTimer = 3.2;
                 state.bike.vx = Math.max(210, state.bike.vx * 0.58);
-                state.quipText = 'No, mi vengono i vortici! No se… poi rigozzo!';
+                state.quipText = 'No, mi vengono i vortici! No se… poi rigozzo, dé!';
                 state.quipTimer = 3.2;
                 playSound('dizzy');
               } else if (tb.alertTimer <= 0) {
@@ -1915,21 +1915,21 @@
                 state.score += 200;
                 state.bike.vx = Math.min(830, state.bike.vx + 150);
                 spawnDust(berm.x, getGroundY(berm.x), 11, 'rgba(180, 115, 62, 0.85)');
-                state.quipText = 'Sponda ' + berm.direction + ' presa, boia dé! (+200 pts)';
+                state.quipText = 'Sponda ' + berm.direction + ' pigliata a foho, boia dé! (+200 pts)';
                 state.quipTimer = 2.0;
                 playSound('escape');
               } else if (state.bike.vx > 680 && !keys.left) {
                 berm.missed = true;
                 state.bike.vx *= 0.65;
                 spawnDust(berm.x, getGroundY(berm.x), 9, 'rgba(146, 102, 68, 0.8)');
-                state.quipText = 'Troppo lungo in sponda, o grullo! Frena prima!';
+                state.quipText = 'Troppo lungo in sponda, o grullo! Frena prima, dé!';
                 state.quipTimer = 2.0;
                 playSound('dizzy');
               } else if (dx > 45) {
                 berm.carved = true;
                 state.bermCarvedCount++;
                 state.score += 140;
-                state.quipText = 'Curva chiusa, dé! (+140 pts)';
+                state.quipText = 'Curva chiusa benino, boia dé! (+140 pts)';
                 state.quipTimer = 1.6;
               }
             }
@@ -1950,7 +1950,7 @@
                 boar.cleared = true;
                 state.score += 150;
                 playSound('escape');
-                state.quipText = 'Saltato il cinghiale, boia dé! (+150 pts)';
+                state.quipText = 'Saltato i’ cinghiale, boia dé! (+150 pts)';
                 state.quipTimer = 1.8;
               } else {
                 boar.hit = true;
@@ -1979,7 +1979,7 @@
                 wc.resolved = true;
                 state.score += 180;
                 playSound('escape');
-                state.quipText = 'Saltato il grullo controsenso! (+180 pts)';
+                state.quipText = 'Saltato i’ grullo controsenso, dé! (+180 pts)';
                 state.quipTimer = 2.0;
               } else {
                 wc.resolved = true;
@@ -2391,22 +2391,46 @@
         ctx.arc(1, 2, 10, 0, Math.PI * 2);
         ctx.fill();
 
-        // Casco colorato con visiera
+        // Casco integrale con calotta, mentoniera protettiva e visiera
+        ctx.fillStyle = '#090d16';
+        ctx.beginPath();
+        ctx.arc(0, 0, 13.5, 0, Math.PI * 2);
+        ctx.fill();
+
         ctx.fillStyle = tb.helmet;
         ctx.beginPath();
-        ctx.arc(0, -1, 12.5, Math.PI * 0.95, Math.PI * 0.05);
+        ctx.arc(0, -2, 12.2, Math.PI * 0.92, Math.PI * 0.02);
         ctx.closePath();
         ctx.fill();
         ctx.strokeStyle = '#090d16';
         ctx.lineWidth = 1.6;
         ctx.stroke();
 
+        // Mentoniera integrale rinforzata
+        ctx.fillStyle = '#090d16';
+        ctx.beginPath();
+        ctx.moveTo(0, 3);
+        ctx.lineTo(14, 3);
+        ctx.lineTo(10, 12);
+        ctx.lineTo(-1, 12);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = tb.helmet;
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.moveTo(2, 6);
+        ctx.lineTo(11, 6);
+        ctx.moveTo(1, 9);
+        ctx.lineTo(9, 9);
+        ctx.stroke();
+
+        // Visiera superiore del casco integrale
         ctx.fillStyle = tb.helmet;
         ctx.beginPath();
-        ctx.moveTo(4, -9);
-        ctx.lineTo(18, -6);
-        ctx.lineTo(15, -2);
-        ctx.lineTo(3, -5);
+        ctx.moveTo(3, -10);
+        ctx.lineTo(18, -7);
+        ctx.lineTo(15, -3);
+        ctx.lineTo(2, -6);
         ctx.closePath();
         ctx.fill();
 
@@ -2486,31 +2510,60 @@
         ctx.save();
         ctx.translate(screenX, screenY);
 
-        const bermGrad = ctx.createLinearGradient(0, -56, 0, 8);
-        bermGrad.addColorStop(0, berm.carved ? '#d97706' : '#92400e');
-        bermGrad.addColorStop(0.55, '#78350f');
-        bermGrad.addColorStop(1, '#451a03');
-        ctx.fillStyle = bermGrad;
+        // Sponda parabolica ben definita con rampa d'ingresso, parete inclinata (bank) e uscita
+        const outerGrad = ctx.createLinearGradient(0, -68, 0, 10);
+        outerGrad.addColorStop(0, '#9a3412');
+        outerGrad.addColorStop(0.5, '#78350f');
+        outerGrad.addColorStop(1, '#451a03');
+        ctx.fillStyle = outerGrad;
         ctx.beginPath();
-        ctx.moveTo(-78, 4);
-        ctx.quadraticCurveTo(-24, -56, 26, -52);
-        ctx.quadraticCurveTo(64, -44, 84, 4);
+        ctx.moveTo(-92, 5);
+        ctx.bezierCurveTo(-52, 3, -40, -64, 6, -64);
+        ctx.bezierCurveTo(46, -64, 58, 2, 96, 5);
+        ctx.lineTo(96, 12);
+        ctx.lineTo(-92, 12);
         ctx.closePath();
         ctx.fill();
 
-        ctx.strokeStyle = berm.carved ? '#facc15' : '#d97706';
-        ctx.lineWidth = 3;
+        // Fascia interna compattata dalla ruota (canale di appoggio della sponda)
+        ctx.fillStyle = berm.carved ? '#b45309' : '#7c2d12';
         ctx.beginPath();
-        ctx.moveTo(-68, -6);
-        ctx.quadraticCurveTo(-18, -50, 26, -47);
-        ctx.quadraticCurveTo(56, -40, 74, -4);
+        ctx.moveTo(-78, 4);
+        ctx.bezierCurveTo(-44, 2, -32, -52, 6, -52);
+        ctx.bezierCurveTo(38, -52, 48, 2, 82, 4);
+        ctx.lineTo(66, 6);
+        ctx.bezierCurveTo(34, -36, 26, -38, 6, -38);
+        ctx.bezierCurveTo(-18, -38, -28, -24, -64, 5);
+        ctx.closePath();
+        ctx.fill();
+
+        // Cresta superiore scolpita con bordo ben marcato
+        ctx.strokeStyle = berm.carved ? '#fde047' : '#fb923c';
+        ctx.lineWidth = 3.2;
+        ctx.beginPath();
+        ctx.moveTo(-84, 3);
+        ctx.bezierCurveTo(-46, 0, -34, -58, 6, -58);
+        ctx.bezierCurveTo(42, -58, 52, 0, 88, 3);
         ctx.stroke();
 
+        // Solchi trasversali dei tasselli lungo la sponda
+        ctx.strokeStyle = 'rgba(28, 25, 23, 0.45)';
+        ctx.lineWidth = 1.4;
+        for (let g = -3; g <= 3; g++) {
+          const gx = 6 + g * 12;
+          const gy = -52 + Math.abs(g) * 4.2;
+          ctx.beginPath();
+          ctx.moveTo(gx - 3, gy - 4);
+          ctx.lineTo(gx + 3, gy + 5);
+          ctx.stroke();
+        }
+
+        // Paletto e cartello curva della Macchia della Magona
         ctx.fillStyle = '#5c2d16';
-        ctx.fillRect(54, -64, 5, 64);
+        ctx.fillRect(62, -74, 5, 74);
         ctx.fillStyle = berm.carved ? '#15803d' : '#f59e0b';
         ctx.beginPath();
-        ctx.roundRect(30, -82, 54, 22, 5);
+        ctx.roundRect(36, -94, 58, 22, 5);
         ctx.fill();
         ctx.strokeStyle = '#0f172a';
         ctx.lineWidth = 1.5;
@@ -2518,7 +2571,7 @@
         ctx.fillStyle = berm.carved ? '#ffffff' : '#0f172a';
         ctx.font = '900 8px Inter, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(berm.direction === 'DESTRA' ? 'CURVA ↱' : 'CURVA ↰', 57, -69);
+        ctx.fillText(berm.direction === 'DESTRA' ? 'SPONDA ↱' : 'SPONDA ↰', 65, -81);
 
         ctx.restore();
       }
