@@ -942,25 +942,41 @@
       z-index: 9998 !important;
       box-sizing: border-box !important;
     }
+    #chatBox.keyboard-open,
+    #chatBox:focus-within {
+      top: 84px !important;
+      bottom: auto !important;
+      max-height: calc(100dvh - 360px) !important;
+      min-height: 170px !important;
+      padding: 8px !important;
+      gap: 6px !important;
+    }
 
     #chatBox.keyboard-open #chatMessages,
     #chatBox:focus-within #chatMessages {
-      min-height: 64px !important;
-      max-height: 108px !important;
-      flex: 0 1 108px !important;
+      min-height: 48px !important;
+      max-height: 82px !important;
+      flex: 1 1 auto !important;
+      padding: 6px !important;
     }
-
     #chatBox.keyboard-open #chatInput,
     #chatBox:focus-within #chatInput {
-      min-height: 40px !important;
-      max-height: 56px !important;
+      min-height: 36px !important;
+      max-height: 44px !important;
+      height: 38px !important;
+      padding: 6px 8px !important;
+      font-size: 0.85rem !important;
     }
-
     #chatBox.keyboard-open #chatSend,
     #chatBox:focus-within #chatSend {
-      height: 44px !important;
-      min-height: 44px !important;
-      margin-top: 4px !important;
+      height: 40px !important;
+      min-height: 40px !important;
+      padding: 6px 12px !important;
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
+      display: flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
     }
 </style>
 
@@ -2811,36 +2827,37 @@
             navEl.style.clear = "both";
           }
         });
-
-
         const syncChatKeyboardPosition = () => {
           const box = document.getElementById("chatBox");
           const inp = document.getElementById("chatInput");
-          if (!box) return;
+          if (!box || box.classList.contains("hidden")) return;
           const isFocused = Boolean(inp && document.activeElement === inp);
-          let kbOffset = 78;
-          if (window.visualViewport) {
-            const occluded = Math.max(0, window.innerHeight - window.visualViewport.height - window.visualViewport.offsetTop);
-            if (occluded > 80) {
-              kbOffset = Math.round(occluded + 12);
-              box.classList.add("keyboard-open");
-            } else if (!isFocused) {
-              box.classList.remove("keyboard-open");
-            }
-          }
+
           if (isFocused) {
             box.classList.add("keyboard-open");
-            if (kbOffset < 90) {
-              kbOffset = 280;
+            let availTop = 84;
+            const hdr = document.getElementById("header");
+            if (hdr) {
+              availTop = Math.max(82, hdr.getBoundingClientRect().bottom + 6);
             }
-          }
-          if (!box.classList.contains("hidden")) {
-            box.style.setProperty("bottom", kbOffset + "px", "important");
-            box.style.setProperty("max-height", "calc(100vh - " + (kbOffset + 24) + "px)", "important");
+            let visibleBottom = window.innerHeight * 0.46;
+            if (window.visualViewport) {
+              visibleBottom = Math.min(visibleBottom, window.visualViewport.height - 12);
+            }
+            const boxHeight = Math.max(175, Math.min(260, Math.round(visibleBottom - availTop)));
+            box.style.setProperty("top", Math.round(availTop) + "px", "important");
+            box.style.setProperty("bottom", "auto", "important");
+            box.style.setProperty("height", boxHeight + "px", "important");
+            box.style.setProperty("max-height", boxHeight + "px", "important");
+          } else {
+            box.classList.remove("keyboard-open");
+            box.style.setProperty("top", "auto", "important");
+            box.style.setProperty("bottom", "78px", "important");
+            box.style.setProperty("height", "auto", "important");
+            box.style.setProperty("max-height", "min(440px, 62vh)", "important");
           }
         };
-
-        if (window.visualViewport) {
+if (window.visualViewport) {
           window.visualViewport.addEventListener("resize", syncChatKeyboardPosition);
           window.visualViewport.addEventListener("scroll", syncChatKeyboardPosition);
         }
