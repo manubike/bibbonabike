@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Olmetto Rider · Lungomare di Livorno</title>
+  <title>Olmetto Rider · Livorno &amp; Bosco dei Torbobikers</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,10 +30,9 @@
       display: block;
       width: 100vw;
       height: 100vh;
-      image-rendering: pixelated;
     }
     .glass-hud {
-      background: rgba(15, 23, 42, 0.78);
+      background: rgba(15, 23, 42, 0.80);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.16);
@@ -62,8 +61,8 @@
   <div id="hudContainer" class="fixed top-2 left-2 right-2 z-20 flex flex-col gap-2 pointer-events-none max-w-4xl mx-auto">
     <div class="flex items-center justify-between gap-2">
       <!-- Badge Titolo & Location -->
-      <div class="glass-hud rounded-2xl px-3 py-2 flex items-center gap-2.5 shadow-lg">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-600 to-lime-400 flex items-center justify-center shadow-inner shrink-0">
+      <div class="glass-hud rounded-2xl px-3 py-2 flex items-center gap-2.5 shadow-lg pointer-events-auto">
+        <div id="hudBadgeIcon" class="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-600 to-lime-400 flex items-center justify-center shadow-inner shrink-0">
           <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
             <circle cx="5.5" cy="17.5" r="3.5"/>
             <circle cx="18.5" cy="17.5" r="3.5"/>
@@ -71,13 +70,16 @@
           </svg>
         </div>
         <div class="leading-tight">
-          <div class="text-xs sm:text-sm font-black tracking-tight text-white">OLMETTO RIDER</div>
-          <div class="text-[10px] sm:text-xs font-semibold text-lime-300">Livorno · Viale Italia</div>
+          <div class="flex items-center gap-1.5">
+            <span class="text-xs sm:text-sm font-black tracking-tight text-white">OLMETTO RIDER</span>
+            <span id="hudLevelPill" class="px-1.5 py-0.5 rounded-md bg-sky-500/25 border border-sky-400/40 text-[9px] font-black text-sky-300 uppercase">LV 1</span>
+          </div>
+          <div id="hudLocationLabel" class="text-[10px] sm:text-xs font-semibold text-lime-300">Livorno · Viale Italia</div>
         </div>
       </div>
 
-      <!-- Distanza, Punti & Audio -->
-      <div class="glass-hud rounded-2xl px-3 py-2 flex items-center gap-3 sm:gap-4 shadow-lg pointer-events-auto">
+      <!-- Distanza, Punti, Cambio Livello & Audio -->
+      <div class="glass-hud rounded-2xl px-3 py-2 flex items-center gap-2.5 sm:gap-3.5 shadow-lg pointer-events-auto">
         <div class="text-center">
           <div class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">Distanza</div>
           <div id="distanceDisplay" class="text-xs sm:text-sm font-black text-sky-300">0 m</div>
@@ -86,6 +88,9 @@
           <div class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">Punti</div>
           <div id="scoreDisplay" class="text-xs sm:text-sm font-black text-amber-300">0 pts</div>
         </div>
+        <button id="switchLevelHudBtn" type="button" class="px-2.5 h-9 rounded-xl bg-slate-800/90 hover:bg-slate-700 border border-slate-600/60 text-[10px] font-black uppercase tracking-wider text-emerald-300 transition cursor-pointer" title="Cambia Livello">
+          🌲 Lv.2
+        </button>
         <button id="audioToggleBtn" type="button" class="w-9 h-9 rounded-xl bg-slate-800/90 hover:bg-slate-700 border border-slate-600/60 flex items-center justify-center text-slate-200 transition cursor-pointer" title="Audio">
           <svg id="audioIconOn" class="w-4 h-4 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
@@ -101,7 +106,7 @@
       </div>
     </div>
 
-    <!-- Barra Progresso 5 Belvedere + Gelateria L'Orizzonte -->
+    <!-- Barra Progresso Tappe + Traguardo -->
     <div class="glass-hud rounded-2xl px-3 py-2 shadow-lg">
       <div class="flex items-center justify-between text-[11px] font-bold mb-1">
         <span id="nextLandmarkText" class="text-amber-300 truncate">📸 Prossimo Belvedere: Terrazza Mascagni</span>
@@ -118,7 +123,7 @@
     </div>
   </div>
 
-  <!-- MODALE DIALOGO CON NPC (NON INVASIVA IN ALTO A DESTRA) -->
+  <!-- MODALE DIALOGO CON NPC (LIVELLO 1) -->
   <div id="dialogueModal" class="hidden fixed top-24 right-3 sm:right-5 z-30 w-80 sm:w-96 pointer-events-auto">
     <div class="glass-hud rounded-2xl p-4 sm:p-5 shadow-2xl border border-white/25 animate-float">
       <div class="flex items-center gap-3 mb-3">
@@ -136,7 +141,7 @@
     </div>
   </div>
 
-  <!-- MODALE CARTOLINA SELFIE BELVEDERE -->
+  <!-- MODALE CARTOLINA SELFIE BELVEDERE (LIVELLO 1) -->
   <div id="panoramaModal" class="hidden fixed inset-0 z-30 flex items-center justify-center p-4 bg-slate-950/45 backdrop-blur-[2px] pointer-events-auto">
     <div class="bg-slate-900/95 backdrop-blur-md rounded-3xl p-4 sm:p-5 shadow-2xl border-2 border-amber-400/85 text-center w-full max-w-md sm:max-w-lg">
       <div class="flex items-center justify-between mb-2">
@@ -154,7 +159,7 @@
     </div>
   </div>
 
-  <!-- SCHERMATA INIZIALE ANIMATA -->
+  <!-- SCHERMATA INIZIALE CON SELEZIONE LIVELLO -->
   <div id="startScreen" class="fixed inset-0 z-40 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md">
     <div class="glass-hud rounded-3xl p-5 sm:p-6 max-w-md w-full text-center shadow-2xl border-2 border-purple-400/60">
       <div class="text-xs sm:text-sm font-black uppercase tracking-widest text-lime-300 mb-0.5">Olmetto Rider</div>
@@ -162,21 +167,26 @@
       <div class="relative rounded-2xl overflow-hidden border-2 border-white/80 shadow-xl bg-sky-900 aspect-[4/3] w-full mb-4">
         <canvas id="startHeroCanvas" class="w-full h-full block"></canvas>
       </div>
-      <button id="startBtn" type="button" class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-purple-600 via-lime-500 to-amber-400 hover:brightness-110 active:scale-95 text-slate-950 font-black text-base uppercase tracking-wider shadow-xl transition cursor-pointer">
-        🚴‍♂️ Gioca Ora
-      </button>
+      <div class="flex flex-col gap-2.5">
+        <button id="startBtn" type="button" class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-purple-600 via-lime-500 to-amber-400 hover:brightness-110 active:scale-95 text-slate-950 font-black text-sm sm:text-base uppercase tracking-wider shadow-xl transition cursor-pointer">
+          🌊 Livello 1 · Lungomare di Livorno
+        </button>
+        <button id="startLv2Btn" type="button" class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 via-lime-400 to-amber-400 hover:brightness-110 active:scale-95 text-slate-950 font-black text-sm sm:text-base uppercase tracking-wider shadow-xl transition cursor-pointer">
+          🌲 Livello 2 · Discesa nel Bosco &amp; Torbobikers
+        </button>
+      </div>
     </div>
   </div>
 
-  <!-- SCHERMATA FINALE DOPO I 10 SECONDI ALLA GELATERIA L'ORIZZONTE -->
+  <!-- SCHERMATA FINALE LIVELLO 1 E LIVELLO 2 -->
   <div id="victoryScreen" class="hidden fixed inset-0 z-40 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-    <div class="glass-hud rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl border-2 border-pink-400/70">
-      <div class="text-5xl mb-2">🍦🌊🏆</div>
-      <div class="inline-block px-3 py-1 rounded-full bg-pink-500/20 border border-pink-400/40 text-pink-300 text-[11px] font-black uppercase tracking-wider mb-2">
+    <div id="victoryCard" class="glass-hud rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl border-2 border-pink-400/70">
+      <div id="victoryEmoji" class="text-5xl mb-2">🍦🌊🏆</div>
+      <div id="victoryBadge" class="inline-block px-3 py-1 rounded-full bg-pink-500/20 border border-pink-400/40 text-pink-300 text-[11px] font-black uppercase tracking-wider mb-2">
         Gelateria L’Orizzonte · Traguardo!
       </div>
-      <h2 class="text-2xl sm:text-3xl font-black text-white mb-1">NO… STAI A MILANO!</h2>
-      <p class="text-xs sm:text-sm text-slate-300 mb-5">
+      <h2 id="victoryTitle" class="text-2xl sm:text-3xl font-black text-white mb-1">NO… STAI A MILANO!</h2>
+      <p id="victoryDesc" class="text-xs sm:text-sm text-slate-300 mb-5">
         Boia dé, hai fatto tutti e 5 i Belvedere delle collinette, risposto per le rime ai 10 livornesi e ti sei gustato il gelato alla Gelateria L’Orizzonte!
       </p>
       <div class="grid grid-cols-3 gap-2 mb-6">
@@ -185,7 +195,7 @@
           <div id="finalScore" class="text-base sm:text-lg font-black text-amber-300">0</div>
         </div>
         <div class="bg-slate-900/80 rounded-2xl p-3 border border-slate-700">
-          <div class="text-[10px] font-bold text-slate-400 uppercase">Belvedere</div>
+          <div id="finalMetricLabel" class="text-[10px] font-bold text-slate-400 uppercase">Belvedere</div>
           <div id="finalBelvedere" class="text-base sm:text-lg font-black text-lime-300">5 / 5</div>
         </div>
         <div class="bg-slate-900/80 rounded-2xl p-3 border border-slate-700">
@@ -193,9 +203,14 @@
           <div id="finalTime" class="text-base sm:text-lg font-black text-sky-300">0s</div>
         </div>
       </div>
-      <button id="restartBtn" type="button" class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-amber-500 via-pink-500 to-purple-600 hover:brightness-110 active:scale-95 text-white font-black text-base uppercase tracking-wider shadow-xl transition cursor-pointer">
-        🔄 Rigioca il Lungomare
-      </button>
+      <div class="flex flex-col gap-2.5">
+        <button id="nextLevelBtn" type="button" class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-emerald-400 via-lime-400 to-amber-400 hover:brightness-110 active:scale-95 text-slate-950 font-black text-sm sm:text-base uppercase tracking-wider shadow-xl transition cursor-pointer">
+          🌲 Vai al Livello 2 · Discesa nel Bosco!
+        </button>
+        <button id="restartBtn" type="button" class="w-full py-3 px-6 rounded-2xl bg-slate-800/90 hover:bg-slate-700 active:scale-95 text-white font-black text-xs sm:text-sm uppercase tracking-wider border border-slate-600 transition cursor-pointer">
+          🔄 Rigioca questo Livello
+        </button>
+      </div>
     </div>
   </div>
 
@@ -234,6 +249,9 @@
       const canvas = document.getElementById('gameCanvas');
       const ctx = canvas.getContext('2d');
 
+      const hudLevelPill = document.getElementById('hudLevelPill');
+      const hudLocationLabel = document.getElementById('hudLocationLabel');
+      const switchLevelHudBtn = document.getElementById('switchLevelHudBtn');
       const distanceDisplay = document.getElementById('distanceDisplay');
       const scoreDisplay = document.getElementById('scoreDisplay');
       const nextLandmarkText = document.getElementById('nextLandmarkText');
@@ -244,7 +262,16 @@
       const startHeroCanvas = document.getElementById('startHeroCanvas');
       const startHeroCtx = startHeroCanvas ? startHeroCanvas.getContext('2d') : null;
       const startBtn = document.getElementById('startBtn');
+      const startLv2Btn = document.getElementById('startLv2Btn');
+
       const victoryScreen = document.getElementById('victoryScreen');
+      const victoryCard = document.getElementById('victoryCard');
+      const victoryEmoji = document.getElementById('victoryEmoji');
+      const victoryBadge = document.getElementById('victoryBadge');
+      const victoryTitle = document.getElementById('victoryTitle');
+      const victoryDesc = document.getElementById('victoryDesc');
+      const finalMetricLabel = document.getElementById('finalMetricLabel');
+      const nextLevelBtn = document.getElementById('nextLevelBtn');
       const restartBtn = document.getElementById('restartBtn');
 
       const dialogueModal = document.getElementById('dialogueModal');
@@ -260,7 +287,7 @@
       const panoramaSubtitle = document.getElementById('panoramaSubtitle');
       const panoramaCanvas = document.getElementById('panoramaCanvas');
       const continuePanoramaBtn = document.getElementById('continuePanoramaBtn');
-      const pCtx = panoramaCanvas ? panoramaCanvas.getContext('2d') : null;
+      const pCtx = panoramaCanvas.getContext('2d');
 
       const audioToggleBtn = document.getElementById('audioToggleBtn');
       const audioIconOn = document.getElementById('audioIconOn');
@@ -272,10 +299,11 @@
       const btnPedal = document.getElementById('btnPedal');
 
       // =========================================================================
-      // CONFIGURAZIONE PERCORSO: 5 BELVEDERE SU COLLINETTE + GELATERIA L'ORIZZONTE
+      // CONFIGURAZIONI LIVELLO 1 (LUNGOMARE) & LIVELLO 2 (BOSCO TORBOBIKERS)
       // =========================================================================
-      const COURSE_LENGTH = 25000;
-      const GELATO_STOP_DURATION = 10.0;
+      const COURSE_LENGTH_LV1 = 25000;
+      const COURSE_LENGTH_LV2 = 28000;
+      const END_STOP_DURATION = 10.0;
       const BELVEDERE_PAUSE_DURATION = 5.0;
 
       const BELVEDERE_SPOTS = [
@@ -286,8 +314,16 @@
         { id: 4, x: 24200, name: 'Belvedere Antignano', subtitle: 'Quinta e ultima vetta prima del gelato!', visited: false }
       ];
 
+      const FOREST_SECTORS = [
+        { id: 0, x: 5600, name: 'Pineta Alta · Ingresso Trail', passed: false },
+        { id: 1, x: 11200, name: 'Canaloni delle Radici', passed: false },
+        { id: 2, x: 16800, name: 'Bivio dei Torbobikers', passed: false },
+        { id: 3, x: 22400, name: 'Discesa delle Sughere', passed: false },
+        { id: 4, x: 28000, name: 'Baracchina del Bosco & Mare', passed: false }
+      ];
+
       // =========================================================================
-      // 10 NPC LIVORNESI CON DIALOGHI E RISPOSTE ESCLUSIVAMENTE LIVORNESI
+      // 10 NPC LIVORNESI LIVELLO 1
       // =========================================================================
       const NPC_TEMPLATES = [
         {
@@ -342,9 +378,100 @@
         }
       ];
 
-      const RIDER_QUIPS = [
+      // =========================================================================
+      // TORBOBIKERS & FRASI LIVORNESI DI FUGA (LIVELLO 2)
+      // =========================================================================
+      const TORBOBIKER_TEMPLATES = [
+        {
+          name: 'Torbobiker Poldo',
+          jersey: '#16a34a',
+          helmet: '#facc15',
+          bikeColor: '#22c55e',
+          lureQuote: '“O Olmetto, fèrmati! Tira ‘na boccata, dé!”',
+          escapeQuote: '“No, mi vengono i vortici!”'
+        },
+        {
+          name: 'Torbobiker Cencio',
+          jersey: '#ea580c',
+          helmet: '#0f172a',
+          bikeColor: '#f97316',
+          lureQuote: '“Dai un tiro solo prima der canalone, grullo!”',
+          escapeQuote: '“No se… poi rigozzo!”'
+        },
+        {
+          name: 'Torbobiker Bibo',
+          jersey: '#0284c7',
+          helmet: '#38bdf8',
+          bikeColor: '#0ea5e9',
+          lureQuote: '“Frena un secondo che s’accende in pineta!”',
+          escapeQuote: '“Ma ti levi di ‘ulo!”'
+        },
+        {
+          name: 'Torbobiker Teo',
+          jersey: '#9333ea',
+          helmet: '#e879f9',
+          bikeColor: '#a855f7',
+          lureQuote: '“Allora un ci siamo! Scendi dar mezzo e fuma!”',
+          escapeQuote: '“Boia dé, levati che c’ho i freni caldi!”'
+        },
+        {
+          name: 'Torbobiker Dindo',
+          jersey: '#dc2626',
+          helmet: '#fde047',
+          bikeColor: '#ef4444',
+          lureQuote: '“Oh fenomenoooo, piglia due tiri prima der salto!”',
+          escapeQuote: '“No, mi vengono i vortici!”'
+        },
+        {
+          name: 'Torbobiker Faina',
+          jersey: '#0d9488',
+          helmet: '#f8fafc',
+          bikeColor: '#14b8a6',
+          lureQuote: '“T’ho preparato un tromboncino da paura, dé!”',
+          escapeQuote: '“No se… poi rigozzo!”'
+        },
+        {
+          name: 'Torbobiker Randa',
+          jersey: '#ca8a04',
+          helmet: '#1e293b',
+          bikeColor: '#eab308',
+          lureQuote: '“Dove tu scappi così a rotta di collo, grullo?”',
+          escapeQuote: '“Ma ti levi di ‘ulo!”'
+        },
+        {
+          name: 'Torbobiker Zanna',
+          jersey: '#4f46e5',
+          helmet: '#a3e635',
+          bikeColor: '#6366f1',
+          lureQuote: '“Fèrmati due minuti sotto le sughere, via su!”',
+          escapeQuote: '“O grullo, io tiro dritto in baracchina, dé!”'
+        },
+        {
+          name: 'Torbobiker Moro',
+          jersey: '#be123c',
+          helmet: '#cbd5e1',
+          bikeColor: '#f43f5e',
+          lureQuote: '“Tira ‘na boccata che poi tu voli sulle radici!”',
+          escapeQuote: '“Mi gira già la testa solo a guardallo, boia dé!”'
+        },
+        {
+          name: 'Torbobiker Capo',
+          jersey: '#15803d',
+          helmet: '#fb923c',
+          bikeColor: '#4ade80',
+          lureQuote: '“Ultimo bivio, dé! Fèrmati co’ i Torbobikers!”',
+          escapeQuote: '“Ma ti levi di ‘ulo! Ci si vede all’aperitivo!”'
+        }
+      ];
+
+      const RIDER_QUIPS_LV1 = [
         'Boia dé, che spettacolo!', 'Che gasse, dé!', 'O svegliaaa!',
         'Che stile l’Orbea!', 'Forza Livorno, dé!', 'Via su verso l’Orizzonte!', 'Boia dé, che vista!'
+      ];
+
+      const RIDER_QUIPS_LV2 = [
+        'Boia dé, che discesa!', 'Lascia correre la Fox 38!', 'O svegliaaa, giù a foho!',
+        'Via su verso la baracchina!', 'Che flow nel bosco, dé!', 'Freni caldi e gasse aperto!'
       ];
 
       // =========================================================================
@@ -357,8 +484,8 @@
         if (!audioEnabled) return;
         try {
           if (!audioCtx) {
-            const AudioCtx = window.AudioContext || window.webkitAudioContext;
-            if (AudioCtx) audioCtx = new AudioCtx();
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) audioCtx = new AudioContext();
           }
           if (audioCtx && audioCtx.state === 'suspended') {
             audioCtx.resume().catch(function () {});
@@ -405,6 +532,22 @@
             gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
             osc.start(now);
             osc.stop(now + 0.29);
+          } else if (type === 'escape') {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(320, now);
+            osc.frequency.exponentialRampToValueAtTime(760, now + 0.22);
+            gain.gain.setValueAtTime(0.12, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+            osc.start(now);
+            osc.stop(now + 0.25);
+          } else if (type === 'dizzy') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(280, now);
+            osc.frequency.linearRampToValueAtTime(150, now + 0.25);
+            gain.gain.setValueAtTime(0.14, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+            osc.start(now);
+            osc.stop(now + 0.29);
           } else if (type === 'gelato') {
             osc.type = 'triangle';
             osc.frequency.setValueAtTime(523.25, now);
@@ -440,18 +583,20 @@
       // STATO DEL GIOCO & INPUT
       // =========================================================================
       const state = {
+        level: 1,
         mode: 'START',
         time: 0,
         startTime: 0,
-        elapsedSimTime: 0,
         score: 0,
         belvedereCount: 0,
+        torboEscapedCount: 0,
         panoramaTimer: 0,
         currentBelvedere: null,
-        gelatoTimer: 0,
+        endStopTimer: 0,
         activeNpc: null,
         quipText: '',
         quipTimer: 0,
+        vortexTimer: 0,
         bike: {
           x: 200,
           y: 0,
@@ -462,38 +607,67 @@
           pedalPhase: 0,
           pitch: 0
         },
-        cameraX: 0
+        cameraX: 0,
+        cameraBaseY: 0
       };
 
       const keys = { right: false, left: false, up: false, turbo: false };
 
-      function clearKeys() {
+      function resetKeys() {
         keys.right = false;
         keys.left = false;
         keys.up = false;
         keys.turbo = false;
+        if (btnPedal) btnPedal.classList.remove('pressed');
+        if (btnBrake) btnBrake.classList.remove('pressed');
+        if (btnJump) btnJump.classList.remove('pressed');
+        if (btnTurbo) btnTurbo.classList.remove('pressed');
       }
 
-      window.addEventListener('blur', clearKeys);
+      window.addEventListener('blur', resetKeys);
 
       let npcs = [];
+      let torbobikers = [];
+      let trailObstacles = [];
       let sceneryItems = [];
       let leaves = [];
+      let dustParticles = [];
+
+      function getCourseLength() {
+        return state.level === 2 ? COURSE_LENGTH_LV2 : COURSE_LENGTH_LV1;
+      }
 
       function getGroundY(worldX) {
-        const x = Number.isFinite(worldX) ? worldX : 0;
-        let y = Math.sin(x * 0.0016) * 14 + Math.cos(x * 0.0007) * 10;
+        if (state.level === 2) {
+          // Discesa continua nel bosco con dossi, drop e pianoro finale alla Baracchina
+          const clampedX = Math.max(0, Math.min(COURSE_LENGTH_LV2, worldX));
+          const downhill = clampedX * 0.095;
+          const trailBumps = Math.sin(clampedX * 0.0038) * 18 + Math.cos(clampedX * 0.0014) * 26;
+          const rollers = Math.sin(clampedX * 0.009) * 7;
+          let y = downhill + trailBumps + rollers;
+
+          if (worldX > COURSE_LENGTH_LV2 - 650) {
+            const flatY = COURSE_LENGTH_LV2 * 0.095;
+            const t = Math.min(1, Math.max(0, (worldX - (COURSE_LENGTH_LV2 - 650)) / 500));
+            const smooth = t * t * (3 - 2 * t);
+            y = y * (1 - smooth) + flatY * smooth;
+          }
+          return y;
+        }
+
+        // Livello 1: Lungomare con 5 collinette Belvedere
+        let y = Math.sin(worldX * 0.0016) * 14 + Math.cos(worldX * 0.0007) * 10;
         for (let i = 0; i < BELVEDERE_SPOTS.length; i++) {
           const spot = BELVEDERE_SPOTS[i];
-          const dx = x - spot.x;
+          const dx = worldX - spot.x;
           const hillRadius = 780;
           if (Math.abs(dx) < hillRadius) {
             const norm = dx / hillRadius;
             y -= Math.pow(Math.cos(norm * Math.PI * 0.5), 2) * 125;
           }
         }
-        if (x > 24600) {
-          const t = Math.min(1, (x - 24600) / 300);
+        if (worldX > 24600) {
+          const t = Math.min(1, (worldX - 24600) / 300);
           y = y * (1 - t);
         }
         return y;
@@ -504,85 +678,178 @@
         return Math.atan2(getGroundY(worldX + eps) - getGroundY(worldX - eps), eps * 2);
       }
 
+      function configureHudForLevel() {
+        const isLv2 = state.level === 2;
+        if (hudLevelPill) {
+          hudLevelPill.textContent = isLv2 ? 'LV 2' : 'LV 1';
+          hudLevelPill.className = isLv2
+            ? 'px-1.5 py-0.5 rounded-md bg-emerald-500/25 border border-emerald-400/40 text-[9px] font-black text-emerald-300 uppercase'
+            : 'px-1.5 py-0.5 rounded-md bg-sky-500/25 border border-sky-400/40 text-[9px] font-black text-sky-300 uppercase';
+        }
+        if (hudLocationLabel) {
+          hudLocationLabel.textContent = isLv2 ? 'Bosco · Discesa Torbobikers' : 'Livorno · Viale Italia';
+        }
+        if (switchLevelHudBtn) {
+          switchLevelHudBtn.textContent = isLv2 ? '🌊 Lv.1' : '🌲 Lv.2';
+          switchLevelHudBtn.title = isLv2 ? 'Passa al Livello 1 (Lungomare)' : 'Passa al Livello 2 (Bosco)';
+        }
+
+        const endBadge = document.getElementById('milestone4');
+        if (endBadge) {
+          endBadge.textContent = isLv2 ? '🍹' : '🍦';
+        }
+      }
+
       function populateWorld() {
         npcs = [];
+        torbobikers = [];
+        trailObstacles = [];
         sceneryItems = [];
         leaves = [];
+        dustParticles = [];
 
-        for (let i = 0; i < BELVEDERE_SPOTS.length; i++) {
-          BELVEDERE_SPOTS[i].visited = false;
+        configureHudForLevel();
+
+        for (let i = 0; i < 5; i++) {
           const badge = document.getElementById('milestone' + i);
           if (badge) {
-            badge.classList.remove('bg-amber-400', 'text-slate-950');
+            badge.classList.remove('bg-amber-400', 'bg-emerald-400', 'text-slate-950');
             badge.classList.add('bg-slate-900');
           }
         }
 
-        const npcPositions = [1800, 3600, 6500, 8600, 11600, 13600, 16500, 18600, 21400, 23100];
-        for (let i = 0; i < NPC_TEMPLATES.length; i++) {
-          const tpl = NPC_TEMPLATES[i];
-          npcs.push({
-            id: i,
-            x: npcPositions[i],
-            name: tpl.name,
-            role: tpl.role,
-            avatar: tpl.avatar,
-            shirt: tpl.shirt,
-            pants: tpl.pants,
-            hair: tpl.hair,
-            quote: tpl.quote,
-            replies: tpl.replies.slice(),
-            talked: false,
-            wavePhase: i * 1.1
-          });
-        }
-
-        for (let x = 350; x < COURSE_LENGTH + 400; x += 420) {
-          sceneryItems.push({
-            x: x,
-            type: (Math.floor(x / 420) % 3 === 0) ? 'lamp' : 'pine',
-            scale: 0.85 + ((x * 17) % 30) / 100
-          });
-        }
-
-        for (let x = 1100; x < COURSE_LENGTH - 900; x += 1450) {
-          let tooClose = false;
-          for (let n = 0; n < npcs.length; n++) {
-            if (Math.abs(npcs[n].x - x) < 340) tooClose = true;
+        if (state.level === 1) {
+          for (let i = 0; i < BELVEDERE_SPOTS.length; i++) {
+            BELVEDERE_SPOTS[i].visited = false;
           }
-          for (let b = 0; b < BELVEDERE_SPOTS.length; b++) {
-            if (Math.abs(BELVEDERE_SPOTS[b].x - x) < 420) tooClose = true;
+
+          const npcPositions = [1800, 3600, 6500, 8600, 11600, 13600, 16500, 18600, 21400, 23100];
+          for (let i = 0; i < NPC_TEMPLATES.length; i++) {
+            const tpl = NPC_TEMPLATES[i];
+            npcs.push({
+              id: i,
+              x: npcPositions[i],
+              name: tpl.name,
+              role: tpl.role,
+              avatar: tpl.avatar,
+              shirt: tpl.shirt,
+              pants: tpl.pants,
+              hair: tpl.hair,
+              quote: tpl.quote,
+              replies: tpl.replies.slice(),
+              talked: false,
+              wavePhase: i * 1.1
+            });
           }
-          if (!tooClose) leaves.push({ x: x, yOffset: -26, collected: false, phase: (x % 7) * 0.5 });
+
+          for (let x = 350; x < COURSE_LENGTH_LV1 + 400; x += 420) {
+            sceneryItems.push({
+              x: x,
+              type: (Math.floor(x / 420) % 3 === 0) ? 'lamp' : 'pine',
+              scale: 0.85 + ((x * 17) % 30) / 100
+            });
+          }
+
+          for (let x = 1100; x < COURSE_LENGTH_LV1 - 900; x += 1450) {
+            let tooClose = false;
+            for (let n = 0; n < npcs.length; n++) {
+              if (Math.abs(npcs[n].x - x) < 340) tooClose = true;
+            }
+            for (let b = 0; b < BELVEDERE_SPOTS.length; b++) {
+              if (Math.abs(BELVEDERE_SPOTS[b].x - x) < 420) tooClose = true;
+            }
+            if (!tooClose) leaves.push({ x: x, yOffset: -26, collected: false, phase: (x % 7) * 0.5 });
+          }
+        } else {
+          // LIVELLO 2: Sentiero nel bosco + 10 Torbobikers + radici/rocce da saltare
+          for (let i = 0; i < FOREST_SECTORS.length; i++) {
+            FOREST_SECTORS[i].passed = false;
+          }
+
+          const torboPositions = [2200, 4700, 7200, 9700, 12200, 14800, 17400, 20000, 22600, 25200];
+          for (let i = 0; i < TORBOBIKER_TEMPLATES.length; i++) {
+            const tpl = TORBOBIKER_TEMPLATES[i];
+            torbobikers.push({
+              id: i,
+              baseX: torboPositions[i],
+              x: torboPositions[i],
+              vx: 0,
+              name: tpl.name,
+              jersey: tpl.jersey,
+              helmet: tpl.helmet,
+              bikeColor: tpl.bikeColor,
+              lureQuote: tpl.lureQuote,
+              escapeQuote: tpl.escapeQuote,
+              status: 'WAITING', // WAITING | CHASING | ESCAPED | CAUGHT
+              alertTimer: 0,
+              smokePhase: i * 0.9
+            });
+          }
+
+          // Radici e tronchi sul sentiero (saltabili con SALTA per bonus stile)
+          for (let x = 1500; x < COURSE_LENGTH_LV2 - 1400; x += 1850) {
+            let nearTorbo = false;
+            for (let t = 0; t < torbobikers.length; t++) {
+              if (Math.abs(torbobikers[t].baseX - x) < 480) nearTorbo = true;
+            }
+            if (!nearTorbo) {
+              trailObstacles.push({
+                x: x,
+                type: (Math.floor(x / 1850) % 2 === 0) ? 'log' : 'rock',
+                cleared: false,
+                hit: false
+              });
+            }
+          }
+
+          // Alberi fitti del bosco (pini marittimi, lecci, felci)
+          for (let x = 200; x < COURSE_LENGTH_LV2 + 500; x += 260) {
+            const mod = Math.floor(x / 260) % 3;
+            sceneryItems.push({
+              x: x,
+              type: mod === 0 ? 'forestPine' : (mod === 1 ? 'oak' : 'bush'),
+              scale: 0.88 + ((x * 13) % 35) / 100
+            });
+          }
         }
       }
 
-      function startGame() {
+      function startGame(targetLevel) {
+        if (typeof targetLevel === 'number') {
+          state.level = targetLevel;
+        }
         ensureAudio();
+        resetKeys();
         populateWorld();
-        clearKeys();
 
         state.mode = 'PLAYING';
         state.startTime = performance.now();
-        state.elapsedSimTime = 0;
         state.score = 0;
         state.belvedereCount = 0;
+        state.torboEscapedCount = 0;
         state.panoramaTimer = 0;
         state.currentBelvedere = null;
-        state.gelatoTimer = 0;
+        state.endStopTimer = 0;
         state.activeNpc = null;
-        state.quipText = 'Boia dé, si parte verso l’Orizzonte!';
-        state.quipTimer = 2.6;
+        state.vortexTimer = 0;
+
+        if (state.level === 2) {
+          state.quipText = 'Giù nel bosco! Scappa dai Torbobikers!';
+        } else {
+          state.quipText = 'Boia dé, si parte verso l’Orizzonte!';
+        }
+        state.quipTimer = 2.8;
 
         state.bike.x = 200;
         state.bike.y = getGroundY(200);
-        state.bike.vx = 0;
+        state.bike.vx = state.level === 2 ? 220 : 0;
         state.bike.vy = 0;
         state.bike.onGround = true;
         state.bike.wheelAngle = 0;
         state.bike.pedalPhase = 0;
         state.bike.pitch = 0;
         state.cameraX = 0;
+        state.cameraBaseY = state.bike.y;
 
         if (startScreen) startScreen.classList.add('hidden');
         if (victoryScreen) victoryScreen.classList.add('hidden');
@@ -592,13 +859,36 @@
         updateHud();
       }
 
-      if (startBtn) startBtn.addEventListener('click', startGame);
-      if (restartBtn) restartBtn.addEventListener('click', startGame);
+      if (startBtn) {
+        startBtn.addEventListener('click', function () {
+          startGame(1);
+        });
+      }
+      if (startLv2Btn) {
+        startLv2Btn.addEventListener('click', function () {
+          startGame(2);
+        });
+      }
+      if (restartBtn) {
+        restartBtn.addEventListener('click', function () {
+          startGame(state.level);
+        });
+      }
+      if (nextLevelBtn) {
+        nextLevelBtn.addEventListener('click', function () {
+          startGame(state.level === 1 ? 2 : 1);
+        });
+      }
+      if (switchLevelHudBtn) {
+        switchLevelHudBtn.addEventListener('click', function () {
+          startGame(state.level === 1 ? 2 : 1);
+        });
+      }
 
       function triggerJump() {
         if (state.mode !== 'PLAYING') return;
         if (state.bike.onGround) {
-          state.bike.vy = -560;
+          state.bike.vy = -575;
           state.bike.onGround = false;
           playSound('jump');
         }
@@ -664,24 +954,10 @@
         });
       }
 
-      function selectNpcReply(npc, replyText) {
-        if (!npc) return;
-        npc.talked = true;
-        state.score += 150;
-        state.quipText = String(replyText).replace(/[“”]/g, '');
-        state.quipTimer = 3.0;
-        if (dialogueModal) dialogueModal.classList.add('hidden');
-        state.activeNpc = null;
-        if (state.mode === 'DIALOGUE') {
-          state.mode = 'PLAYING';
-        }
-        updateHud();
-      }
-
       function openNpcDialogue(npc) {
         state.mode = 'DIALOGUE';
         state.activeNpc = npc;
-        clearKeys();
+        resetKeys();
         playSound('npc');
 
         if (npcAvatarBadge) npcAvatarBadge.textContent = npc.avatar;
@@ -697,7 +973,14 @@
             btn.className = 'w-full text-left px-3.5 py-2.5 rounded-xl bg-slate-800/90 hover:bg-purple-600/80 active:scale-98 border border-slate-600/80 text-xs sm:text-sm font-bold text-white leading-snug transition cursor-pointer';
             btn.textContent = replyText;
             btn.addEventListener('click', function () {
-              selectNpcReply(npc, replyText);
+              npc.talked = true;
+              state.score += 150;
+              state.quipText = replyText.replace(/[“”]/g, '');
+              state.quipTimer = 3.0;
+              if (dialogueModal) dialogueModal.classList.add('hidden');
+              state.activeNpc = null;
+              state.mode = 'PLAYING';
+              updateHud();
             });
             dialogueOptions.appendChild(btn);
           });
@@ -713,7 +996,7 @@
         state.currentBelvedere = spot;
         state.panoramaTimer = BELVEDERE_PAUSE_DURATION;
         state.mode = 'PANORAMA';
-        clearKeys();
+        resetKeys();
 
         const badge = document.getElementById('milestone' + spot.id);
         if (badge) {
@@ -742,6 +1025,45 @@
 
       if (continuePanoramaBtn) {
         continuePanoramaBtn.addEventListener('click', closeBelvederePanorama);
+      }
+
+      function showVictoryScreen() {
+        state.mode = 'VICTORY';
+        const totalSec = Math.max(1, Math.round((performance.now() - state.startTime) / 1000));
+        const finalScoreEl = document.getElementById('finalScore');
+        const finalBelvedereEl = document.getElementById('finalBelvedere');
+        const finalTimeEl = document.getElementById('finalTime');
+
+        if (finalScoreEl) finalScoreEl.textContent = state.score + ' pts';
+        if (finalTimeEl) finalTimeEl.textContent = totalSec + 's';
+
+        if (state.level === 1) {
+          if (victoryCard) victoryCard.className = 'glass-hud rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl border-2 border-pink-400/70';
+          if (victoryEmoji) victoryEmoji.textContent = '🍦🌊🏆';
+          if (victoryBadge) {
+            victoryBadge.className = 'inline-block px-3 py-1 rounded-full bg-pink-500/20 border border-pink-400/40 text-pink-300 text-[11px] font-black uppercase tracking-wider mb-2';
+            victoryBadge.textContent = 'Gelateria L’Orizzonte · Traguardo!';
+          }
+          if (victoryTitle) victoryTitle.textContent = 'NO… STAI A MILANO!';
+          if (victoryDesc) victoryDesc.textContent = 'Boia dé, hai fatto tutti e 5 i Belvedere delle collinette, risposto per le rime ai 10 livornesi e ti sei gustato il gelato alla Gelateria L’Orizzonte!';
+          if (finalMetricLabel) finalMetricLabel.textContent = 'Belvedere';
+          if (finalBelvedereEl) finalBelvedereEl.textContent = state.belvedereCount + ' / 5';
+          if (nextLevelBtn) nextLevelBtn.textContent = '🌲 Vai al Livello 2 · Discesa nel Bosco!';
+        } else {
+          if (victoryCard) victoryCard.className = 'glass-hud rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl border-2 border-emerald-400/75';
+          if (victoryEmoji) victoryEmoji.textContent = '🍹🌅🏆';
+          if (victoryBadge) {
+            victoryBadge.className = 'inline-block px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-[11px] font-black uppercase tracking-wider mb-2';
+            victoryBadge.textContent = 'Aperitivo in Baracchina · Traguardo!';
+          }
+          if (victoryTitle) victoryTitle.textContent = 'BOIA DÉ, SCAMPATO!';
+          if (victoryDesc) victoryDesc.textContent = 'Sei sceso a foho dal bosco, hai seminato i Torbobikers senza farti venire i vortici e ti godi l’aperitivo in baracchina!';
+          if (finalMetricLabel) finalMetricLabel.textContent = 'Torbo Seminati';
+          if (finalBelvedereEl) finalBelvedereEl.textContent = state.torboEscapedCount + ' / ' + torbobikers.length;
+          if (nextLevelBtn) nextLevelBtn.textContent = '🌊 Torna al Livello 1 · Lungomare';
+        }
+
+        if (victoryScreen) victoryScreen.classList.remove('hidden');
       }
 
       function renderPanoramaSelfie() {
@@ -880,14 +1202,6 @@
         pCtx.lineTo(cx + 29, feetY - 69);
         pCtx.stroke();
 
-        pCtx.save();
-        pCtx.translate(cx - 25, feetY - 104);
-        pCtx.rotate(-Math.PI / 2);
-        pCtx.fillStyle = 'rgba(248, 250, 252, 0.8)';
-        pCtx.font = '800 5px Inter, sans-serif';
-        pCtx.fillText('RIP CURL', -12, 0);
-        pCtx.restore();
-
         pCtx.fillStyle = '#f8fafc';
         pCtx.beginPath();
         pCtx.moveTo(cx - 29, feetY - 69);
@@ -900,15 +1214,6 @@
         pCtx.quadraticCurveTo(cx + 21, feetY - 82, cx + 19, feetY - 69);
         pCtx.closePath();
         pCtx.fill();
-
-        pCtx.strokeStyle = '#030712';
-        pCtx.lineWidth = 2;
-        pCtx.beginPath();
-        pCtx.moveTo(cx, feetY - 133);
-        pCtx.lineTo(cx - 3, feetY - 122);
-        pCtx.moveTo(cx, feetY - 133);
-        pCtx.lineTo(cx + 4, feetY - 123);
-        pCtx.stroke();
 
         const torsoGrad = pCtx.createLinearGradient(cx - 34, feetY - 205, cx + 34, feetY - 134);
         torsoGrad.addColorStop(0, '#e39668');
@@ -960,26 +1265,6 @@
         pCtx.lineTo(cx + 35, feetY - 171);
         pCtx.stroke();
 
-        pCtx.strokeStyle = '#0f172a';
-        pCtx.lineWidth = 4;
-        pCtx.beginPath();
-        pCtx.moveTo(cx + 42, feetY - 173);
-        pCtx.lineTo(cx + 45, feetY - 167);
-        pCtx.stroke();
-
-        pCtx.strokeStyle = '#e39668';
-        pCtx.lineWidth = 3.2;
-        pCtx.beginPath();
-        pCtx.moveTo(cx - 35, feetY - 171);
-        pCtx.lineTo(cx - 37, feetY - 183);
-        pCtx.moveTo(cx - 35, feetY - 171);
-        pCtx.lineTo(cx - 22, feetY - 168);
-        pCtx.moveTo(cx + 35, feetY - 171);
-        pCtx.lineTo(cx + 37, feetY - 183);
-        pCtx.moveTo(cx + 35, feetY - 171);
-        pCtx.lineTo(cx + 22, feetY - 168);
-        pCtx.stroke();
-
         const headY = feetY - 228;
         pCtx.fillStyle = '#d48456';
         pCtx.fillRect(cx - 9, feetY - 210, 18, 13);
@@ -997,8 +1282,6 @@
         pCtx.fillRect(cx - 13, headY - 23, 26, 6);
         pCtx.fillRect(cx - 16.5, headY - 13, 3.5, 11);
         pCtx.fillRect(cx + 13, headY - 13, 3.5, 11);
-        pCtx.fillStyle = '#334155';
-        pCtx.fillRect(cx - 6, headY - 22, 13, 4);
 
         pCtx.fillStyle = '#1c1917';
         pCtx.beginPath();
@@ -1006,24 +1289,10 @@
         pCtx.roundRect(cx + 2, headY - 7, 13, 8, 2);
         pCtx.fill();
         pCtx.fillRect(cx - 2, headY - 5.5, 4, 2.5);
-        pCtx.fillRect(cx - 17, headY - 5, 2, 2);
-        pCtx.fillRect(cx + 15, headY - 5, 2, 2);
-
-        pCtx.strokeStyle = '#9a4d2c';
-        pCtx.lineWidth = 1.8;
-        pCtx.beginPath();
-        pCtx.moveTo(cx, headY - 1);
-        pCtx.lineTo(cx - 1.5, headY + 5);
-        pCtx.stroke();
 
         pCtx.fillStyle = '#475569';
         pCtx.beginPath();
         pCtx.roundRect(cx - 6.5, headY + 6.5, 13, 3.2, 1.5);
-        pCtx.fill();
-
-        pCtx.fillStyle = '#64748b';
-        pCtx.beginPath();
-        pCtx.arc(cx, headY + 18, 4, 0, Math.PI);
         pCtx.fill();
 
         pCtx.fillStyle = '#2b0909';
@@ -1035,42 +1304,88 @@
       }
 
       function updateHud() {
-        const meters = Math.min(2500, Math.max(0, Math.floor(state.bike.x / 10)));
+        const courseLen = getCourseLength();
+        const meters = Math.min(Math.floor(courseLen / 10), Math.max(0, Math.floor(state.bike.x / 10)));
         if (distanceDisplay) distanceDisplay.textContent = meters + ' m';
         if (scoreDisplay) scoreDisplay.textContent = state.score + ' pts';
 
-        const pct = Math.min(100, Math.max(0, (state.bike.x / COURSE_LENGTH) * 100));
+        const pct = Math.min(100, Math.max(0, (state.bike.x / courseLen) * 100));
         if (progressBarFill) progressBarFill.style.width = pct.toFixed(1) + '%';
 
-        let nextSpot = null;
-        for (let i = 0; i < BELVEDERE_SPOTS.length; i++) {
-          if (!BELVEDERE_SPOTS[i].visited) {
-            nextSpot = BELVEDERE_SPOTS[i];
-            break;
+        if (state.level === 1) {
+          let nextSpot = null;
+          for (let i = 0; i < BELVEDERE_SPOTS.length; i++) {
+            if (!BELVEDERE_SPOTS[i].visited) {
+              nextSpot = BELVEDERE_SPOTS[i];
+              break;
+            }
+          }
+
+          if (nextSpot) {
+            const distM = Math.max(0, Math.round((nextSpot.x - state.bike.x) / 10));
+            if (nextLandmarkText) nextLandmarkText.textContent = '📸 Belvedere #' + (nextSpot.id + 1) + ': ' + nextSpot.name;
+            if (nextLandmarkDist) nextLandmarkDist.textContent = distM + ' m';
+          } else {
+            const distGelato = Math.max(0, Math.round((COURSE_LENGTH_LV1 - state.bike.x) / 10));
+            if (nextLandmarkText) nextLandmarkText.textContent = '🍦 Traguardo: Gelateria L’Orizzonte';
+            if (nextLandmarkDist) nextLandmarkDist.textContent = distGelato + ' m';
+          }
+        } else {
+          let nextTorbo = null;
+          for (let t = 0; t < torbobikers.length; t++) {
+            if (torbobikers[t].status === 'WAITING' || torbobikers[t].status === 'CHASING') {
+              nextTorbo = torbobikers[t];
+              break;
+            }
+          }
+          if (nextTorbo && nextTorbo.x >= state.bike.x - 100) {
+            const distM = Math.max(0, Math.round((nextTorbo.x - state.bike.x) / 10));
+            if (nextLandmarkText) nextLandmarkText.textContent = '🌿 Allarme: ' + nextTorbo.name + ' (' + state.torboEscapedCount + '/' + torbobikers.length + ' seminati)';
+            if (nextLandmarkDist) nextLandmarkDist.textContent = distM + ' m';
+          } else {
+            const distBar = Math.max(0, Math.round((COURSE_LENGTH_LV2 - state.bike.x) / 10));
+            if (nextLandmarkText) nextLandmarkText.textContent = '🍹 Traguardo: Aperitivo in Baracchina';
+            if (nextLandmarkDist) nextLandmarkDist.textContent = distBar + ' m';
           }
         }
+      }
 
-        if (nextSpot) {
-          const distM = Math.max(0, Math.round((nextSpot.x - state.bike.x) / 10));
-          if (nextLandmarkText) nextLandmarkText.textContent = '📸 Belvedere #' + (nextSpot.id + 1) + ': ' + nextSpot.name;
-          if (nextLandmarkDist) nextLandmarkDist.textContent = distM + ' m';
-        } else {
-          const distGelato = Math.max(0, Math.round((COURSE_LENGTH - state.bike.x) / 10));
-          if (nextLandmarkText) nextLandmarkText.textContent = '🍦 Traguardo: Gelateria L’Orizzonte';
-          if (nextLandmarkDist) nextLandmarkDist.textContent = distGelato + ' m';
+      function spawnDust(wx, wy, count, color) {
+        for (let i = 0; i < count; i++) {
+          dustParticles.push({
+            x: wx - 25 + (Math.random() - 0.5) * 16,
+            y: wy - 4 - Math.random() * 8,
+            vx: -60 - Math.random() * 110,
+            vy: -30 - Math.random() * 65,
+            life: 0.35 + Math.random() * 0.25,
+            maxLife: 0.6,
+            size: 2.5 + Math.random() * 3,
+            color: color
+          });
         }
       }
 
       function update(dt) {
-        const safeDt = Number.isFinite(dt) && dt > 0 ? Math.min(0.1, dt) : 0.016;
-        state.time += safeDt;
+        state.time += dt;
 
         if (state.quipTimer > 0) {
-          state.quipTimer = Math.max(0, state.quipTimer - safeDt);
+          state.quipTimer = Math.max(0, state.quipTimer - dt);
+        }
+        if (state.vortexTimer > 0) {
+          state.vortexTimer = Math.max(0, state.vortexTimer - dt);
+        }
+
+        for (let d = dustParticles.length - 1; d >= 0; d--) {
+          const p = dustParticles[d];
+          p.x += p.vx * dt;
+          p.y += p.vy * dt;
+          p.vy += 180 * dt;
+          p.life -= dt;
+          if (p.life <= 0) dustParticles.splice(d, 1);
         }
 
         if (state.mode === 'PANORAMA') {
-          state.panoramaTimer -= safeDt;
+          state.panoramaTimer -= dt;
           if (panoramaCountdown) panoramaCountdown.textContent = Math.max(0, state.panoramaTimer).toFixed(1) + 's';
           if (state.panoramaTimer <= 0) {
             closeBelvederePanorama();
@@ -1078,161 +1393,465 @@
           return;
         }
 
-        if (state.mode === 'GELATO_STOP') {
-          state.gelatoTimer -= safeDt;
-          state.elapsedSimTime += safeDt;
-          if (state.gelatoTimer <= 0) {
-            state.mode = 'VICTORY';
-            const totalSec = Math.max(1, Math.round(state.elapsedSimTime));
-            const finalScoreEl = document.getElementById('finalScore');
-            const finalBelvedereEl = document.getElementById('finalBelvedere');
-            const finalTimeEl = document.getElementById('finalTime');
-            if (finalScoreEl) finalScoreEl.textContent = state.score + ' pts';
-            if (finalBelvedereEl) finalBelvedereEl.textContent = state.belvedereCount + ' / 5';
-            if (finalTimeEl) finalTimeEl.textContent = totalSec + 's';
-            if (victoryScreen) victoryScreen.classList.remove('hidden');
+        if (state.mode === 'END_STOP') {
+          state.endStopTimer -= dt;
+          if (state.endStopTimer <= 0) {
+            showVictoryScreen();
           }
           return;
         }
 
         if (state.mode !== 'PLAYING') return;
 
-        state.elapsedSimTime += safeDt;
-
-        const maxSpeed = keys.turbo ? 760 : 510;
-        const accel = keys.turbo ? 950 : 620;
+        const isLv2 = state.level === 2;
+        const dizzyFactor = state.vortexTimer > 0 ? 0.62 : 1.0;
+        const maxSpeed = (keys.turbo ? (isLv2 ? 840 : 760) : (isLv2 ? 620 : 510)) * dizzyFactor;
+        const accel = (keys.turbo ? 1020 : 650) * dizzyFactor;
 
         if (keys.right) {
-          state.bike.vx += accel * safeDt;
+          state.bike.vx += accel * dt;
         } else if (keys.left) {
-          state.bike.vx -= 820 * safeDt;
+          state.bike.vx -= 860 * dt;
         } else {
-          state.bike.vx *= Math.pow(0.25, safeDt);
+          // Nel bosco in discesa la bici mantiene più abbrivio
+          const drag = isLv2 ? 0.55 : 0.25;
+          state.bike.vx *= Math.pow(drag, dt);
           if (Math.abs(state.bike.vx) < 4) state.bike.vx = 0;
         }
 
-        const prevX = state.bike.x;
         const slope = getGroundSlope(state.bike.x);
-        state.bike.vx += Math.sin(slope) * 140 * safeDt;
+        const gravityAssist = isLv2 ? 320 : 140;
+        state.bike.vx += Math.sin(slope) * gravityAssist * dt;
         state.bike.vx = Math.max(-140, Math.min(maxSpeed, state.bike.vx));
 
-        state.bike.x = Math.max(80, state.bike.x + state.bike.vx * safeDt);
-        state.bike.wheelAngle += (state.bike.vx * safeDt) / 28;
-        state.bike.pedalPhase += (Math.abs(state.bike.vx) * safeDt) / 36;
+        state.bike.x = Math.max(80, state.bike.x + state.bike.vx * dt);
+        state.bike.wheelAngle += (state.bike.vx * dt) / 28;
+        state.bike.pedalPhase += (Math.abs(state.bike.vx) * dt) / 36;
 
         const groundY = getGroundY(state.bike.x);
         if (!state.bike.onGround) {
-          state.bike.vy += 1450 * safeDt;
-          state.bike.y += state.bike.vy * safeDt;
+          state.bike.vy += 1450 * dt;
+          state.bike.y += state.bike.vy * dt;
           if (state.bike.y >= groundY) {
             state.bike.y = groundY;
             state.bike.vy = 0;
             state.bike.onGround = true;
+            if (isLv2) spawnDust(state.bike.x, groundY, 7, 'rgba(120, 83, 52, 0.7)');
           }
         } else {
           state.bike.y = groundY;
+          if (isLv2 && state.bike.vx > 340 && Math.random() < dt * 14) {
+            spawnDust(state.bike.x, groundY, 1, 'rgba(146, 102, 68, 0.55)');
+          }
         }
 
-        const targetPitch = state.bike.onGround ? slope : Math.max(-0.4, Math.min(0.4, state.bike.vy * 0.0007));
-        state.bike.pitch += (targetPitch - state.bike.pitch) * Math.min(1, safeDt * 12);
+        // La telecamera verticale segue il profilo del terreno (così i salti staccano visivamente la bici da terra!)
+        state.cameraBaseY += (groundY - state.cameraBaseY) * Math.min(1, dt * 14);
 
-        if (state.quipTimer <= 0 && state.bike.vx > 380 && Math.random() < safeDt * 0.25) {
-          state.quipText = RIDER_QUIPS[Math.floor(Math.random() * RIDER_QUIPS.length)];
+        const targetPitch = state.bike.onGround ? slope : Math.max(-0.42, Math.min(0.42, state.bike.vy * 0.0007));
+        state.bike.pitch += (targetPitch - state.bike.pitch) * Math.min(1, dt * 12);
+
+        if (state.quipTimer <= 0 && state.bike.vx > 410 && Math.random() < dt * 0.24) {
+          const quipPool = isLv2 ? RIDER_QUIPS_LV2 : RIDER_QUIPS_LV1;
+          state.quipText = quipPool[Math.floor(Math.random() * quipPool.length)];
           state.quipTimer = 2.2;
         }
 
-        for (let c = 0; c < leaves.length; c++) {
-          const leaf = leaves[c];
-          const leafY = getGroundY(leaf.x) + leaf.yOffset;
-          const crossedX = (prevX <= leaf.x && state.bike.x >= leaf.x) || Math.abs(state.bike.x - leaf.x) < 38;
-          if (!leaf.collected && crossedX && Math.abs(state.bike.y - leafY) < 48) {
-            leaf.collected = true;
-            state.score += 50;
-            playSound('npc');
-            state.quipText = 'Fogliolina presa! (+50 pts)';
-            state.quipTimer = 1.4;
+        if (!isLv2) {
+          // LOGICA LIVELLO 1
+          for (let c = 0; c < leaves.length; c++) {
+            const leaf = leaves[c];
+            const leafY = getGroundY(leaf.x) + leaf.yOffset;
+            if (!leaf.collected && Math.abs(state.bike.x - leaf.x) < 38 && Math.abs(state.bike.y - leafY) < 42) {
+              leaf.collected = true;
+              state.score += 50;
+              playSound('npc');
+              state.quipText = 'Fogliolina presa! (+50 pts)';
+              state.quipTimer = 1.4;
+            }
           }
-        }
 
-        for (let i = 0; i < npcs.length; i++) {
-          const npc = npcs[i];
-          const crossedNpc = (prevX <= npc.x && state.bike.x >= npc.x) || Math.abs(state.bike.x - npc.x) < 48;
-          if (!npc.talked && crossedNpc) {
-            state.bike.x = npc.x;
+          for (let i = 0; i < npcs.length; i++) {
+            const npc = npcs[i];
+            if (!npc.talked && Math.abs(state.bike.x - npc.x) < 48) {
+              openNpcDialogue(npc);
+              return;
+            }
+          }
+
+          for (let b = 0; b < BELVEDERE_SPOTS.length; b++) {
+            const spot = BELVEDERE_SPOTS[b];
+            if (!spot.visited && state.bike.x >= spot.x) {
+              state.bike.x = spot.x;
+              state.bike.vx = 0;
+              state.bike.y = getGroundY(spot.x);
+              state.cameraBaseY = state.bike.y;
+              openBelvederePanorama(spot);
+              return;
+            }
+          }
+
+          if (state.bike.x >= COURSE_LENGTH_LV1) {
+            state.bike.x = COURSE_LENGTH_LV1;
             state.bike.vx = 0;
-            state.bike.y = getGroundY(npc.x);
-            openNpcDialogue(npc);
-            return;
+            state.bike.y = getGroundY(COURSE_LENGTH_LV1);
+            state.cameraBaseY = state.bike.y;
+            state.bike.onGround = true;
+            state.bike.pitch = 0;
+            state.score += 500;
+            state.mode = 'END_STOP';
+            state.endStopTimer = END_STOP_DURATION;
+            resetKeys();
+            playSound('gelato');
           }
-        }
+        } else {
+          // LOGICA LIVELLO 2: RADICI/ROCCE & TORBOBIKERS
+          for (let o = 0; o < trailObstacles.length; o++) {
+            const obs = trailObstacles[o];
+            if (obs.cleared || obs.hit) continue;
+            const dx = state.bike.x - obs.x;
+            if (Math.abs(dx) < 30) {
+              const heightAboveGround = getGroundY(obs.x) - state.bike.y;
+              if (heightAboveGround > 26) {
+                obs.cleared = true;
+                state.score += 100;
+                playSound('npc');
+                state.quipText = 'Saltata di netto! (+100 pts)';
+                state.quipTimer = 1.4;
+              } else {
+                obs.hit = true;
+                state.bike.vx *= 0.45;
+                spawnDust(obs.x, getGroundY(obs.x), 8, 'rgba(120, 83, 52, 0.85)');
+                state.quipText = 'Boia dé, che radice!';
+                state.quipTimer = 1.6;
+              }
+            }
+          }
 
-        for (let b = 0; b < BELVEDERE_SPOTS.length; b++) {
-          const spot = BELVEDERE_SPOTS[b];
-          if (!spot.visited && state.bike.x >= spot.x) {
-            state.bike.x = spot.x;
+          // Settori progress bar Livello 2
+          for (let s = 0; s < FOREST_SECTORS.length - 1; s++) {
+            const sec = FOREST_SECTORS[s];
+            if (!sec.passed && state.bike.x >= sec.x) {
+              sec.passed = true;
+              const badge = document.getElementById('milestone' + s);
+              if (badge) {
+                badge.classList.remove('bg-slate-900');
+                badge.classList.add('bg-emerald-400', 'text-slate-950');
+              }
+            }
+          }
+
+          // Torbobikers che provano a fermare Olmetto per fargli fumare uno spinello
+          for (let t = 0; t < torbobikers.length; t++) {
+            const tb = torbobikers[t];
+            const distToRider = tb.x - state.bike.x;
+
+            if (tb.status === 'WAITING' && distToRider < 430 && distToRider > -60) {
+              tb.status = 'CHASING';
+              tb.alertTimer = 3.2;
+              playSound('npc');
+            }
+
+            if (tb.status === 'CHASING') {
+              tb.alertTimer -= dt;
+              // Il Torbobiker affianca e prova a stringere la traiettoria
+              const chaseSpeed = Math.max(260, state.bike.vx * 0.72);
+              tb.x += chaseSpeed * dt;
+
+              // Se Olmetto accelera forte, attiva il TURBO o salta via, scappa!
+              const escapedAhead = state.bike.x - tb.x > 135;
+              const highSpeedEscape = Math.abs(state.bike.x - tb.x) < 110 && (state.bike.vx > 515 || keys.turbo || !state.bike.onGround);
+
+              if (escapedAhead || highSpeedEscape) {
+                tb.status = 'ESCAPED';
+                state.torboEscapedCount++;
+                state.score += 200;
+                state.quipText = tb.escapeQuote.replace(/[“”]/g, '');
+                state.quipTimer = 2.7;
+                playSound('escape');
+              } else if (Math.abs(state.bike.x - tb.x) < 42 && state.bike.vx <= 515 && state.bike.onGround) {
+                // Troppo lento: il Torbobiker riesce a fargli prendere una boccata -> vortici!
+                tb.status = 'CAUGHT';
+                state.vortexTimer = 3.4;
+                state.bike.vx = Math.max(190, state.bike.vx * 0.55);
+                state.quipText = '“No, mi vengono i vortici! No se… poi rigozzo!”';
+                state.quipTimer = 3.2;
+                playSound('dizzy');
+              } else if (tb.alertTimer <= 0 && state.bike.x > tb.x) {
+                tb.status = 'ESCAPED';
+                state.torboEscapedCount++;
+                state.score += 200;
+                state.quipText = tb.escapeQuote.replace(/[“”]/g, '');
+                state.quipTimer = 2.5;
+                playSound('escape');
+              }
+            }
+          }
+
+          if (state.bike.x >= COURSE_LENGTH_LV2) {
+            state.bike.x = COURSE_LENGTH_LV2;
             state.bike.vx = 0;
-            state.bike.y = getGroundY(spot.x);
-            openBelvederePanorama(spot);
-            return;
+            state.bike.y = getGroundY(COURSE_LENGTH_LV2);
+            state.cameraBaseY = state.bike.y;
+            state.bike.onGround = true;
+            state.bike.pitch = 0;
+            state.score += 500;
+            state.mode = 'END_STOP';
+            state.endStopTimer = END_STOP_DURATION;
+            const endBadge = document.getElementById('milestone4');
+            if (endBadge) {
+              endBadge.classList.remove('bg-slate-900');
+              endBadge.classList.add('bg-emerald-400', 'text-slate-950');
+            }
+            resetKeys();
+            playSound('gelato');
           }
-        }
-
-        if (state.bike.x >= COURSE_LENGTH) {
-          state.bike.x = COURSE_LENGTH;
-          state.bike.vx = 0;
-          state.bike.y = getGroundY(COURSE_LENGTH);
-          state.bike.onGround = true;
-          state.bike.pitch = 0;
-          state.score += 500;
-          state.mode = 'GELATO_STOP';
-          state.gelatoTimer = GELATO_STOP_DURATION;
-          clearKeys();
-          playSound('gelato');
         }
 
         updateHud();
       }
 
+      // =========================================================================
+      // DISEGNO PERSONAGGI, BELVEDERE, BARACCHINA E SCENOGRAFIA
+      // =========================================================================
       function drawBelvederePost(spot, screenX, screenY) {
-        if (!spot) return;
         ctx.save();
         ctx.translate(screenX, screenY);
 
-        // Ombra alla base
-        ctx.fillStyle = 'rgba(15, 23, 42, 0.32)';
+        // Basamento e palo in legno
+        ctx.fillStyle = '#78350f';
+        ctx.fillRect(-4, -78, 8, 78);
+
+        // Cartello panoramico
+        ctx.fillStyle = spot.visited ? '#15803d' : '#0369a1';
         ctx.beginPath();
-        ctx.ellipse(0, 2, 18, 4.5, 0, 0, Math.PI * 2);
+        ctx.roundRect(-42, -98, 84, 30, 6);
         ctx.fill();
-
-        // Paletto in legno / ferro
-        ctx.fillStyle = '#475569';
-        ctx.fillRect(-3, -72, 6, 72);
-
-        // Pannello panoramico
-        ctx.fillStyle = spot.visited ? '#16a34a' : '#f59e0b';
-        ctx.strokeStyle = '#0f172a';
+        ctx.strokeStyle = spot.visited ? '#86efac' : '#facc15';
         ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.roundRect(-42, -104, 84, 34, 7);
-        ctx.fill();
         ctx.stroke();
 
-        // Testo sul cartello
         ctx.fillStyle = '#ffffff';
-        ctx.font = '900 8.5px Inter, sans-serif';
+        ctx.font = '900 8px Inter, sans-serif';
         ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('📸 BELVEDERE #' + (spot.id + 1), 0, -91);
-
-        ctx.font = '700 7.5px Inter, sans-serif';
-        ctx.fillStyle = '#fef3c7';
-        const shortName = spot.name.length > 16 ? spot.name.slice(0, 15) + '…' : spot.name;
-        ctx.fillText(shortName, 0, -79);
+        ctx.fillText('BELVEDERE #' + (spot.id + 1), 0, -85);
+        ctx.font = '700 7px Inter, sans-serif';
+        ctx.fillStyle = '#fef08a';
+        ctx.fillText(spot.visited ? 'SELFIE FATTO!' : 'VISTA MARE', 0, -75);
 
         ctx.restore();
       }
 
-      function drawOlmettoRider(screenX, screenY, pitch, wheelAngle, pedalPhase, eatingGelato) {
+      function drawTrailObstacle(obs, screenX, screenY) {
+        ctx.save();
+        ctx.translate(screenX, screenY);
+
+        if (obs.type === 'log') {
+          ctx.fillStyle = '#5c2d16';
+          ctx.beginPath();
+          ctx.ellipse(0, -10, 20, 11, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#3b1a0b';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+          ctx.fillStyle = '#d97706';
+          ctx.beginPath();
+          ctx.arc(10, -10, 6, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          ctx.fillStyle = '#64748b';
+          ctx.beginPath();
+          ctx.moveTo(-22, 0);
+          ctx.lineTo(-12, -20);
+          ctx.lineTo(8, -22);
+          ctx.lineTo(22, 0);
+          ctx.closePath();
+          ctx.fill();
+          ctx.strokeStyle = '#334155';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+
+        ctx.restore();
+      }
+
+      function drawTorbobiker(tb, screenX, screenY) {
+        ctx.save();
+        ctx.translate(screenX, screenY);
+        const slope = getGroundSlope(tb.x);
+        ctx.rotate(slope);
+
+        // Ombra
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.35)';
+        ctx.beginPath();
+        ctx.ellipse(0, 2, 46, 5, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Ruote MTB Torbobiker
+        const rWheelX = -28;
+        const fWheelX = 30;
+        const wY = -18;
+        const wR = 18;
+        [rWheelX, fWheelX].forEach(function (wx) {
+          ctx.strokeStyle = '#0f172a';
+          ctx.lineWidth = 5;
+          ctx.beginPath();
+          ctx.arc(wx, wY, wR - 2, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.fillStyle = '#475569';
+          ctx.beginPath();
+          ctx.arc(wx, wY, 4, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        // Telaio bici
+        ctx.strokeStyle = tb.bikeColor;
+        ctx.lineWidth = 4.5;
+        ctx.beginPath();
+        ctx.moveTo(rWheelX, wY);
+        ctx.lineTo(-4, wY);
+        ctx.lineTo(-10, -42);
+        ctx.lineTo(18, -46);
+        ctx.lineTo(-4, wY);
+        ctx.moveTo(18, -46);
+        ctx.lineTo(fWheelX, wY);
+        ctx.stroke();
+
+        // Corpo ciclista
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(-14, -50, 7, 24);
+
+        ctx.fillStyle = tb.jersey;
+        ctx.beginPath();
+        ctx.roundRect(-16, -78, 18, 28, 5);
+        ctx.fill();
+
+        // Braccio teso con lo spinello verso Olmetto
+        const armWave = Math.sin(state.time * 7 + tb.id) * 3;
+        ctx.strokeStyle = tb.jersey;
+        ctx.lineWidth = 5.5;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(-4, -72);
+        ctx.lineTo(22, -68 + armWave);
+        ctx.stroke();
+
+        // Spinello con brace e nuvoletta di fumo
+        ctx.save();
+        ctx.translate(24, -68 + armWave);
+        ctx.rotate(-0.2);
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(0, -1.5, 11, 3);
+        ctx.fillStyle = '#f97316';
+        ctx.fillRect(10, -1.5, 2.5, 3);
+
+        // Volute di fumo
+        ctx.fillStyle = 'rgba(226, 232, 240, 0.72)';
+        const smokeRise = (state.time * 18 + tb.smokePhase * 10) % 18;
+        ctx.beginPath();
+        ctx.arc(13, -4 - smokeRise * 0.6, 3.2, 0, Math.PI * 2);
+        ctx.arc(16, -10 - smokeRise, 4.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        // Testa e casco
+        ctx.fillStyle = '#e09668';
+        ctx.beginPath();
+        ctx.arc(-4, -88, 9, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = tb.helmet;
+        ctx.beginPath();
+        ctx.arc(-4, -90, 9.5, Math.PI, 0);
+        ctx.fill();
+
+        // Fumetto del Torbobiker finché non viene seminato
+        if (tb.status === 'WAITING' || tb.status === 'CHASING') {
+          const bob = Math.sin(state.time * 5 + tb.id) * 3;
+          const label = tb.status === 'CHASING' ? tb.lureQuote.replace(/[“”]/g, '') : '🌿 Oh Olmetto, tira!';
+          ctx.save();
+          ctx.translate(0, -118 + bob);
+          ctx.font = '800 9.5px Inter, sans-serif';
+          const tw = ctx.measureText(label).width + 16;
+          ctx.fillStyle = tb.status === 'CHASING' ? 'rgba(22, 101, 52, 0.92)' : 'rgba(15, 23, 42, 0.88)';
+          ctx.beginPath();
+          ctx.roundRect(-tw / 2, -11, tw, 20, 8);
+          ctx.fill();
+          ctx.strokeStyle = '#4ade80';
+          ctx.lineWidth = 1.4;
+          ctx.stroke();
+          ctx.fillStyle = '#f0fdf4';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(label, 0, -1);
+          ctx.restore();
+        }
+
+        ctx.restore();
+      }
+
+      function drawBaracchinaAperitivo(screenX, screenY) {
+        ctx.save();
+        ctx.translate(screenX, screenY);
+
+        // Struttura chiosco in legno / baracchina livornese
+        ctx.fillStyle = '#78350f';
+        ctx.beginPath();
+        ctx.roundRect(-84, -116, 168, 116, 10);
+        ctx.fill();
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        // Tendone a righe giallo/bianco
+        const stripeW = 14;
+        for (let i = 0; i < 12; i++) {
+          ctx.fillStyle = i % 2 === 0 ? '#f59e0b' : '#fef3c7';
+          ctx.fillRect(-84 + i * stripeW, -90, stripeW, 18);
+        }
+
+        // Insegna luminosa
+        ctx.fillStyle = '#064e3b';
+        ctx.beginPath();
+        ctx.roundRect(-78, -142, 156, 26, 8);
+        ctx.fill();
+        ctx.strokeStyle = '#34d399';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.fillStyle = '#a7f3d0';
+        ctx.font = '900 10px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('BARACCHINA · APERITIVO', 0, -126);
+
+        // Bancone e bicchieri di spritz / patatine
+        ctx.fillStyle = '#fef3c7';
+        ctx.fillRect(-68, -46, 136, 46);
+        ctx.fillStyle = '#92400e';
+        ctx.fillRect(-72, -50, 144, 6);
+
+        // Calici spritz arancioni sul bancone
+        const glassesX = [-44, -18, 12, 38];
+        for (let g = 0; g < glassesX.length; g++) {
+          const gx = glassesX[g];
+          ctx.fillStyle = '#f97316';
+          ctx.beginPath();
+          ctx.moveTo(gx - 5, -64);
+          ctx.lineTo(gx + 5, -64);
+          ctx.lineTo(gx + 3, -55);
+          ctx.lineTo(gx - 3, -55);
+          ctx.closePath();
+          ctx.fill();
+          ctx.strokeStyle = '#e2e8f0';
+          ctx.lineWidth = 1.4;
+          ctx.beginPath();
+          ctx.moveTo(gx, -55);
+          ctx.lineTo(gx, -50);
+          ctx.stroke();
+        }
+
+        ctx.restore();
+      }
+
+      function drawOlmettoRider(screenX, screenY, pitch, wheelAngle, pedalPhase, celebrationType) {
         if (state.mode === 'PANORAMA') {
           ctx.save();
           ctx.translate(screenX, screenY);
@@ -1259,43 +1878,10 @@
           ctx.arc(11, -31, 4.2, Math.PI, 0);
           ctx.fill();
 
-          ctx.strokeStyle = '#030712';
-          ctx.lineWidth = 1.4;
-          ctx.beginPath();
-          ctx.moveTo(0, -61);
-          ctx.lineTo(-2, -55);
-          ctx.moveTo(0, -61);
-          ctx.lineTo(2, -55);
-          ctx.stroke();
-
           ctx.fillStyle = '#e39668';
           ctx.beginPath();
           ctx.roundRect(-17, -96, 34, 36, 8);
           ctx.fill();
-
-          ctx.strokeStyle = 'rgba(124, 45, 18, 0.25)';
-          ctx.lineWidth = 1.2;
-          ctx.beginPath();
-          ctx.moveTo(0, -90);
-          ctx.lineTo(0, -68);
-          ctx.moveTo(-12, -83);
-          ctx.quadraticCurveTo(-6, -80, -1, -83);
-          ctx.moveTo(1, -83);
-          ctx.quadraticCurveTo(6, -80, 12, -83);
-          ctx.stroke();
-
-          ctx.fillStyle = '#9a4d2c';
-          ctx.beginPath();
-          ctx.arc(-8, -85, 1.3, 0, Math.PI * 2);
-          ctx.arc(8, -85, 1.3, 0, Math.PI * 2);
-          ctx.arc(0, -70, 1.1, 0, Math.PI * 2);
-          ctx.fill();
-
-          ctx.strokeStyle = '#f8fafc';
-          ctx.lineWidth = 1.8;
-          ctx.beginPath();
-          ctx.arc(0, -96, 7, 0.15 * Math.PI, 0.85 * Math.PI);
-          ctx.stroke();
 
           ctx.strokeStyle = '#dc8c5d';
           ctx.lineWidth = 6.5;
@@ -1310,26 +1896,6 @@
           ctx.lineTo(18, -79);
           ctx.stroke();
 
-          ctx.strokeStyle = '#0f172a';
-          ctx.lineWidth = 2.4;
-          ctx.beginPath();
-          ctx.moveTo(21, -80);
-          ctx.lineTo(23, -77);
-          ctx.stroke();
-
-          ctx.strokeStyle = '#e39668';
-          ctx.lineWidth = 2;
-          ctx.beginPath();
-          ctx.moveTo(-18, -79);
-          ctx.lineTo(-19, -86);
-          ctx.moveTo(-18, -79);
-          ctx.lineTo(-11, -77);
-          ctx.moveTo(18, -79);
-          ctx.lineTo(19, -86);
-          ctx.moveTo(18, -79);
-          ctx.lineTo(11, -77);
-          ctx.stroke();
-
           const hy = -109;
           ctx.fillStyle = '#e39668';
           ctx.beginPath();
@@ -1339,25 +1905,17 @@
           ctx.fillStyle = '#475569';
           ctx.beginPath();
           ctx.arc(0, hy - 5, 9.2, Math.PI, 0);
+          pCtx && null;
           ctx.fill();
           ctx.fillStyle = '#cbd5e1';
           ctx.fillRect(-7, hy - 12, 14, 3.5);
-          ctx.fillRect(-9, hy - 7, 2, 6);
-          ctx.fillRect(7, hy - 7, 2, 6);
 
           ctx.fillStyle = '#1c1917';
           ctx.beginPath();
           ctx.roundRect(-8, hy - 3.5, 7, 4.2, 1.2);
           ctx.roundRect(1, hy - 3.5, 7, 4.2, 1.2);
           ctx.fill();
-          ctx.fillRect(-1, hy - 2.5, 2, 1.4);
 
-          ctx.fillStyle = '#475569';
-          ctx.fillRect(-3.5, hy + 3, 7, 1.8);
-          ctx.fillStyle = '#64748b';
-          ctx.beginPath();
-          ctx.arc(0, hy + 9.2, 2.2, 0, Math.PI);
-          ctx.fill();
           ctx.fillStyle = '#2b0909';
           ctx.beginPath();
           ctx.ellipse(0, hy + 6.5, 2.1, 3.2, 0, 0, Math.PI * 2);
@@ -1369,6 +1927,11 @@
 
         ctx.save();
         ctx.translate(screenX, screenY);
+
+        // Effetto vortici temporaneo se il Torbobiker riesce a rallentarlo
+        if (state.vortexTimer > 0) {
+          ctx.rotate(Math.sin(state.time * 16) * 0.05);
+        }
         ctx.rotate(pitch);
 
         const rearWheelX = -38;
@@ -1688,9 +2251,18 @@
         ctx.lineTo(3, -2);
         ctx.stroke();
 
+        // Stelline/spirale vortici sopra il casco se rallentato dal Torbobiker
+        if (state.vortexTimer > 0) {
+          ctx.strokeStyle = '#a3e635';
+          ctx.lineWidth = 1.8;
+          ctx.beginPath();
+          ctx.arc(Math.sin(state.time * 12) * 8, -20, 6, 0, Math.PI * 1.6);
+          ctx.stroke();
+        }
+
         ctx.restore();
 
-        if (eatingGelato) {
+        if (celebrationType === 'GELATO') {
           const lickBob = Math.sin(state.time * 8) * 3;
           ctx.save();
           ctx.translate(headX + 18, headY + 4 + lickBob);
@@ -1710,24 +2282,51 @@
           ctx.arc(2.5, -2.5, 4.2, 0, Math.PI * 2);
           ctx.fill();
           ctx.restore();
+        } else if (celebrationType === 'APERITIVO') {
+          const toastBob = Math.sin(state.time * 6) * 4;
+          ctx.save();
+          ctx.translate(headX + 20, headY + 2 + toastBob);
+          // Calice di Spritz in mano
+          ctx.fillStyle = '#f97316';
+          ctx.beginPath();
+          ctx.moveTo(-6, -4);
+          ctx.lineTo(6, -4);
+          ctx.lineTo(3, 6);
+          ctx.lineTo(-3, 6);
+          ctx.closePath();
+          ctx.fill();
+          ctx.strokeStyle = '#f8fafc';
+          ctx.lineWidth = 1.6;
+          ctx.beginPath();
+          ctx.moveTo(0, 6);
+          ctx.lineTo(0, 14);
+          ctx.moveTo(-4, 14);
+          ctx.lineTo(4, 14);
+          ctx.stroke();
+          // Fettina d'arancia
+          ctx.fillStyle = '#facc15';
+          ctx.beginPath();
+          ctx.arc(5, -4, 3, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
         }
 
         if (state.quipTimer > 0 && state.quipText) {
           ctx.save();
-          ctx.translate(headX, headY - 26);
-          ctx.font = '800 10px Inter, sans-serif';
-          const textW = ctx.measureText(state.quipText).width + 16;
-          ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+          ctx.translate(headX, headY - 28);
+          ctx.font = '800 10.5px Inter, sans-serif';
+          const textW = ctx.measureText(state.quipText).width + 18;
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.90)';
           ctx.beginPath();
-          ctx.roundRect(-textW / 2, -12, textW, 20, 8);
+          ctx.roundRect(-textW / 2, -12, textW, 21, 8);
           ctx.fill();
-          ctx.strokeStyle = 'rgba(163, 230, 53, 0.7)';
-          ctx.lineWidth = 1.2;
+          ctx.strokeStyle = state.vortexTimer > 0 ? 'rgba(248, 113, 113, 0.85)' : 'rgba(163, 230, 53, 0.85)';
+          ctx.lineWidth = 1.4;
           ctx.stroke();
           ctx.fillStyle = '#ecfccb';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
-          ctx.fillText(state.quipText, 0, -2);
+          ctx.fillText(state.quipText, 0, -1.5);
           ctx.restore();
         }
 
@@ -1907,8 +2506,8 @@
       function render() {
         if (!ctx || !canvas) return;
         const dpr = window.devicePixelRatio || 1;
-        const width = Math.max(1, window.innerWidth);
-        const height = Math.max(1, window.innerHeight);
+        const width = window.innerWidth;
+        const height = window.innerHeight;
         if (canvas.width !== Math.floor(width * dpr) || canvas.height !== Math.floor(height * dpr)) {
           canvas.width = Math.floor(width * dpr);
           canvas.height = Math.floor(height * dpr);
@@ -1917,70 +2516,133 @@
         ctx.save();
         ctx.scale(dpr, dpr);
 
-        const skyGrad = ctx.createLinearGradient(0, 0, 0, height * 0.65);
-        skyGrad.addColorStop(0, '#0369a1');
-        skyGrad.addColorStop(0.55, '#38bdf8');
-        skyGrad.addColorStop(1, '#bae6fd');
-        ctx.fillStyle = skyGrad;
-        ctx.fillRect(0, 0, width, height);
-
-        ctx.fillStyle = '#fef08a';
-        ctx.beginPath();
-        ctx.arc(width * 0.82, height * 0.2, 34, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.72)';
-        for (let c = 0; c < 5; c++) {
-          const cx = ((c * 340 - state.cameraX * 0.08) % (width + 260) + (width + 260)) % (width + 260) - 130;
-          const cy = height * (0.14 + (c % 3) * 0.06);
-          ctx.beginPath();
-          ctx.arc(cx, cy, 24, 0, Math.PI * 2);
-          ctx.arc(cx + 22, cy - 6, 28, 0, Math.PI * 2);
-          ctx.arc(cx + 46, cy, 22, 0, Math.PI * 2);
-          ctx.fill();
-        }
-
-        const horizonY = height * 0.60;
-        const seaGrad = ctx.createLinearGradient(0, horizonY, 0, height);
-        seaGrad.addColorStop(0, '#0284c7');
-        seaGrad.addColorStop(0.5, '#0ea5e9');
-        seaGrad.addColorStop(1, '#38bdf8');
-        ctx.fillStyle = seaGrad;
-        ctx.fillRect(0, horizonY, width, height - horizonY);
-
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.28)';
-        for (let wRow = 0; wRow < 6; wRow++) {
-          const wy = horizonY + 12 + wRow * 16;
-          for (let wx = 0; wx < width + 120; wx += 110) {
-            const offsetX = ((wx - state.cameraX * (0.18 + wRow * 0.03) + wRow * 35) % (width + 120) + (width + 120)) % (width + 120) - 60;
-            ctx.fillRect(offsetX, wy, 36, 2);
-          }
-        }
-
-        const riderScreenX = width * 0.5;
+        const isLv2 = state.level === 2;
+        const riderScreenX = width * 0.45;
         state.cameraX = state.bike.x - riderScreenX;
-        const centerScreenY = height * 0.73;
-        const baseRoadScreenY = centerScreenY - state.bike.y;
+        const groundScreenTargetY = height * 0.72;
+        const baseRoadScreenY = groundScreenTargetY - state.cameraBaseY;
+        const riderScreenY = baseRoadScreenY + state.bike.y;
 
+        if (!isLv2) {
+          // =====================================================================
+          // SFONDO LIVELLO 1: MARE E LUNGOMARE DI LIVORNO
+          // =====================================================================
+          const skyGrad = ctx.createLinearGradient(0, 0, 0, height * 0.65);
+          skyGrad.addColorStop(0, '#0369a1');
+          skyGrad.addColorStop(0.55, '#38bdf8');
+          skyGrad.addColorStop(1, '#bae6fd');
+          ctx.fillStyle = skyGrad;
+          ctx.fillRect(0, 0, width, height);
+
+          ctx.fillStyle = '#fef08a';
+          ctx.beginPath();
+          ctx.arc(width * 0.82, height * 0.2, 34, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.72)';
+          for (let c = 0; c < 5; c++) {
+            const cx = ((c * 340 - state.cameraX * 0.08) % (width + 260) + (width + 260)) % (width + 260) - 130;
+            const cy = height * (0.14 + (c % 3) * 0.06);
+            ctx.beginPath();
+            ctx.arc(cx, cy, 24, 0, Math.PI * 2);
+            ctx.arc(cx + 22, cy - 6, 28, 0, Math.PI * 2);
+            ctx.arc(cx + 46, cy, 22, 0, Math.PI * 2);
+            ctx.fill();
+          }
+
+          const horizonY = height * 0.60;
+          const seaGrad = ctx.createLinearGradient(0, horizonY, 0, height);
+          seaGrad.addColorStop(0, '#0284c7');
+          seaGrad.addColorStop(0.5, '#0ea5e9');
+          seaGrad.addColorStop(1, '#38bdf8');
+          ctx.fillStyle = seaGrad;
+          ctx.fillRect(0, horizonY, width, height - horizonY);
+
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.28)';
+          for (let wRow = 0; wRow < 6; wRow++) {
+            const wy = horizonY + 12 + wRow * 16;
+            for (let wx = 0; wx < width + 120; wx += 110) {
+              const offsetX = ((wx - state.cameraX * (0.18 + wRow * 0.03) + wRow * 35) % (width + 120) + (width + 120)) % (width + 120) - 60;
+              ctx.fillRect(offsetX, wy, 36, 2);
+            }
+          }
+        } else {
+          // =====================================================================
+          // SFONDO LIVELLO 2: BOSCO MEDITERRANEO IN DISCESA + RAGGI DI SOLE
+          // =====================================================================
+          const forestSkyGrad = ctx.createLinearGradient(0, 0, 0, height * 0.75);
+          forestSkyGrad.addColorStop(0, '#064e3b');
+          forestSkyGrad.addColorStop(0.5, '#047857');
+          forestSkyGrad.addColorStop(1, '#34d399');
+          ctx.fillStyle = forestSkyGrad;
+          ctx.fillRect(0, 0, width, height);
+
+          // Raggi di sole filtrati tra i pini
+          ctx.save();
+          ctx.fillStyle = 'rgba(254, 240, 138, 0.11)';
+          for (let r = 0; r < 5; r++) {
+            const rx = ((r * 310 - state.cameraX * 0.06) % (width + 240) + (width + 240)) % (width + 240) - 120;
+            ctx.beginPath();
+            ctx.moveTo(rx, 0);
+            ctx.lineTo(rx + 65, 0);
+            ctx.lineTo(rx + 210, height);
+            ctx.lineTo(rx + 95, height);
+            ctx.closePath();
+            ctx.fill();
+          }
+          ctx.restore();
+
+          // Sagome alberi sfondo lontano (parallasse 0.16)
+          ctx.fillStyle = '#065f46';
+          for (let bg = 0; bg < width + 220; bg += 110) {
+            const tx = ((bg - state.cameraX * 0.16) % (width + 220) + (width + 220)) % (width + 220) - 110;
+            ctx.fillRect(tx - 6, height * 0.25, 12, height * 0.65);
+            ctx.beginPath();
+            ctx.arc(tx, height * 0.28, 46, 0, Math.PI * 2);
+            ctx.fill();
+          }
+
+          // Chioma superiore del bosco
+          ctx.fillStyle = '#022c22';
+          ctx.fillRect(0, 0, width, height * 0.08);
+        }
+
+        // Elementi scenografici lungo il percorso
         for (let s = 0; s < sceneryItems.length; s++) {
           const item = sceneryItems[s];
           const sx = item.x - state.cameraX;
-          if (sx < -120 || sx > width + 120) continue;
+          if (sx < -140 || sx > width + 140) continue;
           const sy = baseRoadScreenY + getGroundY(item.x);
 
           ctx.save();
           ctx.translate(sx, sy);
           ctx.scale(item.scale, item.scale);
-          if (item.type === 'pine') {
+          if (item.type === 'pine' || item.type === 'forestPine') {
             ctx.fillStyle = '#78350f';
-            ctx.fillRect(-5, -86, 10, 86);
+            ctx.fillRect(-6, -98, 12, 98);
             ctx.fillStyle = '#15803d';
             ctx.beginPath();
-            ctx.ellipse(0, -96, 44, 18, 0, 0, Math.PI * 2);
+            ctx.ellipse(0, -108, 48, 20, 0, 0, Math.PI * 2);
             ctx.fill();
             ctx.fillStyle = '#16a34a';
             ctx.beginPath();
-            ctx.ellipse(-6, -104, 34, 14, 0, 0, Math.PI * 2);
+            ctx.ellipse(-6, -118, 36, 15, 0, 0, Math.PI * 2);
+            ctx.fill();
+          } else if (item.type === 'oak') {
+            ctx.fillStyle = '#5c2d16';
+            ctx.fillRect(-7, -84, 14, 84);
+            ctx.fillStyle = '#14532d';
+            ctx.beginPath();
+            ctx.arc(0, -96, 38, 0, Math.PI * 2);
+            ctx.arc(-22, -86, 26, 0, Math.PI * 2);
+            ctx.arc(22, -86, 26, 0, Math.PI * 2);
+            ctx.fill();
+          } else if (item.type === 'bush') {
+            ctx.fillStyle = '#15803d';
+            ctx.beginPath();
+            ctx.arc(-14, -12, 16, 0, Math.PI * 2);
+            ctx.arc(8, -14, 18, 0, Math.PI * 2);
+            ctx.arc(24, -10, 14, 0, Math.PI * 2);
             ctx.fill();
           } else {
             ctx.fillStyle = '#334155';
@@ -1993,20 +2655,21 @@
           ctx.restore();
         }
 
-        ctx.fillStyle = '#1e293b';
+        // Terreno (asfalto lungomare nel Lv1, sentiero sterrato nel bosco nel Lv2)
+        ctx.fillStyle = isLv2 ? '#451a03' : '#1e293b';
         ctx.beginPath();
-        ctx.moveTo(-20, height + 20);
+        ctx.moveTo(-20, height + 40);
         for (let sx = -20; sx <= width + 20; sx += 16) {
           const wx = sx + state.cameraX;
           const sy = baseRoadScreenY + getGroundY(wx);
           ctx.lineTo(sx, sy);
         }
-        ctx.lineTo(width + 20, height + 20);
+        ctx.lineTo(width + 20, height + 40);
         ctx.closePath();
         ctx.fill();
 
-        ctx.strokeStyle = '#94a3b8';
-        ctx.lineWidth = 4;
+        ctx.strokeStyle = isLv2 ? '#92400e' : '#94a3b8';
+        ctx.lineWidth = isLv2 ? 5 : 4;
         ctx.beginPath();
         for (let sx = -20; sx <= width + 20; sx += 16) {
           const wx = sx + state.cameraX;
@@ -2016,7 +2679,7 @@
         }
         ctx.stroke();
 
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.55)';
+        ctx.strokeStyle = isLv2 ? 'rgba(217, 119, 6, 0.45)' : 'rgba(255, 255, 255, 0.55)';
         ctx.lineWidth = 2.5;
         ctx.setLineDash([22, 22]);
         ctx.lineDashOffset = state.cameraX % 44;
@@ -2030,75 +2693,123 @@
         ctx.stroke();
         ctx.setLineDash([]);
 
-        for (let b = 0; b < BELVEDERE_SPOTS.length; b++) {
-          const spot = BELVEDERE_SPOTS[b];
-          const bx = spot.x - state.cameraX;
-          if (bx >= -140 && bx <= width + 140) {
-            drawBelvederePost(spot, bx, baseRoadScreenY + getGroundY(spot.x));
+        if (!isLv2) {
+          for (let b = 0; b < BELVEDERE_SPOTS.length; b++) {
+            const spot = BELVEDERE_SPOTS[b];
+            const bx = spot.x - state.cameraX;
+            if (bx >= -140 && bx <= width + 140) {
+              drawBelvederePost(spot, bx, baseRoadScreenY + getGroundY(spot.x));
+            }
+          }
+
+          const gelatoX = COURSE_LENGTH_LV1 - state.cameraX;
+          if (gelatoX >= -180 && gelatoX <= width + 180) {
+            drawGelateriaOrizzonte(gelatoX, baseRoadScreenY + getGroundY(COURSE_LENGTH_LV1));
+          }
+
+          for (let c = 0; c < leaves.length; c++) {
+            const leaf = leaves[c];
+            if (leaf.collected) continue;
+            const cx = leaf.x - state.cameraX;
+            if (cx < -40 || cx > width + 40) continue;
+            const cy = baseRoadScreenY + getGroundY(leaf.x) + leaf.yOffset;
+            const bob = Math.sin(state.time * 4 + leaf.phase) * 4;
+            const sway = Math.sin(state.time * 3 + leaf.phase) * 0.14;
+            drawWeedLeaf(cx, cy, bob, sway);
+          }
+
+          for (let i = 0; i < npcs.length; i++) {
+            const npc = npcs[i];
+            const nx = npc.x - state.cameraX;
+            if (nx >= -80 && nx <= width + 80) {
+              drawNpc(npc, nx, baseRoadScreenY + getGroundY(npc.x));
+            }
+          }
+        } else {
+          // Ostacoli sul sentiero
+          for (let o = 0; o < trailObstacles.length; o++) {
+            const obs = trailObstacles[o];
+            const ox = obs.x - state.cameraX;
+            if (ox >= -60 && ox <= width + 60) {
+              drawTrailObstacle(obs, ox, baseRoadScreenY + getGroundY(obs.x));
+            }
+          }
+
+          // Baracchina finale per l'aperitivo
+          const barX = COURSE_LENGTH_LV2 - state.cameraX;
+          if (barX >= -200 && barX <= width + 200) {
+            drawBaracchinaAperitivo(barX, baseRoadScreenY + getGroundY(COURSE_LENGTH_LV2));
+          }
+
+          // Torbobikers
+          for (let t = 0; t < torbobikers.length; t++) {
+            const tb = torbobikers[t];
+            const tx = tb.x - state.cameraX;
+            if (tx >= -140 && tx <= width + 140) {
+              drawTorbobiker(tb, tx, baseRoadScreenY + getGroundY(tb.x));
+            }
           }
         }
 
-        const gelatoX = COURSE_LENGTH - state.cameraX;
-        if (gelatoX >= -180 && gelatoX <= width + 180) {
-          drawGelateriaOrizzonte(gelatoX, baseRoadScreenY + getGroundY(COURSE_LENGTH));
+        // Particelle terra/polvere ruote
+        for (let d = 0; d < dustParticles.length; d++) {
+          const p = dustParticles[d];
+          const px = p.x - state.cameraX;
+          const py = baseRoadScreenY + p.y;
+          ctx.fillStyle = p.color;
+          ctx.beginPath();
+          ctx.arc(px, py, p.size, 0, Math.PI * 2);
+          ctx.fill();
         }
 
-        for (let c = 0; c < leaves.length; c++) {
-          const leaf = leaves[c];
-          if (leaf.collected) continue;
-          const cx = leaf.x - state.cameraX;
-          if (cx < -40 || cx > width + 40) continue;
-          const cy = baseRoadScreenY + getGroundY(leaf.x) + leaf.yOffset;
-          const bob = Math.sin(state.time * 4 + leaf.phase) * 4;
-          const sway = Math.sin(state.time * 3 + leaf.phase) * 0.14;
-          drawWeedLeaf(cx, cy, bob, sway);
-        }
-
-        for (let i = 0; i < npcs.length; i++) {
-          const npc = npcs[i];
-          const nx = npc.x - state.cameraX;
-          if (nx >= -80 && nx <= width + 80) {
-            drawNpc(npc, nx, baseRoadScreenY + getGroundY(npc.x));
-          }
-        }
-
+        const celebration = state.mode === 'END_STOP' ? (isLv2 ? 'APERITIVO' : 'GELATO') : null;
         drawOlmettoRider(
           riderScreenX,
-          centerScreenY,
+          riderScreenY,
           state.bike.pitch,
           state.bike.wheelAngle,
           state.bike.pedalPhase,
-          state.mode === 'GELATO_STOP'
+          celebration
         );
 
-        if (state.mode === 'GELATO_STOP' || state.mode === 'VICTORY') {
+        // Banner celebrativo finale
+        if (state.mode === 'END_STOP' || state.mode === 'VICTORY') {
           ctx.save();
           const pulse = 1 + Math.sin(state.time * 4) * 0.04;
           ctx.translate(width * 0.5, height * 0.25);
           ctx.scale(pulse, pulse);
 
-          const fontSize = Math.max(24, Math.min(54, Math.floor(width * 0.062)));
+          const fontSize = Math.max(22, Math.min(50, Math.floor(width * 0.058)));
           ctx.font = '900 ' + fontSize + 'px Inter, sans-serif';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
 
+          const headline = isLv2 ? 'APERITIVO IN BARACCHINA!' : 'NO… STAI A MILANO!';
           ctx.lineWidth = Math.max(5, fontSize * 0.16);
           ctx.strokeStyle = '#0f172a';
-          ctx.strokeText('NO… STAI A MILANO!', 0, 0);
+          ctx.strokeText(headline, 0, 0);
 
           const textGrad = ctx.createLinearGradient(0, -fontSize * 0.5, 0, fontSize * 0.5);
-          textGrad.addColorStop(0, '#fef08a');
-          textGrad.addColorStop(0.5, '#f97316');
-          textGrad.addColorStop(1, '#ec4899');
+          if (isLv2) {
+            textGrad.addColorStop(0, '#fef08a');
+            textGrad.addColorStop(0.5, '#fb923c');
+            textGrad.addColorStop(1, '#34d399');
+          } else {
+            textGrad.addColorStop(0, '#fef08a');
+            textGrad.addColorStop(0.5, '#f97316');
+            textGrad.addColorStop(1, '#ec4899');
+          }
           ctx.fillStyle = textGrad;
-          ctx.fillText('NO… STAI A MILANO!', 0, 0);
+          ctx.fillText(headline, 0, 0);
 
-          if (state.mode === 'GELATO_STOP') {
+          if (state.mode === 'END_STOP') {
             ctx.font = '800 14px Inter, sans-serif';
             ctx.fillStyle = '#ffffff';
             ctx.strokeStyle = 'rgba(15, 23, 42, 0.85)';
             ctx.lineWidth = 4;
-            const subLabel = '🍦 Gelateria L’Orizzonte · ' + Math.ceil(state.gelatoTimer) + 's';
+            const subLabel = isLv2
+              ? '🍹 Spritz & Patatine in Baracchina · ' + Math.ceil(state.endStopTimer) + 's'
+              : '🍦 Gelateria L’Orizzonte · ' + Math.ceil(state.endStopTimer) + 's';
             ctx.strokeText(subLabel, 0, fontSize * 0.85);
             ctx.fillText(subLabel, 0, fontSize * 0.85);
           }
@@ -2109,7 +2820,7 @@
       }
 
       // =========================================================================
-      // ILLUSTRAZIONE ANIMATA SCHERMATA START (FOTO SULLA SCOGLIERA + SHAKA)
+      // ILLUSTRAZIONE ANIMATA SCHERMATA START
       // =========================================================================
       function renderStartHeroAnimation(t) {
         if (!startHeroCtx || !startHeroCanvas || !startScreen || startScreen.classList.contains('hidden')) return;
@@ -2177,23 +2888,6 @@
         c.closePath();
         c.fill();
 
-        c.strokeStyle = 'rgba(68, 56, 44, 0.45)';
-        c.lineWidth = 2;
-        c.beginPath();
-        c.moveTo(20, h * 0.84);
-        c.lineTo(145, h * 0.88);
-        c.lineTo(235, h * 0.94);
-        c.moveTo(270, h * 0.86);
-        c.lineTo(410, h * 0.92);
-        c.stroke();
-
-        c.fillStyle = '#3f6212';
-        c.beginPath();
-        c.ellipse(52, h * 0.79, 34, 11, -0.1, 0, Math.PI * 2);
-        c.ellipse(275, h * 0.82, 32, 10, 0.1, 0, Math.PI * 2);
-        c.ellipse(435, h * 0.86, 40, 14, -0.15, 0, Math.PI * 2);
-        c.fill();
-
         const rx = w * 0.49;
         const feetY = h * 0.86;
         const breathe = Math.sin(t * 2.6) * 2.2;
@@ -2212,12 +2906,6 @@
         c.moveTo(rx + 8, feetY - 78 + breathe);
         c.lineTo(rx + 6, feetY - 4);
         c.stroke();
-
-        c.fillStyle = '#1e293b';
-        c.beginPath();
-        c.ellipse(rx - 48, feetY - 3, 13, 6, -0.15, 0, Math.PI * 2);
-        c.ellipse(rx + 10, feetY - 2, 13, 6, 0.15, 0, Math.PI * 2);
-        c.fill();
 
         const torsoTopY = feetY - 156 + breathe;
         const torsoH = 82;
@@ -2245,41 +2933,15 @@
         c.lineTo(rx - 4, torsoTopY + 16);
         c.closePath();
         c.fill();
-
-        c.strokeStyle = '#1e293b';
-        c.lineWidth = 6;
-        c.beginPath();
-        c.moveTo(rx - 15, torsoTopY);
-        c.lineTo(rx - 17, torsoTopY + 46);
-        c.moveTo(rx + 15, torsoTopY);
-        c.lineTo(rx + 17, torsoTopY + 46);
-        c.stroke();
         c.restore();
 
-        c.fillStyle = '#090d16';
-        c.beginPath();
-        c.arc(rx - 29, torsoTopY + 10, 11, 0, Math.PI * 2);
-        c.arc(rx + 29, torsoTopY + 10, 11, 0, Math.PI * 2);
-        c.fill();
-        c.fillStyle = '#84cc16';
-        c.beginPath();
-        c.arc(rx - 32, torsoTopY + 10, 4.5, 0, Math.PI * 2);
-        c.arc(rx + 32, torsoTopY + 10, 4.5, 0, Math.PI * 2);
-        c.fill();
-
         const shakaWave = Math.sin(t * 6.5) * 0.16;
-        c.strokeStyle = '#090d16';
-        c.lineWidth = 12;
+        c.strokeStyle = '#7c3aed';
+        c.lineWidth = 11;
         c.lineCap = 'round';
-        c.lineJoin = 'round';
         c.beginPath();
         c.moveTo(rx - 30, torsoTopY + 12);
         c.lineTo(rx - 44, torsoTopY + 38);
-        c.stroke();
-        c.strokeStyle = '#7c3aed';
-        c.lineWidth = 11;
-        c.beginPath();
-        c.moveTo(rx - 44, torsoTopY + 38);
         c.lineTo(rx - 28, torsoTopY + 46);
         c.stroke();
 
@@ -2290,71 +2952,18 @@
         c.beginPath();
         c.roundRect(-6, -6, 13, 12, 4);
         c.fill();
-        c.strokeStyle = '#d97706';
-        c.lineWidth = 3.5;
-        c.beginPath();
-        c.moveTo(-2, -5);
-        c.lineTo(-4, -15);
-        c.moveTo(6, -1);
-        c.lineTo(17, -4);
-        c.stroke();
         c.restore();
-
-        const barHandX = rx + 58;
-        const barHandY = torsoTopY + 66;
-        c.strokeStyle = '#090d16';
-        c.lineWidth = 12;
-        c.beginPath();
-        c.moveTo(rx + 30, torsoTopY + 12);
-        c.lineTo(rx + 46, torsoTopY + 40);
-        c.stroke();
-        c.strokeStyle = '#7c3aed';
-        c.lineWidth = 11;
-        c.beginPath();
-        c.moveTo(rx + 46, torsoTopY + 40);
-        c.lineTo(barHandX, barHandY);
-        c.stroke();
-        c.fillStyle = '#d97706';
-        c.beginPath();
-        c.arc(barHandX, barHandY, 6.5, 0, Math.PI * 2);
-        c.fill();
 
         const headY = torsoTopY - 22;
         c.save();
         c.translate(rx, headY);
-        c.rotate(Math.sin(t * 2.2) * 0.03);
-
         c.fillStyle = '#090d16';
         c.beginPath();
         c.arc(0, 0, 21, 0, Math.PI * 2);
         c.fill();
-        c.fillStyle = '#1e293b';
-        c.beginPath();
-        c.moveTo(-16, -11);
-        c.lineTo(16, -11);
-        c.lineTo(12, -19);
-        c.lineTo(-12, -19);
-        c.closePath();
-        c.fill();
-        c.fillStyle = '#090d16';
-        c.beginPath();
-        c.moveTo(-17, 4);
-        c.lineTo(17, 4);
-        c.lineTo(11, 21);
-        c.lineTo(-11, 21);
-        c.closePath();
-        c.fill();
-        c.fillStyle = '#d48456';
-        c.beginPath();
-        c.arc(0, 7, 7, 0, Math.PI * 2);
-        c.fill();
-        c.fillStyle = '#475569';
-        c.fillRect(-4, 8, 8, 2.5);
-
-        const shimmer = Math.sin(t * 3.5) * 0.25;
         const gGrad = c.createLinearGradient(-14, -6, 14, 4);
         gGrad.addColorStop(0, '#84cc16');
-        gGrad.addColorStop(Math.max(0.15, Math.min(0.85, 0.5 + shimmer)), '#38bdf8');
+        gGrad.addColorStop(0.5, '#38bdf8');
         gGrad.addColorStop(1, '#f97316');
         c.fillStyle = gGrad;
         c.beginPath();
@@ -2367,239 +2976,37 @@
         const wY = feetY - 34;
         const wR = 42;
 
-        function drawHeroWheel(wx, wy, isRear) {
+        [rearWX, frontWX].forEach(function (wx) {
           c.save();
-          c.translate(wx, wy);
+          c.translate(wx, wY);
           c.strokeStyle = '#090d16';
           c.lineWidth = 9.5;
           c.beginPath();
           c.arc(0, 0, wR - 4, 0, Math.PI * 2);
           c.stroke();
-
-          c.strokeStyle = '#334155';
-          c.lineWidth = 2.2;
-          c.beginPath();
-          c.arc(0, 0, wR - 9, 0, Math.PI * 2);
-          c.stroke();
-
-          c.strokeStyle = 'rgba(203, 213, 225, 0.45)';
-          c.lineWidth = 1.1;
-          for (let r = 0; r < 10; r++) {
-            const a = (r * Math.PI) / 5;
-            c.beginPath();
-            c.moveTo(0, 0);
-            c.lineTo(Math.cos(a) * (wR - 9), Math.sin(a) * (wR - 9));
-            c.stroke();
-          }
-
           c.fillStyle = '#facc15';
           c.font = '900 6.5px Inter, sans-serif';
           c.textAlign = 'center';
           c.fillText('PIRELLI', 0, -(wR - 6));
-          c.fillText('SCORPION', 0, wR - 2.5);
-
-          c.fillStyle = isRear ? '#334155' : '#94a3b8';
-          c.beginPath();
-          c.arc(0, 0, isRear ? 13 : 10, 0, Math.PI * 2);
-          c.fill();
-          c.fillStyle = '#0f172a';
-          c.beginPath();
-          c.arc(0, 0, 4.5, 0, Math.PI * 2);
-          c.fill();
           c.restore();
-        }
+        });
 
-        drawHeroWheel(rearWX, wY, true);
-        drawHeroWheel(frontWX, wY, false);
-
-        c.strokeStyle = '#090d16';
-        c.lineWidth = 4;
+        c.strokeStyle = '#6d28d9';
+        c.lineWidth = 10;
         c.beginPath();
-        c.arc(frontWX, wY, wR + 4, -Math.PI * 0.78, -Math.PI * 0.35);
+        c.moveTo(rx - 32, wY - 56);
+        c.lineTo(rx + 62, wY - 76);
+        c.lineTo(rx - 14, wY + 2);
+        c.closePath();
         c.stroke();
 
         c.strokeStyle = '#d97706';
         c.lineWidth = 7;
-        c.lineCap = 'round';
         c.beginPath();
         c.moveTo(rx + 66, wY - 68);
-        c.lineTo(rx + 84, wY - 36);
-        c.stroke();
-
-        c.strokeStyle = '#090d16';
-        c.lineWidth = 8.5;
-        c.beginPath();
-        c.moveTo(rx + 84, wY - 36);
         c.lineTo(frontWX, wY);
         c.stroke();
-
-        c.save();
-        c.translate(rx + 96, wY - 20);
-        c.rotate(1.06);
-        c.fillStyle = '#ffffff';
-        c.font = '900 7px Inter, sans-serif';
-        c.textAlign = 'center';
-        c.fillText('FOX 38', 0, 0);
-        c.restore();
-
-        const bbX = rx - 14;
-        const bbY = wY + 2;
-        const seatX = rx - 32;
-        const seatY = wY - 56;
-        const headX = rx + 62;
-        const headYFrame = wY - 76;
-
-        c.strokeStyle = '#6d28d9';
-        c.lineWidth = 7;
-        c.lineJoin = 'round';
-        c.beginPath();
-        c.moveTo(rearWX, wY);
-        c.lineTo(bbX, bbY);
-        c.lineTo(seatX + 4, seatY + 14);
-        c.lineTo(rearWX, wY);
-        c.stroke();
-
-        const fGrad = c.createLinearGradient(seatX, headYFrame, bbX, bbY);
-        fGrad.addColorStop(0, '#8b5cf6');
-        fGrad.addColorStop(0.5, '#6d28d9');
-        fGrad.addColorStop(1, '#4c1d95');
-        c.strokeStyle = fGrad;
-        c.lineWidth = 10;
-        c.beginPath();
-        c.moveTo(seatX, seatY);
-        c.lineTo(headX, headYFrame);
-        c.lineTo(bbX, bbY);
-        c.closePath();
-        c.stroke();
-
-        c.save();
-        c.translate(rx + 25, wY - 36);
-        c.rotate(-0.82);
-        c.fillStyle = '#ffffff';
-        c.font = '900 8.5px Inter, sans-serif';
-        c.textAlign = 'center';
-        c.fillText('ORBEA', 0, 0);
-        c.restore();
-
-        c.save();
-        c.translate(rx + 18, wY - 45);
-        c.rotate(-0.82);
-        c.fillStyle = '#1e293b';
-        c.beginPath();
-        c.roundRect(-11, -13, 22, 11, 3);
-        c.fill();
-        c.restore();
-
-        c.strokeStyle = '#090d16';
-        c.lineWidth = 5;
-        c.beginPath();
-        c.moveTo(seatX, seatY);
-        c.lineTo(seatX - 4, seatY - 14);
-        c.moveTo(headX, headYFrame);
-        c.lineTo(barHandX, barHandY);
-        c.stroke();
-
-        c.fillStyle = '#090d16';
-        c.beginPath();
-        c.roundRect(seatX - 18, seatY - 18, 28, 7, 3);
-        c.fill();
       }
-
-      // =========================================================================
-      // SUITE DI AUDIT AUTOMATICO (100.000 ITERAZIONI)
-      // =========================================================================
-      function runAuditSuite100k() {
-        const snapshot = {
-          mode: state.mode,
-          time: state.time,
-          startTime: state.startTime,
-          elapsedSimTime: state.elapsedSimTime,
-          score: state.score,
-          belvedereCount: state.belvedereCount,
-          panoramaTimer: state.panoramaTimer,
-          currentBelvedere: state.currentBelvedere,
-          gelatoTimer: state.gelatoTimer,
-          activeNpc: state.activeNpc,
-          quipText: state.quipText,
-          quipTimer: state.quipTimer,
-          bike: Object.assign({}, state.bike),
-          cameraX: state.cameraX,
-          keys: Object.assign({}, keys)
-        };
-
-        let passed = 0;
-        let errors = 0;
-
-        try {
-          startGame();
-          keys.right = true;
-          keys.turbo = true;
-
-          for (let i = 0; i < 100000; i++) {
-            const stepDt = (i % 17 === 0) ? 0.032 : 0.016;
-            if (state.mode === 'DIALOGUE' && state.activeNpc) {
-              selectNpcReply(state.activeNpc, state.activeNpc.replies[0]);
-              keys.right = true;
-              keys.turbo = true;
-            } else if (state.mode === 'PANORAMA') {
-              closeBelvederePanorama();
-              keys.right = true;
-              keys.turbo = true;
-            }
-
-            if (i % 97 === 0 && state.mode === 'PLAYING') {
-              triggerJump();
-            }
-
-            update(stepDt);
-
-            if (
-              !Number.isFinite(state.bike.x) ||
-              !Number.isFinite(state.bike.y) ||
-              !Number.isFinite(state.bike.vx) ||
-              !Number.isFinite(state.score)
-            ) {
-              errors++;
-            } else {
-              passed++;
-            }
-
-            if (state.mode === 'VICTORY') {
-              startGame();
-              keys.right = true;
-              keys.turbo = true;
-            }
-          }
-        } catch (e) {
-          errors++;
-        } finally {
-          populateWorld();
-          state.mode = snapshot.mode;
-          state.time = snapshot.time;
-          state.startTime = snapshot.startTime;
-          state.elapsedSimTime = snapshot.elapsedSimTime;
-          state.score = snapshot.score;
-          state.belvedereCount = snapshot.belvedereCount;
-          state.panoramaTimer = snapshot.panoramaTimer;
-          state.currentBelvedere = snapshot.currentBelvedere;
-          state.gelatoTimer = snapshot.gelatoTimer;
-          state.activeNpc = snapshot.activeNpc;
-          state.quipText = snapshot.quipText;
-          state.quipTimer = snapshot.quipTimer;
-          state.bike = Object.assign({}, snapshot.bike);
-          state.cameraX = snapshot.cameraX;
-          Object.assign(keys, snapshot.keys);
-          if (startScreen && state.mode === 'START') startScreen.classList.remove('hidden');
-          if (victoryScreen && state.mode !== 'VICTORY') victoryScreen.classList.add('hidden');
-          if (dialogueModal && state.mode !== 'DIALOGUE') dialogueModal.classList.add('hidden');
-          if (panoramaModal && state.mode !== 'PANORAMA') panoramaModal.classList.add('hidden');
-          updateHud();
-        }
-
-        return { total: 100000, passed: passed, errors: errors };
-      }
-
-      window.runOlmettoAuditTests = runAuditSuite100k;
 
       let lastTimestamp = performance.now();
       function gameLoop(now) {
@@ -2612,20 +3019,18 @@
             renderStartHeroAnimation(now / 1000);
           }
         } catch (err) {
-          // Mantiene vivo il loop anche in caso di errori imprevisti
+          // Mantiene attivo il loop
         }
         requestAnimationFrame(gameLoop);
       }
 
       populateWorld();
       state.bike.y = getGroundY(state.bike.x);
+      state.cameraBaseY = state.bike.y;
       updateHud();
       renderStartHeroAnimation(0);
-      runAuditSuite100k();
       requestAnimationFrame(gameLoop);
     })();
   </script>
 </body>
-</html>
-
 </html>
