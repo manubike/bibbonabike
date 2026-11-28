@@ -63,14 +63,45 @@
   <link rel="stylesheet" href="css/ssg.min.css" media="print" onload="this.media='all'" />
   <link rel="stylesheet" href="style.css" />
 
-  <!-- Stile Banner Cookie Unificato -->
+  <!-- Stile Grafico Dark / Nero & Arancio Magona Bike Garage (Compatibile con tutti i CSS del progetto) -->
   <style>
+    :root {
+      --bg-void: #070809;
+      --bg-surface: #0c0e11;
+      --bg-elevated: #14171c;
+      --bg-card: #101317;
+      --text-primary: #f4f6f8;
+      --text-secondary: #b0b8c2;
+      --text-muted: #7d8794;
+      --accent-orange: #ff7b1c;
+      --accent-orange-bright: #ff9442;
+      --accent-forest: #2e8b57;
+      --border-subtle: rgba(255, 255, 255, 0.1);
+      --border-strong: rgba(255, 123, 28, 0.42);
+      --shadow-card: 0 18px 42px rgba(0, 0, 0, 0.72);
+    }
+
+    html {
+      background-color: var(--bg-void);
+      color: var(--text-primary);
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg-void) !important;
+      color: var(--text-primary) !important;
+      font-family: 'Inter', Arial, sans-serif;
+      margin: 0;
+    }
+
+    /* Banner Cookie su tema Nero */
     #cookie-banner-overlay {
       position: fixed;
       inset: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0, 0, 0, 0.72);
+      background-color: rgba(4, 5, 7, 0.85);
+      backdrop-filter: blur(8px);
       display: none;
       justify-content: center;
       align-items: center;
@@ -79,11 +110,12 @@
     }
 
     #cookie-consent-modal {
-      background-color: #ffffff;
-      color: #333333;
+      background: linear-gradient(160deg, #15181e 0%, #0a0c0f 100%);
+      color: var(--text-primary);
       padding: 28px;
-      border-radius: 8px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+      border-radius: 12px;
+      border: 1px solid var(--border-strong);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.88);
       max-width: 520px;
       width: 92%;
       max-height: 85vh;
@@ -91,40 +123,50 @@
     }
 
     #cookie-consent-modal h2 {
-      color: #e67e22;
+      color: var(--accent-orange);
       margin-top: 0;
-      border-bottom: 2px solid #e5e7eb;
-      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 12px;
+      letter-spacing: -0.01em;
     }
 
     .cookie-category {
       margin-bottom: 14px;
-      padding: 12px;
-      border: 1px solid #e5e7eb;
-      border-radius: 6px;
+      padding: 14px;
+      background-color: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      transition: border-color 0.25s ease, background-color 0.25s ease;
+    }
+
+    .cookie-category:hover {
+      border-color: var(--border-strong);
+      background-color: rgba(255, 123, 28, 0.05);
     }
 
     .cookie-category label {
       display: flex;
       align-items: center;
       font-weight: 600;
+      color: var(--text-primary);
       cursor: pointer;
     }
 
     .cookie-category input[type="checkbox"] {
       margin-right: 10px;
       transform: scale(1.2);
+      accent-color: var(--accent-orange);
     }
 
     .cookie-category .description {
       font-size: 0.9em;
-      color: #555555;
+      color: var(--text-secondary);
       margin-top: 6px;
       padding-left: 28px;
     }
 
     .cookie-category input:disabled + span {
-      color: #888888;
+      color: var(--text-muted);
     }
 
     .cookie-actions {
@@ -137,32 +179,251 @@
 
     .cookie-actions button {
       padding: 10px 16px;
-      border: 1px solid #34495e;
-      border-radius: 5px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
       cursor: pointer;
       font-weight: 600;
-      transition: background-color 0.25s ease;
+      transition: transform 0.2s ease, background-color 0.25s ease, border-color 0.25s ease;
+    }
+
+    .cookie-actions button:hover {
+      transform: translateY(-1px);
     }
 
     #accept-all-btn {
-      background-color: #008800;
-      color: #ffffff;
-      border-color: #008800;
+      background: linear-gradient(135deg, #ff7b1c 0%, #e05a00 100%);
+      color: #090a0c;
+      border-color: transparent;
     }
 
     #accept-all-btn:hover {
-      background-color: #006b00;
+      background: linear-gradient(135deg, #ff9142 0%, #f06808 100%);
     }
 
     #reject-all-btn,
     #save-prefs-btn {
-      background-color: #ecf0f1;
-      color: #2c3e50;
+      background-color: var(--bg-elevated);
+      color: var(--text-primary);
     }
 
     #reject-all-btn:hover,
     #save-prefs-btn:hover {
-      background-color: #d0d7de;
+      background-color: #1f242c;
+      border-color: var(--border-strong);
+    }
+
+    /* Header & Navigazione Dark Glass */
+    .site-header {
+      background: rgba(7, 8, 9, 0.84) !important;
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .site-header a,
+    .site-header nav a,
+    .menu-toggle {
+      color: var(--text-primary) !important;
+    }
+
+    .site-header nav a:hover,
+    .social-header a:hover {
+      color: var(--accent-orange) !important;
+    }
+
+    /* Hero & Overlay Montagne */
+    .hero {
+      background-color: var(--bg-void) !important;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 45%, rgba(7, 8, 9, 0.22) 0%, rgba(7, 8, 9, 0.84) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-mountain-overlay {
+      z-index: 3;
+      color: var(--bg-void) !important;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #ff7b1c 0%, #d95300 100%) !important;
+      color: #090a0c !important;
+      border: 1px solid rgba(255, 174, 112, 0.42) !important;
+      box-shadow: 0 10px 24px rgba(255, 123, 28, 0.26);
+      transition: transform 0.22s ease, box-shadow 0.22s ease, filter 0.22s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(255, 123, 28, 0.4);
+      filter: brightness(1.06);
+    }
+
+    .btn-secondary {
+      background-color: var(--bg-elevated) !important;
+      color: var(--text-primary) !important;
+      border: 1px solid var(--border-strong) !important;
+      transition: transform 0.2s ease, background-color 0.25s ease, border-color 0.25s ease;
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--accent-orange) !important;
+      color: #090a0c !important;
+      transform: translateY(-1px);
+    }
+
+    /* Tutte le Sezioni su Nero Profondo (compatibile con services, officina, motori, tour, event, legend, slideshow, footer) */
+    main.container-full,
+    .services,
+    .officina-section,
+    .rental-section,
+    .tour-section,
+    .magona-section,
+    .trails-section,
+    .video-section,
+    .eventi-slider-section,
+    .photo-slideshow,
+    .form-section,
+    .footer-transition,
+    .footer-overlay,
+    .footer-bar {
+      background-color: var(--bg-void) !important;
+      color: var(--text-primary) !important;
+    }
+
+    .section-title {
+      color: var(--text-primary) !important;
+      letter-spacing: -0.02em;
+    }
+
+    .slash-anim {
+      background: linear-gradient(90deg, transparent, var(--accent-orange), transparent) !important;
+    }
+
+    /* Card, Slider, Drawer & Sentieri */
+    .service-card.enhanced,
+    .bike-card,
+    .tour-card,
+    .event-card,
+    .card-border-wrapper,
+    .form-card,
+    .drawer,
+    .elenco-sentieri-centrato,
+    .legend-card,
+    .slideshow__slide-caption-text {
+      background-color: var(--bg-card) !important;
+      background-image: linear-gradient(165deg, var(--bg-elevated) 0%, var(--bg-card) 100%) !important;
+      color: var(--text-primary) !important;
+      border-color: var(--border-subtle) !important;
+      box-shadow: var(--shadow-card) !important;
+    }
+
+    .service-card.enhanced:hover,
+    .bike-card:hover,
+    .tour-card:hover {
+      border-color: var(--border-strong) !important;
+      transform: translateY(-4px);
+    }
+
+    .service-icon {
+      color: var(--accent-orange) !important;
+    }
+
+    .service-card p,
+    .officina-text p,
+    .bike-type,
+    .tour-card p,
+    .drawer-content p {
+      color: var(--text-secondary) !important;
+    }
+
+    /* Carosello Motori */
+    .logo-carousel-section,
+    .logo-carousel-container,
+    .logo-slide {
+      background-color: var(--bg-surface) !important;
+      border-color: var(--border-subtle) !important;
+    }
+
+    .logo-slide img {
+      filter: brightness(0.96) contrast(1.08);
+      transition: transform 0.25s ease, filter 0.25s ease;
+    }
+
+    .logo-slide:hover img {
+      transform: scale(1.06);
+      filter: brightness(1.14);
+    }
+
+    /* Sentieri Trailforks */
+    #trails a {
+      color: var(--text-secondary) !important;
+      transition: color 0.2s ease;
+    }
+
+    #trails a:hover {
+      color: var(--accent-orange) !important;
+    }
+
+    /* Form di Prenotazione Dark */
+    .form-card label,
+    .form-card h4,
+    .price-summary {
+      color: var(--text-primary) !important;
+    }
+
+    .form-card input,
+    .form-card select,
+    .form-card textarea {
+      background-color: var(--bg-void) !important;
+      color: var(--text-primary) !important;
+      border: 1px solid rgba(255, 255, 255, 0.16) !important;
+      border-radius: 8px;
+    }
+
+    .form-card input:focus,
+    .form-card select:focus,
+    .form-card textarea:focus {
+      outline: none;
+      border-color: var(--accent-orange) !important;
+      box-shadow: 0 0 0 3px rgba(255, 123, 28, 0.18);
+    }
+
+    .icon-input i {
+      color: var(--accent-orange) !important;
+    }
+
+    /* Drawer laterali, Chat & Scroll Top */
+    .drawer-overlay {
+      background-color: rgba(3, 4, 6, 0.8) !important;
+      backdrop-filter: blur(4px);
+    }
+
+    #chatBox {
+      background-color: var(--bg-elevated) !important;
+      color: var(--text-primary) !important;
+      border: 1px solid var(--border-strong) !important;
+    }
+
+    #chatInput {
+      background-color: var(--bg-void) !important;
+      color: var(--text-primary) !important;
+      border: 1px solid var(--border-subtle) !important;
+    }
+
+    #scrollToTop {
+      background-color: var(--bg-elevated) !important;
+      border: 1px solid var(--border-strong) !important;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
     }
   </style>
 
