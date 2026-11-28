@@ -1216,7 +1216,7 @@
   <div id="cookie-banner-overlay" role="dialog" aria-modal="true" aria-labelledby="cookieModalTitle">
     <div id="cookie-consent-modal">
       <h2 id="cookieModalTitle" data-i18n="cookie_title">Gestione Cookie per BibbonaBike.com</h2>
-            <div class="modal-lang-row" style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px 0 14px;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);">
+      <div class="modal-lang-row" style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px 0 14px;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);">
         <label for="cookieLangSelect" style="font-size:0.85rem;font-weight:600;color:#b0b8c2;margin:0;" data-i18n="lbl_lang">Lingua / Language</label>
         <select id="cookieLangSelect" class="modal-lang-select" title="Lingua / Language" data-i18n-title="lbl_lang" style="background:#14171c;color:#f4f6f8;border:1px solid rgba(255,123,28,0.42);border-radius:8px;padding:6px 10px;font-size:0.85rem;font-weight:600;cursor:pointer;">
           <option value="it">🇮🇹 Italiano</option>
@@ -1391,35 +1391,7 @@
     <!-- Slideshow Parallax Motivazionale -->
     <div id="wrapper">
       <section class="slideshow" id="js-header">
-        <div class="slideshow__slide js-slider-home-slide is-current" data-slide="1">
-          <div class="slideshow__slide-background-parallax background-absolute js-parallax" data-speed="-1" data-position="top" data-target="#js-header">
-            <div class="slideshow__slide-background-load-wrap background-absolute">
-              <div class="slideshow__slide-background-load background-absolute">
-                <div class="slideshow__slide-background-wrap background-absolute">
-                  <div class="slideshow__slide-background background-absolute">
-                    <div class="slideshow__slide-image-wrap background-absolute">
-                      <div class="slideshow__slide-image background-absolute" style="background-image: url('img/slogan4.webp');"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="slideshow__slide-caption">
-            <div class="slideshow__slide-caption-text">
-              <div class="container js-parallax" data-speed="2" data-position="top" data-target="#js-header">
-                <h2 class="slideshow__slide-caption-title" data-i18n="slide1_title">Tutto ciò che è rotto può essere riparato!</h2>
-                <a class="slideshow__slide-caption-subtitle -load o-hsub -link" href="tel:+393313453207">
-                  <span class="slideshow__slide-caption-subtitle-label">
-                    <i class="fas fa-phone" style="margin-right: 6px;"></i><span data-i18n="slide1_cta">Chiamaci!</span>
-                  </span>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="slideshow__slide js-slider-home-slide is-next" data-slide="2">
+        <div class="slideshow__slide js-slider-home-slide is-current" data-slide="2">
           <div class="slideshow__slide-background-parallax background-absolute js-parallax" data-speed="-1" data-position="top" data-target="#js-header">
             <div class="slideshow__slide-background-load-wrap background-absolute">
               <div class="slideshow__slide-background-load background-absolute">
@@ -1445,7 +1417,7 @@
           </div>
         </div>
 
-        <div class="slideshow__slide js-slider-home-slide is-prev" data-slide="3">
+        <div class="slideshow__slide js-slider-home-slide is-next" data-slide="3">
           <div class="slideshow__slide-background-parallax background-absolute js-parallax" data-speed="-1" data-position="top" data-target="#js-header">
             <div class="slideshow__slide-background-load-wrap background-absolute">
               <div class="slideshow__slide-background-load background-absolute">
@@ -2089,7 +2061,7 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
         <button type="button" id="closePrivacyModalBtn" aria-label="Chiudi Privacy e Cookie Policy" data-i18n-title="pp_close_btn" style="background:#14171c; color:#f4f6f8; border:1px solid rgba(255,255,255,0.16); border-radius:8px; width:36px; height:36px; font-size:1.2rem; cursor:pointer; line-height:1;">&times;</button>
       </div>
 
-            <div class="modal-lang-row" style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 14px;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);">
+      <div class="modal-lang-row" style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 14px;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);">
         <label for="privacyLangSelect" style="font-size:0.85rem;font-weight:600;color:#b0b8c2;margin:0;" data-i18n="lbl_lang">Lingua / Language</label>
         <select id="privacyLangSelect" class="modal-lang-select" title="Lingua / Language" data-i18n-title="lbl_lang" style="background:#14171c;color:#f4f6f8;border:1px solid rgba(255,123,28,0.42);border-radius:8px;padding:6px 10px;font-size:0.85rem;font-weight:600;cursor:pointer;">
           <option value="it">🇮🇹 Italiano</option>
@@ -2285,7 +2257,7 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
       if (openPrivacyBtn) openPrivacyBtn.addEventListener('click', openPrivacyModal);
       if (footerPrivacyLink) footerPrivacyLink.addEventListener('click', openPrivacyModal);
       if (closePrivacyBtn) closePrivacyBtn.addEventListener('click', closePrivacyModal);
-      if (closePrivacyBottomBtn) closePrivacyBottomBtn.addEventListener('click', closePrivacyModal);
+      if (closePrivacyBottomBtn) closePrivacyBtn.addEventListener('click', closePrivacyModal);
 
       if (privacyOverlay) {
         privacyOverlay.addEventListener('click', (e) => {
