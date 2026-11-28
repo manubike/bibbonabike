@@ -1604,7 +1604,7 @@
       <div class="container-full">
         <h2 class="section-title"><i class="fas fa-calendar-check"></i> <span data-i18n="booking_section_title">Prenota ora</span></h2>
 
-        <form id="noleggioForm" class="form-card">
+        <form id="noleggioForm" class="form-card" novalidate>
           <div class="form-group icon-input">
             <label for="name" data-i18n="lbl_name">Nome e Cognome *</label>
             <i class="fa fa-user"></i>
@@ -1709,8 +1709,8 @@
             <div id="hcaptcha" class="h-captcha" data-sitekey="ccc4c746-e570-44b8-9aaa-287629b21dc0"></div>
           </div>
 
-          <button type="submit" class="btn-primary">📩 <span data-i18n="btn_submit">Invia richiesta</span></button>
-          <p id="responseMessage"></p>
+          <button type="submit" id="submitBookingBtn" class="btn-primary">📩 <span data-i18n="btn_submit">Invia richiesta</span></button>
+          <p id="responseMessage" role="status" aria-live="polite" style="margin-top: 12px; font-weight: 600;"></p>
         </form>
       </div>
     </section>
@@ -2797,119 +2797,6 @@
   <script src="js/tour.js"></script>
   <script src="js/booking.js"></script>
 
-  <!-- Invio Prenotazione Resiliente verso Cloudflare Worker (/submit) -->
-  <script>
-    (function () {
-      const WORKER_SUBMIT_URL = "https://bibbonabike-booking.vitiellomanuel1985.workers.dev/submit";
-
-      document.addEventListener("DOMContentLoaded", () => {
-        const form = document.getElementById("noleggioForm");
-        const responseEl = document.getElementById("responseMessage");
-        if (!form) return;
-
-        form.addEventListener("submit", async (e) => {
-          // Evita doppi invii ravvicinati
-          if (form.dataset.submitting === "1") {
-            e.preventDefault();
-            return;
-          }
-          e.preventDefault();
-
-          const nameVal = (document.getElementById("name")?.value || "").trim();
-          const emailVal = (document.getElementById("email")?.value || "").trim();
-          const phoneVal = (document.getElementById("phone")?.value || "").trim();
-          const bikeVal = (document.getElementById("bikeType")?.value || "").trim();
-          const qtyVal = parseInt(document.getElementById("quantity")?.value || "1", 10) || 1;
-          const dateVal = (document.getElementById("date")?.value || "").trim();
-          const durationVal = (document.getElementById("duration")?.value || "1").trim();
-          const notesVal = (document.getElementById("notes")?.value || "").trim();
-          const discountVal = (document.getElementById("codiceSconto")?.value || "").trim();
-          const totalVal = (document.getElementById("totalHidden")?.value || document.getElementById("totalAmount")?.textContent || "0.00").trim();
-          const tourVal = (document.getElementById("tourSelected")?.value || "").trim();
-
-          const accessories = Array.from(form.querySelectorAll('input[name="accessories"]:checked')).map(cb => cb.value);
-
-          const captchaTokenInput = form.querySelector('textarea[name="h-captcha-response"], input[name="h-captcha-response"]');
-          const hcaptchaResponse = captchaTokenInput ? captchaTokenInput.value.trim() : "";
-
-          if (!nameVal || !emailVal || !phoneVal || !bikeVal || !dateVal) {
-            if (responseEl) {
-              responseEl.style.color = "#ff8a95";
-              responseEl.textContent = "Compila tutti i campi obbligatori (Nome, Email, Telefono, Tipo di bici e Data).";
-            }
-            return;
-          }
-
-          const submitBtn = form.querySelector('button[type="submit"]');
-          form.dataset.submitting = "1";
-          if (submitBtn) submitBtn.disabled = true;
-          if (responseEl) {
-            responseEl.style.color = "#ffab6b";
-            responseEl.textContent = "Invio richiesta in corso...";
-          }
-
-          const payload = {
-            name: nameVal,
-            email: emailVal,
-            phone: phoneVal,
-            bikeType: bikeVal,
-            quantity: qtyVal,
-            date: dateVal,
-            duration: durationVal,
-            accessories: accessories,
-            tourSelected: tourVal,
-            notes: notesVal,
-            codiceSconto: discountVal,
-            total: totalVal,
-            "h-captcha-response": hcaptchaResponse
-          };
-
-          try {
-            const res = await fetch(WORKER_SUBMIT_URL, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(payload)
-            });
-
-            let data = null;
-            const contentType = res.headers.get("content-type") || "";
-            if (contentType.includes("application/json")) {
-              data = await res.json();
-            } else {
-              const rawText = await res.text();
-              data = { message: rawText };
-            }
-
-            if (res.ok && (!data || data.ok !== false)) {
-              if (responseEl) {
-                responseEl.style.color = "#6ee7a8";
-                responseEl.textContent = (data && (data.message || data.msg)) || "Richiesta inviata con successo! Ti ricontatteremo al più presto.";
-              }
-              form.reset();
-              const totalSpan = document.getElementById("totalAmount");
-              const totalHid = document.getElementById("totalHidden");
-              if (totalSpan) totalSpan.textContent = "0.00";
-              if (totalHid) totalHid.value = "0.00";
-            } else {
-              if (responseEl) {
-                responseEl.style.color = "#ff8a95";
-                responseEl.textContent = (data && (data.error || data.message)) || ("Errore durante l'invio (HTTP " + res.status + "). Verifica anche l'hCaptcha o contattaci su WhatsApp.");
-              }
-            }
-          } catch (err) {
-            if (responseEl) {
-              responseEl.style.color = "#ff8a95";
-              responseEl.textContent = "Impossibile contattare il server di prenotazione. Controlla la connessione o scrivici su WhatsApp al +39 331 345 3207.";
-            }
-          } finally {
-            form.dataset.submitting = "0";
-            if (submitBtn) submitBtn.disabled = false;
-          }
-        });
-      });
-    })();
-  </script>
-
   <script src="js/event.js"></script>
   <script src="js/slideshow.js"></script>
   <script src="js/typewrite.js"></script>
@@ -3189,5 +3076,120 @@
   <script src="js/weather.js"></script>
   <script src="js/contactButton.js"></script>
   <script src="js/slideshow_my.js"></script>
+
+  <!-- Invio Prenotazione verso Cloudflare Worker (/submit) -->
+  <script>
+    (function () {
+      const WORKER_SUBMIT_URL = "https://bibbonabike-booking.vitiellomanuel1985.workers.dev/submit";
+
+      function setFeedback(msg, isOk) {
+        const el = document.getElementById("responseMessage");
+        if (!el) return;
+        el.style.color = isOk === true ? "#6ee7a8" : (isOk === false ? "#ff8a95" : "#ffab6b");
+        el.textContent = msg;
+      }
+
+      async function handleBookingSubmit(e) {
+        const form = document.getElementById("noleggioForm");
+        if (!form) return;
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (form.dataset.sending === "1") return;
+
+        const nameVal = (document.getElementById("name")?.value || "").trim();
+        const emailVal = (document.getElementById("email")?.value || "").trim();
+        const phoneVal = (document.getElementById("phone")?.value || "").trim();
+        const bikeVal = (document.getElementById("bikeType")?.value || "").trim();
+        const qtyVal = Math.max(1, parseInt(document.getElementById("quantity")?.value || "1", 10) || 1);
+        const dateVal = (document.getElementById("date")?.value || "").trim();
+        const durationVal = (document.getElementById("duration")?.value || "1").trim();
+        const notesVal = (document.getElementById("notes")?.value || "").trim();
+        const discountVal = (document.getElementById("codiceSconto")?.value || "").trim();
+        const totalVal = (document.getElementById("totalHidden")?.value || document.getElementById("totalAmount")?.textContent || "0.00").trim();
+        const tourVal = (document.getElementById("tourSelected")?.value || "").trim();
+        const accessories = Array.from(form.querySelectorAll('input[name="accessories"]:checked')).map((cb) => cb.value);
+
+        const tokenEl = form.querySelector('textarea[name="h-captcha-response"], input[name="h-captcha-response"]');
+        const captchaToken = tokenEl ? tokenEl.value.trim() : "";
+
+        if (!nameVal || !emailVal || !phoneVal || !bikeVal || !dateVal) {
+          setFeedback("Compila tutti i campi obbligatori: Nome e Cognome, Email, Telefono, Tipo di bici e Data.", false);
+          return;
+        }
+
+        const submitBtn = document.getElementById("submitBookingBtn") || form.querySelector('button[type="submit"]');
+        form.dataset.sending = "1";
+        if (submitBtn) submitBtn.disabled = true;
+        setFeedback("Invio richiesta in corso...", null);
+
+        const payload = {
+          name: nameVal,
+          email: emailVal,
+          phone: phoneVal,
+          bikeType: bikeVal,
+          quantity: qtyVal,
+          date: dateVal,
+          duration: durationVal,
+          accessories: accessories,
+          tourSelected: tourVal,
+          notes: notesVal,
+          codiceSconto: discountVal,
+          total: totalVal,
+          hCaptchaToken: captchaToken,
+          "h-captcha-response": captchaToken
+        };
+
+        try {
+          const resp = await fetch(WORKER_SUBMIT_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+
+          const rawText = await resp.text();
+          let data = null;
+          try {
+            data = JSON.parse(rawText);
+          } catch (_) {
+            data = { message: rawText };
+          }
+
+          if (resp.ok && (!data || data.ok !== false)) {
+            setFeedback((data && (data.message || data.msg)) || "Richiesta inviata con successo! Ti contatteremo al più presto.", true);
+            form.reset();
+            const totalSpan = document.getElementById("totalAmount");
+            const totalHid = document.getElementById("totalHidden");
+            if (totalSpan) totalSpan.textContent = "0.00";
+            if (totalHid) totalHid.value = "0.00";
+          } else {
+            const errMsg = (data && (data.error || data.message)) || ("Risposta del server non valida (HTTP " + resp.status + ").");
+            setFeedback(errMsg, false);
+          }
+        } catch (err) {
+          setFeedback("Errore di rete durante l'invio al server di prenotazione. Verifica la connessione o contattaci al +39 331 345 3207.", false);
+        } finally {
+          form.dataset.sending = "0";
+          if (submitBtn) submitBtn.disabled = false;
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("noleggioForm");
+        if (form) {
+          form.addEventListener("submit", handleBookingSubmit, true);
+        }
+        const btn = document.getElementById("submitBookingBtn");
+        if (btn) {
+          btn.addEventListener("click", (e) => {
+            if (form) {
+              handleBookingSubmit(e);
+            }
+          }, true);
+        }
+      });
+    })();
+  </script>
+
 </body>
 </html>
