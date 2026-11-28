@@ -101,6 +101,11 @@
       overflow-x: clip;
     }
 
+    #noleggio,
+    #noleggioForm {
+      scroll-margin-top: 20px;
+    }
+
     body {
       background-color: var(--bg-void) !important;
       color: var(--text-primary) !important;
@@ -2267,6 +2272,29 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
   <!-- Script Scroll to Top, Reveal Footer, Lazy hCaptcha e Animazione Titoli -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      // Scroll preciso al form di prenotazione su iOS / iPhone 14 Pro Max
+      const bookingTriggers = document.querySelectorAll('a[href="#noleggio"], .scroll-btn');
+      bookingTriggers.forEach((trigger) => {
+        trigger.addEventListener('click', (e) => {
+          const href = trigger.getAttribute('href');
+          if (href !== '#noleggio' && !trigger.classList.contains('scroll-btn')) return;
+          const targetEl = document.getElementById('noleggioForm') || document.getElementById('noleggio');
+          if (!targetEl) return;
+          e.preventDefault();
+          e.stopPropagation();
+
+          const scrollToForm = (behavior) => {
+            const rect = targetEl.getBoundingClientRect();
+            const topPos = Math.max(0, rect.top + window.scrollY - 16);
+            window.scrollTo({ top: topPos, behavior: behavior });
+          };
+
+          scrollToForm('smooth');
+          // Riallineamento di sicurezza dopo eventuale assestamento di immagini/galleria su iOS Safari
+          setTimeout(() => scrollToForm('auto'), 650);
+        }, true);
+      });
+
       const scrollBtn = document.getElementById('scrollToTop');
       if (scrollBtn) {
         const updateScrollBtn = () => {
