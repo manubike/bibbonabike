@@ -520,11 +520,13 @@
     .rental-section .section-title,
     .tour-section .section-title,
     .magona-section .section-title,
-    .form-section .section-title {
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      gap: 10px !important;
+    .form-section .section-title,
+    section > .section-title,
+    section > .container-full > .section-title,
+    section > .tour-overlay > .section-title {
+      display: block !important;
+      width: 100% !important;
+      max-width: 100% !important;
       visibility: visible !important;
       opacity: 1 !important;
       color: #ffffff !important;
@@ -536,22 +538,25 @@
       padding: 0.25rem 0.5rem !important;
       text-align: center !important;
       position: relative !important;
+      left: 0 !important;
+      right: 0 !important;
       z-index: 5 !important;
       transform: none !important;
       text-shadow: 0 2px 12px rgba(0, 0, 0, 0.85) !important;
     }
 
-    .section-title i,
-    .section-title span {
-      display: inline-flex !important;
-      align-items: center !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-      color: inherit !important;
+    .section-title i {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
     }
 
-    .section-title i {
-      color: var(--accent-orange-bright) !important;
+    .section-title span {
+      display: inline !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      color: #ffffff !important;
+      text-align: center !important;
     }
 
     .slash-anim {
@@ -2116,10 +2121,19 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.section-title').forEach((titleEl) => {
-        titleEl.style.setProperty('display', 'flex', 'important');
+        titleEl.querySelectorAll('i').forEach((iconEl) => {
+          iconEl.style.setProperty('display', 'none', 'important');
+          iconEl.style.setProperty('visibility', 'hidden', 'important');
+          iconEl.style.setProperty('opacity', '0', 'important');
+        });
+        titleEl.style.setProperty('display', 'block', 'important');
+        titleEl.style.setProperty('width', '100%', 'important');
         titleEl.style.setProperty('visibility', 'visible', 'important');
         titleEl.style.setProperty('opacity', '1', 'important');
         titleEl.style.setProperty('color', '#ffffff', 'important');
+        titleEl.style.setProperty('text-align', 'center', 'important');
+        titleEl.style.setProperty('margin-left', 'auto', 'important');
+        titleEl.style.setProperty('margin-right', 'auto', 'important');
       });
 
       const weatherWidgetEl = document.getElementById('weatherWidget');
