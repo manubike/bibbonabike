@@ -1,18 +1,18 @@
 /* ==========================================================================
    FILE ESTERNO: seo-bici.js
-   Inclusione in index.html (sopra o sotto il blocco principale, fuori dal core):
+   Inclusione in index.html (fuori dal core, sopra o sotto il codice principale):
    <script src="/js/seo-bici.js"></script>
    ========================================================================== */
 
 (function () {
   const SITE_CONFIG = {
-    name: "Nome del Tuo Store / Portale Bici",
-    url: "https://www.tuodominio.it/",
-    image: "https://www.tuodominio.it/immagini/anteprima-bici.jpg",
+    name: "Magona Bike Garage - Val di Cecina Biking",
+    url: "https://www.bibbonabike.com/",
+    image: "https://www.bibbonabike.com/immagini/anteprima-bici.jpg",
     locale: "it_IT",
-    title: "Bici MTB, Corsa, Gravel, E-Bike, Ricambi e Accessori | Tutti i Marchi",
+    title: "Magona Bike Garage | Officina Bici, E-Bike, Noleggio, MTB, Corsa, Gravel e Ricambi a Bibbona",
     description:
-      "Catalogo completo di biciclette muscolari ed elettriche: MTB (XC, Trail, Enduro, DH), Bici da Corsa, Gravel, E-MTB, E-Road, E-Gravel, ricambi, motori e accessori dei migliori marchi.",
+      "Officina specializzata bici ed e-bike, noleggio, tour guidati, ricambi e accessori a Bibbona (Val di Cecina, Costa degli Etruschi). Assistenza motori Bosch, Shimano, Brose, Yamaha, TQ, Mahle, Bafang e sospensioni RockShox e Fox.",
     injectJsonLdAtBottomOfBody: true // true = inietta lo schema in fondo al body; false = in head
   };
 
@@ -36,7 +36,9 @@
     "forcelle ammortizzate", "ammortizzatori posteriori", "serie sterzo",
     "accessori ciclismo", "caschi bici", "scarpe ciclismo", "abbigliamento ciclismo",
     "occhiali bici", "ciclocomputer GPS", "rulli smart", "luci bici", "lucchetti",
-    "borse bikepacking", "portaborracce"
+    "borse bikepacking", "portaborracce",
+    "officina bici Bibbona", "noleggio e-bike Bibbona", "tour MTB Val di Cecina",
+    "assistenza e-bike Costa degli Etruschi", "revisione sospensioni MTB"
   ];
 
   const BIKE_BRANDS = [
@@ -130,6 +132,24 @@
       description: SITE_CONFIG.description,
       url: SITE_CONFIG.url,
       image: SITE_CONFIG.image,
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "Via del Mandorlo 1",
+        addressLocality: "Bibbona",
+        addressRegion: "LI",
+        addressCountry: "IT"
+      },
+      areaServed: [
+        "Bibbona",
+        "Val di Cecina",
+        "Costa degli Etruschi",
+        "Cecina",
+        "Bolgheri",
+        "Riparbella",
+        "Casale Marittimo",
+        "Guardistallo",
+        "Castagneto Carducci"
+      ],
       knowsAbout: [
         "Mountain Bike (MTB)",
         "Electric Mountain Bike (E-MTB)",
@@ -139,7 +159,10 @@
         "Electric Gravel Bikes (E-Gravel)",
         "E-Bike Drive Systems",
         "Bicycle Parts and Components",
-        "Cycling Accessories"
+        "Cycling Accessories",
+        "Bicycle Repair and Maintenance",
+        "Bicycle Rental",
+        "Guided MTB Tours"
       ],
       brand: ALL_BRANDS.map((brandName) => ({
         "@type": "Brand",
@@ -167,4 +190,3 @@
     injectJsonLd();
   }
 })();
-
