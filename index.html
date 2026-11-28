@@ -836,7 +836,6 @@
       visibility: hidden !important;
       pointer-events: none !important;
     }
-
     #chatBox:not(.hidden),
     #chatBox.open,
     #chatBox.active {
@@ -846,12 +845,16 @@
       visibility: visible !important;
       pointer-events: auto !important;
       position: fixed !important;
-      right: 16px !important;
+      left: 12px !important;
+      right: 12px !important;
       bottom: 84px !important;
-      left: auto !important;
       top: auto !important;
-      width: min(350px, calc(100vw - 32px)) !important;
-      max-height: min(440px, calc(100vh - 120px)) !important;
+      transform: none !important;
+      translate: none !important;
+      margin: 0 !important;
+      width: auto !important;
+      max-width: min(360px, calc(100vw - 24px)) !important;
+      max-height: min(420px, calc(100vh - 120px)) !important;
       z-index: 9995 !important;
       background-color: var(--bg-elevated) !important;
       color: var(--text-primary) !important;
@@ -859,9 +862,17 @@
       border-radius: 14px !important;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85) !important;
       overflow: hidden !important;
+      box-sizing: border-box !important;
     }
 
-    #chatMessages {
+    #chatBox textarea,
+    #chatBox #chatInput,
+    #chatBox button,
+    #chatBox #chatSend {
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+    }
+#chatMessages {
       flex: 1 1 auto !important;
       overflow-y: auto !important;
       padding: 12px !important;
