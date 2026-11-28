@@ -758,43 +758,54 @@
       border: 0;
       display: block;
     }
-
-
-    /* Foto 29" e 24" impilate nella card noleggio */
+    /* Foto 29" e 24" impilate nella card noleggio con dimensioni identiche */
     .rental-showcase-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 0.9rem;
-      width: 100%;
-      margin-bottom: 1rem;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 0.9rem !important;
+      width: 100% !important;
+      margin-bottom: 1rem !important;
+      box-sizing: border-box !important;
     }
 
     .rental-bike-figure {
-      margin: 0;
-      padding: 0.65rem;
-      border-radius: 10px;
-      background-color: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
-      text-align: center;
-      box-sizing: border-box;
+      margin: 0 !important;
+      padding: 0.65rem !important;
+      width: 100% !important;
+      border-radius: 10px !important;
+      background-color: var(--bg-surface) !important;
+      border: 1px solid var(--border-subtle) !important;
+      text-align: center !important;
+      box-sizing: border-box !important;
+    }
+
+    .rental-bike-media {
+      width: 100% !important;
+      height: 220px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      overflow: hidden !important;
+      border-radius: 8px !important;
+      background-color: #ffffff !important;
     }
 
     .rental-bike-figure img {
-      display: block;
-      width: 100%;
-      max-height: 240px;
-      object-fit: contain;
-      margin: 0 auto;
-      border-radius: 8px;
+      display: block !important;
+      width: 100% !important;
+      height: 100% !important;
+      max-height: 220px !important;
+      object-fit: contain !important;
+      margin: 0 auto !important;
+      border-radius: 6px !important;
     }
 
     .rental-bike-figure figcaption {
-      margin-top: 0.45rem;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--accent-orange-bright);
+      margin-top: 0.45rem !important;
+      font-size: 0.85rem !important;
+      font-weight: 600 !important;
+      color: var(--accent-orange-bright) !important;
     }
-
   </style>
 
 </head>
@@ -1153,11 +1164,19 @@
         <div class="bike-card">
           <div class="rental-showcase-stack">
             <figure class="rental-bike-figure">
-              <img src="img/ebikeHD.png" alt="E-MTB 29" />
+              <div class="rental-bike-media">
+                <img src="img/ebikeHD.png" alt="E-MTB 29" />
+              </div>
               <figcaption>E-MTB 29”</figcaption>
             </figure>
             <figure class="rental-bike-figure rental-bike-figure--24">
-              <img src="img/ebike24.webp" alt="E-MTB 24 Coppi" />
+              <div class="rental-bike-media">
+                <img
+                  src="img/ebike24.webp"
+                  alt="E-MTB 24"
+                  onerror="if (!this.dataset.fb1) { this.dataset.fb1 = '1'; this.src = 'img/ebike24.png'; } else if (!this.dataset.fb2) { this.dataset.fb2 = '1'; this.src = 'img/ebikeHD.png'; }"
+                />
+              </div>
               <figcaption>E-MTB 24”</figcaption>
             </figure>
           </div>
