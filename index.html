@@ -2168,6 +2168,7 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
   </div>
 
   <!-- Modale Completo Privacy & Cookie Policy (GDPR) -->
+  <div id="privacy-policy" aria-hidden="true" style="display:none;"></div>
   <div id="privacy-policy-overlay" role="dialog" aria-modal="true" aria-labelledby="privacyModalTitle" style="display:none; position:fixed; inset:0; width:100%; height:100%; background-color:rgba(4,5,7,0.88); backdrop-filter:blur(8px); justify-content:center; align-items:center; z-index:10000; padding:16px; box-sizing:border-box;">
     <div id="privacy-policy-modal" style="background:linear-gradient(160deg, #15181e 0%, #0a0c0f 100%); color:#f4f6f8; padding:28px; border-radius:12px; border:1px solid rgba(255,123,28,0.42); box-shadow:0 24px 60px rgba(0,0,0,0.9); max-width:680px; width:100%; max-height:86vh; overflow-y:auto; position:relative; box-sizing:border-box;">
       <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:12px; margin-bottom:16px;">
@@ -2849,7 +2850,7 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
                     `• **Lunghezza:** ${tr.length}\n` +
                     `• **Dislivello:** ${tr.elevation}\n` +
                     `• **Difficoltà:** ${tr.difficulty}\n` +
-                    `• **Indicazioni:** ${tr.info}\n` +
+                    `• **Dettagli:** ${tr.info}\n` +
                     `• **Scheda Trailforks:** ${tr.url}`
                   );
                 }
@@ -2878,10 +2879,10 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
             "sant ilario", "palio delle botti", "pineta", "tomboli", "bolgheri", "castagneto",
             "cecina", "casale marittimo", "guardistallo", "montescudaio", "riparbella",
             "castellina", "montecatini val di cecina", "volterra", "pomarance", "monterufoli",
-            "dintorni", "storia", "paesaggio", "val di cecina", "costa degli etruschi"
+            "dintorni", "storia", "paesaggio", "val di cecina", "costa degli etruschi", "dove", "indirizzo", "orari"
           ],
           answer:
-            "**Bibbona** e i dintorni tra **Costa degli Etruschi** e **Val di Cecina** uniscono borghi storici (origini villanoviane ed etrusche, Pieve di Sant'Ilario, tradizioni locali, **Bolgheri**, **Castagneto Carducci**, **Casale Marittimo**, **Guardistallo**, **Montescudaio**, **Montecatini Val di Cecina**, **Volterra**, **Pomarance**, **Monterufoli-Caselli**), **Marina di Bibbona** con la pineta e i **Tomboli di Cecina**, e itinerari in bici su collina, strade bianche e trail."
+            "**Bibbona** e i dintorni tra **Costa degli Etruschi** e **Val di Cecina** uniscono borghi storici (origini villanoviane ed etrusche, Pieve di Sant'Ilario, tradizioni locali, **Bolgheri**, **Castagneto Carducci**, **Casale Marittimo**, **Guardistallo**, **Montescudaio**, **Montecatini Val di Cecina**, **Volterra**, **Pomarance**, **Monterufoli-Caselli**), **Marina di Bibbona** con la pineta e i **Tomboli di Cecina**, e itinerari in bici su collina, strade bianche e trail. Ci trovi a **Bibbona (LI)** in **Via del Mandorlo 1** / **Piazza delle Querce 5**."
         },
         {
           id: "mondo_biciclette_e_garage",
@@ -2890,10 +2891,12 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
             "strada", "cicloturismo", "ciclismo", "allenamento", "forcella", "rockshox",
             "sospensioni", "freni", "cambio", "gomme", "batteria", "motore", "motori",
             "bosch", "shimano", "brose", "yamaha", "avinox", "tq", "bafang", "fazua", "fsa",
-            "mahle", "oli", "panasonic", "hyena", "polini", "noleggio", "officina", "tour", "prenota", "prezzi"
+            "mahle", "oli", "panasonic", "hyena", "polini", "noleggio", "officina", "tour", "prenota", "prezzi", "quanto", "costo", "costa"
           ],
           answer:
-            "**Magona Bike Garage – BibbonaBike.com** (**Via del Mandorlo 1, Bibbona, Livorno** · Tel./WhatsApp **+39 331 345 3207** · **magonabikegarage@gmail.com**) offre **noleggio E-MTB** (**E-MTB Full 29"**, **E-MTB Front 29"** ed **E-MTB 24" Junior / Ragazzi**), **tour con guide certificate** e **officina specializzata** su bici, sospensioni/forcelle (es. RockShox) e motori E-Bike (**Bosch, Shimano, Yamaha, Avinox, TQ, Bafang, Brose, Fazua, FSA, Mahle, OLI, Panasonic, Hyena, Polini** e altri)."
+            "**Magona Bike Garage – BibbonaBike.com** (**Via del Mandorlo 1, Bibbona, Livorno** · Tel./WhatsApp **+39 331 345 3207** · **magonabikegarage@gmail.com**) offre:\n" +
+            "• **Noleggio E-MTB**: **E-MTB 29”** (**50€/giorno** · **35€ mezza giornata**) ed **E-MTB 24”** (**40€/giorno** · **25€ mezza giornata**), con accessori (carrello bambini +7€, seggiolino Shotgun +15€).\n" +
+            "• **Tour con guide certificate** e **officina specializzata** su bici, sospensioni/forcelle (es. RockShox) e motori E-Bike (**Bosch, Shimano, Yamaha, Avinox, TQ, Bafang, Brose, Fazua, FSA, Mahle, OLI, Panasonic, Hyena, Polini** e altri)."
         }
       ];
 
@@ -2920,11 +2923,13 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
       }
 
       let lastUserPrompt = "";
+      let lastSentTs = 0;
+      let isSanitizing = false;
 
       function getLocalAssistantReply(userMessage) {
         const norm = normalizeText(userMessage);
         if (!norm) {
-          return "Chiedimi pure dei **sentieri della Macchia Della Magona** (con dati Trailforks, dislivelli e indicazioni), **Bibbona**, **dintorni**, **storia**, **paesaggio** o **biciclette**!";
+          return "Chiedimi pure dei **sentieri della Macchia Della Magona** (dati Trailforks, dislivelli e dettagli), **Bibbona**, **dintorni**, **storia**, **paesaggio**, **prezzi noleggio** o **officina**!";
         }
 
         const tokens = norm.split(" ").filter(Boolean);
@@ -2958,7 +2963,7 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
         }
 
         return (
-          "Posso aiutarti su **Macchia Della Magona Trail Area** (tutti i sentieri Trailforks, lunghezze, dislivelli, difficoltà e indicazioni), **Bibbona**, **dintorni**, **storia**, **paesaggio** e **mondo biciclette** (MTB, E-MTB, gravel, cicloturismo, officina e noleggio)."
+          "Posso aiutarti su **Macchia Della Magona Trail Area** (tutti i sentieri Trailforks, lunghezze, dislivelli e difficoltà), **Bibbona**, **dintorni**, **storia**, **paesaggio**, **noleggio E-MTB** e **officina** (Tel./WhatsApp **+39 331 345 3207**)."
         );
       }
 
@@ -2968,6 +2973,7 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
 
         const row = document.createElement("div");
         row.className = sender === "user" ? "chat-msg user-msg" : "chat-msg bot-msg";
+        row.dataset.localVerified = "1";
         row.style.marginBottom = "8px";
         row.style.padding = "8px 10px";
         row.style.borderRadius = "8px";
@@ -2990,30 +2996,66 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
         messagesEl.scrollTop = messagesEl.scrollHeight;
       }
 
+      function isErrorMessageText(txt) {
+        const lower = String(txt || "").toLowerCase().trim();
+        if (!lower) return false;
+        return (
+          lower.includes("errore") ||
+          lower.includes("error") ||
+          lower.includes("impossibile") ||
+          lower.includes("failed") ||
+          lower.includes("not found") ||
+          lower.includes("404") ||
+          lower.includes("500") ||
+          lower.includes("502") ||
+          lower.includes("503") ||
+          lower.includes("timeout") ||
+          lower.includes("scadut") ||
+          lower.includes("non disponibile") ||
+          lower.includes("riprova")
+        );
+      }
+
       function sanitizeErrorBubbles() {
+        if (isSanitizing) return;
         const messagesEl = document.getElementById("chatMessages");
         if (!messagesEl) return;
-        const bubbles = messagesEl.querySelectorAll(".bot-msg, div");
-        bubbles.forEach((b) => {
-          if (b.classList && b.classList.contains("user-msg")) return;
-          const txt = (b.textContent || "").toLowerCase();
-          if (
-            txt.includes("errore nella richiesta") ||
-            txt.includes("errore nella risposta") ||
-            txt.includes("errore di rete") ||
-            (txt.includes("errore") && (txt.includes("richiesta") || txt.includes("risposta")))
-          ) {
-            b.innerHTML = formatRichText(getLocalAssistantReply(lastUserPrompt));
-          }
-        });
+        isSanitizing = true;
+        try {
+          const children = Array.from(messagesEl.children);
+          children.forEach((b) => {
+            if (b.classList && b.classList.contains("user-msg")) return;
+            if (b.dataset && b.dataset.localVerified === "1") return;
+            const txt = b.textContent || "";
+            if (isErrorMessageText(txt)) {
+              b.dataset.localVerified = "1";
+              b.className = "chat-msg bot-msg";
+              b.style.marginBottom = "8px";
+              b.style.padding = "8px 10px";
+              b.style.borderRadius = "8px";
+              b.style.fontSize = "0.88rem";
+              b.style.lineHeight = "1.45";
+              b.style.whiteSpace = "pre-line";
+              b.style.backgroundColor = "rgba(255, 255, 255, 0.04)";
+              b.style.border = "1px solid rgba(255, 255, 255, 0.1)";
+              b.style.color = "#e6ebf0";
+              b.innerHTML = formatRichText(getLocalAssistantReply(lastUserPrompt));
+            }
+          });
+        } finally {
+          isSanitizing = false;
+        }
       }
 
       function sendChatMessage() {
+        const now = Date.now();
+        if (now - lastSentTs < 120) return;
         const inputEl = document.getElementById("chatInput");
         if (!inputEl) return;
         const text = inputEl.value.trim();
         if (!text) return;
 
+        lastSentTs = now;
         lastUserPrompt = text;
         appendChatBubble("user", text);
         inputEl.value = "";
@@ -3038,7 +3080,22 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
         }
       }
 
+      // Rimuove eventuali listener legacy collegati da js/chat.js su #chatSend e #chatInput
+      function detachLegacyChatListeners() {
+        const oldSend = document.getElementById("chatSend");
+        if (oldSend && oldSend.parentNode) {
+          const cleanSend = oldSend.cloneNode(true);
+          oldSend.parentNode.replaceChild(cleanSend, oldSend);
+        }
+        const oldInput = document.getElementById("chatInput");
+        if (oldInput && oldInput.parentNode) {
+          const cleanInput = oldInput.cloneNode(true);
+          oldInput.parentNode.replaceChild(cleanInput, oldInput);
+        }
+      }
+
       document.addEventListener("DOMContentLoaded", () => {
+        detachLegacyChatListeners();
         refreshInitialChatGreeting();
         window.addEventListener("bibbonabike:langchange", refreshInitialChatGreeting);
 
@@ -3107,7 +3164,7 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
 
         document.addEventListener("keydown", (e) => {
           const inp = e.target && e.target.id === "chatInput" ? e.target : null;
-          if (inp && e.key === "Enter" && !e.shiftKey) {
+          if (inp && (e.key === "Enter" || e.keyCode === 13) && !e.shiftKey) {
             e.preventDefault();
             e.stopPropagation();
             if (typeof e.stopImmediatePropagation === "function") {
@@ -3129,28 +3186,64 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
     (function () {
       const DIRECTIONS_ADDRESS = "Piazza delle Querce 5, Bibbona, Livorno";
       const DIRECTIONS_URL = "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(DIRECTIONS_ADDRESS);
+      const BUTTON_LABEL = "Indicazioni";
+      let isApplying = false;
 
       function applyDirectionsLink() {
+        if (isApplying) return;
         const mapEl = document.getElementById("mapLink");
         if (!mapEl) return;
 
-        const targetLink = mapEl.tagName === "A" ? mapEl : mapEl.querySelector("a");
-        if (targetLink) {
+        isApplying = true;
+        try {
+          let targetLink = mapEl.tagName === "A" ? mapEl : mapEl.querySelector("a");
+          if (!targetLink) {
+            targetLink = document.createElement("a");
+            targetLink.className = "btn-secondary";
+            mapEl.innerHTML = "";
+            mapEl.appendChild(targetLink);
+          }
+
           targetLink.href = DIRECTIONS_URL;
           targetLink.target = "_blank";
           targetLink.rel = "noopener noreferrer";
           targetLink.title = DIRECTIONS_ADDRESS;
-          targetLink.setAttribute("aria-label", "Indicazioni: " + DIRECTIONS_ADDRESS);
-        } else {
-          mapEl.dataset.address = DIRECTIONS_ADDRESS;
-          mapEl.dataset.mapUrl = DIRECTIONS_URL;
+          targetLink.setAttribute("aria-label", BUTTON_LABEL);
+
+          // Rimuove eventuale testo extra lasciando esclusivamente "Indicazioni"
+          if (targetLink.textContent.trim() !== BUTTON_LABEL || targetLink.children.length > 0) {
+            targetLink.textContent = BUTTON_LABEL;
+          }
+
+          if (mapEl !== targetLink) {
+            Array.from(mapEl.childNodes).forEach((node) => {
+              if (node !== targetLink) {
+                mapEl.removeChild(node);
+              }
+            });
+          }
+        } finally {
+          isApplying = false;
         }
       }
 
-      document.addEventListener("DOMContentLoaded", applyDirectionsLink);
+      document.addEventListener("DOMContentLoaded", () => {
+        applyDirectionsLink();
+        const mapEl = document.getElementById("mapLink");
+        if (mapEl && "MutationObserver" in window) {
+          new MutationObserver(() => {
+            applyDirectionsLink();
+          }).observe(mapEl, { childList: true, subtree: true, characterData: true });
+        }
+      });
+
       window.addEventListener("load", () => {
         applyDirectionsLink();
-        setTimeout(applyDirectionsLink, 250);
+        setTimeout(applyDirectionsLink, 150);
+        setTimeout(applyDirectionsLink, 500);
+      });
+      window.addEventListener("bibbonabike:langchange", () => {
+        setTimeout(applyDirectionsLink, 0);
       });
     })();
   </script>
