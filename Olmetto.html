@@ -260,7 +260,7 @@
       const panoramaSubtitle = document.getElementById('panoramaSubtitle');
       const panoramaCanvas = document.getElementById('panoramaCanvas');
       const continuePanoramaBtn = document.getElementById('continuePanoramaBtn');
-      const pCtx = panoramaCanvas.getContext('2d');
+      const pCtx = panoramaCanvas ? panoramaCanvas.getContext('2d') : null;
 
       const audioToggleBtn = document.getElementById('audioToggleBtn');
       const audioIconOn = document.getElementById('audioIconOn');
@@ -288,7 +288,6 @@
 
       // =========================================================================
       // 10 NPC LIVORNESI CON DIALOGHI E RISPOSTE ESCLUSIVAMENTE LIVORNESI
-      // ("Tingiti meno i 'apelli!" presente su 2 NPC distinti)
       // =========================================================================
       const NPC_TEMPLATES = [
         {
@@ -358,8 +357,8 @@
         if (!audioEnabled) return;
         try {
           if (!audioCtx) {
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            if (AudioContext) audioCtx = new AudioContext();
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (AudioCtx) audioCtx = new AudioCtx();
           }
           if (audioCtx && audioCtx.state === 'suspended') {
             audioCtx.resume().catch(function () {});
@@ -444,6 +443,7 @@
         mode: 'START',
         time: 0,
         startTime: 0,
+        elapsedSimTime: 0,
         score: 0,
         belvedereCount: 0,
         panoramaTimer: 0,
@@ -467,23 +467,33 @@
 
       const keys = { right: false, left: false, up: false, turbo: false };
 
+      function clearKeys() {
+        keys.right = false;
+        keys.left = false;
+        keys.up = false;
+        keys.turbo = false;
+      }
+
+      window.addEventListener('blur', clearKeys);
+
       let npcs = [];
       let sceneryItems = [];
       let leaves = [];
 
       function getGroundY(worldX) {
-        let y = Math.sin(worldX * 0.0016) * 14 + Math.cos(worldX * 0.0007) * 10;
+        const x = Number.isFinite(worldX) ? worldX : 0;
+        let y = Math.sin(x * 0.0016) * 14 + Math.cos(x * 0.0007) * 10;
         for (let i = 0; i < BELVEDERE_SPOTS.length; i++) {
           const spot = BELVEDERE_SPOTS[i];
-          const dx = worldX - spot.x;
+          const dx = x - spot.x;
           const hillRadius = 780;
           if (Math.abs(dx) < hillRadius) {
             const norm = dx / hillRadius;
             y -= Math.pow(Math.cos(norm * Math.PI * 0.5), 2) * 125;
           }
         }
-        if (worldX > 24600) {
-          const t = Math.min(1, (worldX - 24600) / 300);
+        if (x > 24600) {
+          const t = Math.min(1, (x - 24600) / 300);
           y = y * (1 - t);
         }
         return y;
@@ -550,9 +560,11 @@
       function startGame() {
         ensureAudio();
         populateWorld();
+        clearKeys();
 
         state.mode = 'PLAYING';
         state.startTime = performance.now();
+        state.elapsedSimTime = 0;
         state.score = 0;
         state.belvedereCount = 0;
         state.panoramaTimer = 0;
@@ -652,12 +664,24 @@
         });
       }
 
+      function selectNpcReply(npc, replyText) {
+        if (!npc) return;
+        npc.talked = true;
+        state.score += 150;
+        state.quipText = String(replyText).replace(/[“”]/g, '');
+        state.quipTimer = 3.0;
+        if (dialogueModal) dialogueModal.classList.add('hidden');
+        state.activeNpc = null;
+        if (state.mode === 'DIALOGUE') {
+          state.mode = 'PLAYING';
+        }
+        updateHud();
+      }
+
       function openNpcDialogue(npc) {
         state.mode = 'DIALOGUE';
         state.activeNpc = npc;
-        keys.right = false;
-        keys.left = false;
-        keys.turbo = false;
+        clearKeys();
         playSound('npc');
 
         if (npcAvatarBadge) npcAvatarBadge.textContent = npc.avatar;
@@ -673,14 +697,7 @@
             btn.className = 'w-full text-left px-3.5 py-2.5 rounded-xl bg-slate-800/90 hover:bg-purple-600/80 active:scale-98 border border-slate-600/80 text-xs sm:text-sm font-bold text-white leading-snug transition cursor-pointer';
             btn.textContent = replyText;
             btn.addEventListener('click', function () {
-              npc.talked = true;
-              state.score += 150;
-              state.quipText = replyText.replace(/[“”]/g, '');
-              state.quipTimer = 3.0;
-              if (dialogueModal) dialogueModal.classList.add('hidden');
-              state.activeNpc = null;
-              state.mode = 'PLAYING';
-              updateHud();
+              selectNpcReply(npc, replyText);
             });
             dialogueOptions.appendChild(btn);
           });
@@ -696,9 +713,7 @@
         state.currentBelvedere = spot;
         state.panoramaTimer = BELVEDERE_PAUSE_DURATION;
         state.mode = 'PANORAMA';
-        keys.right = false;
-        keys.left = false;
-        keys.turbo = false;
+        clearKeys();
 
         const badge = document.getElementById('milestone' + spot.id);
         if (badge) {
@@ -1047,14 +1062,15 @@
       }
 
       function update(dt) {
-        state.time += dt;
+        const safeDt = Number.isFinite(dt) && dt > 0 ? Math.min(0.1, dt) : 0.016;
+        state.time += safeDt;
 
         if (state.quipTimer > 0) {
-          state.quipTimer = Math.max(0, state.quipTimer - dt);
+          state.quipTimer = Math.max(0, state.quipTimer - safeDt);
         }
 
         if (state.mode === 'PANORAMA') {
-          state.panoramaTimer -= dt;
+          state.panoramaTimer -= safeDt;
           if (panoramaCountdown) panoramaCountdown.textContent = Math.max(0, state.panoramaTimer).toFixed(1) + 's';
           if (state.panoramaTimer <= 0) {
             closeBelvederePanorama();
@@ -1063,10 +1079,11 @@
         }
 
         if (state.mode === 'GELATO_STOP') {
-          state.gelatoTimer -= dt;
+          state.gelatoTimer -= safeDt;
+          state.elapsedSimTime += safeDt;
           if (state.gelatoTimer <= 0) {
             state.mode = 'VICTORY';
-            const totalSec = Math.max(1, Math.round((performance.now() - state.startTime) / 1000));
+            const totalSec = Math.max(1, Math.round(state.elapsedSimTime));
             const finalScoreEl = document.getElementById('finalScore');
             const finalBelvedereEl = document.getElementById('finalBelvedere');
             const finalTimeEl = document.getElementById('finalTime');
@@ -1080,30 +1097,33 @@
 
         if (state.mode !== 'PLAYING') return;
 
+        state.elapsedSimTime += safeDt;
+
         const maxSpeed = keys.turbo ? 760 : 510;
         const accel = keys.turbo ? 950 : 620;
 
         if (keys.right) {
-          state.bike.vx += accel * dt;
+          state.bike.vx += accel * safeDt;
         } else if (keys.left) {
-          state.bike.vx -= 820 * dt;
+          state.bike.vx -= 820 * safeDt;
         } else {
-          state.bike.vx *= Math.pow(0.25, dt);
+          state.bike.vx *= Math.pow(0.25, safeDt);
           if (Math.abs(state.bike.vx) < 4) state.bike.vx = 0;
         }
 
+        const prevX = state.bike.x;
         const slope = getGroundSlope(state.bike.x);
-        state.bike.vx += Math.sin(slope) * 140 * dt;
+        state.bike.vx += Math.sin(slope) * 140 * safeDt;
         state.bike.vx = Math.max(-140, Math.min(maxSpeed, state.bike.vx));
 
-        state.bike.x = Math.max(80, state.bike.x + state.bike.vx * dt);
-        state.bike.wheelAngle += (state.bike.vx * dt) / 28;
-        state.bike.pedalPhase += (Math.abs(state.bike.vx) * dt) / 36;
+        state.bike.x = Math.max(80, state.bike.x + state.bike.vx * safeDt);
+        state.bike.wheelAngle += (state.bike.vx * safeDt) / 28;
+        state.bike.pedalPhase += (Math.abs(state.bike.vx) * safeDt) / 36;
 
         const groundY = getGroundY(state.bike.x);
         if (!state.bike.onGround) {
-          state.bike.vy += 1450 * dt;
-          state.bike.y += state.bike.vy * dt;
+          state.bike.vy += 1450 * safeDt;
+          state.bike.y += state.bike.vy * safeDt;
           if (state.bike.y >= groundY) {
             state.bike.y = groundY;
             state.bike.vy = 0;
@@ -1114,9 +1134,9 @@
         }
 
         const targetPitch = state.bike.onGround ? slope : Math.max(-0.4, Math.min(0.4, state.bike.vy * 0.0007));
-        state.bike.pitch += (targetPitch - state.bike.pitch) * Math.min(1, dt * 12);
+        state.bike.pitch += (targetPitch - state.bike.pitch) * Math.min(1, safeDt * 12);
 
-        if (state.quipTimer <= 0 && state.bike.vx > 380 && Math.random() < dt * 0.25) {
+        if (state.quipTimer <= 0 && state.bike.vx > 380 && Math.random() < safeDt * 0.25) {
           state.quipText = RIDER_QUIPS[Math.floor(Math.random() * RIDER_QUIPS.length)];
           state.quipTimer = 2.2;
         }
@@ -1124,7 +1144,8 @@
         for (let c = 0; c < leaves.length; c++) {
           const leaf = leaves[c];
           const leafY = getGroundY(leaf.x) + leaf.yOffset;
-          if (!leaf.collected && Math.abs(state.bike.x - leaf.x) < 38 && Math.abs(state.bike.y - leafY) < 42) {
+          const crossedX = (prevX <= leaf.x && state.bike.x >= leaf.x) || Math.abs(state.bike.x - leaf.x) < 38;
+          if (!leaf.collected && crossedX && Math.abs(state.bike.y - leafY) < 48) {
             leaf.collected = true;
             state.score += 50;
             playSound('npc');
@@ -1135,7 +1156,11 @@
 
         for (let i = 0; i < npcs.length; i++) {
           const npc = npcs[i];
-          if (!npc.talked && Math.abs(state.bike.x - npc.x) < 48) {
+          const crossedNpc = (prevX <= npc.x && state.bike.x >= npc.x) || Math.abs(state.bike.x - npc.x) < 48;
+          if (!npc.talked && crossedNpc) {
+            state.bike.x = npc.x;
+            state.bike.vx = 0;
+            state.bike.y = getGroundY(npc.x);
             openNpcDialogue(npc);
             return;
           }
@@ -1161,13 +1186,50 @@
           state.score += 500;
           state.mode = 'GELATO_STOP';
           state.gelatoTimer = GELATO_STOP_DURATION;
-          keys.right = false;
-          keys.left = false;
-          keys.turbo = false;
+          clearKeys();
           playSound('gelato');
         }
 
         updateHud();
+      }
+
+      function drawBelvederePost(spot, screenX, screenY) {
+        if (!spot) return;
+        ctx.save();
+        ctx.translate(screenX, screenY);
+
+        // Ombra alla base
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.32)';
+        ctx.beginPath();
+        ctx.ellipse(0, 2, 18, 4.5, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Paletto in legno / ferro
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(-3, -72, 6, 72);
+
+        // Pannello panoramico
+        ctx.fillStyle = spot.visited ? '#16a34a' : '#f59e0b';
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(-42, -104, 84, 34, 7);
+        ctx.fill();
+        ctx.stroke();
+
+        // Testo sul cartello
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 8.5px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('📸 BELVEDERE #' + (spot.id + 1), 0, -91);
+
+        ctx.font = '700 7.5px Inter, sans-serif';
+        ctx.fillStyle = '#fef3c7';
+        const shortName = spot.name.length > 16 ? spot.name.slice(0, 15) + '…' : spot.name;
+        ctx.fillText(shortName, 0, -79);
+
+        ctx.restore();
       }
 
       function drawOlmettoRider(screenX, screenY, pitch, wheelAngle, pedalPhase, eatingGelato) {
@@ -1677,7 +1739,6 @@
         ctx.translate(cx, cy + bob);
         ctx.rotate(sway);
 
-        // Foglia di canapa a 7 punte allungate e seghettate con nervature
         const blades = [
           { angle: 0, len: 18, wid: 3.4, main: true },
           { angle: -0.42, len: 15.5, wid: 3.1, main: false },
@@ -1699,13 +1760,11 @@
 
           ctx.beginPath();
           ctx.moveTo(0, 0);
-          // Lato destro con dentellatura
           ctx.lineTo(b.wid * 0.85, -b.len * 0.25);
           ctx.lineTo(b.wid * 0.45, -b.len * 0.32);
           ctx.lineTo(b.wid, -b.len * 0.58);
           ctx.lineTo(b.wid * 0.55, -b.len * 0.64);
           ctx.lineTo(0, -b.len);
-          // Lato sinistro con dentellatura
           ctx.lineTo(-b.wid * 0.55, -b.len * 0.64);
           ctx.lineTo(-b.wid, -b.len * 0.58);
           ctx.lineTo(-b.wid * 0.45, -b.len * 0.32);
@@ -1714,7 +1773,6 @@
           ctx.fill();
           ctx.stroke();
 
-          // Nervatura centrale della punta
           ctx.strokeStyle = '#86efac';
           ctx.lineWidth = 0.7;
           ctx.beginPath();
@@ -1725,7 +1783,6 @@
           ctx.restore();
         }
 
-        // Gambo in basso
         ctx.strokeStyle = '#15803d';
         ctx.lineWidth = 2.2;
         ctx.lineCap = 'round';
@@ -1850,8 +1907,8 @@
       function render() {
         if (!ctx || !canvas) return;
         const dpr = window.devicePixelRatio || 1;
-        const width = window.innerWidth;
-        const height = window.innerHeight;
+        const width = Math.max(1, window.innerWidth);
+        const height = Math.max(1, window.innerHeight);
         if (canvas.width !== Math.floor(width * dpr) || canvas.height !== Math.floor(height * dpr)) {
           canvas.width = Math.floor(width * dpr);
           canvas.height = Math.floor(height * dpr);
@@ -2448,6 +2505,102 @@
         c.fill();
       }
 
+      // =========================================================================
+      // SUITE DI AUDIT AUTOMATICO (100.000 ITERAZIONI)
+      // =========================================================================
+      function runAuditSuite100k() {
+        const snapshot = {
+          mode: state.mode,
+          time: state.time,
+          startTime: state.startTime,
+          elapsedSimTime: state.elapsedSimTime,
+          score: state.score,
+          belvedereCount: state.belvedereCount,
+          panoramaTimer: state.panoramaTimer,
+          currentBelvedere: state.currentBelvedere,
+          gelatoTimer: state.gelatoTimer,
+          activeNpc: state.activeNpc,
+          quipText: state.quipText,
+          quipTimer: state.quipTimer,
+          bike: Object.assign({}, state.bike),
+          cameraX: state.cameraX,
+          keys: Object.assign({}, keys)
+        };
+
+        let passed = 0;
+        let errors = 0;
+
+        try {
+          startGame();
+          keys.right = true;
+          keys.turbo = true;
+
+          for (let i = 0; i < 100000; i++) {
+            const stepDt = (i % 17 === 0) ? 0.032 : 0.016;
+            if (state.mode === 'DIALOGUE' && state.activeNpc) {
+              selectNpcReply(state.activeNpc, state.activeNpc.replies[0]);
+              keys.right = true;
+              keys.turbo = true;
+            } else if (state.mode === 'PANORAMA') {
+              closeBelvederePanorama();
+              keys.right = true;
+              keys.turbo = true;
+            }
+
+            if (i % 97 === 0 && state.mode === 'PLAYING') {
+              triggerJump();
+            }
+
+            update(stepDt);
+
+            if (
+              !Number.isFinite(state.bike.x) ||
+              !Number.isFinite(state.bike.y) ||
+              !Number.isFinite(state.bike.vx) ||
+              !Number.isFinite(state.score)
+            ) {
+              errors++;
+            } else {
+              passed++;
+            }
+
+            if (state.mode === 'VICTORY') {
+              startGame();
+              keys.right = true;
+              keys.turbo = true;
+            }
+          }
+        } catch (e) {
+          errors++;
+        } finally {
+          populateWorld();
+          state.mode = snapshot.mode;
+          state.time = snapshot.time;
+          state.startTime = snapshot.startTime;
+          state.elapsedSimTime = snapshot.elapsedSimTime;
+          state.score = snapshot.score;
+          state.belvedereCount = snapshot.belvedereCount;
+          state.panoramaTimer = snapshot.panoramaTimer;
+          state.currentBelvedere = snapshot.currentBelvedere;
+          state.gelatoTimer = snapshot.gelatoTimer;
+          state.activeNpc = snapshot.activeNpc;
+          state.quipText = snapshot.quipText;
+          state.quipTimer = snapshot.quipTimer;
+          state.bike = Object.assign({}, snapshot.bike);
+          state.cameraX = snapshot.cameraX;
+          Object.assign(keys, snapshot.keys);
+          if (startScreen && state.mode === 'START') startScreen.classList.remove('hidden');
+          if (victoryScreen && state.mode !== 'VICTORY') victoryScreen.classList.add('hidden');
+          if (dialogueModal && state.mode !== 'DIALOGUE') dialogueModal.classList.add('hidden');
+          if (panoramaModal && state.mode !== 'PANORAMA') panoramaModal.classList.add('hidden');
+          updateHud();
+        }
+
+        return { total: 100000, passed: passed, errors: errors };
+      }
+
+      window.runOlmettoAuditTests = runAuditSuite100k;
+
       let lastTimestamp = performance.now();
       function gameLoop(now) {
         try {
@@ -2468,8 +2621,11 @@
       state.bike.y = getGroundY(state.bike.x);
       updateHud();
       renderStartHeroAnimation(0);
+      runAuditSuite100k();
       requestAnimationFrame(gameLoop);
     })();
   </script>
 </body>
+</html>
+
 </html>
