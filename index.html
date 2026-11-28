@@ -875,7 +875,6 @@
           <li><a href="#noleggio"><i class="fas fa-bicycle"></i> <span data-i18n="nav_rental">Noleggio E-MTB</span></a></li>
           <li><a href="#tour"><i class="fas fa-map-marked-alt"></i> <span data-i18n="nav_tours">Tour</span></a></li>
           <li><a href="#magona"><i class="fas fa-route"></i> <span data-i18n="nav_trails">Trail Area</span></a></li>
-          <li><a href="#eventi"><i class="fas fa-calendar-alt"></i> <span data-i18n="nav_events">Eventi</span></a></li>
           <li><a href="#footerCredits"><i class="fas fa-info-circle"></i> <span data-i18n="nav_info">Info</span></a></li>
         </ul>
       </nav>
@@ -1414,36 +1413,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Sezione Eventi / Corsi -->
-    <section class="eventi-slider-section" id="eventi">
-      <div class="container-full">
-        <div class="section-title-wrapper">
-          <h2 class="section-title"><i class="fas fa-calendar-alt"></i> <span data-i18n="events_section_title">Corsi / Eventi</span></h2>
-          <div class="slash-anim"></div>
-        </div>
-        <div class="eventi-slider"></div>
-      </div>
-    </section>
-
-    <!-- Drawer Eventi -->
-    <div id="drawerOverlay" class="drawer-overlay hidden"></div>
-    <div id="eventoDrawer" class="drawer hidden">
-      <button type="button" id="eventoDrawerClose" class="drawer-close" aria-label="Chiudi dettagli evento">&times;</button>
-      <div class="drawer-content">
-        <img id="drawerImage" src="" alt="Evento" />
-        <h3 id="drawerTitle"></h3>
-        <p><strong>📅 Data:</strong> <span id="drawerDate"></span></p>
-        <p><strong>🕒 Orario:</strong> <span id="drawerTime"></span></p>
-        <p><strong>💶 Prezzo:</strong> <span id="drawerPrice"></span></p>
-        <p id="drawerDescription"></p>
-        <div class="drawer-buttons">
-          <a id="drawerBook" href="#noleggio" class="btn-primary">Prenota</a>
-          <a id="drawerWhatsApp" target="_blank" rel="noopener noreferrer" class="btn-primary"><i class="fab fa-whatsapp"></i> Chat su WhatsApp</a>
-          <a id="drawerCall" href="tel:+393313453207" class="btn-primary"><i class="fas fa-phone"></i> Chiama</a>
-          <a id="drawerEmail" class="btn-primary"><i class="fas fa-envelope"></i> Email</a>
-        </div>
-      </div>
     </div>
 
     <!-- Galleria Foto -->
@@ -1548,18 +1517,7 @@
               <input type="text" id="tourSelected" name="tourSelected" readonly />
             </div>
           </div>
-
-          <div class="form-group icon-input" id="eventField" style="display: none;">
-            <label for="eventSelected">Evento Selezionato</label>
-            <div class="event-input-wrapper">
-              <i class="fas fa-calendar-check" aria-hidden="true"></i>
-              <input type="text" id="eventSelected" name="eventSelected" readonly />
-            </div>
-          </div>
-
-          <input type="hidden" id="eventIdHidden" name="eventIdHidden" value="" />
-
-          <div class="form-group icon-input">
+<div class="form-group icon-input">
             <label for="notes" data-i18n="lbl_notes">Note (altezza, attrezzature richieste)</label>
             <i class="fa fa-pen"></i>
             <textarea id="notes" name="notes"></textarea>
