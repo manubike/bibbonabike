@@ -116,6 +116,15 @@
       overflow-x: clip;
     }
 
+    /* Slideshow motivazionale rimosso */
+    #wrapper,
+    .slideshow {
+      display: none !important;
+      visibility: hidden !important;
+      height: 0 !important;
+      overflow: hidden !important;
+    }
+
     /* Banner Cookie su tema Nero */
     #cookie-banner-overlay {
       position: fixed;
@@ -1387,74 +1396,6 @@
         </div>
       </div>
     </section>
-
-    <!-- Slideshow Parallax Motivazionale -->
-    <div id="wrapper">
-      <section class="slideshow" id="js-header">
-        <div class="slideshow__slide js-slider-home-slide is-current" data-slide="2">
-          <div class="slideshow__slide-background-parallax background-absolute js-parallax" data-speed="-1" data-position="top" data-target="#js-header">
-            <div class="slideshow__slide-background-load-wrap background-absolute">
-              <div class="slideshow__slide-background-load background-absolute">
-                <div class="slideshow__slide-background-wrap background-absolute">
-                  <div class="slideshow__slide-background background-absolute">
-                    <div class="slideshow__slide-image-wrap background-absolute">
-                      <div class="slideshow__slide-image background-absolute" style="background-image: url('img/slogan3.webp');"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="slideshow__slide-caption">
-            <div class="slideshow__slide-caption-text">
-              <div class="container js-parallax" data-speed="2" data-position="top" data-target="#js-header">
-                <h2 class="slideshow__slide-caption-title" data-i18n="slide2_title">Ogni sentiero è una storia da vivere</h2>
-                <a class="slideshow__slide-caption-subtitle -load o-hsub -link" href="#tour">
-                  <span class="slideshow__slide-caption-subtitle-label" data-i18n="slide2_cta">Scopri di più</span>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="slideshow__slide js-slider-home-slide is-next" data-slide="3">
-          <div class="slideshow__slide-background-parallax background-absolute js-parallax" data-speed="-1" data-position="top" data-target="#js-header">
-            <div class="slideshow__slide-background-load-wrap background-absolute">
-              <div class="slideshow__slide-background-load background-absolute">
-                <div class="slideshow__slide-background-wrap background-absolute">
-                  <div class="slideshow__slide-background background-absolute">
-                    <div class="slideshow__slide-image-wrap background-absolute">
-                      <div class="slideshow__slide-image background-absolute" style="background-image: url('img/slogan5.webp');"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="slideshow__slide-caption">
-            <div class="slideshow__slide-caption-text">
-              <div class="container js-parallax" data-speed="2" data-position="top" data-target="#js-header">
-                <h2 class="slideshow__slide-caption-title" data-i18n="slide3_title">Ehi, prenditi un momento per rilassarti!</h2>
-                <a class="slideshow__slide-caption-subtitle -load o-hsub -link" href="https://bsehovac.github.io/the-cube/" target="_blank" rel="noopener noreferrer">
-                  <span class="slideshow__slide-caption-subtitle-label" data-i18n="slide3_cta">Ne abbiamo tutti bisogno</span>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </section>
-    </div>
-
-    <!-- SVG frecce navigazione -->
-    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
-      <symbol viewBox="0 0 18 18" id="arrow-next">
-        <path d="M12.6,9L4,17.3L4.7,18l8.5-8.3l0,0L14,9l0,0l-0.7-0.7l0,0L4.7,0L4,0.7L12.6,9z"></path>
-      </symbol>
-      <symbol viewBox="0 0 18 18" id="arrow-prev">
-        <path d="M14,0.7L13.3,0L4.7,8.3l0,0L4,9l0,0l0.7,0.7l0,0l8.5,8.3l0.7-0.7L5.4,9L14,0.7z"></path>
-      </symbol>
-    </svg>
 
     <!-- Sezione Officina -->
     <section class="officina-section" id="officina">
