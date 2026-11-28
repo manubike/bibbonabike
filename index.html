@@ -712,6 +712,59 @@
       max-width: calc(100% - 32px) !important;
     }
 
+
+    /* Fix sovrapposizione menu e selettore lingua */
+    .site-header .container {
+      display: flex !important;
+      align-items: center !important;
+      flex-wrap: wrap !important;
+      gap: 10px 12px !important;
+      position: relative !important;
+    }
+
+    .site-header .lang-switcher {
+      position: relative !important;
+      z-index: 1002 !important;
+      flex-shrink: 0 !important;
+      margin-left: auto !important;
+    }
+
+    .site-header .social-header {
+      position: relative !important;
+      z-index: 1001 !important;
+      flex-shrink: 0 !important;
+    }
+
+    .site-header nav,
+    .site-header nav.open,
+    .site-header nav.active,
+    .site-header .nav-menu,
+    .site-header .nav-menu.open,
+    .site-header .nav-menu.active {
+      position: relative !important;
+      z-index: 1000 !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      clear: both !important;
+      margin-top: 8px !important;
+    }
+
+    .site-header nav ul {
+      display: flex !important;
+      flex-wrap: wrap !important;
+      gap: 6px 12px !important;
+      padding: 10px 12px !important;
+      margin: 0 !important;
+      list-style: none !important;
+    }
+
+    .site-header nav li a {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      white-space: nowrap !important;
+    }
+
   </style>
 
   <!-- Favicon -->
@@ -2547,6 +2600,15 @@
         }
 
         applyLanguage(initialLang);
+
+        window.addEventListener("bibbonabike:langchange", function () {
+          const headerEl = document.getElementById("header");
+          const navEl = headerEl ? headerEl.querySelector("nav") : null;
+          if (navEl) {
+            navEl.style.clear = "both";
+          }
+        });
+
       });
     })();
   </script>
