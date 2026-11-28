@@ -469,7 +469,7 @@
 
       let npcs = [];
       let sceneryItems = [];
-      let cones = [];
+      let leaves = [];
 
       function getGroundY(worldX) {
         let y = Math.sin(worldX * 0.0016) * 14 + Math.cos(worldX * 0.0007) * 10;
@@ -497,7 +497,7 @@
       function populateWorld() {
         npcs = [];
         sceneryItems = [];
-        cones = [];
+        leaves = [];
 
         for (let i = 0; i < BELVEDERE_SPOTS.length; i++) {
           BELVEDERE_SPOTS[i].visited = false;
@@ -543,7 +543,7 @@
           for (let b = 0; b < BELVEDERE_SPOTS.length; b++) {
             if (Math.abs(BELVEDERE_SPOTS[b].x - x) < 420) tooClose = true;
           }
-          if (!tooClose) cones.push({ x: x, jumped: false });
+          if (!tooClose) leaves.push({ x: x, yOffset: -26, collected: false, phase: (x % 7) * 0.5 });
         }
       }
 
@@ -1121,12 +1121,14 @@
           state.quipTimer = 2.2;
         }
 
-        for (let c = 0; c < cones.length; c++) {
-          const cone = cones[c];
-          if (!cone.jumped && Math.abs(state.bike.x - cone.x) < 32 && !state.bike.onGround && state.bike.y < getGroundY(cone.x) - 24) {
-            cone.jumped = true;
+        for (let c = 0; c < leaves.length; c++) {
+          const leaf = leaves[c];
+          const leafY = getGroundY(leaf.x) + leaf.yOffset;
+          if (!leaf.collected && Math.abs(state.bike.x - leaf.x) < 38 && Math.abs(state.bike.y - leafY) < 42) {
+            leaf.collected = true;
             state.score += 50;
-            state.quipText = 'Hop! (+50 pts)';
+            playSound('npc');
+            state.quipText = 'Fogliolina presa! (+50 pts)';
             state.quipTimer = 1.4;
           }
         }
@@ -1670,6 +1672,71 @@
         ctx.restore();
       }
 
+      function drawWeedLeaf(cx, cy, bob, sway) {
+        ctx.save();
+        ctx.translate(cx, cy + bob);
+        ctx.rotate(sway);
+
+        // Foglia di canapa a 7 punte allungate e seghettate con nervature
+        const blades = [
+          { angle: 0, len: 18, wid: 3.4, main: true },
+          { angle: -0.42, len: 15.5, wid: 3.1, main: false },
+          { angle: 0.42, len: 15.5, wid: 3.1, main: false },
+          { angle: -0.86, len: 12, wid: 2.7, main: false },
+          { angle: 0.86, len: 12, wid: 2.7, main: false },
+          { angle: -1.28, len: 8.5, wid: 2.2, main: false },
+          { angle: 1.28, len: 8.5, wid: 2.2, main: false }
+        ];
+
+        for (let i = 0; i < blades.length; i++) {
+          const b = blades[i];
+          ctx.save();
+          ctx.rotate(b.angle);
+
+          ctx.fillStyle = b.main ? '#22c55e' : '#16a34a';
+          ctx.strokeStyle = '#14532d';
+          ctx.lineWidth = 0.8;
+
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          // Lato destro con dentellatura
+          ctx.lineTo(b.wid * 0.85, -b.len * 0.25);
+          ctx.lineTo(b.wid * 0.45, -b.len * 0.32);
+          ctx.lineTo(b.wid, -b.len * 0.58);
+          ctx.lineTo(b.wid * 0.55, -b.len * 0.64);
+          ctx.lineTo(0, -b.len);
+          // Lato sinistro con dentellatura
+          ctx.lineTo(-b.wid * 0.55, -b.len * 0.64);
+          ctx.lineTo(-b.wid, -b.len * 0.58);
+          ctx.lineTo(-b.wid * 0.45, -b.len * 0.32);
+          ctx.lineTo(-b.wid * 0.85, -b.len * 0.25);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+
+          // Nervatura centrale della punta
+          ctx.strokeStyle = '#86efac';
+          ctx.lineWidth = 0.7;
+          ctx.beginPath();
+          ctx.moveTo(0, -1);
+          ctx.lineTo(0, -b.len * 0.85);
+          ctx.stroke();
+
+          ctx.restore();
+        }
+
+        // Gambo in basso
+        ctx.strokeStyle = '#15803d';
+        ctx.lineWidth = 2.2;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(0, 6);
+        ctx.stroke();
+
+        ctx.restore();
+      }
+
       function drawNpc(npc, screenX, screenY) {
         ctx.save();
         ctx.translate(screenX, screenY);
@@ -1724,39 +1791,6 @@
           ctx.textBaseline = 'middle';
           ctx.fillText('Dé, aoh!', 0, -78 + bob);
         }
-
-        ctx.restore();
-      }
-
-      function drawBelvederePost(spot, screenX, screenY) {
-        ctx.save();
-        ctx.translate(screenX, screenY);
-
-        ctx.fillStyle = '#f8fafc';
-        ctx.fillRect(-48, -18, 96, 4);
-        ctx.fillRect(-48, -4, 96, 4);
-        for (let bx = -44; bx <= 44; bx += 11) {
-          ctx.fillRect(bx - 2, -15, 4, 11);
-        }
-
-        ctx.fillStyle = '#78350f';
-        ctx.fillRect(-2, -56, 4, 56);
-
-        ctx.fillStyle = spot.visited ? '#15803d' : '#b45309';
-        ctx.beginPath();
-        ctx.roundRect(-44, -82, 88, 30, 7);
-        ctx.fill();
-        ctx.strokeStyle = '#fde68a';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        ctx.fillStyle = '#fef3c7';
-        ctx.font = '900 8.5px Inter, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('📸 BELVEDERE #' + (spot.id + 1), 0, -70);
-        ctx.fillStyle = '#ffffff';
-        ctx.font = '700 7.5px Inter, sans-serif';
-        ctx.fillText(spot.name.toUpperCase(), 0, -59);
 
         ctx.restore();
       }
@@ -1952,21 +1986,15 @@
           drawGelateriaOrizzonte(gelatoX, baseRoadScreenY + getGroundY(COURSE_LENGTH));
         }
 
-        for (let c = 0; c < cones.length; c++) {
-          const cone = cones[c];
-          const cx = cone.x - state.cameraX;
+        for (let c = 0; c < leaves.length; c++) {
+          const leaf = leaves[c];
+          if (leaf.collected) continue;
+          const cx = leaf.x - state.cameraX;
           if (cx < -40 || cx > width + 40) continue;
-          const cy = baseRoadScreenY + getGroundY(cone.x);
-          ctx.fillStyle = cone.jumped ? '#22c55e' : '#f97316';
-          ctx.beginPath();
-          ctx.moveTo(cx - 8, cy);
-          ctx.lineTo(cx + 8, cy);
-          ctx.lineTo(cx + 3, cy - 18);
-          ctx.lineTo(cx - 3, cy - 18);
-          ctx.closePath();
-          ctx.fill();
-          ctx.fillStyle = '#ffffff';
-          ctx.fillRect(cx - 5, cy - 11, 10, 3.5);
+          const cy = baseRoadScreenY + getGroundY(leaf.x) + leaf.yOffset;
+          const bob = Math.sin(state.time * 4 + leaf.phase) * 4;
+          const sway = Math.sin(state.time * 3 + leaf.phase) * 0.14;
+          drawWeedLeaf(cx, cy, bob, sway);
         }
 
         for (let i = 0; i < npcs.length; i++) {
@@ -1999,14 +2027,14 @@
 
           ctx.lineWidth = Math.max(5, fontSize * 0.16);
           ctx.strokeStyle = '#0f172a';
-          ctx.strokeText('NO STAI A MILANO', 0, 0);
+          ctx.strokeText('NO… STAI A MILANO!', 0, 0);
 
           const textGrad = ctx.createLinearGradient(0, -fontSize * 0.5, 0, fontSize * 0.5);
           textGrad.addColorStop(0, '#fef08a');
           textGrad.addColorStop(0.5, '#f97316');
           textGrad.addColorStop(1, '#ec4899');
           ctx.fillStyle = textGrad;
-          ctx.fillText('NO STAI A MILANO', 0, 0);
+          ctx.fillText('NO… STAI A MILANO!', 0, 0);
 
           if (state.mode === 'GELATO_STOP') {
             ctx.font = '800 14px Inter, sans-serif';
@@ -2024,7 +2052,7 @@
       }
 
       // =========================================================================
-      // ILLUSTRAZIONE ANIMATA SCHERMATA START
+      // ILLUSTRAZIONE ANIMATA SCHERMATA START (FOTO SULLA SCOGLIERA + SHAKA)
       // =========================================================================
       function renderStartHeroAnimation(t) {
         if (!startHeroCtx || !startHeroCanvas || !startScreen || startScreen.classList.contains('hidden')) return;
