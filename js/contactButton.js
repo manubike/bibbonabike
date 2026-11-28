@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   const phone = "+393313453207";
-  const address = "Via del Mandorlo 1, Bibbona, Livorno";
-  const coords = "43.2662098,10.594119";
+  const address = "Piazza delle Querce 5, Bibbona, Livorno";
 
   const phoneLinkElement = document.getElementById("phoneLink");
   const whatsappLinkElement = document.getElementById("whatsappLink");
@@ -25,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
   waBtn.innerHTML = `<i class="fab fa-whatsapp"></i> Chat su WhatsApp`;
 
   const mapBtn = document.createElement("a");
-  mapBtn.href = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(coords)}`;
+  mapBtn.href = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`;
   mapBtn.target = "_blank";
   mapBtn.rel = "noopener noreferrer";
   mapBtn.className = "btn-primary";
