@@ -540,16 +540,39 @@
       transform: translateY(-4px);
     }
 
+    /* Titoli bianchi sulle card servizi (Noleggio E-Bike, Officina, Ristoro, Tour e Corsi) */
+    .service-card h3,
+    .service-card.enhanced h3,
+    .services .grid .service-card h3 {
+      color: #ffffff !important;
+    }
+
     .service-icon {
       color: var(--accent-orange) !important;
     }
 
     .service-card p,
-    .officina-text p,
     .bike-type,
     .tour-card p,
     .drawer-content p {
       color: var(--text-secondary) !important;
+    }
+
+    /* Formattazione ordinata del testo sopra i pulsanti in Officina */
+    .officina-text {
+      max-width: 680px !important;
+      margin: 0 auto !important;
+      text-align: center !important;
+    }
+
+    .officina-text p#officinaText {
+      color: var(--text-secondary) !important;
+      font-size: 0.98rem !important;
+      line-height: 1.65 !important;
+      margin: 0 auto 1.25rem !important;
+      padding: 0 0.5rem !important;
+      text-align: center !important;
+      white-space: pre-line !important;
     }
 
     .logo-carousel-section,
@@ -658,7 +681,7 @@
       color: var(--accent-orange) !important;
     }
 
-    /* Pulsante Verifica Email in stile coerente con icona arancione interna */
+    /* Pulsante Verifica Email in stile coerente con bordo arancione */
     #sendEmailOtpBtn {
       background: linear-gradient(165deg, #1a1e26 0%, #11141a 100%) !important;
       color: var(--text-primary) !important;
@@ -669,13 +692,8 @@
       display: inline-flex !important;
       align-items: center !important;
       justify-content: center !important;
-      gap: 6px !important;
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45) !important;
       transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease !important;
-    }
-
-    #sendEmailOtpBtn i.fa-envelope {
-      color: var(--accent-orange) !important;
     }
 
     #sendEmailOtpBtn:hover:not(:disabled) {
@@ -1395,9 +1413,10 @@
         </div>
 
         <div class="officina-text">
-          <p id="officinaText" style="white-space: pre-wrap;" data-i18n="officina_body">
-            Diagnosi elettroniche, aggiornamenti firmware, riparazioni e manutenzioni complete su E-MTB, MTB, gravel e bici muscolari, con revisione forcelle e sospensioni e assistenza dedicata sui principali motori e-bike.
-          </p>
+          <p id="officinaText" data-i18n="officina_body">Diagnosi elettroniche, aggiornamenti firmware, riparazioni e manutenzioni complete su E-MTB, MTB, gravel e bici muscolari, con revisione forcelle e sospensioni e assistenza dedicata sui principali motori e-bike.
+
+Affidati ai nostri esperti meccanici per qualsiasi intervento: dalle riparazioni rapide alle revisioni complete.
+Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre efficiente e sicura.</p>
 
           <div class="officina-buttons" style="margin-top: 1.2rem; display: flex; gap: 1rem; align-content: space-between; flex-direction: row; align-items: center; flex-wrap: wrap; justify-content: center;">
             <span id="phoneLink"></span>
@@ -1740,7 +1759,7 @@
 
               <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
                 <button type="button" id="sendEmailOtpBtn" style="padding: 8px 12px; font-size: 0.85rem;">
-                  <i class="fas fa-envelope"></i> <span data-i18n="btn_verify_email">Verifica Email</span>
+                  <span data-i18n="btn_verify_email">Verifica Email</span>
                 </button>
                 <span id="emailVerifiedBadge" style="font-size: 0.82rem; font-weight: 600; color: #ffab6b;" data-i18n="otp_not_verified">
                   Email non ancora verificata
@@ -2421,7 +2440,7 @@
           slide3_title: "Ehi, prenditi un momento per rilassarti!",
           slide3_cta: "Ne abbiamo tutti bisogno",
           workshop_section_title: "Officina",
-          officina_body: "Diagnosi elettroniche, aggiornamenti firmware, riparazioni e manutenzioni complete su E-MTB, MTB, gravel e bici muscolari, con revisione forcelle e sospensioni e assistenza dedicata sui principali motori e-bike.",
+          officina_body: "Diagnosi elettroniche, aggiornamenti firmware, riparazioni e manutenzioni complete su E-MTB, MTB, gravel e bici muscolari, con revisione forcelle e sospensioni e assistenza dedicata sui principali motori e-bike.\n\nAffidati ai nostri esperti meccanici per qualsiasi intervento: dalle riparazioni rapide alle revisioni complete.\nLavoriamo con passione, precisione e attenzione per garantirti una bici sempre efficiente e sicura.",
           rental_section_title: "Noleggio E-MTB",
           cap_bike_29: "E-MTB 29”",
           cap_bike_24: "E-MTB 24”",
@@ -2594,7 +2613,7 @@
           slide3_title: "Hey, take a moment to relax!",
           slide3_cta: "We all need it",
           workshop_section_title: "Workshop",
-          officina_body: "Electronic diagnostics, firmware updates, repairs and full servicing for E-MTB, MTB, gravel and analog bikes, including fork and suspension servicing and dedicated motor support.",
+          officina_body: "Electronic diagnostics, firmware updates, repairs and full servicing for E-MTB, MTB, gravel and analog bikes, including fork and suspension servicing and dedicated motor support.\n\nTrust our expert mechanics for any service: from quick repairs to full overhauls.\nWe work with passion, precision and care to keep your bike efficient and safe.",
           rental_section_title: "E-MTB Rental",
           cap_bike_29: "E-MTB 29”",
           cap_bike_24: "E-MTB 24”",
@@ -2613,24 +2632,24 @@
           trails_col_length: "Length",
           trails_col_elev: "Elevation",
           trails_col_diff: "Difficulty",
-          tr_1bis_name: "Trail 1 Bis (1b)",
-          tr_3_name: "Trail 3 (#3)",
-          tr_4_name: "Trail 4 (#4)",
-          tr_5_name: "Trail 5 · Botro Grande - L'Aia Vecchia",
-          tr_6_name: "Trail 6 (#6)",
-          tr_7_name: "Trail 7 (#7)",
-          tr_7bis_name: "Trail 7 Bis",
-          tr_8_name: "Trail 8 (#8)",
-          tr_9_name: "Trail 9",
-          tr_9bis_name: "Trail 9 Bis / 9 B (9b)",
-          tr_10_name: "Trail 10 · Il Terminino - Golazze Aperte",
-          tr_10bis_name: "Trail 10 Bis",
-          tr_11_name: "Trail 11 (#11)",
-          tr_12_name: "Trail 12",
-          tr_13_name: "Trail 13 (#13)",
-          tr_13bis_name: "Trail 13 Bis (13bis)",
-          tr_14_name: "Trail 14 (#14)",
-          tr_17_name: "Trail 17 (#17)",
+          tr_1bis_name: "Percorso 1 Bis (1b)",
+          tr_3_name: "Percorso 3 (#3)",
+          tr_4_name: "Percorso 4 (#4)",
+          tr_5_name: "Percorso 5 · Botro Grande - L'Aia Vecchia",
+          tr_6_name: "Percorso 6 (#6)",
+          tr_7_name: "Percorso 7 (#7)",
+          tr_7bis_name: "Percorso 7 Bis",
+          tr_8_name: "Percorso 8 (#8)",
+          tr_9_name: "Percorso 9",
+          tr_9bis_name: "Percorso 9 Bis / 9 B (9b)",
+          tr_10_name: "Percorso 10 · Il Terminino - Golazze Aperte",
+          tr_10bis_name: "Percorso 10 Bis",
+          tr_11_name: "Percorso 11 (#11)",
+          tr_12_name: "Percorso 12",
+          tr_13_name: "Percorso 13 (#13)",
+          tr_13bis_name: "Percorso 13 Bis (13bis)",
+          tr_14_name: "Percorso 14 (#14)",
+          tr_17_name: "Percorso 17 (#17)",
           tr_see_tf: "See Trailforks page",
           diff_easy: "Easy",
           diff_easy_tf: "Easy / Trailforks",
@@ -2767,7 +2786,7 @@
           slide3_title: "Hey, nimm dir kurz Zeit zum Durchatmen!",
           slide3_cta: "Das brauchen wir alle",
           workshop_section_title: "Werkstatt",
-          officina_body: "Elektronische Diagnose, Firmware-Updates, Reparaturen und Komplettservice für E-MTB, MTB, Gravel und Bio-Bikes inklusive Gabel-/Dämpferservice und Motorunterstützung.",
+          officina_body: "Elektronische Diagnose, Firmware-Updates, Reparaturen und Komplettservice für E-MTB, MTB, Gravel und Bio-Bikes inklusive Gabel-/Dämpferservice und Motorunterstützung.\n\nVertraue unseren erfahrenen Mechanikern für jeden Service: von schnellen Reparaturen bis zur Komplettrevision.\nWir arbeiten mit Leidenschaft, Präzision und Sorgfalt für ein stets sicheres und effizientes Bike.",
           rental_section_title: "E-MTB Verleih",
           cap_bike_29: "E-MTB 29”",
           cap_bike_24: "E-MTB 24”",
@@ -2940,7 +2959,7 @@
           slide3_title: "Hé, neem even rust en ontspan!",
           slide3_cta: "Dat hebben we allemaal nodig",
           workshop_section_title: "Werkplaats",
-          officina_body: "Elektronische diagnoses, firmware-updates, reparaties en compleet onderhoud aan E-MTB, MTB, gravel en gewone fietsen, inclusief vork- en veringservice en ondersteuning voor E-Bike motoren.",
+          officina_body: "Elektronische diagnoses, firmware-updates, reparaties en compleet onderhoud aan E-MTB, MTB, gravel en gewone fietsen, inclusief vork- en veringservice en ondersteuning voor E-Bike motoren.\n\nVertrouw op onze ervaren monteurs voor elke ingreep: van snelle reparaties tot volledige revisies.\nWe werken met passie, precisie en zorg voor een veilige en betrouwbare fiets.",
           rental_section_title: "E-MTB Verhuur",
           cap_bike_29: "E-MTB 29”",
           cap_bike_24: "E-MTB 24”",
@@ -3113,7 +3132,7 @@
           slide3_title: "¡Eh, tómate un momento para relajarte!",
           slide3_cta: "Todos lo necesitamos",
           workshop_section_title: "Taller",
-          officina_body: "Diagnóstico electrónico, actualizaciones de firmware, reparaciones y mantenimiento completo en E-MTB, MTB, gravel y bicis musculares, con revisión de suspensiones/horquillas y asistencia para motores e-bike.",
+          officina_body: "Diagnóstico electrónico, actualizaciones de firmware, reparaciones y mantenimiento completo en E-MTB, MTB, gravel y bicis musculares, con revisión de suspensiones/horquillas y asistencia para motores e-bike.\n\nConfía en nuestros mecánicos expertos para cualquier intervención: desde reparaciones rápidas hasta revisiones completas.\nTrabajamos con pasión, precisión y atención para garantizarte una bici siempre eficiente y segura.",
           rental_section_title: "Alquiler E-MTB",
           cap_bike_29: "E-MTB 29”",
           cap_bike_24: "E-MTB 24”",
@@ -3219,7 +3238,7 @@
           cookie_cat_nec_title: "Cookies Técnicas y Necesarias",
           cookie_cat_nec_desc: "Esenciales para el funcionamiento, seguridad y gestión de reservas. No se pueden desactivar.",
           cookie_cat_ana_title: "Cookies Estadísticas y Analíticas",
-          cookie_cat_ana_desc: "Nos ayudan a entender cómo interactúan los visitantes con el sitio y mejorarlo (ej. Google Analytics).",
+          cookie_cat_ana_desc: "Nos ayudan a entender cómo interactúan los visitantes con el sitio y a mejorarlo (ej. Google Analytics).",
           cookie_cat_mkt_title: "Cookies de Marketing y Perfilado",
           cookie_cat_mkt_desc: "Se utilizan para mostrar anuncios relevantes en redes sociales u otros sitios web.",
           cookie_more_info: "Para más detalles, consulta nuestra",
@@ -3236,8 +3255,8 @@
           pp_sec2_body: "El formulario utiliza hCaptcha para evitar envíos automatizados y spam. Los datos de reserva se transmiten de forma segura para atender tu solicitud y se conservan durante el tiempo necesario para prestar el servicio y cumplir la normativa aplicable.",
           pp_sec3_title: "3. Categorías de cookies y preferencias",
           pp_sec3_body: "El sitio distingue entre cookies técnicas/necesarias (siempre activas para el funcionamiento y guardado de preferencias), cookies analíticas y cookies de marketing/perfilado, activadas solo con consentimiento previo mediante el banner.",
-          pp_sec4_title: "4. Derechos del interesado (RGPD)",
-          pp_sec4_body: "De acuerdo con el Reglamento UE 2016/679 (RGPD), puedes solicitar en cualquier momento el acceso, rectificación, supresión o limitación de tus datos, retirar tu consentimiento para cookies no necesarias o reclamar ante la autoridad de control contactando con Magona Bike Garage.",
+          pp_sec4_title: "4. Derechos del interesado (GDPR)",
+          pp_sec4_body: "De acuerdo con el Reglamento UE 2016/679 (GDPR), puedes solicitar en cualquier momento el acceso, rectificación, supresión o limitación de tus datos, retirar tu consentimiento para cookies no necesarias o reclamar ante la autoridad de control contactando con Magona Bike Garage.",
           pp_manage_cookies: "Gestionar Preferencias de Cookies",
           pp_close_btn: "Cerrar",
           chat_toggle_title: "Chat IA",
@@ -3286,7 +3305,7 @@
           slide3_title: "Hé, prends un moment pour te détendre !",
           slide3_cta: "On en a tous besoin",
           workshop_section_title: "Atelier",
-          officina_body: "Diagnostics électroniques, mises à jour firmware, réparations et entretien complet sur E-MTB, VTT, gravel et vélos musculaires, avec révision des suspensions/fourches et assistance moteur.",
+          officina_body: "Diagnostics électroniques, mises à jour firmware, réparations et entretien complet sur E-MTB, VTT, gravel et vélos musculaires, avec révision des suspensions/fourches et assistance moteur.\n\nFaites confiance à nos mécaniciens experts pour toute intervention : des réparations rapides aux révisions complètes.\nNous travaillons avec passion, précision et soin pour vous garantir un vélo toujours fiable et performant.",
           rental_section_title: "Location E-MTB",
           cap_bike_29: "E-MTB 29”",
           cap_bike_24: "E-MTB 24”",
@@ -3459,7 +3478,7 @@
           slide3_title: "Ei, tira um momento para relaxar!",
           slide3_cta: "Todos precisamos",
           workshop_section_title: "Oficina",
-          officina_body: "Diagnósticos eletrónicos, atualizações de firmware, reparações e manutenção completa em E-MTB, MTB, gravel e bicicletas convencionais, incluindo revisão de suspensões/forquetas e apoio a motores e-bike.",
+          officina_body: "Diagnósticos eletrónicos, atualizações de firmware, reparações e manutenção completa em E-MTB, MTB, gravel e bicicletas convencionais, incluindo revisão de suspensões/forquetas e apoio a motores e-bike.\n\nConfia nos nossos mecânicos especializados para qualquer intervenção: de reparações rápidas a revisões completas.\nTrabalhamos com paixão, precisão e atenção para garantir uma bicicleta sempre eficiente e segura.",
           rental_section_title: "Aluguer E-MTB",
           cap_bike_29: "E-MTB 29”",
           cap_bike_24: "E-MTB 24”",
@@ -3632,7 +3651,7 @@
           slide3_title: "嘿，停下来放松一会儿吧！",
           slide3_cta: "我们都需要片刻喘息",
           workshop_section_title: "维修工坊",
-          officina_body: "提供电助力山地车、山地车、砾石公路车及普通自行车的电子诊断、固件升级、维修与全面保养，涵盖前叉与避震保养以及主流电机支持。",
+          officina_body: "提供电助力山地车、山地车、砾石公路车及普通自行车的电子诊断、固件升级、维修与全面保养，涵盖前叉与避震保养以及主流电机支持。\n\n无论是快速维修还是全面保养，都可交由我们的专业技师处理。\n我们以热情、精准与细心对待每一次维护，让您的爱车始终安全顺畅。",
           rental_section_title: "电助力山地车租赁",
           cap_bike_29: "电助力山地车 29”",
           cap_bike_24: "电助力山地车 24”",
