@@ -1028,6 +1028,157 @@
       display: block;
     }
 
+
+    /* Sottotitolo e prezzo nelle card Noleggio E-MTB */
+    .bike-card .bike-subtitle {
+      font-size: 0.9rem;
+      color: var(--text-secondary) !important;
+      margin: 0.25rem 0 0.75rem;
+      line-height: 1.45;
+    }
+
+    .bike-card .bike-prices {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      margin: 0.65rem 0 1rem;
+      padding: 0.65rem 0.75rem;
+      border-radius: 8px;
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      font-size: 0.92rem;
+    }
+
+    .bike-card .bike-prices span strong {
+      color: var(--accent-orange-bright);
+    }
+
+    .rental-icon-figure {
+      margin: 0 0 1rem 0;
+      padding: 0.65rem;
+      border-radius: 10px;
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+
+    .rental-icon-figure figcaption {
+      margin-top: 0.45rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--accent-orange-bright);
+      letter-spacing: 0.02em;
+    }
+
+
+    /* Intestazione generale sopra le 2 card noleggio */
+    .rental-top-header {
+      text-align: center;
+      margin: 0 auto 1.5rem;
+      max-width: 780px;
+    }
+
+    .rental-top-header .animated-price {
+      display: inline-flex !important;
+      align-items: baseline !important;
+      justify-content: center !important;
+      gap: 0.45rem !important;
+      margin: 0 !important;
+      font-size: clamp(1.35rem, 2.8vw, 1.95rem) !important;
+      font-weight: 800 !important;
+      color: var(--accent-orange-bright) !important;
+      letter-spacing: -0.01em;
+    }
+
+    .rental-top-header .price-slide {
+      color: var(--text-primary) !important;
+      font-weight: 600 !important;
+      font-size: 0.92em !important;
+    }
+
+    /* Griglia a 2 card noleggio */
+    #sezione-noleggio .bike-grid {
+      display: grid !important;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+      gap: 1.5rem !important;
+      max-width: 960px !important;
+      margin: 0 auto !important;
+      align-items: stretch !important;
+    }
+
+    #sezione-noleggio .bike-card {
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: space-between !important;
+      padding: 1rem !important;
+      border-radius: 14px !important;
+      border: 1px solid var(--border-subtle) !important;
+      box-sizing: border-box !important;
+    }
+
+    #sezione-noleggio .rental-bike-figure {
+      margin: 0 0 1rem 0 !important;
+      padding: 0.65rem !important;
+      width: 100% !important;
+      border-radius: 10px !important;
+      background-color: var(--bg-surface) !important;
+      border: 1px solid var(--border-subtle) !important;
+      text-align: center !important;
+      box-sizing: border-box !important;
+    }
+
+    #sezione-noleggio .rental-bike-media {
+      width: 100% !important;
+      height: 230px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      overflow: hidden !important;
+      border-radius: 8px !important;
+      background-color: #ffffff !important;
+    }
+
+    #sezione-noleggio .rental-bike-figure img {
+      display: block !important;
+      width: 100% !important;
+      height: 100% !important;
+      max-height: 230px !important;
+      object-fit: contain !important;
+      margin: 0 auto !important;
+      border-radius: 6px !important;
+    }
+
+    #sezione-noleggio .rental-bike-figure figcaption {
+      margin-top: 0.5rem !important;
+      font-size: 0.92rem !important;
+      font-weight: 700 !important;
+      color: var(--accent-orange-bright) !important;
+    }
+
+    #sezione-noleggio .bike-info {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      text-align: center !important;
+      gap: 0.85rem !important;
+      width: 100% !important;
+    }
+
+    #sezione-noleggio .bike-info .bike-type {
+      margin: 0 !important;
+      font-size: 0.98rem !important;
+      font-weight: 600 !important;
+      color: var(--text-primary) !important;
+      line-height: 1.45 !important;
+    }
+
+    #sezione-noleggio .bike-info .bike-select {
+      width: 100% !important;
+      max-width: 260px !important;
+      text-align: center !important;
+      justify-content: center !important;
+    }
+
     /* Foto 29" e 24" impilate nella card noleggio con dimensioni identiche */
     .rental-showcase-stack {
       display: flex !important;
@@ -1474,35 +1625,42 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
     <!-- Sezione Noleggio -->
     <section class="rental-section" id="sezione-noleggio">
       <h2 class="section-title"><i class="fas fa-bicycle"></i> <span data-i18n="rental_section_title">Noleggio E-MTB</span></h2>
-      <div class="bike-grid">
-        <div class="bike-card">
-          <div class="rental-showcase-stack">
-            <figure class="rental-bike-figure">
-              <div class="rental-bike-media">
-                <img src="img/ebikeHD.png" alt="E-MTB 29" />
-              </div>
-              <figcaption data-i18n="cap_bike_29">E-MTB 29”</figcaption>
-            </figure>
-            <figure class="rental-bike-figure rental-bike-figure--24">
-              <div class="rental-bike-media">
-                <img
-                  src="img/ebike24.webp"
-                  alt="E-MTB 24"
-                  onerror="if (!this.dataset.fb1) { this.dataset.fb1 = '1'; this.src = 'img/ebike24.png'; } else if (!this.dataset.fb2) { this.dataset.fb2 = '1'; this.src = 'img/ebikeHD.png'; }"
-                />
-              </div>
-              <figcaption data-i18n="cap_bike_24">E-MTB 24”</figcaption>
-            </figure>
-          </div>
-          <div class="bike-info">
-            <h3 class="animated-price">
-              <div class="price-show" data-i18n="price_from">A PARTIRE DA 40€</div>
-              <div class="price-slide"><span data-i18n="price_per_day">| giorno</span></div>
-            </h3>
 
+      <div class="rental-top-header">
+        <h3 class="animated-price">
+          <span class="price-show" data-i18n="price_from">A PARTIRE DA 40€</span>
+          <span class="price-slide"><span data-i18n="price_per_day">| giorno</span></span>
+        </h3>
+      </div>
+
+      <div class="bike-grid">
+        <!-- Card 1: E-MTB 29" -->
+        <div class="bike-card">
+          <figure class="rental-bike-figure">
+            <div class="rental-bike-media">
+              <img src="img/ebikeHD.png" alt="E-MTB 29" />
+            </div>
+            <figcaption data-i18n="cap_bike_29">E-MTB 29”</figcaption>
+          </figure>
+          <div class="bike-info">
             <p class="bike-type" data-i18n="bike_29_label">E-MTB 29 — 50€ / giorno · 35€ mezza giornata</p>
             <a href="#noleggio" class="btn-secondary bike-select" data-bike="E-MTB 29" data-price-day="50" data-price-half="35" aria-label="Seleziona bici E-MTB 29" data-i18n="btn_select">SELEZIONA »</a>
+          </div>
+        </div>
 
+        <!-- Card 2: E-MTB 24" -->
+        <div class="bike-card">
+          <figure class="rental-bike-figure rental-bike-figure--24">
+            <div class="rental-bike-media">
+              <img
+                src="img/ebike24.webp"
+                alt="E-MTB 24"
+                onerror="if (!this.dataset.fb1) { this.dataset.fb1 = '1'; this.src = 'img/ebike24.png'; } else if (!this.dataset.fb2) { this.dataset.fb2 = '1'; this.src = 'img/ebikeHD.png'; }"
+              />
+            </div>
+            <figcaption data-i18n="cap_bike_24">E-MTB 24”</figcaption>
+          </figure>
+          <div class="bike-info">
             <p class="bike-type" data-i18n="bike_24_label">E-MTB 24 — 40€ / giorno · 25€ mezza giornata</p>
             <a href="#noleggio" class="btn-secondary bike-select" data-bike="E-MTB 24" data-price-day="40" data-price-half="25" aria-label="Seleziona bici E-MTB 24" data-i18n="btn_select">SELEZIONA »</a>
           </div>
@@ -2282,7 +2440,7 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
         const days = Number.isFinite(parsedDays) && parsedDays > 0 ? parsedDays : 1;
         const parsedQty = parseInt(quantityInput.value, 10);
         const qty = Number.isFinite(parsedQty) && parsedQty >= 1 ? parsedQty : 1;
-        const priceDay = parseFloat(selectedOption.dataset.priceDay) || 40;
+        const priceDay = parseFloat(selectedOption.dataset.priceDay) || 35;
         const priceHalf = parseFloat(selectedOption.dataset.priceHalf) || (priceDay / 2);
 
         const unitPrice = days === 0.5 ? priceHalf : priceDay * days;
@@ -2305,6 +2463,23 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
       }
 
       window.recomputeBibbonaTotal = computeRentalTotal;
+
+
+      // Compatibilità selezione bici (anche se chiamata con valore legacy "E-MTB 29")
+      if (bikeSelect) {
+        const originalDescriptor = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value');
+        if (originalDescriptor && originalDescriptor.set) {
+          Object.defineProperty(bikeSelect, 'value', {
+            get: function () {
+              return originalDescriptor.get.call(this);
+            },
+            set: function (val) {
+              const mapped = val === 'E-MTB 29' ? 'E-MTB Full 29' : val;
+              originalDescriptor.set.call(this, mapped);
+            }
+          });
+        }
+      }
 
       selectButtons.forEach((btn) => {
         btn.addEventListener('click', () => {
@@ -2683,7 +2858,7 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
             "mahle", "oli", "panasonic", "hyena", "polini", "noleggio", "officina", "tour", "prenota", "prezzi"
           ],
           answer:
-            "**Magona Bike Garage – BibbonaBike.com** (**Via del Mandorlo 1, Bibbona, Livorno** · Tel./WhatsApp **+39 331 345 3207** · **magonabikegarage@gmail.com**) offre **noleggio E-MTB** (**E-MTB 29** e **E-MTB 24**), **tour con guide certificate** e **officina specializzata** su bici, sospensioni/forcelle (es. RockShox) e motori E-Bike (**Bosch, Shimano, Yamaha, Avinox, TQ, Bafang, Brose, Fazua, FSA, Mahle, OLI, Panasonic, Hyena, Polini** e altri)."
+            "**Magona Bike Garage – BibbonaBike.com** (**Via del Mandorlo 1, Bibbona, Livorno** · Tel./WhatsApp **+39 331 345 3207** · **magonabikegarage@gmail.com**) offre **noleggio E-MTB** (**E-MTB Full 29"**, **E-MTB Front 29"** ed **E-MTB 24" Junior / Ragazzi**), **tour con guide certificate** e **officina specializzata** su bici, sospensioni/forcelle (es. RockShox) e motori E-Bike (**Bosch, Shimano, Yamaha, Avinox, TQ, Bafang, Brose, Fazua, FSA, Mahle, OLI, Panasonic, Hyena, Polini** e altri)."
         }
       ];
 
