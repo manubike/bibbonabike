@@ -25,7 +25,7 @@
   <meta name="twitter:image" content="https://bibbonabike.com/img/Magona_Bike_preview.png" />
   <meta name="twitter:site" content="@bibbonabike" />
 
-  <title>Magona Bike Garage – BibbonaBike</title>
+  <title data-i18n="meta_title">Magona Bike Garage – BibbonaBike</title>
 
   <!-- Precaricamento risorse critiche -->
   <link rel="preload" as="image" href="img/text.webp" type="image/webp" />
@@ -426,6 +426,23 @@
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
     }
 
+    .lang-switcher select {
+      background-color: var(--bg-elevated) !important;
+      color: var(--text-primary) !important;
+      border: 1px solid var(--border-strong) !important;
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .lang-switcher select:focus {
+      outline: none;
+      border-color: var(--accent-orange-bright) !important;
+    }
+  </style>
+
 
     /* Fix overflow orizzontale casella Data nel form di prenotazione */
     .form-card,
@@ -496,7 +513,7 @@
       </div>
 
       <p style="margin-top: 18px;">
-        Per maggiori dettagli, consulta la nostra <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" style="color: #e67e22;">Privacy e Cookie Policy</a>.
+        <span data-i18n="cookie_more_info">Per maggiori dettagli, consulta la nostra</span> <a href="#privacy-policy" id="openPrivacyModalBtn" role="button" style="color: #ff7b1c; font-weight: 600; text-decoration: underline;" data-i18n="cookie_policy_link">Privacy e Cookie Policy</a>.
       </p>
 
       <div class="cookie-actions">
@@ -516,16 +533,29 @@
 
       <nav aria-label="Navigazione principale">
         <ul>
-          <li><a href="#"><i class="fas fa-home"></i> Home</a></li>
-          <li><a href="#officina"><i class="fas fa-tools"></i> Assistenza E-Bike</a></li>
-          <li><a href="#noleggio"><i class="fas fa-bicycle"></i> Noleggio E-MTB</a></li>
-          <li><a href="#tour"><i class="fas fa-map-marked-alt"></i> Tour</a></li>
-          <li><a href="#magona"><i class="fas fa-route"></i> Trail Area</a></li>
-          <li><a href="#eventi"><i class="fas fa-calendar-alt"></i> Eventi</a></li>
-          <li><a href="#footerCredits"><i class="fas fa-info-circle"></i> Info</a></li>
+          <li><a href="#"><i class="fas fa-home"></i> <span data-i18n="nav_home">Home</span></a></li>
+          <li><a href="#officina"><i class="fas fa-tools"></i> <span data-i18n="nav_workshop">Assistenza E-Bike</span></a></li>
+          <li><a href="#noleggio"><i class="fas fa-bicycle"></i> <span data-i18n="nav_rental">Noleggio E-MTB</span></a></li>
+          <li><a href="#tour"><i class="fas fa-map-marked-alt"></i> <span data-i18n="nav_tours">Tour</span></a></li>
+          <li><a href="#magona"><i class="fas fa-route"></i> <span data-i18n="nav_trails">Trail Area</span></a></li>
+          <li><a href="#eventi"><i class="fas fa-calendar-alt"></i> <span data-i18n="nav_events">Eventi</span></a></li>
+          <li><a href="#footerCredits"><i class="fas fa-info-circle"></i> <span data-i18n="nav_info">Info</span></a></li>
         </ul>
       </nav>
 
+      <div class="lang-switcher" aria-label="Selettore lingua">
+        <label for="siteLangSelect" class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">Lingua</label>
+        <select id="siteLangSelect" title="Lingua / Language">
+          <option value="it">🇮🇹 IT</option>
+          <option value="en">🇬🇧 EN</option>
+          <option value="fr">🇫🇷 FR</option>
+          <option value="de">🇩🇪 DE</option>
+          <option value="es">🇪🇸 ES</option>
+          <option value="nl">🇳🇱 NL</option>
+          <option value="pt">🇵🇹 PT</option>
+          <option value="sv">🇸🇪 SV</option>
+        </select>
+      </div>
       <div class="social-header" id="socialIcons">
         <a href="https://wa.me/393313453207" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
           <i class="fab fa-whatsapp"></i>
@@ -556,13 +586,12 @@
     <div class="hero-content animated">
       <img src="img/fulllogo_transparent_nobuffer.webp" loading="eager" alt="Magona Bike Garage" class="hero-logo" />
       <div class="hero-text">
-        <h1 id="slideshow-title" class="fade-text">Pedala e goditi la splendida natura incontaminata tra i sentieri della ValdiCecina</h1>
+        <h1 id="slideshow-title" class="fade-text" data-i18n="hero_title">Pedala e goditi la splendida natura incontaminata tra i sentieri della ValdiCecina</h1>
         <p>
-          Officina specializzata per E-Bike, diagnosi riparazione e aggiornamento per i motori dei marchi più conosciuti,
-          noleggio E-MTB e ristoro a Bibbona, in provincia di Livorno.
+<span data-i18n="hero_desc">Officina specializzata per E-Bike, diagnosi riparazione e aggiornamento per i motori dei marchi più conosciuti, noleggio E-MTB e ristoro a Bibbona, in provincia di Livorno.</span>
         </p>
         <a href="#noleggio" class="btn-primary scroll-btn">
-          <span class="icon-bike">🚴‍♂️</span> Prenota la tua E-MTB
+          <span class="icon-bike">🚴‍♂️</span> <span data-i18n="hero_cta">Prenota la tua E-MTB</span>
         </a>
       </div>
     </div>
@@ -574,28 +603,19 @@
     </div>
   </section>
 
-  <!-- Google Translate -->
-  <div id="google_translate_element"></div>
-  <script>
-    function googleTranslateElementInit() {
-      new google.translate.TranslateElement({ pageLanguage: 'it' }, 'google_translate_element');
-    }
-  </script>
-  <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
   <main class="container-full">
     <!-- Sezione Servizi -->
     <section class="services">
-      <h2 class="section-title">I nostri servizi</h2>
+      <h2 class="section-title" data-i18n="services_title">I nostri servizi</h2>
       <div class="grid">
         <div class="service-card enhanced">
           <i class="fas fa-bicycle service-icon"></i>
-          <h3>Noleggio E-Bike</h3>
-          <p>E-Bike pronte per farti esplorare la ValdiCecina... Vi aspettano decine di km di percorsi mtb e strade bianche e tanti panorami mozzafiato</p>
+          <h3 data-i18n="srv_rental_title">Noleggio E-Bike</h3>
+          <p data-i18n="srv_rental_desc">E-Bike pronte per farti esplorare la ValdiCecina... Vi aspettano decine di km di percorsi mtb e strade bianche e tanti panorami mozzafiato</p>
         </div>
         <div class="service-card enhanced">
           <i class="fas fa-tools service-icon"></i>
-          <h3>Officina</h3>
+          <h3 data-i18n="srv_workshop_title">Officina</h3>
           <p>
             Riparazioni, revisioni e manutenzioni complete per ogni tipo di bici, officina specializzata per E-Bike, aggiornamenti, diagnosi e interventi per ogni tipo di motore.
             Avinox, Bafang, Brose, Bosch, Fazua, FSA, Mahle, OLI,
@@ -606,13 +626,13 @@
         </div>
         <div class="service-card enhanced">
           <i class="fas fa-mug-hot service-icon"></i>
-          <h3>Ristoro</h3>
-          <p>Area relax con caffetteria e snack per rilassarti e ricaricare anche te, non solo la tua bici!</p>
+          <h3 data-i18n="srv_cafe_title">Ristoro</h3>
+          <p data-i18n="srv_cafe_desc">Area relax con caffetteria e snack per rilassarti e ricaricare anche te, non solo la tua bici!</p>
         </div>
         <div class="service-card enhanced">
           <i class="fas fa-compass service-icon"></i>
-          <h3>Tour e Corsi</h3>
-          <p>Le nostre guide certificate vi accompagneranno nelle vostre avventure e potranno insegnarvi le tecniche di guida più adatte per poter viaggiare in totale sicurezza.</p>
+          <h3 data-i18n="srv_tours_title">Tour e Corsi</h3>
+          <p data-i18n="srv_tours_desc">Le nostre guide certificate vi accompagneranno nelle vostre avventure e potranno insegnarvi le tecniche di guida più adatte per poter viaggiare in totale sicurezza.</p>
         </div>
       </div>
     </section>
@@ -734,7 +754,7 @@
     <!-- Sezione Officina -->
     <section class="officina-section" id="officina">
       <div id="officina-title-anchor"></div>
-      <h2 class="section-title"><i class="fas fa-tools"></i> Officina</h2>
+      <h2 class="section-title"><i class="fas fa-tools"></i> <span data-i18n="workshop_section_title">Officina</span></h2>
 
       <div class="logo-carousel-section">
         <div class="logo-carousel-container">
@@ -804,20 +824,20 @@
 
     <!-- Sezione Noleggio -->
     <section class="rental-section">
-      <h2 class="section-title"><i class="fas fa-bicycle"></i> Noleggio E-MTB</h2>
+      <h2 class="section-title"><i class="fas fa-bicycle"></i> <span data-i18n="rental_section_title">Noleggio E-MTB</span></h2>
       <div class="bike-grid">
         <div class="bike-card">
           <img src="img/ebikeHD.png" alt="FULL Bike" />
           <div class="bike-info">
             <h3 class="animated-price">
-              <div class="price-show">A PARTIRE DA 40€</div>
+              <div class="price-show" data-i18n="price_from">A PARTIRE DA 40€</div>
               <div class="price-slide"><span>| giorno</span></div>
             </h3>
 
-            <p class="bike-type">E-MTB 29 — 50€ / giorno · 35€ mezza giornata</p>
+            <p class="bike-type" data-i18n="bike_29_label">E-MTB 29 — 50€ / giorno · 35€ mezza giornata</p>
             <a href="#prenota" class="btn-secondary bike-select" data-bike="E-MTB 29" data-price-day="50" data-price-half="35" aria-label="Seleziona bici E-MTB 29">SELEZIONA »</a>
 
-            <p class="bike-type">E-MTB 24 — 40€ / giorno · 25€ mezza giornata</p>
+            <p class="bike-type" data-i18n="bike_24_label">E-MTB 24 — 40€ / giorno · 25€ mezza giornata</p>
             <a href="#prenota" class="btn-secondary bike-select" data-bike="E-MTB 24" data-price-day="40" data-price-half="25" aria-label="Seleziona bici E-MTB 24">SELEZIONA »</a>
           </div>
         </div>
@@ -832,7 +852,7 @@
         <div class="tour-slide" style="background-image: url('img/tour3.webp');"></div>
       </div>
       <div class="tour-overlay">
-        <h2 class="section-title tour-title"><i class="fas fa-route"></i> Tour Con Guide Certificate</h2>
+        <h2 class="section-title tour-title"><i class="fas fa-route"></i> <span data-i18n="tours_section_title">Tour Con Guide Certificate</span></h2>
         <div class="tour-cards">
           <!-- Card generate dinamicamente da JS -->
         </div>
@@ -845,7 +865,7 @@
     <!-- Magona Section -->
     <section id="magona" class="magona-section">
       <h2 class="section-title">
-        <i class="fas fa-route"></i> Macchia Della Magona Trail Area
+        <i class="fas fa-route"></i> <span data-i18n="magona_section_title">Macchia Della Magona Trail Area</span>
       </h2>
       <div class="centrato">
         <img src="img/magona.png" alt="Macchia Della Magona Trail Area" />
@@ -971,7 +991,7 @@
     <section class="eventi-slider-section" id="eventi">
       <div class="container-full">
         <div class="section-title-wrapper">
-          <h2 class="section-title"><i class="fas fa-calendar-alt"></i> Corsi / Eventi</h2>
+          <h2 class="section-title"><i class="fas fa-calendar-alt"></i> <span data-i18n="events_section_title">Corsi / Eventi</span></h2>
           <div class="slash-anim"></div>
         </div>
         <div class="eventi-slider"></div>
@@ -1000,7 +1020,7 @@
 
     <!-- Galleria Foto -->
     <section class="photo-slideshow" id="galleria">
-      <h2 class="section-title"><i class="fas fa-images"></i> Galleria</h2>
+      <h2 class="section-title"><i class="fas fa-images"></i> <span data-i18n="gallery_section_title">Galleria</span></h2>
       <div id="photoGallery" class="gridOverflow go-zoomFx go-masonry"></div>
       <div class="slideshow-controls">
         <button type="button" id="toggleLayout" class="btn-secondary layout-toggle" aria-pressed="true" aria-label="Cambia layout a griglia" title="Griglia">
@@ -1015,32 +1035,32 @@
     <!-- Form Noleggio / Prenotazione -->
     <section class="form-section" id="noleggio">
       <div class="container-full">
-        <h2 class="section-title"><i class="fas fa-calendar-check"></i> Prenota ora</h2>
+        <h2 class="section-title"><i class="fas fa-calendar-check"></i> <span data-i18n="booking_section_title">Prenota ora</span></h2>
 
         <form id="noleggioForm" class="form-card">
           <div class="form-group icon-input">
-            <label for="name">Nome e Cognome *</label>
+            <label for="name" data-i18n="lbl_name">Nome e Cognome *</label>
             <i class="fa fa-user"></i>
             <input type="text" id="name" name="name" autocomplete="name" required />
           </div>
 
           <div class="form-group icon-input">
-            <label for="email">Email *</label>
+            <label for="email" data-i18n="lbl_email">Email *</label>
             <i class="fa fa-envelope"></i>
             <input type="email" id="email" name="email" autocomplete="email" required />
           </div>
 
           <div class="form-group icon-input">
-            <label for="phone">Numero di telefono *</label>
+            <label for="phone" data-i18n="lbl_phone">Numero di telefono *</label>
             <i class="fa fa-phone"></i>
             <input type="tel" id="phone" name="phone" autocomplete="tel" placeholder="+39 333 1234567" required />
           </div>
 
           <div class="form-group icon-input">
-            <label for="bikeType">Tipo di bici *</label>
+            <label for="bikeType" data-i18n="lbl_bike">Tipo di bici *</label>
             <i class="fa fa-bicycle"></i>
             <select id="bikeType" name="bikeType" required>
-              <option value="">Seleziona</option>
+              <option value="" data-i18n="opt_select">Seleziona</option>
               <option value="E-MTB 29" data-price-day="50" data-price-half="35">E-MTB 29 (50€/giorno · 35€ mezza giornata)</option>
               <option value="E-MTB 24" data-price-day="40" data-price-half="25">E-MTB 24 (40€/giorno · 25€ mezza giornata)</option>
             </select>
@@ -1067,22 +1087,22 @@
           </div>
 
           <div class="form-group icon-input">
-            <label for="quantity">Quantità *</label>
+            <label for="quantity" data-i18n="lbl_qty">Quantità *</label>
             <i class="fa fa-plus"></i>
             <input type="number" id="quantity" name="quantity" value="1" min="1" required />
           </div>
 
           <div class="form-group icon-input">
-            <label for="date">Data *</label>
+            <label for="date" data-i18n="lbl_date">Data *</label>
             <i class="fa fa-calendar-alt"></i>
             <input type="date" id="date" name="date" required />
           </div>
 
           <div class="form-group icon-input">
-            <label for="duration">Durata *</label>
+            <label for="duration" data-i18n="lbl_duration">Durata *</label>
             <i class="fa fa-clock"></i>
             <select id="duration" name="duration" required>
-              <option value="0.5">½ giornata</option>
+              <option value="0.5" data-i18n="opt_half_day">½ giornata</option>
               <option value="1">1 giorno</option>
               <option value="2">2 giorni</option>
               <option value="3">3 giorni</option>
@@ -1112,19 +1132,19 @@
           <input type="hidden" id="eventIdHidden" name="eventIdHidden" value="" />
 
           <div class="form-group icon-input">
-            <label for="notes">Note (altezza, attrezzature richieste)</label>
+            <label for="notes" data-i18n="lbl_notes">Note (altezza, attrezzature richieste)</label>
             <i class="fa fa-pen"></i>
             <textarea id="notes" name="notes"></textarea>
           </div>
 
           <div class="form-group icon-input">
-            <label for="codiceSconto">Codice Sconto</label>
+            <label for="codiceSconto" data-i18n="lbl_discount">Codice Sconto</label>
             <i class="fas fa-tag"></i>
             <input type="text" id="codiceSconto" name="codiceSconto" />
           </div>
 
           <p class="price-summary">
-            <strong>Totale:</strong> €<span id="totalAmount">0.00</span>
+            <strong data-i18n="lbl_total">Totale:</strong> €<span id="totalAmount">0.00</span>
             <input type="hidden" name="total" id="totalHidden" value="0.00" />
           </p>
 
@@ -1132,7 +1152,7 @@
             <div id="hcaptcha" class="h-captcha" data-sitekey="ccc4c746-e570-44b8-9aaa-287629b21dc0"></div>
           </div>
 
-          <button type="submit" class="btn-primary">📩 Invia richiesta</button>
+          <button type="submit" class="btn-primary">📩 <span data-i18n="btn_submit">Invia richiesta</span></button>
           <p id="responseMessage"></p>
         </form>
       </div>
@@ -1164,7 +1184,7 @@
               <i class="fas fa-map-marker-alt animated-icon"></i> Via del Mandorlo 1, Bibbona 57020
             </a>
           </p>
-          <p>&copy; 2025 Magona Bike Garage – BibbonaBike.com</p>
+          <p>&copy; 2025 Magona Bike Garage – BibbonaBike.com · <a href="#privacy-policy" id="footerPrivacyLink" role="button" style="color: #ff9442; text-decoration: underline;" data-i18n="footer_policy_link">Privacy &amp; Cookie Policy</a></p>
           <div class="footer-social">
             <a href="https://wa.me/393313453207" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
               <i class="fab fa-whatsapp"></i>
@@ -1204,6 +1224,37 @@
       <div id="chatMessages"></div>
       <textarea id="chatInput" placeholder="Scrivi una domanda..."></textarea>
       <button type="button" id="chatSend">Invia</button>
+    </div>
+  </div>
+
+  <!-- Modale Completo Privacy & Cookie Policy (GDPR) -->
+  <div id="privacy-policy-overlay" role="dialog" aria-modal="true" aria-labelledby="privacyModalTitle" style="display:none; position:fixed; inset:0; width:100%; height:100%; background-color:rgba(4,5,7,0.88); backdrop-filter:blur(8px); justify-content:center; align-items:center; z-index:10000; padding:16px; box-sizing:border-box;">
+    <div id="privacy-policy-modal" style="background:linear-gradient(160deg, #15181e 0%, #0a0c0f 100%); color:#f4f6f8; padding:28px; border-radius:12px; border:1px solid rgba(255,123,28,0.42); box-shadow:0 24px 60px rgba(0,0,0,0.9); max-width:680px; width:100%; max-height:86vh; overflow-y:auto; position:relative; box-sizing:border-box;">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:12px; margin-bottom:16px;">
+        <h2 id="privacyModalTitle" style="margin:0; color:#ff7b1c; font-size:1.35rem;" data-i18n="pp_title">Privacy e Cookie Policy – BibbonaBike.com</h2>
+        <button type="button" id="closePrivacyModalBtn" aria-label="Chiudi Privacy e Cookie Policy" style="background:#14171c; color:#f4f6f8; border:1px solid rgba(255,255,255,0.16); border-radius:8px; width:36px; height:36px; font-size:1.2rem; cursor:pointer; line-height:1;">&times;</button>
+      </div>
+
+      <div id="privacyModalBody" style="font-size:0.93rem; line-height:1.55; color:#b0b8c2;">
+        <p><strong style="color:#f4f6f8;" data-i18n="pp_controller_lbl">Titolare del trattamento:</strong> Magona Bike Garage – BibbonaBike.com, Via del Mandorlo 1, 57020 Bibbona (LI), Italia · P.IVA: 02075750493 · Email: <a href="mailto:magonabikegarage@gmail.com" style="color:#ff9442;">magonabikegarage@gmail.com</a> · Tel./WhatsApp: +39 331 345 3207.</p>
+
+        <h3 style="color:#f4f6f8; font-size:1.05rem; margin-top:16px; margin-bottom:6px;" data-i18n="pp_sec1_title">1. Dati raccolti e finalità del trattamento</h3>
+        <p data-i18n="pp_sec1_body">Raccogliamo i dati inseriti nel modulo di prenotazione (nome e cognome, email, numero di telefono, modello di bici scelto, data, durata, quantità, accessori, codice sconto ed eventuali note) esclusivamente per gestire preventivi, noleggi, tour, eventi e richieste di assistenza officina, oltre che per adempiere a obblighi amministrativi o di legge.</p>
+
+        <h3 style="color:#f4f6f8; font-size:1.05rem; margin-top:16px; margin-bottom:6px;" data-i18n="pp_sec2_title">2. Sicurezza, hCaptcha e conservazione dati</h3>
+        <p data-i18n="pp_sec2_body">Il modulo utilizza hCaptcha per prevenire invii automatizzati e spam. I dati di prenotazione vengono trasmessi in modo sicuro per la gestione della richiesta e conservati per il tempo necessario a evadere il servizio e per gli eventuali obblighi normativi applicabili.</p>
+
+        <h3 style="color:#f4f6f8; font-size:1.05rem; margin-top:16px; margin-bottom:6px;" data-i18n="pp_sec3_title">3. Categorie di cookie e preferenze</h3>
+        <p data-i18n="pp_sec3_body">Il sito distingue tra cookie tecnici/necessari (sempre attivi per il funzionamento e la memorizzazione delle scelte), cookie statistici/analitici e cookie di marketing/profilazione, attivabili solo previo consenso espresso tramite il banner.</p>
+
+        <h3 style="color:#f4f6f8; font-size:1.05rem; margin-top:16px; margin-bottom:6px;" data-i18n="pp_sec4_title">4. Diritti dell'interessato (GDPR)</h3>
+        <p data-i18n="pp_sec4_body">Ai sensi del Regolamento UE 2016/679 (GDPR), puoi richiedere in qualsiasi momento accesso, rettifica, cancellazione o limitazione dei tuoi dati, revocare il consenso ai cookie non necessari o proporre reclamo all'autorità di controllo competente scrivendo a magonabikegarage@gmail.com o contattando Magona Bike Garage.</p>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; flex-wrap:wrap; gap:10px; margin-top:22px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.1);">
+        <button type="button" id="reopenCookieBannerBtn" style="padding:10px 14px; border-radius:8px; border:1px solid rgba(255,255,255,0.16); background:#14171c; color:#f4f6f8; font-weight:600; cursor:pointer;" data-i18n="pp_manage_cookies">Gestisci Preferenze Cookie</button>
+        <button type="button" id="closePrivacyModalBottomBtn" style="padding:10px 18px; border-radius:8px; border:none; background:linear-gradient(135deg, #ff7b1c 0%, #d95300 100%); color:#090a0c; font-weight:700; cursor:pointer;" data-i18n="pp_close_btn">Chiudi</button>
+      </div>
     </div>
   </div>
 
@@ -1282,6 +1333,53 @@
       if (rejectAllBtn) {
         rejectAllBtn.addEventListener('click', () => {
           saveConsent({ analytics: false, marketing: false });
+        });
+      }
+
+      const privacyOverlay = document.getElementById('privacy-policy-overlay');
+      const openPrivacyBtn = document.getElementById('openPrivacyModalBtn');
+      const footerPrivacyLink = document.getElementById('footerPrivacyLink');
+      const closePrivacyBtn = document.getElementById('closePrivacyModalBtn');
+      const closePrivacyBottomBtn = document.getElementById('closePrivacyModalBottomBtn');
+      const reopenCookieBannerBtn = document.getElementById('reopenCookieBannerBtn');
+
+      function openPrivacyModal(e) {
+        if (e) e.preventDefault();
+        if (privacyOverlay) {
+          privacyOverlay.style.display = 'flex';
+        }
+      }
+
+      function closePrivacyModal() {
+        if (privacyOverlay) {
+          privacyOverlay.style.display = 'none';
+        }
+      }
+
+      if (openPrivacyBtn) openPrivacyBtn.addEventListener('click', openPrivacyModal);
+      if (footerPrivacyLink) footerPrivacyLink.addEventListener('click', openPrivacyModal);
+      if (closePrivacyBtn) closePrivacyBtn.addEventListener('click', closePrivacyModal);
+      if (closePrivacyBottomBtn) closePrivacyBottomBtn.addEventListener('click', closePrivacyModal);
+
+      if (privacyOverlay) {
+        privacyOverlay.addEventListener('click', (e) => {
+          if (e.target === privacyOverlay) {
+            closePrivacyModal();
+          }
+        });
+      }
+
+      if (reopenCookieBannerBtn) {
+        reopenCookieBannerBtn.addEventListener('click', () => {
+          closePrivacyModal();
+          const current = getConsent();
+          if (current) {
+            if (analyticsCheckbox) analyticsCheckbox.checked = Boolean(current.analytics);
+            if (marketingCheckbox) marketingCheckbox.checked = Boolean(current.marketing);
+          }
+          if (overlay) {
+            overlay.style.display = 'flex';
+          }
         });
       }
 
@@ -1510,6 +1608,547 @@
         h2List.forEach(h2 => titleObserver.observe(h2));
       }
     });
+  </script>
+
+  <!-- Traduzione Sito in 8 Lingue (IT, EN, FR, DE, ES, NL, PT, SV) -->
+  <script>
+    (function () {
+      const SUPPORTED_LANGS = ["it", "en", "fr", "de", "es", "nl", "pt", "sv"];
+      const STORAGE_KEY = "bibbonabike_lang";
+
+      const TRANSLATIONS = {
+        it: {
+          cookie_more_info: 'Per maggiori dettagli, consulta la nostra',
+          cookie_policy_link: 'Privacy e Cookie Policy',
+          footer_policy_link: 'Privacy & Cookie Policy',
+          pp_title: 'Privacy e Cookie Policy – BibbonaBike.com',
+          pp_controller_lbl: 'Titolare del trattamento:',
+          pp_sec1_title: '1. Dati raccolti e finalità del trattamento',
+          pp_sec1_body: 'Raccogliamo i dati inseriti nel modulo di prenotazione (nome e cognome, email, numero di telefono, modello di bici scelto, data, durata, quantità, accessori, codice sconto ed eventuali note) esclusivamente per gestire preventivi, noleggi, tour, eventi e richieste di assistenza officina, oltre che per adempiere a obblighi amministrativi o di legge.',
+          pp_sec2_title: '2. Sicurezza, hCaptcha e conservazione dati',
+          pp_sec2_body: 'Il modulo utilizza hCaptcha per prevenire invii automatizzati e spam. I dati di prenotazione vengono trasmessi in modo sicuro per la gestione della richiesta e conservati per il tempo necessario a evadere il servizio e per gli eventuali obblighi normativi applicabili.',
+          pp_sec3_title: '3. Categorie di cookie e preferenze',
+          pp_sec3_body: 'Il sito distingue tra cookie tecnici/necessari (sempre attivi per il funzionamento e la memorizzazione delle scelte), cookie statistici/analitici e cookie di marketing/profilazione, attivabili solo previo consenso espresso tramite il banner.',
+          pp_sec4_title: "4. Diritti dell'interessato (GDPR)",
+          pp_sec4_body: "Ai sensi del Regolamento UE 2016/679 (GDPR), puoi richiedere in qualsiasi momento accesso, rettifica, cancellazione o limitazione dei tuoi dati, revocare il consenso ai cookie non necessari o proporre reclamo all'autorità di controllo competente scrivendo a magonabikegarage@gmail.com o contattando Magona Bike Garage.",
+          pp_manage_cookies: 'Gestisci Preferenze Cookie',
+          pp_close_btn: 'Chiudi',
+          meta_title: "Magona Bike Garage – BibbonaBike",
+          nav_home: "Home",
+          nav_workshop: "Assistenza E-Bike",
+          nav_rental: "Noleggio E-MTB",
+          nav_tours: "Tour",
+          nav_trails: "Trail Area",
+          nav_events: "Eventi",
+          nav_info: "Info",
+          hero_title: "Pedala e goditi la splendida natura incontaminata tra i sentieri della ValdiCecina",
+          hero_desc: "Officina specializzata per E-Bike, diagnosi riparazione e aggiornamento per i motori dei marchi più conosciuti, noleggio E-MTB e ristoro a Bibbona, in provincia di Livorno.",
+          hero_cta: "Prenota la tua E-MTB",
+          services_title: "I nostri servizi",
+          srv_rental_title: "Noleggio E-Bike",
+          srv_rental_desc: "E-Bike pronte per farti esplorare la ValdiCecina... Vi aspettano decine di km di percorsi mtb e strade bianche e tanti panorami mozzafiato",
+          srv_workshop_title: "Officina",
+          srv_cafe_title: "Ristoro",
+          srv_cafe_desc: "Area relax con caffetteria e snack per rilassarti e ricaricare anche te, non solo la tua bici!",
+          srv_tours_title: "Tour e Corsi",
+          srv_tours_desc: "Le nostre guide certificate vi accompagneranno nelle vostre avventure e potranno insegnarvi le tecniche di guida più adatte per poter viaggiare in totale sicurezza.",
+          workshop_section_title: "Officina",
+          rental_section_title: "Noleggio E-MTB",
+          price_from: "A PARTIRE DA 40€",
+          bike_29_label: "E-MTB 29 — 50€ / giorno · 35€ mezza giornata",
+          bike_24_label: "E-MTB 24 — 40€ / giorno · 25€ mezza giornata",
+          tours_section_title: "Tour Con Guide Certificate",
+          magona_section_title: "Macchia Della Magona Trail Area",
+          events_section_title: "Corsi / Eventi",
+          gallery_section_title: "Galleria",
+          booking_section_title: "Prenota ora",
+          lbl_name: "Nome e Cognome *",
+          lbl_email: "Email *",
+          lbl_phone: "Numero di telefono *",
+          lbl_bike: "Tipo di bici *",
+          opt_select: "Seleziona",
+          lbl_qty: "Quantità *",
+          lbl_date: "Data *",
+          lbl_duration: "Durata *",
+          opt_half_day: "½ giornata",
+          lbl_notes: "Note (altezza, attrezzature richieste)",
+          lbl_discount: "Codice Sconto",
+          lbl_total: "Totale:",
+          btn_submit: "Invia richiesta"
+        },
+        en: {
+          cookie_more_info: 'For more details, please read our',
+          cookie_policy_link: 'Privacy & Cookie Policy',
+          footer_policy_link: 'Privacy & Cookie Policy',
+          pp_title: 'Privacy & Cookie Policy – BibbonaBike.com',
+          pp_controller_lbl: 'Data Controller:',
+          pp_sec1_title: '1. Data collected and purposes of processing',
+          pp_sec1_body: 'We collect the information entered in the booking form (full name, email, phone number, selected bike model, date, duration, quantity, accessories, promo code and optional notes) solely to handle quotes, rentals, tours, events and workshop service requests, as well as to comply with administrative or legal obligations.',
+          pp_sec2_title: '2. Security, hCaptcha and data retention',
+          pp_sec2_body: 'The form uses hCaptcha to prevent automated submissions and spam. Booking data is transmitted securely to process your request and retained for as long as needed to deliver the service and meet applicable statutory obligations.',
+          pp_sec3_title: '3. Cookie categories and preferences',
+          pp_sec3_body: 'The website distinguishes between technical/necessary cookies (always active for site operation and saving preferences), analytics/statistics cookies and marketing/profiling cookies, enabled only with explicit consent via the banner.',
+          pp_sec4_title: '4. Data subject rights (GDPR)',
+          pp_sec4_body: 'Under EU Regulation 2016/679 (GDPR), you may at any time request access to, rectification, erasure or restriction of your data, withdraw consent for non-essential cookies, or lodge a complaint with the competent supervisory authority by contacting Magona Bike Garage.',
+          pp_manage_cookies: 'Manage Cookie Preferences',
+          pp_close_btn: 'Close',
+          meta_title: "Magona Bike Garage – BibbonaBike",
+          nav_home: "Home",
+          nav_workshop: "E-Bike Service",
+          nav_rental: "E-MTB Rental",
+          nav_tours: "Tours",
+          nav_trails: "Trail Area",
+          nav_events: "Events",
+          nav_info: "Info",
+          hero_title: "Ride and enjoy unspoiled nature across the trails of Val di Cecina",
+          hero_desc: "Specialized E-Bike workshop for diagnostics, repairs and firmware updates across major motor brands, E-MTB rentals and refreshments in Bibbona, province of Livorno.",
+          hero_cta: "Book your E-MTB",
+          services_title: "Our services",
+          srv_rental_title: "E-Bike Rental",
+          srv_rental_desc: "E-Bikes ready to explore Val di Cecina... Dozens of kilometers of MTB trails, gravel roads and breathtaking views await you.",
+          srv_workshop_title: "Workshop",
+          srv_cafe_title: "Refreshments",
+          srv_cafe_desc: "Relaxation area with coffee and snacks to recharge yourself too, not just your bike!",
+          srv_tours_title: "Tours & Clinics",
+          srv_tours_desc: "Our certified guides will accompany you on your adventures and teach riding techniques for safe trail travel.",
+          workshop_section_title: "Workshop",
+          rental_section_title: "E-MTB Rental",
+          price_from: "STARTING FROM €40",
+          bike_29_label: "E-MTB 29 — €50 / day · €35 half day",
+          bike_24_label: "E-MTB 24 — €40 / day · €25 half day",
+          tours_section_title: "Certified Guided Tours",
+          magona_section_title: "Macchia Della Magona Trail Area",
+          events_section_title: "Clinics / Events",
+          gallery_section_title: "Gallery",
+          booking_section_title: "Book now",
+          lbl_name: "Full Name *",
+          lbl_email: "Email *",
+          lbl_phone: "Phone number *",
+          lbl_bike: "Bike model *",
+          opt_select: "Select",
+          lbl_qty: "Quantity *",
+          lbl_date: "Date *",
+          lbl_duration: "Duration *",
+          opt_half_day: "½ day",
+          lbl_notes: "Notes (height, requested gear)",
+          lbl_discount: "Promo Code",
+          lbl_total: "Total:",
+          btn_submit: "Send request"
+        },
+        fr: {
+          cookie_more_info: 'Pour en savoir plus, consultez notre',
+          cookie_policy_link: 'Politique de Confidentialité et Cookies',
+          footer_policy_link: 'Confidentialité & Cookies',
+          pp_title: 'Politique de Confidentialité et Cookies – BibbonaBike.com',
+          pp_controller_lbl: 'Responsable du traitement :',
+          pp_sec1_title: '1. Données collectées et finalités du traitement',
+          pp_sec1_body: "Nous collectons les données saisies dans le formulaire de réservation (nom et prénom, e-mail, téléphone, modèle de vélo, date, durée, quantité, accessoires, code promo et notes éventuelles) uniquement pour gérer les devis, locations, randonnées, événements et demandes d'atelier, ainsi que les obligations légales.",
+          pp_sec2_title: '2. Sécurité, hCaptcha et conservation des données',
+          pp_sec2_body: 'Le formulaire utilise hCaptcha pour prévenir les envois automatisés et le spam. Les données sont transmises de manière sécurisée pour traiter la demande et conservées pendant la durée nécessaire au service et aux obligations légales applicables.',
+          pp_sec3_title: '3. Catégories de cookies et préférences',
+          pp_sec3_body: "Le site distingue les cookies techniques/nécessaires (toujours actifs pour le fonctionnement et l'enregistrement des choix), les cookies statistiques et les cookies marketing/profilage, activés uniquement avec votre consentement via le bandeau.",
+          pp_sec4_title: '4. Droits de la personne concernée (RGPD)',
+          pp_sec4_body: "Conformément au Règlement UE 2016/679 (RGPD), vous pouvez demander l'accès, la rectification, l'effacement ou la limitation de vos données, retirer votre consentement aux cookies non essentiels ou saisir l'autorité compétente en contactant Magona Bike Garage.",
+          pp_manage_cookies: 'Gérer les Préférences Cookies',
+          pp_close_btn: 'Fermer',
+          meta_title: "Magona Bike Garage – BibbonaBike",
+          nav_home: "Accueil",
+          nav_workshop: "Atelier E-Bike",
+          nav_rental: "Location E-MTB",
+          nav_tours: "Randonnées",
+          nav_trails: "Zone Trails",
+          nav_events: "Événements",
+          nav_info: "Infos",
+          hero_title: "Roulez et profitez d'une nature préservée sur les sentiers du Val di Cecina",
+          hero_desc: "Atelier spécialisé E-Bike pour diagnostic, réparation et mise à jour des principales motorisations, location E-MTB et espace détente à Bibbona, province de Livourne.",
+          hero_cta: "Réservez votre E-MTB",
+          services_title: "Nos services",
+          srv_rental_title: "Location E-Bike",
+          srv_rental_desc: "Des E-Bikes prêtes pour explorer le Val di Cecina... Des dizaines de kilomètres de sentiers VTT, pistes et panoramas vous attendent.",
+          srv_workshop_title: "Atelier",
+          srv_cafe_title: "Détente & Café",
+          srv_cafe_desc: "Espace détente avec café et en-cas pour recharger vos batteries aussi, pas seulement celles du vélo !",
+          srv_tours_title: "Randonnées & Stages",
+          srv_tours_desc: "Nos guides diplômés vous accompagnent dans vos sorties et vous enseignent les bonnes techniques de pilotage en toute sécurité.",
+          workshop_section_title: "Atelier",
+          rental_section_title: "Location E-MTB",
+          price_from: "À PARTIR DE 40€",
+          bike_29_label: "E-MTB 29 — 50€ / jour · 35€ demi-journée",
+          bike_24_label: "E-MTB 24 — 40€ / jour · 25€ demi-journée",
+          tours_section_title: "Randonnées Avec Guides Certifiés",
+          magona_section_title: "Zone Trails Macchia Della Magona",
+          events_section_title: "Stages / Événements",
+          gallery_section_title: "Galerie",
+          booking_section_title: "Réserver maintenant",
+          lbl_name: "Nom et Prénom *",
+          lbl_email: "E-mail *",
+          lbl_phone: "Numéro de téléphone *",
+          lbl_bike: "Type de vélo *",
+          opt_select: "Sélectionner",
+          lbl_qty: "Quantité *",
+          lbl_date: "Date *",
+          lbl_duration: "Durée *",
+          opt_half_day: "½ journée",
+          lbl_notes: "Notes (taille, équipement souhaité)",
+          lbl_discount: "Code Promo",
+          lbl_total: "Total :",
+          btn_submit: "Envoyer la demande"
+        },
+        de: {
+          cookie_more_info: 'Weitere Informationen findest du in unserer',
+          cookie_policy_link: 'Datenschutz- & Cookie-Richtlinie',
+          footer_policy_link: 'Datenschutz & Cookies',
+          pp_title: 'Datenschutz- & Cookie-Richtlinie – BibbonaBike.com',
+          pp_controller_lbl: 'Verantwortlicher:',
+          pp_sec1_title: '1. Erhobene Daten und Verarbeitungszwecke',
+          pp_sec1_body: 'Wir erfassen die im Buchungsformular angegebenen Daten (Vor- und Nachname, E-Mail, Telefonnummer, Bike-Modell, Datum, Dauer, Anzahl, Zubehör, Rabattcode und Hinweise) ausschließlich zur Bearbeitung von Angeboten, Verleih, Touren, Events und Werkstattanfragen sowie zur Erfüllung gesetzlicher Pflichten.',
+          pp_sec2_title: '2. Sicherheit, hCaptcha und Speicherdauer',
+          pp_sec2_body: 'Das Formular nutzt hCaptcha zum Schutz vor automatisierten Anfragen und Spam. Buchungsdaten werden sicher zur Bearbeitung übermittelt und so lange gespeichert, wie es für die Leistungserbringung und gesetzliche Vorgaben erforderlich ist.',
+          pp_sec3_title: '3. Cookie-Kategorien und Einstellungen',
+          pp_sec3_body: 'Die Website unterscheidet zwischen technisch notwendigen Cookies (stets aktiv für Funktion und EinstellungsSPEICHERUNG), Statistik-Cookies sowie Marketing-/Profilierungs-Cookies, die nur nach ausdrücklicher Zustimmung über das Banner aktiviert werden.',
+          pp_sec4_title: '4. Rechte betroffener Personen (DSGVO)',
+          pp_sec4_body: 'Gemäß der EU-Verordnung 2016/679 (DSGVO) kannst du jederzeit Auskunft, Berichtigung, Löschung oder Einschränkung deiner Daten verlangen, deine Einwilligung für optionale Cookies widerrufen oder dich an die zuständige Aufsichtsbehörde wenden.',
+          pp_manage_cookies: 'Cookie-Einstellungen verwalten',
+          pp_close_btn: 'Schließen',
+          meta_title: "Magona Bike Garage – BibbonaBike",
+          nav_home: "Start",
+          nav_workshop: "E-Bike Service",
+          nav_rental: "E-MTB Verleih",
+          nav_tours: "Touren",
+          nav_trails: "Trail-Gebiet",
+          nav_events: "Events",
+          nav_info: "Info",
+          hero_title: "Fahre und genieße unberührte Natur auf den Trails des Val di Cecina",
+          hero_desc: "Spezialisierte E-Bike-Werkstatt für Diagnose, Reparatur und Updates gängiger Motoren, E-MTB-Verleih und Einkehr in Bibbona, Provinz Livorno.",
+          hero_cta: "E-MTB buchen",
+          services_title: "Unsere Leistungen",
+          srv_rental_title: "E-Bike Verleih",
+          srv_rental_desc: "E-Bikes bereit für das Val di Cecina... Dutzende Kilometer MTB-Strecken, Schotterwege und Ausblicke warten auf dich.",
+          srv_workshop_title: "Werkstatt",
+          srv_cafe_title: "Verpflegung",
+          srv_cafe_desc: "Entspannungsbereich mit Kaffee und Snacks, damit auch du neue Energie tanken kannst – nicht nur dein Bike!",
+          srv_tours_title: "Touren & Kurse",
+          srv_tours_desc: "Unsere zertifizierten Guides begleiten dich auf deinen Touren und vermitteln Fahrtechnik für sicheres Biken.",
+          workshop_section_title: "Werkstatt",
+          rental_section_title: "E-MTB Verleih",
+          price_from: "AB 40€",
+          bike_29_label: "E-MTB 29 — 50€ / Tag · 35€ Halbtag",
+          bike_24_label: "E-MTB 24 — 40€ / Tag · 25€ Halbtag",
+          tours_section_title: "Geführte Touren Mit Zertifizierten Guides",
+          magona_section_title: "Macchia Della Magona Trail-Gebiet",
+          events_section_title: "Kurse / Events",
+          gallery_section_title: "Galerie",
+          booking_section_title: "Jetzt buchen",
+          lbl_name: "Vor- und Nachname *",
+          lbl_email: "E-Mail *",
+          lbl_phone: "Telefonnummer *",
+          lbl_bike: "Bike-Modell *",
+          opt_select: "Auswählen",
+          lbl_qty: "Anzahl *",
+          lbl_date: "Datum *",
+          lbl_duration: "Dauer *",
+          opt_half_day: "½ Tag",
+          lbl_notes: "Hinweise (Körpergröße, gewünschte Ausrüstung)",
+          lbl_discount: "Rabattcode",
+          lbl_total: "Gesamt:",
+          btn_submit: "Anfrage senden"
+        },
+        es: {
+          cookie_more_info: 'Para más detalles, consulta nuestra',
+          cookie_policy_link: 'Política de Privacidad y Cookies',
+          footer_policy_link: 'Privacidad y Cookies',
+          pp_title: 'Política de Privacidad y Cookies – BibbonaBike.com',
+          pp_controller_lbl: 'Responsable del tratamiento:',
+          pp_sec1_title: '1. Datos recogidos y finalidades del tratamiento',
+          pp_sec1_body: 'Recogemos los datos introducidos en el formulario de reserva (nombre y apellidos, correo electrónico, teléfono, tipo de bicicleta, fecha, duración, cantidad, accesorios, código de descuento y notas) únicamente para gestionar presupuestos, alquileres, rutas, eventos y taller, así como obligaciones legales.',
+          pp_sec2_title: '2. Seguridad, hCaptcha y conservación de datos',
+          pp_sec2_body: 'El formulario utiliza hCaptcha para evitar envíos automatizados y spam. Los datos de reserva se transmiten de forma segura para atender tu solicitud y se conservan durante el tiempo necesario para prestar el servicio y cumplir la normativa aplicable.',
+          pp_sec3_title: '3. Categorías de cookies y preferencias',
+          pp_sec3_body: 'El sitio distingue entre cookies técnicas/necesarias (siempre activas para el funcionamiento y guardado de preferencias), cookies analíticas y cookies de marketing/perfilado, activadas solo con consentimiento previo mediante el banner.',
+          pp_sec4_title: '4. Derechos del interesado (RGPD)',
+          pp_sec4_body: 'De acuerdo con el Reglamento UE 2016/679 (RGPD), puedes solicitar en cualquier momento el acceso, rectificación, supresión o limitación de tus datos, retirar tu consentimiento para cookies no necesarias o reclamar ante la autoridad de control contactando con Magona Bike Garage.',
+          pp_manage_cookies: 'Gestionar Preferencias de Cookies',
+          pp_close_btn: 'Cerrar',
+          meta_title: "Magona Bike Garage – BibbonaBike",
+          nav_home: "Inicio",
+          nav_workshop: "Taller E-Bike",
+          nav_rental: "Alquiler E-MTB",
+          nav_tours: "Rutas",
+          nav_trails: "Área Trails",
+          nav_events: "Eventos",
+          nav_info: "Info",
+          hero_title: "Pedalea y disfruta de la naturaleza virgen entre los senderos de Val di Cecina",
+          hero_desc: "Taller especializado en E-Bike para diagnóstico, reparación y actualización de los principales motores, alquiler de E-MTB y zona de descanso en Bibbona, provincia de Livorno.",
+          hero_cta: "Reserva tu E-MTB",
+          services_title: "Nuestros servicios",
+          srv_rental_title: "Alquiler E-Bike",
+          srv_rental_desc: "E-Bikes listas para recorrer Val di Cecina... Te esperan decenas de km de rutas MTB, pistas y vistas increíbles.",
+          srv_workshop_title: "Taller",
+          srv_cafe_title: "Descanso & Café",
+          srv_cafe_desc: "Zona de relax con cafetería y snacks para que recargues pilas tú también, ¡no solo tu bici!",
+          srv_tours_title: "Rutas y Cursos",
+          srv_tours_desc: "Nuestros guías certificados te acompañarán en tus rutas y te enseñarán técnicas de conducción seguras.",
+          workshop_section_title: "Taller",
+          rental_section_title: "Alquiler E-MTB",
+          price_from: "DESDE 40€",
+          bike_29_label: "E-MTB 29 — 50€ / día · 35€ medio día",
+          bike_24_label: "E-MTB 24 — 40€ / día · 25€ medio día",
+          tours_section_title: "Rutas Con Guías Certificados",
+          magona_section_title: "Área de Trails Macchia Della Magona",
+          events_section_title: "Cursos / Eventos",
+          gallery_section_title: "Galería",
+          booking_section_title: "Reserva ahora",
+          lbl_name: "Nombre y Apellidos *",
+          lbl_email: "Correo electrónico *",
+          lbl_phone: "Número de teléfono *",
+          lbl_bike: "Tipo de bicicleta *",
+          opt_select: "Seleccionar",
+          lbl_qty: "Cantidad *",
+          lbl_date: "Fecha *",
+          lbl_duration: "Duración *",
+          opt_half_day: "½ día",
+          lbl_notes: "Notas (altura, equipamiento solicitado)",
+          lbl_discount: "Código de Descuento",
+          lbl_total: "Total:",
+          btn_submit: "Enviar solicitud"
+        },
+        nl: {
+          cookie_more_info: 'Lees voor meer informatie ons',
+          cookie_policy_link: 'Privacy- & Cookiebeleid',
+          footer_policy_link: 'Privacy & Cookies',
+          pp_title: 'Privacy- & Cookiebeleid – BibbonaBike.com',
+          pp_controller_lbl: 'Verwerkingsverantwoordelijke:',
+          pp_sec1_title: '1. Verzamelde gegevens en verwerkingsdoeleinden',
+          pp_sec1_body: 'We verzamelen de gegevens uit het boekingsformulier (voor- en achternaam, e-mail, telefoonnummer, fietsmodel, datum, duur, aantal, accessoires, kortingscode en eventuele opmerkingen) uitsluitend voor offertes, verhuur, tochten, events en werkplaatsservice, en om te voldoen aan wettelijke verplichtingen.',
+          pp_sec2_title: '2. Beveiliging, hCaptcha en bewaartermijn',
+          pp_sec2_body: 'Het formulier gebruikt hCaptcha om geautomatiseerde inzendingen en spam te voorkomen. Boekingsgegevens worden veilig verzonden om je aanvraag te verwerken en bewaard zolang nodig is voor de dienstverlening en wettelijke bewaarplichten.',
+          pp_sec3_title: '3. Cookiecategorieën en voorkeuren',
+          pp_sec3_body: 'De website maakt onderscheid tussen technische/noodzakelijke cookies (altijd actief voor werking en opslaan van keuzes), statistische cookies en marketing-/profilerings-cookies, die alleen na uitdrukkelijke toestemming via de banner worden geactiveerd.',
+          pp_sec4_title: '4. Rechten van betrokkenen (AVG)',
+          pp_sec4_body: 'Volgens de AVG (EU 2016/679) kun je op elk moment inzage, rectificatie, wissing of beperking van je gegevens verzoeken, toestemming voor niet-noodzakelijke cookies intrekken of een klacht indienen bij de toezichthouder via Magona Bike Garage.',
+          pp_manage_cookies: 'Cookievoorkeuren beheren',
+          pp_close_btn: 'Sluiten',
+          meta_title: "Magona Bike Garage – BibbonaBike",
+          nav_home: "Home",
+          nav_workshop: "E-Bike Service",
+          nav_rental: "E-MTB Verhuur",
+          nav_tours: "Tochten",
+          nav_trails: "Trailgebied",
+          nav_events: "Events",
+          nav_info: "Info",
+          hero_title: "Fiets en geniet van ongerepte natuur op de trails van Val di Cecina",
+          hero_desc: "Gespecialiseerde E-Bike werkplaats voor diagnose, reparatie en updates van grote motormerken, E-MTB verhuur en horeca in Bibbona, provincie Livorno.",
+          hero_cta: "Boek je E-MTB",
+          services_title: "Onze diensten",
+          srv_rental_title: "E-Bike Verhuur",
+          srv_rental_desc: "E-Bikes klaar om Val di Cecina te verkennen... Tientallen kilometers MTB-routes, gravelpaden en uitzichten wachten op je.",
+          srv_workshop_title: "Werkplaats",
+          srv_cafe_title: "Rustpunt",
+          srv_cafe_desc: "Relaxruimte met koffie en snacks om zelf ook even bij te tanken, niet alleen je fiets!",
+          srv_tours_title: "Tochten & Clinics",
+          srv_tours_desc: "Onze gecertificeerde gidsen begeleiden je avonturen en leren rijtechnieken voor veilig rijden.",
+          workshop_section_title: "Werkplaats",
+          rental_section_title: "E-MTB Verhuur",
+          price_from: "VANAF €40",
+          bike_29_label: "E-MTB 29 — €50 / dag · €35 halve dag",
+          bike_24_label: "E-MTB 24 — €40 / dag · €25 halve dag",
+          tours_section_title: "Begeleide Tochten Met Gecertificeerde Gidsen",
+          magona_section_title: "Macchia Della Magona Trailgebied",
+          events_section_title: "Clinics / Events",
+          gallery_section_title: "Galerij",
+          booking_section_title: "Boek nu",
+          lbl_name: "Voor- en achternaam *",
+          lbl_email: "E-mail *",
+          lbl_phone: "Telefoonnummer *",
+          lbl_bike: "Type fiets *",
+          opt_select: "Selecteer",
+          lbl_qty: "Aantal *",
+          lbl_date: "Datum *",
+          lbl_duration: "Duur *",
+          opt_half_day: "½ dag",
+          lbl_notes: "Opmerkingen (lengte, gewenste uitrusting)",
+          lbl_discount: "Kortingscode",
+          lbl_total: "Totaal:",
+          btn_submit: "Aanvraag versturen"
+        },
+        pt: {
+          cookie_more_info: 'Para mais detalhes, consulta a nossa',
+          cookie_policy_link: 'Política de Privacidade e Cookies',
+          footer_policy_link: 'Privacidade e Cookies',
+          pp_title: 'Política de Privacidade e Cookies – BibbonaBike.com',
+          pp_controller_lbl: 'Responsável pelo tratamento:',
+          pp_sec1_title: '1. Dados recolhidos e finalidades do tratamento',
+          pp_sec1_body: 'Recolhemos os dados inseridos no formulário de reserva (nome completo, email, telefone, tipo de bicicleta, data, duração, quantidade, acessórios, código de desconto e notas) exclusivamente para gerir orçamentos, alugueres, passeios, eventos e oficina, bem como obrigações legais.',
+          pp_sec2_title: '2. Segurança, hCaptcha e conservação de dados',
+          pp_sec2_body: 'O formulário utiliza hCaptcha para prevenir envios automatizados e spam. Os dados da reserva são transmitidos em segurança para processar o pedido e conservados pelo tempo necessário para prestar o serviço e cumprir obrigações legais aplicáveis.',
+          pp_sec3_title: '3. Categorias de cookies e preferências',
+          pp_sec3_body: 'O site distingue entre cookies técnicos/necessários (sempre ativos para o funcionamento e gravação de escolhas), cookies analíticos e cookies de marketing/definição de perfis, ativados apenas mediante consentimento prévio no banner.',
+          pp_sec4_title: '4. Direitos do titular dos dados (RGPD)',
+          pp_sec4_body: 'Nos termos do Regulamento UE 2016/679 (RGPD), podes solicitar a qualquer momento o acesso, retificação, apagamento ou limitação dos teus dados, retirar o consentimento para cookies não essenciais ou apresentar reclamação à autoridade de controlo contactando a Magona Bike Garage.',
+          pp_manage_cookies: 'Gerir Preferências de Cookies',
+          pp_close_btn: 'Fechar',
+          meta_title: "Magona Bike Garage – BibbonaBike",
+          nav_home: "Início",
+          nav_workshop: "Oficina E-Bike",
+          nav_rental: "Aluguer E-MTB",
+          nav_tours: "Passeios",
+          nav_trails: "Área de Trilhos",
+          nav_events: "Eventos",
+          nav_info: "Info",
+          hero_title: "Pedala e desfruta da natureza intocada nos trilhos de Val di Cecina",
+          hero_desc: "Oficina especializada em E-Bike para diagnóstico, reparação e atualização dos principais motores, aluguer de E-MTB e cafetaria em Bibbona, província de Livorno.",
+          hero_cta: "Reserva a tua E-MTB",
+          services_title: "Os nossos serviços",
+          srv_rental_title: "Aluguer E-Bike",
+          srv_rental_desc: "E-Bikes prontas para explorar Val di Cecina... Dezenas de km de trilhos MTB, estradas de terra e vistas esperam por ti.",
+          srv_workshop_title: "Oficina",
+          srv_cafe_title: "Cafetaria",
+          srv_cafe_desc: "Zona de descanso com café e snacks para recarregares energias também, não apenas a tua bicicleta!",
+          srv_tours_title: "Passeios e Cursos",
+          srv_tours_desc: "Os nossos guias certificados acompanham as tuas aventuras e ensinam técnicas para pedalar em segurança.",
+          workshop_section_title: "Oficina",
+          rental_section_title: "Aluguer E-MTB",
+          price_from: "A PARTIR DE 40€",
+          bike_29_label: "E-MTB 29 — 50€ / dia · 35€ meio dia",
+          bike_24_label: "E-MTB 24 — 40€ / dia · 25€ meio dia",
+          tours_section_title: "Passeios Com Guias Certificados",
+          magona_section_title: "Área de Trilhos Macchia Della Magona",
+          events_section_title: "Cursos / Eventos",
+          gallery_section_title: "Galeria",
+          booking_section_title: "Reservar agora",
+          lbl_name: "Nome Completo *",
+          lbl_email: "Email *",
+          lbl_phone: "Número de telefone *",
+          lbl_bike: "Tipo de bicicleta *",
+          opt_select: "Selecionar",
+          lbl_qty: "Quantidade *",
+          lbl_date: "Data *",
+          lbl_duration: "Duração *",
+          opt_half_day: "½ dia",
+          lbl_notes: "Notas (altura, equipamento pretendido)",
+          lbl_discount: "Código de Desconto",
+          lbl_total: "Total:",
+          btn_submit: "Enviar pedido"
+        },
+        sv: {
+          cookie_more_info: 'För mer information, läs vår',
+          cookie_policy_link: 'Integritets- & Cookiepolicy',
+          footer_policy_link: 'Integritet & Cookies',
+          pp_title: 'Integritets- & Cookiepolicy – BibbonaBike.com',
+          pp_controller_lbl: 'Personuppgiftsansvarig:',
+          pp_sec1_title: '1. Insamlade uppgifter och ändamål',
+          pp_sec1_body: 'Vi samlar in uppgifterna som anges i bokningsformuläret (namn, e-post, telefonnummer, cykelmodell, datum, längd, antal, tillbehör, rabattkod och eventuella anteckningar) enbart för att hantera offerter, uthyrning, turer, event och verkstadsärenden samt rättsliga skyldigheter.',
+          pp_sec2_title: '2. Säkerhet, hCaptcha och lagringstid',
+          pp_sec2_body: 'Formuläret använder hCaptcha för att förhindra automatiserade utskick och spam. Bokningsuppgifter överförs säkert för att hantera din förfrågan och sparas så länge som krävs för tjänsten och tillämpliga lagkrav.',
+          pp_sec3_title: '3. Kategorier av cookies och inställningar',
+          pp_sec3_body: 'Webbplatsen skiljer mellan tekniska/nödvändiga cookies (alltid aktiva för funktion och sparade val), statistikcookies samt marknadsförings-/profilerings-cookies som aktiveras först efter samtycke via bannern.',
+          pp_sec4_title: '4. Dina rättigheter enligt GDPR',
+          pp_sec4_body: 'Enligt EU:s dataskyddsförordning (GDPR) kan du när som helst begära tillgång till, rättelse, radering eller begränsning av dina uppgifter, återkalla samtycke till valfria cookies eller lämna klagomål till tillsynsmyndigheten genom att kontakta Magona Bike Garage.',
+          pp_manage_cookies: 'Hantera Cookieinställningar',
+          pp_close_btn: 'Stäng',
+          meta_title: "Magona Bike Garage – BibbonaBike",
+          nav_home: "Hem",
+          nav_workshop: "E-Bike Verkstad",
+          nav_rental: "E-MTB Hyra",
+          nav_tours: "Turer",
+          nav_trails: "Trailområde",
+          nav_events: "Event",
+          nav_info: "Info",
+          hero_title: "Cyckla och njut av orörd natur på stigarna i Val di Cecina",
+          hero_desc: "Specialiserad E-Bike-verkstad för felsökning, reparation och uppdatering av vanliga motorsystem, E-MTB-uthyrning och servering i Bibbona, Livorno-provinsen.",
+          hero_cta: "Boka din E-MTB",
+          services_title: "Våra tjänster",
+          srv_rental_title: "E-MTB Hyra",
+          srv_rental_desc: "E-Bikes redo för att utforska Val di Cecina... Flera mil av MTB-stigar, grusvägar och vyer väntar på dig.",
+          srv_workshop_title: "Verkstad",
+          srv_cafe_title: "Servering",
+          srv_cafe_desc: "Avkopplingsyta med kaffe och snacks så att även du kan ladda om, inte bara din cykel!",
+          srv_tours_title: "Turer & Kurser",
+          srv_tours_desc: "Våra certifierade guider följer med på dina turer och lär ut körteknik för säker cykling.",
+          workshop_section_title: "Verkstad",
+          rental_section_title: "E-MTB Hyra",
+          price_from: "FRÅN 40€",
+          bike_29_label: "E-MTB 29 — 50€ / dag · 35€ halvdag",
+          bike_24_label: "E-MTB 24 — 40€ / dag · 25€ halvdag",
+          tours_section_title: "Guidade Turer Med Certifierade Guider",
+          magona_section_title: "Macchia Della Magona Trailområde",
+          events_section_title: "Kurser / Event",
+          gallery_section_title: "Galleri",
+          booking_section_title: "Boka nu",
+          lbl_name: "För- och efternamn *",
+          lbl_email: "E-post *",
+          lbl_phone: "Telefonnummer *",
+          lbl_bike: "Cykeltyp *",
+          opt_select: "Välj",
+          lbl_qty: "Antal *",
+          lbl_date: "Datum *",
+          lbl_duration: "Längd *",
+          opt_half_day: "½ dag",
+          lbl_notes: "Anteckningar (längd, önskad utrustning)",
+          lbl_discount: "Rabattkod",
+          lbl_total: "Totalt:",
+          btn_submit: "Skicka förfrågan"
+        }
+      };
+
+      function normalizeLang(lang) {
+        if (!lang) return "it";
+        const base = String(lang).toLowerCase().slice(0, 2);
+        return SUPPORTED_LANGS.includes(base) ? base : "it";
+      }
+
+      function applyLanguage(lang) {
+        const activeLang = normalizeLang(lang);
+        const dict = TRANSLATIONS[activeLang] || TRANSLATIONS.it;
+        document.documentElement.lang = activeLang;
+
+        document.querySelectorAll("[data-i18n]").forEach((el) => {
+          const key = el.getAttribute("data-i18n");
+          if (key && Object.prototype.hasOwnProperty.call(dict, key)) {
+            if (el.tagName === "TITLE") {
+              document.title = dict[key];
+            } else {
+              el.textContent = dict[key];
+            }
+          }
+        });
+
+        const selectEl = document.getElementById("siteLangSelect");
+        if (selectEl && selectEl.value !== activeLang) {
+          selectEl.value = activeLang;
+        }
+
+        try {
+          localStorage.setItem(STORAGE_KEY, activeLang);
+        } catch (_) {}
+
+        window.dispatchEvent(new CustomEvent("bibbonabike:langchange", { detail: { lang: activeLang } }));
+      }
+
+      window.setSiteLanguage = applyLanguage;
+
+      document.addEventListener("DOMContentLoaded", () => {
+        let initialLang = "it";
+        try {
+          const saved = localStorage.getItem(STORAGE_KEY);
+          if (saved && SUPPORTED_LANGS.includes(saved)) {
+            initialLang = saved;
+          } else if (navigator.language) {
+            initialLang = normalizeLang(navigator.language);
+          }
+        } catch (_) {}
+
+        const selectEl = document.getElementById("siteLangSelect");
+        if (selectEl) {
+          selectEl.value = initialLang;
+          selectEl.addEventListener("change", (e) => {
+            applyLanguage(e.target.value);
+          });
+        }
+
+        applyLanguage(initialLang);
+      });
+    })();
   </script>
 
   <!-- Librerie e Script di Applicazione -->
