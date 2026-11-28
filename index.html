@@ -808,22 +808,37 @@
     }
 
 
-    /* Apertura e visibilità garantita del widget e del box chat AI */
+    /* Dimensione e posizione corrette del widget e del box chat AI */
     #chatWidget,
     #chatWidget.visible {
+      position: fixed !important;
+      left: 14px !important;
+      bottom: 14px !important;
+      right: auto !important;
+      top: auto !important;
+      width: auto !important;
+      height: auto !important;
       opacity: 1 !important;
       visibility: visible !important;
       pointer-events: auto !important;
       z-index: 9990 !important;
+      transform: none !important;
     }
 
     #chatToggle {
       position: relative !important;
       z-index: 9992 !important;
+      width: 54px !important;
+      height: 54px !important;
+      border-radius: 999px !important;
       cursor: pointer !important;
       opacity: 1 !important;
       visibility: visible !important;
       pointer-events: auto !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 0 !important;
     }
 
     #chatToggle * {
@@ -836,48 +851,88 @@
       visibility: hidden !important;
       pointer-events: none !important;
     }
+
     #chatBox:not(.hidden),
     #chatBox.open,
     #chatBox.active {
       display: flex !important;
       flex-direction: column !important;
+      gap: 8px !important;
+      padding: 12px !important;
       opacity: 1 !important;
       visibility: visible !important;
       pointer-events: auto !important;
       position: fixed !important;
-      left: 12px !important;
-      right: 12px !important;
-      bottom: 84px !important;
+      left: 14px !important;
+      right: 14px !important;
+      bottom: 78px !important;
       top: auto !important;
-      transform: none !important;
-      translate: none !important;
-      margin: 0 !important;
-      width: auto !important;
-      max-width: min(360px, calc(100vw - 24px)) !important;
-      max-height: min(420px, calc(100vh - 120px)) !important;
+      width: calc(100vw - 28px) !important;
+      min-width: 280px !important;
+      max-width: 420px !important;
+      height: auto !important;
+      max-height: min(440px, 62vh) !important;
       z-index: 9995 !important;
       background-color: var(--bg-elevated) !important;
       color: var(--text-primary) !important;
       border: 1px solid var(--border-strong) !important;
       border-radius: 14px !important;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85) !important;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.88) !important;
       overflow: hidden !important;
+      transform: none !important;
+      translate: none !important;
+      margin: 0 !important;
       box-sizing: border-box !important;
     }
 
-    #chatBox textarea,
-    #chatBox #chatInput,
-    #chatBox button,
-    #chatBox #chatSend {
-      max-width: 100% !important;
-      box-sizing: border-box !important;
-    }
-#chatMessages {
+    #chatMessages {
       flex: 1 1 auto !important;
+      min-height: 150px !important;
+      max-height: 250px !important;
+      width: 100% !important;
       overflow-y: auto !important;
-      padding: 12px !important;
+      padding: 8px !important;
+      border-radius: 10px !important;
+      background-color: var(--bg-void) !important;
+      border: 1px solid var(--border-subtle) !important;
       display: flex !important;
       flex-direction: column !important;
+      box-sizing: border-box !important;
+    }
+
+    #chatInput {
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      min-height: 46px !important;
+      max-height: 82px !important;
+      padding: 8px 10px !important;
+      border-radius: 8px !important;
+      background-color: var(--bg-void) !important;
+      color: var(--text-primary) !important;
+      border: 1px solid rgba(255, 255, 255, 0.16) !important;
+      font-family: 'Inter', Arial, sans-serif !important;
+      font-size: 0.9rem !important;
+      resize: none !important;
+      flex-shrink: 0 !important;
+      box-sizing: border-box !important;
+    }
+
+    #chatSend {
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      min-height: 38px !important;
+      padding: 8px 14px !important;
+      border-radius: 8px !important;
+      background: linear-gradient(135deg, #ff7b1c 0%, #d95300 100%) !important;
+      color: #090a0c !important;
+      border: none !important;
+      font-weight: 700 !important;
+      font-size: 0.9rem !important;
+      cursor: pointer !important;
+      flex-shrink: 0 !important;
+      box-sizing: border-box !important;
     }
 
   </style>
