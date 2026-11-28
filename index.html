@@ -2804,101 +2804,238 @@
   <script src="js/chat.js"></script>  <!-- Assistente AI Locale Val di Cecina & BibbonaBike -->
   <script>
     (function () {
+      const MAGONA_TRAILS_DETAIL = [
+        {
+          name: "Percorso 1 Bis (1b)",
+          url: "https://www.trailforks.com/trails/dh1-bis/",
+          length: "0,97 km (3.189 ft)",
+          elevation: "-97 m (-317 ft)",
+          difficulty: "Facile",
+          info: "Tratto in discesa nella Macchia della Magona; adatto a chi cerca un approccio più scorrevole rispetto alle linee tecniche più ripide. Controlla sempre il fondo dopo la pioggia."
+        },
+        {
+          name: "Percorso 3 (#3)",
+          url: "https://www.trailforks.com/trails/percorso-3-dh/",
+          length: "1,46 km (4.777 ft)",
+          elevation: "-177 m (-580 ft)",
+          difficulty: "Medio (★ 4.7)",
+          info: "Discesa nel bosco con sezioni tecniche, sponde, rocce e possibili guadi/zone umide da valutare con attenzione in base al meteo."
+        },
+        {
+          name: "Percorso 4 (#4)",
+          url: "https://www.trailforks.com/trails/percorso-4-dh/",
+          length: "1,61 km (1 mi)",
+          elevation: "-183 m (-600 ft)",
+          difficulty: "Medio",
+          info: "Tracciato in discesa con buon dislivello negativo e cambi di ritmo nel bosco; richiede freni in ordine e attenzione a radici e fondo smosso."
+        },
+        {
+          name: "Percorso 5 · Botro Grande - L'Aia Vecchia",
+          url: "https://www.trailforks.com/region/macchia-della-magona-trail-area/",
+          length: "Vedi scheda Trailforks",
+          elevation: "Vedi scheda Trailforks",
+          difficulty: "Medio",
+          info: "Collegamento e itinerario nell'area di Botro Grande e L'Aia Vecchia immerso nella macchia mediterranea; verifica l'apertura del tracciato su Trailforks."
+        },
+        {
+          name: "Percorso 6 (#6)",
+          url: "https://www.trailforks.com/trails/percorso-6/",
+          length: "1,61 km (1 mi)",
+          elevation: "-96 m / +9 m (-316 / +28 ft)",
+          difficulty: "Medio",
+          info: "Discesa di circa 1,61 km con brevi rilanci; ideale per chi ha già confidenza con singletrack naturali nel bosco."
+        },
+        {
+          name: "Percorso 7 (#7)",
+          url: "https://www.trailforks.com/trails/percorso-7/",
+          length: "1,61 km (1 mi)",
+          elevation: "-179 m (-588 ft)",
+          difficulty: "Difficile",
+          info: "Percorso impegnativo con pendenze e passaggi tecnici; consigliati casco integrale o protezioni adeguate e buona padronanza della bici."
+        },
+        {
+          name: "Percorso 7 Bis",
+          url: "https://www.trailforks.com/trails/percorso-7-bis/",
+          length: "Vedi scheda Trailforks",
+          elevation: "Vedi scheda Trailforks",
+          difficulty: "Medio (Blue Rate)",
+          info: "Variante di livello intermedio (Blue su Trailforks); consulta la scheda dedicata per condizioni aggiornate e raccordo con la rete."
+        },
+        {
+          name: "Percorso 8 (#8)",
+          url: "https://www.trailforks.com/trails/percorso-8/",
+          length: "3,22 km (2 mi)",
+          elevation: "-164 m / +7 m (-538 / +24 ft)",
+          difficulty: "Medio (★ 5.0)",
+          info: "Tracciato più lungo (3,22 km) percorribile in entrambe le direzioni secondo Trailforks; gestisci bene energie, batteria e prudenza nei tratti condivisi."
+        },
+        {
+          name: "Percorso 9",
+          url: "https://www.trailforks.com/trails/percorso-9/",
+          length: "Vedi scheda Trailforks",
+          elevation: "Vedi scheda Trailforks",
+          difficulty: "Facile",
+          info: "Tratto di collegamento/percorrenza più accessibile all'interno della rete della Magona; utile per muoversi tra i settori."
+        },
+        {
+          name: "Percorso 9 Bis / 9 B (9b)",
+          url: "https://www.trailforks.com/trails/percorso-9-bis/",
+          length: "0,71 km (2.329 ft)",
+          elevation: "-44 m / +1 m (-144 / +2 ft)",
+          difficulty: "Medio (Blue · ★ 4.5)",
+          info: "Segmento compatto (0,71 km) classificato Blue su Trailforks con buon feedback dei rider; ottima discesa concentrata."
+        },
+        {
+          name: "Percorso 10 · Il Terminino - Golazze Aperte",
+          url: "https://www.trailforks.com/trails/percorso-10--il-terminino--golazze-aperte/",
+          length: "Vedi scheda Trailforks",
+          elevation: "Vedi scheda Trailforks",
+          difficulty: "Medio",
+          info: "Itinerario tra Il Terminino e Golazze Aperte nella parte alta/collinare della Macchia della Magona; controlla traccia e meteo prima di partire."
+        },
+        {
+          name: "Percorso 10 Bis",
+          url: "https://www.trailforks.com/trails/percorso-10-bis/",
+          length: "0,93 km (3.058 ft)",
+          elevation: "-103 m / +4 m (-338 / +12 ft)",
+          difficulty: "Medio (Blue · ★ 3.7)",
+          info: "Discesa di 0,93 km classificata Blue su Trailforks con dislivello negativo intorno ai 103 m."
+        },
+        {
+          name: "Percorso 11 (#11)",
+          url: "https://www.trailforks.com/trails/percorso-11/",
+          length: "1,45 km (4.751 ft)",
+          elevation: "-117 m (-384 ft)",
+          difficulty: "Medio",
+          info: "Percorso di 1,45 km con circa 117 m di discesa; scorrevole e tecnico al punto giusto per biker intermedi."
+        },
+        {
+          name: "Percorso 12",
+          url: "https://www.trailforks.com/region/macchia-della-magona-trail-area/",
+          length: "Vedi scheda Trailforks",
+          elevation: "Vedi scheda Trailforks",
+          difficulty: "Medio",
+          info: "Tracciato della Trail Area della Magona; verifica su Trailforks eventuali aggiornamenti o varianti locali prima dell'uscita."
+        },
+        {
+          name: "Percorso 13 (#13)",
+          url: "https://www.trailforks.com/trails/magona-13/",
+          length: "0,87 km (2.844 ft)",
+          elevation: "-107 m (-350 ft)",
+          difficulty: "Difficile (★ 4.0)",
+          info: "Discesa breve ma tecnica (0,87 km, -107 m) di livello difficile; richiede controllo della velocità e attenzione agli ostacoli."
+        },
+        {
+          name: "Percorso 13 Bis (13bis)",
+          url: "https://www.trailforks.com/trails/percorso-19/",
+          length: "1,61 km (1 mi)",
+          elevation: "-108 m / +10 m (-356 / +34 ft)",
+          difficulty: "Medio (Blue · ★ 3.8)",
+          info: "Tracciato di 1,61 km classificato Blue su Trailforks con circa 108 m di discesa e lievi saliscendi."
+        },
+        {
+          name: "Percorso 14 (#14)",
+          url: "https://www.trailforks.com/trails/immaginetta/",
+          length: "1,61 km (1 mi)",
+          elevation: "-201 m (-659 ft)",
+          difficulty: "Difficile (★ 4.5)",
+          info: "Linea impegnativa (1,61 km, -201 m) di livello difficile; indicata per rider esperti con bici enduro/E-MTB ben assettata."
+        },
+        {
+          name: "Percorso 17 (#17)",
+          url: "https://www.trailforks.com/trails/percorso-17/",
+          length: "0,94 km (3.100 ft)",
+          elevation: "-106 m / 0 m (-349 / 0 ft)",
+          difficulty: "Medio (★ 5.0)",
+          info: "Discesa di 0,94 km con -106 m di dislivello e valutazione elevata su Trailforks; buon ritmo e passaggi divertenti."
+        }
+      ];
+
+      function formatTrailsSummary() {
+        return (
+          "Ecco i sentieri della **Macchia Della Magona Trail Area** (dati da Trailforks):\n" +
+          MAGONA_TRAILS_DETAIL.map(
+            (t) => `• **${t.name}** — Lunghezza: ${t.length} · Dislivello: ${t.elevation} · Difficoltà: ${t.difficulty}. ${t.info}`
+          ).join("\n")
+        );
+      }
+
       const KNOWLEDGE_BASE = [
         {
-          id: "magona_storia_e_nome",
+          id: "magona_trails_all_and_specific",
+          keywords: [
+            "trailforks", "sentiero", "sentieri", "trail", "percorso", "percorsi", "1 bis", "1b",
+            "percorso 3", "percorso 4", "percorso 5", "botro grande", "aia vecchia", "percorso 6",
+            "percorso 7", "7 bis", "percorso 8", "percorso 9", "9 bis", "9b", "percorso 10",
+            "terminino", "golazze aperte", "10 bis", "percorso 11", "percorso 12", "percorso 13",
+            "13 bis", "13bis", "percorso 14", "immaginetta", "percorso 17", "difficolta", "dislivello", "lunghezza"
+          ],
+          getAnswer: function (norm) {
+            for (const tr of MAGONA_TRAILS_DETAIL) {
+              const cleanName = normalizeText(tr.name);
+              const numMatch = norm.match(/\b(?:percorso\s*)?(1\s*bis|1b|3|4|5|6|7\s*bis|7|8|9\s*bis|9b|9|10\s*bis|10|11|12|13\s*bis|13bis|13|14|17)\b/);
+              if (numMatch) {
+                const tag = numMatch[1].replace(/\s+/g, "");
+                const trTag = normalizeText(tr.name).replace(/\s+/g, "");
+                if (
+                  (tag === "1bis" || tag === "1b") && trTag.includes("1bis") ||
+                  (tag === "7bis") && trTag.includes("7bis") ||
+                  (tag === "9bis" || tag === "9b") && trTag.includes("9bis") ||
+                  (tag === "10bis") && trTag.includes("10bis") ||
+                  (tag === "13bis") && trTag.includes("13bis") ||
+                  (["3","4","5","6","7","8","9","10","11","12","13","14","17"].includes(tag) &&
+                    new RegExp(`\bpercorso\s*${tag}\b`).test(cleanName) && !cleanName.includes("bis"))
+                ) {
+                  return (
+                    `**${tr.name}** (Macchia Della Magona Trail Area – Trailforks)\n` +
+                    `• **Lunghezza:** ${tr.length}\n` +
+                    `• **Dislivello:** ${tr.elevation}\n` +
+                    `• **Difficoltà:** ${tr.difficulty}\n` +
+                    `• **Indicazioni:** ${tr.info}\n` +
+                    `• **Scheda Trailforks:** ${tr.url}`
+                  );
+                }
+              }
+            }
+            return formatTrailsSummary();
+          }
+        },
+        {
+          id: "magona_storia_natura_e_paesaggio",
           keywords: [
             "magona", "macchia della magona", "ferriera", "ferriere", "real magona", "carbone",
             "carbonaia", "carbonaio", "legname", "1636", "1995", "natura 2000", "porcareccia",
-            "boscaioli", "mulinaccio", "mulino", "botro campo di sasso", "campo di sasso", "forteto", "ceduo"
+            "boscaioli", "mulino", "flora", "fauna", "leccio", "sughero", "roverella", "corbezzolo",
+            "mirto", "lentisco", "erica", "cinghiale", "capriolo", "daino", "muflone", "testuggine"
           ],
           answer:
-            "La **Macchia della Magona** è un'area naturale protetta di interesse locale istituita dalla Regione Toscana nel **1995** e parte della rete **Natura 2000**, con circa **1.636 ettari** tra collina, bosco, radure e corsi d'acqua a ridosso di **Bibbona**.
-" +
-            "Il nome deriva dal legame storico con la **Real Magona** e le ferriere della zona, per le quali il bosco forniva legname e carbone vegetale (prodotto nelle **carbonaie** dai carbonai, insieme a vecchi mestieri, mulini, la **porcareccia**, i capanni dei boscaioli e i percorsi storici come il sentiero panoramico, il sentiero dei vecchi mestieri e il sentiero nel bosco)."
+            "La **Macchia della Magona** è un'area naturale protetta di interesse locale (istituita nel **1995**, rete **Natura 2000**, circa **1.636 ettari**) legata storicamente alla **Real Magona** e alle ferriere per il legname e il carbone delle **carbonaie**, con mulini, la **porcareccia** e sentieri storici.\n" +
+            "Il paesaggio è dominato dalla **macchia mediterranea** (**leccio**, **sughero**, **roverella**, **corbezzolo**, **mirto**, **lentisco**, **erica arborea**) e ospita **cinghiali**, **caprioli**, **daini**, **mufloni**, volpi, tassi, istrici, **testuggine di Hermann** e rapaci/uccelli boschivi.\n" +
+            "Chiedimi pure un sentiero specifico (es. *Percorso 8*, *Percorso 14*, *Percorso 17*) o chiedi *tutti i sentieri della Magona*."
         },
         {
-          id: "magona_flora_e_fauna",
+          id: "bibbona_e_dintorni",
           keywords: [
-            "flora", "fauna", "leccio", "lecci", "sughero", "roverella", "corbezzolo", "mirto",
-            "lentisco", "fillirea", "cisto", "erica", "erica arborea", "ginestrone", "pino marittimo",
-            "pino domestico", "ontano", "salice", "pioppo", "cinghiale", "cinghiali", "capriolo",
-            "daino", "muflone", "tasso", "volpe", "istrice", "faina", "gatto selvatico", "donnola",
-            "falco pellegrino", "biancone", "poiana", "allocco", "picchio", "testuggine", "biacco",
-            "rospo", "rana", "uccelli", "animali", "piante", "bosco", "macchia mediterranea"
+            "bibbona", "marina di bibbona", "borgo", "villanoviano", "etruschi", "templari",
+            "sant ilario", "palio delle botti", "pineta", "tomboli", "bolgheri", "castagneto",
+            "cecina", "casale marittimo", "guardistallo", "montescudaio", "riparbella",
+            "castellina", "montecatini val di cecina", "volterra", "pomarance", "monterufoli",
+            "dintorni", "storia", "paesaggio", "val di cecina", "costa degli etruschi"
           ],
           answer:
-            "Il paesaggio e la biodiversità della **Macchia della Magona** sono dominati dalla **macchia mediterranea**:
-" +
-            "• **Flora:** **leccio** (specie arborea principale), **sughero**, **roverella**, rimboschimenti di **pino marittimo** e **pino domestico**, ontani, salici e pioppi lungo i corsi d'acqua, con sottobosco di **corbezzolo**, **mirto**, **lentisco**, **fillirea**, **cisto**, **erica arborea** (usata anche per il ciocco da pipa e le scopiglie) e **ginestrone**.
-" +
-            "• **Fauna:** **cinghiali**, **caprioli**, **daini**, **mufloni**, **volpi**, **tassi**, **istrici**, **faine**, **donnole**, raro **gatto selvatico**, anfibi e rettili (tra cui la **testuggine di Hermann**, biacchi, bisce, lucertole, rospi e rane) e rapaci/uccelli come **poiana**, **biancone**, **falco pellegrino**, **allocco**, picchi, merli, capinere e pettirossi."
+            "**Bibbona** e i dintorni tra **Costa degli Etruschi** e **Val di Cecina** uniscono borghi storici (origini villanoviane ed etrusche, Pieve di Sant'Ilario, tradizioni locali, **Bolgheri**, **Castagneto Carducci**, **Casale Marittimo**, **Guardistallo**, **Montescudaio**, **Montecatini Val di Cecina**, **Volterra**, **Pomarance**, **Monterufoli-Caselli**), **Marina di Bibbona** con la pineta e i **Tomboli di Cecina**, e itinerari in bici su collina, strade bianche e trail."
         },
         {
-          id: "magona_trail_area_e_sentieri",
-          keywords: [
-            "trail", "sentiero", "sentieri", "trailforks", "dh", "enduro", "discesa", "guadi",
-            "percorso 1", "1b", "percorso 3", "percorso 4", "percorso 5", "botro grande", "aia vecchia",
-            "percorso 6", "percorso 7", "percorso 8", "percorso 9", "9b", "percorso 10", "terminino",
-            "golazze aperte", "10 bis", "percorso 11", "percorso 12", "percorso 13", "13 bis",
-            "percorso 14", "immaginetta", "percorso 17", "pineta", "marina di bibbona", "cecina"
-          ],
-          answer:
-            "La **Macchia Della Magona Trail Area** collega pianura, pineta e collina con circa **50 km** di itinerari e tracciati MTB/E-MTB:
-" +
-            "• **Percorsi numerati in scheda:** **Percorso 1 Bis (1b)**, **Percorso 3 (#3)** (con passaggi su rocce, sponde e guadi da valutare dopo le piogge), **Percorso 4 (#4)**, **Percorso 5 · Botro Grande - L'Aia Vecchia**, **Percorso 6 (#6)**, **Percorso 7 (#7)**, **Percorso 7 Bis**, **Percorso 8 (#8)**, **Percorso 9**, **Percorso 9 Bis / 9 B (9b)**, **Percorso 10 · Il Terminino - Golazze Aperte**, **Percorso 10 Bis**, **Percorso 11 (#11)**, **Percorso 12**, **Percorso 13 (#13)**, **Percorso 13 Bis (13bis)**, **Percorso 14 (#14)** e **Percorso 17 (#17)**.
-" +
-            "• **Collegamenti & dintorni:** itinerari verso la pineta tra **Marina di Bibbona** e **Cecina**, aree vicine come **Montescudaio**, **Riparbella-Castellina**, **Castellina Marittima** e **Monte Calvi**, e punti d'interesse come le **Cascate di Caselli** e **Castiglioncello di Bolgheri**."
-        },
-        {
-          id: "bibbona_storia_borgo_e_mare",
-          keywords: [
-            "bibbona", "marina di bibbona", "borgo", "villanoviano", "etruschi", "etrusca",
-            "templari", "sant ilario", "pieve", "san giuseppe", "vallombrosano", "palazzo del comune",
-            "palio delle botti", "processione storica", "forte", "pineta", "tomboli di cecina",
-            "arcipelago toscano", "olio", "extravergine", "terratico", "doc", "enogastronomia", "paesaggio"
-          ],
-          answer:
-            "**Bibbona** sorge su un colle affacciato tra le colline boscose della Magona e il litorale di **Marina di Bibbona** sulla **Costa degli Etruschi**:
-" +
-            "• **Storia e borgo:** tracce già in epoca **villanoviana** ed **etrusca**, passaggio dei **Templari** (con segni e rimandi legati alla **Pieve di Sant'Ilario**), presenza vallombrosana legata alla chiesa di **San Giuseppe**, il **Palazzo del Comune vecchio** con gli stemmi nobiliari, l'Archivio Storico e tradizioni come la **Processione Storica** e il **Palio delle Botti**.
-" +
-            "• **Paesaggio, mare e sapori:** a pochi chilometri si trova **Marina di Bibbona** con il **Forte settecentesco**, le spiagge, l'ampia **pineta**, i **Tomboli di Cecina** (riserva naturale/oasi WWF) con vista verso l'**Arcipelago Toscano**, oltre a **olio extravergine**, **DOC Terratico** e cucina toscana."
-        },
-        {
-          id: "dintorni_val_di_cecina_e_costa",
-          keywords: [
-            "dintorni", "val di cecina", "valdicecina", "costa degli etruschi", "bolgheri",
-            "castagneto carducci", "cecina", "casale marittimo", "guardistallo", "montescudaio",
-            "riparbella", "castellina marittima", "montecatini val di cecina", "volterra",
-            "pomarance", "querceto", "monterufoli", "caselli", "sassetta", "campiglia marittima",
-            "san vincenzo", "populonia", "san gimignano", "larderello", "geotermia", "paesi"
-          ],
-          answer:
-            "Nei **dintorni di Bibbona**, tra **Costa degli Etruschi** e **Val di Cecina**, si alternano paesaggi collinari, strade bianche, vigneti e borghi storici:
-" +
-            "• **Costa e viali celebri:** **Bolgheri** e **Castagneto Carducci**, **Cecina**, **San Vincenzo**, **Campiglia Marittima**, **Sassetta** e la zona archeologica etrusca di **Populonia**.
-" +
-            "• **Colline e Val di Cecina:** **Casale Marittimo**, **Guardistallo**, **Montescudaio**, **Riparbella**, **Castellina Marittima**, **Montecatini Val di Cecina** (nota per le antiche miniere di rame), **Volterra**, **Pomarance**, **Querceto**, la riserva di **Monterufoli-Caselli** e l'area geotermica."
-        },
-        {
-          id: "mondo_biciclette_mtb_emtb_gravel_officina",
+          id: "mondo_biciclette_e_garage",
           keywords: [
             "bici", "bicicletta", "biciclette", "mtb", "e-mtb", "ebike", "e-bike", "gravel",
-            "strada", "cicloturismo", "ciclismo", "allenamento", "forcella", "forcelle", "rockshox",
-            "ammortizzatore", "sospensioni", "freni", "cambio", "gomme", "pressione", "batteria",
-            "motore", "motori", "bosch", "shimano", "brose", "yamaha", "avinox", "tq", "bafang",
-            "fazua", "fsa", "mahle", "oli", "panasonic", "hyena", "polini", "noleggio", "officina",
-            "tour", "guida", "guide", "prenota", "prezzi", "prezzo", "29", "24", "bibbona", "via del mandorlo"
+            "strada", "cicloturismo", "ciclismo", "allenamento", "forcella", "rockshox",
+            "sospensioni", "freni", "cambio", "gomme", "batteria", "motore", "motori",
+            "bosch", "shimano", "brose", "yamaha", "avinox", "tq", "bafang", "fazua", "fsa",
+            "mahle", "oli", "panasonic", "hyena", "polini", "noleggio", "officina", "tour", "prenota", "prezzi"
           ],
           answer:
-            "Sul **mondo biciclette** e sui servizi di **Magona Bike Garage – BibbonaBike.com** (**Via del Mandorlo 1, Bibbona (LI)** · Tel./WhatsApp **+39 331 345 3207** · **magonabikegarage@gmail.com**):
-" +
-            "• **Discipline e guida sul territorio:** in Val di Cecina e Macchia della Magona puoi praticare **MTB ed enduro** (su singletrack, radici, rocce e discese), **E-MTB** (gestendo modalità di assistenza, autonomia batteria e frenate), **gravel** su strade bianche e sterrati collinari, **cicloturismo** tra borghi e **ciclismo sportivo/allenamento**.
-" +
-            "• **Noleggio E-MTB:** **E-MTB 29** (50€/giorno · 35€ mezza giornata) ed **E-MTB 24** (40€/giorno · 25€ mezza giornata), con accessori opzionali (carrello bambini +7€, seggiolino Shotgun +15€) e **tour con guide certificate**.
-" +
-            "• **Officina e manutenzione:** riparazione, revisione e manutenzione bici ed E-Bike, revisione sospensioni/forcelle (es. RockShox), diagnosi, aggiornamenti e interventi su motori **Bosch, Shimano, Yamaha, Avinox, TQ, Bafang, Brose, Fazua, FSA, Mahle, OLI, Panasonic, Hyena, Polini** e altri, con area relax/ristoro."
+            "**Magona Bike Garage – BibbonaBike.com** (**Via del Mandorlo 1, Bibbona (LI)** · Tel./WhatsApp **+39 331 345 3207** · **magonabikegarage@gmail.com**) offre **noleggio E-MTB** (**E-MTB 29** e **E-MTB 24**), **tour con guide certificate** e **officina specializzata** su bici, sospensioni/forcelle (es. RockShox) e motori E-Bike (**Bosch, Shimano, Yamaha, Avinox, TQ, Bafang, Brose, Fazua, FSA, Mahle, OLI, Panasonic, Hyena, Polini** e altri)."
         }
       ];
 
@@ -2929,7 +3066,7 @@
       function getLocalAssistantReply(userMessage) {
         const norm = normalizeText(userMessage);
         if (!norm) {
-          return "Chiedimi pure di **Macchia della Magona** (storia, flora, fauna, sentieri), **Bibbona**, **dintorni e paesaggio** (Costa degli Etruschi e Val di Cecina), oppure del **mondo biciclette** (MTB, E-MTB, gravel, cicloturismo, officina e noleggio)!";
+          return "Chiedimi pure dei **sentieri della Macchia Della Magona** (con dati Trailforks, dislivelli e indicazioni), **Bibbona**, **dintorni**, **storia**, **paesaggio** o **biciclette**!";
         }
 
         const tokens = norm.split(" ").filter(Boolean);
@@ -2959,17 +3096,11 @@
         }
 
         if (bestEntry && bestScore > 0) {
-          return bestEntry.answer;
+          return typeof bestEntry.getAnswer === "function" ? bestEntry.getAnswer(norm) : bestEntry.answer;
         }
 
         return (
-          "Posso risponderti su **Macchia della Magona**, **Bibbona**, **dintorni e paesaggio** (Costa degli Etruschi e Val di Cecina) e **mondo biciclette** (MTB, E-MTB, gravel, cicloturismo, officina, motori e noleggio):
-" +
-          "• **Magona:** 1.636 ettari, riserva storica legata alla Real Magona e alle carbonaie, leccio, sughero, corbezzolo, cinghiali, caprioli, daini, testuggine di Hermann e sentieri/trail.
-" +
-          "• **Bibbona & dintorni:** origini villanoviane/etrusche, Pieve di Sant'Ilario, Marina di Bibbona, pineta, Tomboli di Cecina, Bolgheri, Castagneto Carducci, Casale Marittimo, Guardistallo, Montecatini Val di Cecina e Volterra.
-" +
-          "• **Biciclette & Magona Bike Garage:** uscite in MTB/E-MTB/gravel, manutenzione, sospensioni, motori e noleggio E-MTB 29/24 in Via del Mandorlo 1 a Bibbona."
+          "Posso aiutarti su **Macchia Della Magona Trail Area** (tutti i sentieri Trailforks, lunghezze, dislivelli, difficoltà e indicazioni), **Bibbona**, **dintorni**, **storia**, **paesaggio** e **mondo biciclette** (MTB, E-MTB, gravel, cicloturismo, officina e noleggio)."
         );
       }
 
@@ -3008,7 +3139,12 @@
         bubbles.forEach((b) => {
           if (b.classList && b.classList.contains("user-msg")) return;
           const txt = (b.textContent || "").toLowerCase();
-          if (txt.includes("errore nella risposta") || (txt.includes("errore") && txt.includes("risposta"))) {
+          if (
+            txt.includes("errore nella richiesta") ||
+            txt.includes("errore nella risposta") ||
+            txt.includes("errore di rete") ||
+            (txt.includes("errore") && (txt.includes("richiesta") || txt.includes("risposta")))
+          ) {
             b.innerHTML = formatRichText(getLocalAssistantReply(lastUserPrompt));
           }
         });
@@ -3025,10 +3161,8 @@
         inputEl.value = "";
 
         const reply = getLocalAssistantReply(text);
-        setTimeout(() => {
-          appendChatBubble("bot", reply);
-          sanitizeErrorBubbles();
-        }, 80);
+        appendChatBubble("bot", reply);
+        sanitizeErrorBubbles();
       }
 
       document.addEventListener("DOMContentLoaded", () => {
@@ -3036,7 +3170,7 @@
         if (messagesEl && messagesEl.children.length === 0) {
           appendChatBubble(
             "bot",
-            "Ciao! Sono l'assistente di **Magona Bike Garage**. Chiedimi pure di **Macchia della Magona** (storia, flora, fauna, sentieri), **Bibbona**, **dintorni e paesaggio** (Costa degli Etruschi e Val di Cecina), oppure del **mondo biciclette** (MTB, E-MTB, gravel, cicloturismo, officina e noleggio)."
+            "Ciao! Sono l'assistente di **Magona Bike Garage**. Chiedimi pure i **sentieri della Macchia Della Magona** (con dati Trailforks e indicazioni), **Bibbona**, **dintorni**, **storia**, **paesaggio** o **biciclette**."
           );
         }
 
@@ -3083,6 +3217,9 @@
           lastToggleTs = now;
           e.preventDefault();
           e.stopPropagation();
+          if (typeof e.stopImmediatePropagation === "function") {
+            e.stopImmediatePropagation();
+          }
           const box = document.getElementById("chatBox");
           const isClosed = !box || box.classList.contains("hidden") || window.getComputedStyle(box).display === "none";
           setChatOpenState(isClosed);
@@ -3095,6 +3232,10 @@
           const sBtn = e.target && e.target.closest ? e.target.closest("#chatSend") : null;
           if (sBtn) {
             e.preventDefault();
+            e.stopPropagation();
+            if (typeof e.stopImmediatePropagation === "function") {
+              e.stopImmediatePropagation();
+            }
             sendChatMessage();
           }
         }, true);
@@ -3103,6 +3244,10 @@
           const inp = e.target && e.target.id === "chatInput" ? e.target : null;
           if (inp && e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
+            e.stopPropagation();
+            if (typeof e.stopImmediatePropagation === "function") {
+              e.stopImmediatePropagation();
+            }
             sendChatMessage();
           }
         }, true);
