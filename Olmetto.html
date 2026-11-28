@@ -253,8 +253,6 @@
   <footer id="legalFooter" class="fixed bottom-0 left-0 right-0 z-50 bg-slate-950/90 backdrop-blur-md border-t border-white/10 px-3 py-1 text-center text-[10px] sm:text-[11px] text-slate-300 flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5">
     <span>© 2026 Olmetto Rider · Tutti i diritti riservati.</span>
     <span class="text-slate-600">|</span>
-    <span id="visitCounterText" class="text-lime-300 font-semibold">Visite: 0</span>
-    <span class="text-slate-600">|</span>
     <button id="openPolicyBtn" type="button" class="underline hover:text-lime-300 text-slate-200 font-semibold cursor-pointer">Privacy &amp; Cookie Policy</button>
     <span class="text-slate-600">|</span>
     <button id="openCookiePrefsBtn" type="button" class="underline hover:text-amber-300 text-slate-200 font-semibold cursor-pointer">Preferenze Cookie</button>
@@ -320,33 +318,6 @@
   <script>
     (function () {
       'use strict';
-
-      // Contatore di visite (locale + tentativo contatore globale senza bloccare in caso di rete assente)
-      (function initVisitCounter() {
-        const visitEl = document.getElementById('visitCounterText');
-        const VISIT_KEY = 'olmetto_rider_visits_count_v1';
-        let localCount = 1;
-        try {
-          const prev = parseInt(window.localStorage.getItem(VISIT_KEY) || '0', 10);
-          localCount = (Number.isFinite(prev) && prev >= 0 ? prev : 0) + 1;
-          window.localStorage.setItem(VISIT_KEY, String(localCount));
-        } catch (err) {
-          localCount = 1;
-        }
-        if (visitEl) {
-          visitEl.textContent = 'Visite: ' + localCount;
-        }
-        fetch('https://api.countapi.xyz/hit/olmetto-rider-livorno/visits')
-          .then(function (res) { return res.ok ? res.json() : null; })
-          .then(function (data) {
-            if (data && typeof data.value === 'number' && visitEl) {
-              visitEl.textContent = 'Visite: ' + data.value;
-            }
-          })
-          .catch(function () {
-            // Mantiene il conteggio locale in caso di assenza rete o blocco esterno
-          });
-      })();
 
       // Polyfill sicuro per CanvasRenderingContext2D.roundRect su browser/webview datati
       if (typeof CanvasRenderingContext2D !== 'undefined' && !CanvasRenderingContext2D.prototype.roundRect) {
@@ -1229,10 +1200,12 @@
             });
           }
         } else if (state.level === 4) {
+          // LIVELLO 4: Massa Marittima · Canyon & Trail in terza persona da dietro
           for (let i = 0; i < MASSA_SECTORS.length; i++) {
             MASSA_SECTORS[i].passed = false;
           }
 
+          // Rampe / Kick di terra lungo il trail
           for (let z = 2200; z < COURSE_LENGTH_LV4 - 2200; z += 2700) {
             const laneOffset = Math.sin(z * 0.002) * 38;
             lv4Ramps.push({
@@ -1242,6 +1215,7 @@
             });
           }
 
+          // Tronchi e cinghiali da schivare sterzando o saltare
           for (let z = 1600; z < COURSE_LENGTH_LV4 - 2000; z += 1950) {
             let nearRamp = false;
             for (let r = 0; r < lv4Ramps.length; r++) {
@@ -1258,6 +1232,7 @@
             }
           }
 
+          // Bonus sospesi dopo le rampe o in traiettoria ideale
           for (let z = 2280; z < COURSE_LENGTH_LV4 - 2100; z += 2700) {
             const laneOffset = Math.sin(z * 0.002) * 38;
             lv4Bonuses.push({
@@ -1268,6 +1243,7 @@
             });
           }
 
+          // Alberi e rocce ai lati del sentiero di Massa Marittima
           for (let z = 300; z < COURSE_LENGTH_LV4 + 1200; z += 280) {
             const side = (Math.floor(z / 280) % 2 === 0) ? -1 : 1;
             const distFromEdge = 175 + ((z * 19) % 140);
@@ -1956,6 +1932,9 @@
 
         if (state.mode !== 'PLAYING') return;
 
+        // =====================================================================
+        // FISICA DEDICATA AL LIVELLO 4 (PROSPETTIVA DA DIETRO A MASSA MARITTIMA)
+        // =====================================================================
         if (state.level === 4) {
           const prevZ = state.bike.x;
           const prevTrackCenter = getLv4TrackCenter(prevZ);
@@ -2090,6 +2069,9 @@
           return;
         }
 
+        // =====================================================================
+        // FISICA LIVELLI 1, 2 E 3
+        // =====================================================================
         const isLv2 = state.level === 2;
         const isLv3 = state.level === 3;
         const isTrail = isLv2 || isLv3;
@@ -2448,11 +2430,13 @@
         ctx.save();
         ctx.scale(scaleFactor * (facingRight ? -1 : 1), scaleFactor);
 
+        // Ombra a terra
         ctx.fillStyle = 'rgba(15, 23, 42, 0.42)';
         ctx.beginPath();
         ctx.ellipse(0, 2, 30, 6.5, 0, 0, Math.PI * 2);
         ctx.fill();
 
+        // Zampe posteriori (lato lontano)
         ctx.strokeStyle = '#1c1917';
         ctx.lineWidth = 4.5;
         ctx.lineCap = 'round';
@@ -2463,6 +2447,7 @@
         ctx.lineTo(-9 + legSwing, -2);
         ctx.stroke();
 
+        // Codino arricciato sul posteriore
         ctx.strokeStyle = '#292524';
         ctx.lineWidth = 2.6;
         ctx.beginPath();
@@ -2470,6 +2455,7 @@
         ctx.bezierCurveTo(31, -26, 33, -19, 27, -18);
         ctx.stroke();
 
+        // Corpo massiccio e peloso del cinghiale
         const bodyGrad = ctx.createLinearGradient(0, -34, 0, -6);
         bodyGrad.addColorStop(0, '#292524');
         bodyGrad.addColorStop(0.5, '#44403c');
@@ -2487,6 +2473,7 @@
         ctx.lineWidth = 1.6;
         ctx.stroke();
 
+        // Cresta di setole irte lungo la schiena
         ctx.fillStyle = '#0c0a09';
         ctx.beginPath();
         ctx.moveTo(-12, -28);
@@ -2501,6 +2488,7 @@
         ctx.closePath();
         ctx.fill();
 
+        // Testa robusta con muso allungato e grifo
         ctx.fillStyle = '#3f3b37';
         ctx.beginPath();
         ctx.moveTo(-12, -27);
@@ -2513,6 +2501,7 @@
         ctx.lineWidth = 1.5;
         ctx.stroke();
 
+        // Orecchio peloso appuntito
         ctx.fillStyle = '#1c1917';
         ctx.beginPath();
         ctx.moveTo(-13, -26);
@@ -2521,6 +2510,7 @@
         ctx.closePath();
         ctx.fill();
 
+        // Grifo rosa scuro / narici
         ctx.fillStyle = '#9f5848';
         ctx.beginPath();
         ctx.ellipse(-34, -14.5, 3.2, 4.4, -0.15, 0, Math.PI * 2);
@@ -2531,6 +2521,7 @@
         ctx.arc(-33.8, -13.2, 1, 0, Math.PI * 2);
         ctx.fill();
 
+        // Zanna bianca ricurva ben visibile
         ctx.fillStyle = '#fefce8';
         ctx.strokeStyle = '#a16207';
         ctx.lineWidth = 0.8;
@@ -2542,6 +2533,7 @@
         ctx.fill();
         ctx.stroke();
 
+        // Occhio fiero con sopracciglio aggrottato
         ctx.fillStyle = '#fef08a';
         ctx.beginPath();
         ctx.arc(-20, -20, 2.3, 0, Math.PI * 2);
@@ -2557,6 +2549,7 @@
         ctx.lineTo(-17, -21.2);
         ctx.stroke();
 
+        // Zampe anteriori (lato vicino) con zoccoli
         ctx.strokeStyle = '#292524';
         ctx.lineWidth = 5;
         ctx.beginPath();
@@ -2768,6 +2761,7 @@
         const playerCenter = getLv4TrackCenter(riderZ);
         const playerElev = getLv4TrackElevation(riderZ);
 
+        // 1. Cielo caldo maremmano sopra Massa Marittima
         const skyGrad = ctx.createLinearGradient(0, 0, 0, height * 0.46);
         skyGrad.addColorStop(0, '#0c4a6e');
         skyGrad.addColorStop(0.55, '#0284c7');
@@ -2780,6 +2774,7 @@
         ctx.arc(width * 0.78, height * 0.16, 30, 0, Math.PI * 2);
         ctx.fill();
 
+        // Colline di Massa Marittima con torre medievale sull'orizzonte
         const horizonBaseY = height * 0.37;
         const hillShift = -(playerCenter * 0.12) % width;
         ctx.fillStyle = '#14532d';
@@ -2806,6 +2801,7 @@
         ctx.closePath();
         ctx.fill();
 
+        // 2. Proiezione prospettica pseudo-3D del sentiero che si snoda davanti al rider
         const camZ = riderZ - 190;
         const camY = playerElev + 168 + state.bike.zHeight * 0.45;
         const camX = playerCenter + state.bike.laneX * 0.52;
@@ -2842,6 +2838,7 @@
           }
         }
 
+        // Assicura che l'area sotto lo slice più vicino fino al fondo schermo sia sempre coperta
         if (slices.length > 0) {
           const lastSlice = slices[slices.length - 1];
           if (lastSlice.sy < height + 10) {
@@ -3016,6 +3013,7 @@
               ctx.lineWidth = 2.5;
               ctx.stroke();
             } else {
+              // Cinghiale vero di Massa Marittima con setole, grugno e zanne
               const trot = Math.sin(state.time * 10 + obj.z) * 3.5;
               drawDetailedBoar(1.35, trot, false);
             }
@@ -4668,20 +4666,18 @@
           celebration
         );
 
-        if (state.mode === 'END_STOP') {
+        if (state.mode === 'END_STOP' || state.mode === 'VICTORY') {
           ctx.save();
           const pulse = 1 + Math.sin(state.time * 4) * 0.04;
           ctx.translate(width * 0.5, height * 0.25);
           ctx.scale(pulse, pulse);
 
-          const fontSize = Math.max(20, Math.min(48, Math.floor(width * 0.055)));
+          const fontSize = Math.max(22, Math.min(50, Math.floor(width * 0.058)));
           ctx.font = '900 ' + fontSize + 'px Inter, sans-serif';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
 
-          const headline = isLv3
-            ? 'BIRRA AR GARAGE, DÉ!'
-            : (isLv2 ? 'BOIA DÉ, SCAMPATO!' : 'NO… STAI A MILANO, DÉ!');
+          const headline = isLv3 ? 'BIRRA AR MAGONA BIKE GARAGE, DÉ!' : (isLv2 ? 'APERITIVO IN BARACCHINA, DÉ!' : 'NO… STAI A MILANO, DÉ!');
           ctx.lineWidth = Math.max(5, fontSize * 0.16);
           ctx.strokeStyle = '#0f172a';
           ctx.strokeText(headline, 0, 0);
@@ -4689,38 +4685,41 @@
           const textGrad = ctx.createLinearGradient(0, -fontSize * 0.5, 0, fontSize * 0.5);
           if (isLv3) {
             textGrad.addColorStop(0, '#fde047');
-            textGrad.addColorStop(0.5, '#f59e0b');
+            textGrad.addColorStop(0.5, '#f97316');
             textGrad.addColorStop(1, '#a3e635');
           } else if (isLv2) {
-            textGrad.addColorStop(0, '#a7f3d0');
+            textGrad.addColorStop(0, '#fef08a');
             textGrad.addColorStop(0.5, '#34d399');
-            textGrad.addColorStop(1, '#facc15');
+            textGrad.addColorStop(1, '#fb923c');
           } else {
-            textGrad.addColorStop(0, '#f472b6');
-            textGrad.addColorStop(0.5, '#facc15');
-            textGrad.addColorStop(1, '#4ade80');
+            textGrad.addColorStop(0, '#fef08a');
+            textGrad.addColorStop(0.5, '#f472b6');
+            textGrad.addColorStop(1, '#38bdf8');
           }
           ctx.fillStyle = textGrad;
           ctx.fillText(headline, 0, 0);
 
-          ctx.font = '800 14px Inter, sans-serif';
-          ctx.fillStyle = '#ffffff';
-          ctx.strokeStyle = 'rgba(15, 23, 42, 0.85)';
-          ctx.lineWidth = 4;
-          const subLabel = isLv3
-            ? '🍺 Magona Bike Garage · Bibbona · ' + Math.ceil(state.endStopTimer) + 's'
-            : (isLv2
-              ? '🍹 Aperitivo in Baracchina · ' + Math.ceil(state.endStopTimer) + 's'
-              : '🍦 Gelateria L’Orizzonte · ' + Math.ceil(state.endStopTimer) + 's');
-          ctx.strokeText(subLabel, 0, fontSize * 0.85);
-          ctx.fillText(subLabel, 0, fontSize * 0.85);
+          if (state.mode === 'END_STOP') {
+            ctx.font = '800 14px Inter, sans-serif';
+            ctx.fillStyle = '#ffffff';
+            ctx.strokeStyle = 'rgba(15, 23, 42, 0.85)';
+            ctx.lineWidth = 4;
+            const subLabel = isLv3
+              ? '🍺 Magona Bike Garage · Bibbona · ' + Math.ceil(state.endStopTimer) + 's'
+              : (isLv2
+                ? '🍹 Aperitivo in Baracchina · ' + Math.ceil(state.endStopTimer) + 's'
+                : '🍦 Gelateria L’Orizzonte · ' + Math.ceil(state.endStopTimer) + 's');
+            ctx.strokeText(subLabel, 0, fontSize * 0.85);
+            ctx.fillText(subLabel, 0, fontSize * 0.85);
+          }
+
           ctx.restore();
         }
 
         ctx.restore();
       }
 
-      function renderStartHeroPoster() {
+      function renderStartHero() {
         if (!startHeroCtx || !startHeroCanvas) return;
         const w = 400;
         const h = 300;
@@ -4729,138 +4728,568 @@
           startHeroCanvas.height = h;
         }
 
-        const c = startHeroCtx;
-        const t = state.time;
-        c.clearRect(0, 0, w, h);
+        const t = state.time || 0;
+        const breath = Math.sin(t * 2.6) * 2.2;
+        const handWave = Math.sin(t * 3.8) * 2.5;
+        const cloudDrift = (t * 6) % 90;
+        const waveShimmer = Math.sin(t * 3.2);
 
-        const skyGrad = c.createLinearGradient(0, 0, 0, h * 0.62);
-        skyGrad.addColorStop(0, '#0284c7');
-        skyGrad.addColorStop(0.65, '#38bdf8');
+        startHeroCtx.save();
+
+        // 1. Cielo azzurro terso con nuvole soffici e profilo delle colline/isole all'orizzonte
+        const skyGrad = startHeroCtx.createLinearGradient(0, 0, 0, h * 0.30);
+        skyGrad.addColorStop(0, '#0ea5e9');
+        skyGrad.addColorStop(0.55, '#38bdf8');
         skyGrad.addColorStop(1, '#bae6fd');
-        c.fillStyle = skyGrad;
-        c.fillRect(0, 0, w, h * 0.64);
+        startHeroCtx.fillStyle = skyGrad;
+        startHeroCtx.fillRect(0, 0, w, h * 0.30);
 
-        c.fillStyle = '#fef08a';
-        c.beginPath();
-        c.arc(w * 0.84, h * 0.17, 22, 0, Math.PI * 2);
-        c.fill();
+        // Nuvole chiare nel cielo
+        const drawSoftCloud = function (cx, cy, sc) {
+          startHeroCtx.save();
+          startHeroCtx.translate(cx, cy);
+          startHeroCtx.scale(sc, sc);
+          startHeroCtx.fillStyle = 'rgba(240, 249, 255, 0.82)';
+          startHeroCtx.beginPath();
+          startHeroCtx.arc(-18, 3, 11, 0, Math.PI * 2);
+          startHeroCtx.arc(-6, -2, 15, 0, Math.PI * 2);
+          startHeroCtx.arc(9, -1, 13, 0, Math.PI * 2);
+          startHeroCtx.arc(21, 3, 10, 0, Math.PI * 2);
+          startHeroCtx.fill();
+          startHeroCtx.restore();
+        };
+        drawSoftCloud(((75 + cloudDrift) % (w + 120)) - 60, h * 0.08, 1.05);
+        drawSoftCloud(((235 + cloudDrift * 0.7) % (w + 120)) - 60, h * 0.06, 1.2);
+        drawSoftCloud(((355 + cloudDrift * 0.85) % (w + 120)) - 60, h * 0.11, 0.9);
 
-        const seaGrad = c.createLinearGradient(0, h * 0.42, 0, h * 0.72);
+        // Profilo collinare / isola sulla sinistra dell'orizzonte marino
+        startHeroCtx.fillStyle = '#3b6e8c';
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(0, h * 0.285);
+        startHeroCtx.lineTo(0, h * 0.215);
+        startHeroCtx.quadraticCurveTo(w * 0.04, h * 0.21, w * 0.085, h * 0.245);
+        startHeroCtx.quadraticCurveTo(w * 0.14, h * 0.25, w * 0.195, h * 0.278);
+        startHeroCtx.lineTo(w * 0.195, h * 0.285);
+        startHeroCtx.closePath();
+        startHeroCtx.fill();
+
+        // 2. Mare blu intenso con riflessi e increspature animate
+        const seaGrad = startHeroCtx.createLinearGradient(0, h * 0.275, 0, h * 0.76);
         seaGrad.addColorStop(0, '#0369a1');
-        seaGrad.addColorStop(1, '#0ea5e9');
-        c.fillStyle = seaGrad;
-        c.fillRect(0, h * 0.42, w, h * 0.30);
+        seaGrad.addColorStop(0.25, '#0284c7');
+        seaGrad.addColorStop(0.68, '#0ea5e9');
+        seaGrad.addColorStop(1, '#38bdf8');
+        startHeroCtx.fillStyle = seaGrad;
+        startHeroCtx.fillRect(0, h * 0.275, w, h * 0.485);
 
-        c.fillStyle = '#15803d';
-        c.beginPath();
-        c.moveTo(0, h * 0.72);
-        c.quadraticCurveTo(w * 0.25, h * 0.56, w * 0.55, h * 0.68);
-        c.quadraticCurveTo(w * 0.8, h * 0.54, w, h * 0.65);
-        c.lineTo(w, h * 0.75);
-        c.lineTo(0, h * 0.75);
-        c.closePath();
-        c.fill();
+        for (let row = 0; row < 28; row++) {
+          const ry = h * 0.29 + row * 4.4;
+          const alpha = 0.14 + (row / 28) * 0.24;
+          startHeroCtx.fillStyle = 'rgba(224, 242, 254, ' + alpha.toFixed(2) + ')';
+          for (let col = 0; col < 14; col++) {
+            const shift = Math.sin(t * 2.2 + row * 0.7 + col) * 6 + waveShimmer * 2;
+            const rx = ((col * 34 + (row % 2) * 16 + shift) % (w + 40) + (w + 40)) % (w + 40) - 20;
+            const rw = 8 + ((row + col) % 4) * 5;
+            startHeroCtx.fillRect(rx, ry, rw, 1.4);
+          }
+        }
 
-        c.fillStyle = '#1e293b';
-        c.fillRect(0, h * 0.70, w, h * 0.30);
-        c.strokeStyle = '#94a3b8';
-        c.lineWidth = 3;
-        c.beginPath();
-        c.moveTo(0, h * 0.70);
-        c.lineTo(w, h * 0.70);
-        c.stroke();
+        // 3. Costiera rocciosa e macchia mediterranea in basso
+        startHeroCtx.fillStyle = '#5c4b3b';
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(0, h * 0.88);
+        startHeroCtx.quadraticCurveTo(w * 0.22, h * 0.82, w * 0.48, h * 0.85);
+        startHeroCtx.quadraticCurveTo(w * 0.75, h * 0.78, w, h * 0.68);
+        startHeroCtx.lineTo(w, h);
+        startHeroCtx.lineTo(0, h);
+        startHeroCtx.closePath();
+        startHeroCtx.fill();
 
-        const prevCtx = ctx;
-        ctx = c;
+        // Rocce chiare calcaree e ciuffi d'erba/macchia
+        const rockClusters = [
+          [24, h * 0.91, 28, 12, '#a89f91'],
+          [66, h * 0.87, 22, 9, '#8c7d6b'],
+          [112, h * 0.88, 26, 10, '#b5aa99'],
+          [165, h * 0.86, 20, 8, '#786856'],
+          [238, h * 0.85, 24, 9, '#9e907e'],
+          [285, h * 0.82, 32, 12, '#b5aa99'],
+          [340, h * 0.77, 36, 13, '#8c7d6b'],
+          [382, h * 0.72, 26, 10, '#a89f91']
+        ];
+        for (let rk = 0; rk < rockClusters.length; rk++) {
+          const rc = rockClusters[rk];
+          startHeroCtx.fillStyle = rc[4];
+          startHeroCtx.beginPath();
+          startHeroCtx.ellipse(rc[0], rc[1], rc[2], rc[3], -0.08, 0, Math.PI * 2);
+          startHeroCtx.fill();
+        }
 
-        c.save();
-        c.translate(w * 0.46, h * 0.73);
-        c.scale(1.18, 1.18);
-        drawMtbChassis(t * 5, '#8b5cf6', '#4c1d95', '#d97706', 'ORBEA');
+        // Vegetazione verde a sinistra e a destra
+        const bushSway = Math.sin(t * 2.4) * 2;
+        startHeroCtx.fillStyle = '#3f6212';
+        startHeroCtx.beginPath();
+        startHeroCtx.ellipse(w * 0.05 + bushSway * 0.5, h * 0.88, 34, 18, -0.2, 0, Math.PI * 2);
+        startHeroCtx.ellipse(w * 0.84 + bushSway * 0.4, h * 0.75, 52, 18, -0.25, 0, Math.PI * 2);
+        startHeroCtx.ellipse(w * 0.94 + bushSway * 0.6, h * 0.71, 38, 15, -0.2, 0, Math.PI * 2);
+        startHeroCtx.fill();
 
-        const hipX = -15, hipY = -66, shoulderX = 3, shoulderY = -98;
-        const pedalX = -5 + Math.cos(t * 6) * 9;
-        const pedalY = -24 + Math.sin(t * 6) * 9;
-        const kneeX = (hipX + pedalX) * 0.5 + 10;
-        const kneeY = (hipY + pedalY) * 0.5 - 3;
+        startHeroCtx.fillStyle = '#65a30d';
+        startHeroCtx.beginPath();
+        startHeroCtx.ellipse(w * 0.80 + bushSway * 0.4, h * 0.77, 34, 11, -0.2, 0, Math.PI * 2);
+        startHeroCtx.ellipse(w * 0.14 + bushSway * 0.3, h * 0.93, 24, 9, 0.1, 0, Math.PI * 2);
+        startHeroCtx.fill();
 
-        c.strokeStyle = '#0f172a';
-        c.lineWidth = 8.5;
-        c.lineCap = 'round';
-        c.lineJoin = 'round';
-        c.beginPath();
-        c.moveTo(hipX, hipY);
-        c.lineTo(kneeX, kneeY);
-        c.lineTo(pedalX, pedalY - 3);
-        c.stroke();
+        // 4. Rider in piedi dietro la bici viola (con lieve animazione di respiro e mano)
+        const rx = w * 0.475;
+        const rFootY = h * 0.865 + breath * 0.25;
 
-        c.save();
-        const torsoAngle = Math.atan2(shoulderY - hipY, shoulderX - hipX) + Math.PI / 2;
-        c.translate((hipX + shoulderX) * 0.5, (hipY + shoulderY) * 0.5);
-        c.rotate(torsoAngle);
-        c.beginPath();
-        c.roundRect(-11, -18, 22, 36, 6);
-        c.clip();
-        c.fillStyle = '#090d16';
-        c.fillRect(-11, -18, 22, 12);
-        c.fillStyle = '#5b21b6';
-        c.fillRect(-11, -6, 22, 8);
-        c.fillStyle = '#c4b5fd';
-        c.fillRect(-11, 2, 22, 8);
-        c.fillStyle = '#f8fafc';
-        c.fillRect(-11, 10, 22, 8);
-        c.restore();
+        // Gambe e scarponi neri da MTB
+        startHeroCtx.fillStyle = '#111827';
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(rx - 22, rFootY - 96);
+        startHeroCtx.lineTo(rx - 2, rFootY - 96);
+        startHeroCtx.lineTo(rx - 14, rFootY - 44);
+        startHeroCtx.lineTo(rx - 30, rFootY - 46);
+        startHeroCtx.closePath();
+        startHeroCtx.fill();
 
-        const handX = 22, handY = -74;
-        const elbowX = (shoulderX + handX) * 0.5 - 2;
-        const elbowY = (shoulderY + handY) * 0.5 + 5;
-        c.strokeStyle = '#090d16';
-        c.lineWidth = 7;
-        c.beginPath();
-        c.moveTo(shoulderX, shoulderY + 3);
-        c.lineTo(elbowX, elbowY);
-        c.stroke();
-        c.strokeStyle = '#7c3aed';
-        c.lineWidth = 6.2;
-        c.beginPath();
-        c.moveTo(elbowX, elbowY);
-        c.lineTo(handX, handY);
-        c.stroke();
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(rx + 2, rFootY - 96);
+        startHeroCtx.lineTo(rx + 22, rFootY - 96);
+        startHeroCtx.lineTo(rx + 14, rFootY - 42);
+        startHeroCtx.lineTo(rx - 2, rFootY - 42);
+        startHeroCtx.closePath();
+        startHeroCtx.fill();
 
-        const headX = shoulderX + 4, headY = shoulderY - 14;
-        c.save();
-        c.translate(headX, headY);
-        c.fillStyle = '#090d16';
-        c.beginPath();
-        c.arc(0, 0, 13.5, 0, Math.PI * 2);
-        c.fill();
-        c.fillStyle = '#1e293b';
-        c.beginPath();
-        c.moveTo(3, -10);
-        c.lineTo(18, -7);
-        c.lineTo(15, -3);
-        c.lineTo(2, -6);
-        c.closePath();
-        c.fill();
-        const gGrad = c.createLinearGradient(2, -5, 13, 3);
-        gGrad.addColorStop(0, '#84cc16');
-        gGrad.addColorStop(0.5, '#38bdf8');
-        gGrad.addColorStop(1, '#f97316');
-        c.fillStyle = gGrad;
-        c.beginPath();
-        c.roundRect(3, -5, 10.5, 7, 2);
-        c.fill();
-        c.restore();
+        // Scarpe scure con suola
+        startHeroCtx.fillStyle = '#090d16';
+        startHeroCtx.beginPath();
+        startHeroCtx.roundRect(rx - 32, rFootY - 48, 18, 12, 3);
+        startHeroCtx.roundRect(rx - 2, rFootY - 44, 18, 12, 3);
+        startHeroCtx.fill();
 
-        c.restore();
+        // Maglia tecnica: maniche e spalle nere con logo FOX verde lime centrale, fascia lilla e fondo bianco
+        const torsoTopY = rFootY - 152 + breath * 0.45;
+        startHeroCtx.fillStyle = '#090d16';
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(rx - 28, torsoTopY + 4);
+        startHeroCtx.quadraticCurveTo(rx, torsoTopY - 4, rx + 28, torsoTopY + 4);
+        startHeroCtx.lineTo(rx + 23, torsoTopY + 56);
+        startHeroCtx.lineTo(rx - 23, torsoTopY + 56);
+        startHeroCtx.closePath();
+        startHeroCtx.fill();
 
-        drawWeedLeaf(w * 0.82, h * 0.42, Math.sin(t * 4) * 3, Math.sin(t * 3) * 0.12);
+        // Banda lilla-viola centrale sulla maglia
+        startHeroCtx.fillStyle = '#a78bfa';
+        startHeroCtx.fillRect(rx - 17, torsoTopY + 26, 34, 15);
 
-        ctx = prevCtx;
+        // Parte inferiore bianca della maglia
+        startHeroCtx.fillStyle = '#f8fafc';
+        startHeroCtx.fillRect(rx - 18, torsoTopY + 41, 36, 15);
+
+        // Logo FOX verde lime sul petto
+        startHeroCtx.fillStyle = '#84cc16';
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(rx - 11, torsoTopY + 12);
+        startHeroCtx.lineTo(rx - 4, torsoTopY + 15);
+        startHeroCtx.lineTo(rx, torsoTopY + 11);
+        startHeroCtx.lineTo(rx + 4, torsoTopY + 15);
+        startHeroCtx.lineTo(rx + 11, torsoTopY + 12);
+        startHeroCtx.lineTo(rx + 8, torsoTopY + 21);
+        startHeroCtx.lineTo(rx, torsoTopY + 25);
+        startHeroCtx.lineTo(rx - 8, torsoTopY + 21);
+        startHeroCtx.closePath();
+        startHeroCtx.fill();
+
+        // Zaino / idratazione scuro sulle spalle
+        startHeroCtx.fillStyle = '#1e293b';
+        startHeroCtx.beginPath();
+        startHeroCtx.roundRect(rx - 16, torsoTopY + 2, 32, 22, 6);
+        startHeroCtx.fill();
+
+        // Braccio destro (verso sinistra della foto) con mano/guanto senape-ocra in segno rilassato
+        startHeroCtx.strokeStyle = '#090d16';
+        startHeroCtx.lineWidth = 10;
+        startHeroCtx.lineCap = 'round';
+        startHeroCtx.lineJoin = 'round';
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(rx - 26, torsoTopY + 8);
+        startHeroCtx.lineTo(rx - 42, torsoTopY + 28);
+        startHeroCtx.lineTo(rx - 25, torsoTopY + 34 + handWave * 0.4);
+        startHeroCtx.stroke();
+
+        // Guanto destro color senape/giallo
+        startHeroCtx.fillStyle = '#eab308';
+        startHeroCtx.beginPath();
+        startHeroCtx.arc(rx - 24, torsoTopY + 35 + handWave * 0.4, 6.5, 0, Math.PI * 2);
+        startHeroCtx.fill();
+
+        // Braccio sinistro (verso destra della foto) che tiene il manubrio con guanto scuro/senape
+        const handleX = w * 0.675;
+        const handleY = h * 0.415 + breath * 0.2;
+        startHeroCtx.strokeStyle = '#090d16';
+        startHeroCtx.lineWidth = 10;
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(rx + 26, torsoTopY + 8);
+        startHeroCtx.lineTo(rx + 46, torsoTopY + 26);
+        startHeroCtx.lineTo(handleX, handleY);
+        startHeroCtx.stroke();
+
+        // Casco integrale nero opaco, maschera/occhiali verde-azzurro e barba
+        const helmetY = torsoTopY - 19 + breath * 0.3;
+        startHeroCtx.fillStyle = '#090d16';
+        startHeroCtx.beginPath();
+        startHeroCtx.arc(rx, helmetY, 18.5, 0, Math.PI * 2);
+        startHeroCtx.fill();
+
+        // Visiera superiore del casco integrale
+        startHeroCtx.fillStyle = '#1e293b';
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(rx - 19, helmetY - 7);
+        startHeroCtx.lineTo(rx + 19, helmetY - 7);
+        startHeroCtx.lineTo(rx + 15, helmetY - 13);
+        startHeroCtx.lineTo(rx - 15, helmetY - 13);
+        startHeroCtx.closePath();
+        startHeroCtx.fill();
+
+        // Mentoniera del casco integrale con aperture laterali
+        startHeroCtx.fillStyle = '#090d16';
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(rx - 14, helmetY + 4);
+        startHeroCtx.lineTo(rx + 14, helmetY + 4);
+        startHeroCtx.lineTo(rx + 9, helmetY + 19);
+        startHeroCtx.lineTo(rx - 9, helmetY + 19);
+        startHeroCtx.closePath();
+        startHeroCtx.fill();
+
+        startHeroCtx.fillStyle = '#334155';
+        startHeroCtx.fillRect(rx - 10, helmetY + 8, 6, 4);
+        startHeroCtx.fillRect(rx + 4, helmetY + 8, 6, 4);
+
+        // Maschera / occhiali con lente verde lime e azzurra
+        const lensGrad = startHeroCtx.createLinearGradient(rx - 13, helmetY - 4, rx + 13, helmetY + 4);
+        lensGrad.addColorStop(0, '#84cc16');
+        lensGrad.addColorStop(0.5, '#2dd4bf');
+        lensGrad.addColorStop(1, '#38bdf8');
+        startHeroCtx.fillStyle = lensGrad;
+        startHeroCtx.beginPath();
+        startHeroCtx.roundRect(rx - 13.5, helmetY - 4.5, 12.5, 8.5, 2.5);
+        startHeroCtx.roundRect(rx + 1, helmetY - 4.5, 12.5, 8.5, 2.5);
+        startHeroCtx.fill();
+        startHeroCtx.fillStyle = '#090d16';
+        startHeroCtx.fillRect(rx - 1.5, helmetY - 3.5, 3, 6.5);
+
+        // Barba castana visibile sotto la maschera
+        startHeroCtx.fillStyle = '#5c3a21';
+        startHeroCtx.beginPath();
+        startHeroCtx.arc(rx, helmetY + 8, 6.5, 0, Math.PI);
+        startHeroCtx.fill();
+
+        // 5. MTB Enduro Orbea viola metallizzato in primo piano (ruote Pirelli Scorpion + forcella Fox 38 Kashima)
+        const rearWX = w * 0.305;
+        const frontWX = w * 0.765;
+        const wheelY = h * 0.735 + breath * 0.15;
+        const wheelR = 54;
+        const spin = t * 1.4;
+
+        // Ombra morbida sotto le ruote sulle rocce
+        startHeroCtx.fillStyle = 'rgba(15, 23, 42, 0.35)';
+        startHeroCtx.beginPath();
+        startHeroCtx.ellipse(w * 0.53, wheelY + wheelR + 2, 125, 10, -0.05, 0, Math.PI * 2);
+        startHeroCtx.fill();
+
+        const drawHeroWheel = function (wx, wy) {
+          startHeroCtx.save();
+          startHeroCtx.translate(wx, wy);
+
+          // Copertone tassellato nero
+          startHeroCtx.strokeStyle = '#090d16';
+          startHeroCtx.lineWidth = 11;
+          startHeroCtx.beginPath();
+          startHeroCtx.arc(0, 0, wheelR - 4, 0, Math.PI * 2);
+          startHeroCtx.stroke();
+
+          // Cerchio interno
+          startHeroCtx.strokeStyle = '#1e293b';
+          startHeroCtx.lineWidth = 3;
+          startHeroCtx.beginPath();
+          startHeroCtx.arc(0, 0, wheelR - 10, 0, Math.PI * 2);
+          startHeroCtx.stroke();
+
+          // Raggi rotanti
+          startHeroCtx.save();
+          startHeroCtx.rotate(spin);
+          startHeroCtx.strokeStyle = 'rgba(226, 232, 240, 0.55)';
+          startHeroCtx.lineWidth = 1.2;
+          for (let sp = 0; sp < 14; sp++) {
+            const ang = (sp * Math.PI) / 7;
+            startHeroCtx.beginPath();
+            startHeroCtx.moveTo(0, 0);
+            startHeroCtx.lineTo(Math.cos(ang) * (wheelR - 10), Math.sin(ang) * (wheelR - 10));
+            startHeroCtx.stroke();
+          }
+          startHeroCtx.restore();
+
+          // Scritta gialla PIRELLI sul fianco del copertone
+          startHeroCtx.save();
+          startHeroCtx.rotate(-0.45 + spin * 0.25);
+          startHeroCtx.fillStyle = '#facc15';
+          startHeroCtx.font = '900 7.5px Inter, sans-serif';
+          startHeroCtx.textAlign = 'center';
+          startHeroCtx.fillText('PIRELLI', 0, -(wheelR - 5.5));
+          startHeroCtx.restore();
+
+          // Scritta gialla SCORPION in basso
+          startHeroCtx.save();
+          startHeroCtx.rotate(0.25 + spin * 0.25);
+          startHeroCtx.fillStyle = '#facc15';
+          startHeroCtx.font = '900 7px Inter, sans-serif';
+          startHeroCtx.textAlign = 'center';
+          startHeroCtx.fillText('SCORPION', 0, wheelR - 1.5);
+          startHeroCtx.restore();
+
+          // Mozzo centrale e disco freno
+          startHeroCtx.strokeStyle = '#94a3b8';
+          startHeroCtx.lineWidth = 1.4;
+          startHeroCtx.beginPath();
+          startHeroCtx.arc(0, 0, 17, 0, Math.PI * 2);
+          startHeroCtx.stroke();
+
+          startHeroCtx.fillStyle = '#475569';
+          startHeroCtx.beginPath();
+          startHeroCtx.arc(0, 0, 8, 0, Math.PI * 2);
+          startHeroCtx.fill();
+
+          startHeroCtx.restore();
+        };
+
+        drawHeroWheel(rearWX, wheelY);
+        drawHeroWheel(frontWX, wheelY);
+
+        // Forcella FOX 38: steli dorati Kashima e foderi neri con scritta bianca FOX 38
+        const crownX = w * 0.642;
+        const crownY = h * 0.505 + breath * 0.2;
+        const midForkX = w * 0.688;
+        const midForkY = h * 0.605 + breath * 0.18;
+
+        startHeroCtx.strokeStyle = '#eab308';
+        startHeroCtx.lineWidth = 7.5;
+        startHeroCtx.lineCap = 'round';
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(crownX, crownY);
+        startHeroCtx.lineTo(midForkX, midForkY);
+        startHeroCtx.stroke();
+
+        startHeroCtx.strokeStyle = '#090d16';
+        startHeroCtx.lineWidth = 9.5;
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(midForkX, midForkY);
+        startHeroCtx.lineTo(frontWX, wheelY);
+        startHeroCtx.stroke();
+
+        startHeroCtx.save();
+        startHeroCtx.translate(w * 0.722, h * 0.665 + breath * 0.16);
+        startHeroCtx.rotate(1.14);
+        startHeroCtx.fillStyle = '#f8fafc';
+        startHeroCtx.font = '900 8px Inter, sans-serif';
+        startHeroCtx.textAlign = 'center';
+        startHeroCtx.fillText('FOX 38', 0, 0);
+        startHeroCtx.restore();
+
+        // Telaio full-suspension viola metallizzato ORBEA
+        const bbX = w * 0.495;
+        const bbY = wheelY - 2;
+        const seatTopX = w * 0.455;
+        const seatTopY = h * 0.562 + breath * 0.22;
+        const headTopX = w * 0.632;
+        const headTopY = h * 0.485 + breath * 0.2;
+
+        const purpleGrad = startHeroCtx.createLinearGradient(seatTopX, headTopY, frontWX, wheelY);
+        purpleGrad.addColorStop(0, '#9333ea');
+        purpleGrad.addColorStop(0.5, '#7e22ce');
+        purpleGrad.addColorStop(1, '#581c87');
+
+        // Carro posteriore e link sospensione viola
+        startHeroCtx.strokeStyle = '#7e22ce';
+        startHeroCtx.lineWidth = 8.5;
+        startHeroCtx.lineJoin = 'round';
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(rearWX, wheelY);
+        startHeroCtx.lineTo(bbX, bbY);
+        startHeroCtx.lineTo(seatTopX + 8, seatTopY + 18);
+        startHeroCtx.lineTo(rearWX, wheelY);
+        startHeroCtx.stroke();
+
+        // Triangolo anteriore massiccio viola ORBEA
+        startHeroCtx.fillStyle = purpleGrad;
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(seatTopX + 2, seatTopY + 12);
+        startHeroCtx.lineTo(headTopX + 5, headTopY);
+        startHeroCtx.lineTo(headTopX - 3, headTopY + 14);
+        startHeroCtx.lineTo(bbX + 12, bbY + 5);
+        startHeroCtx.lineTo(bbX - 8, bbY + 3);
+        startHeroCtx.closePath();
+        startHeroCtx.fill();
+
+        // Scritta bianca ORBEA lungo l'obliquo
+        startHeroCtx.save();
+        startHeroCtx.translate(w * 0.558, h * 0.618 + breath * 0.18);
+        startHeroCtx.rotate(-0.82);
+        startHeroCtx.fillStyle = '#f8fafc';
+        startHeroCtx.font = '900 8.5px Inter, sans-serif';
+        startHeroCtx.textAlign = 'center';
+        startHeroCtx.fillText('ORBEA', 0, 0);
+        startHeroCtx.restore();
+
+        // Borraccia nera fissata sul telaio
+        startHeroCtx.save();
+        startHeroCtx.translate(w * 0.562, h * 0.588 + breath * 0.18);
+        startHeroCtx.rotate(-0.65);
+        startHeroCtx.fillStyle = '#1e293b';
+        startHeroCtx.beginPath();
+        startHeroCtx.roundRect(-8, -14, 16, 26, 4);
+        startHeroCtx.fill();
+        startHeroCtx.fillStyle = '#090d16';
+        startHeroCtx.fillRect(-6, -17, 12, 4);
+        startHeroCtx.restore();
+
+        // Reggisella telescopico e sella nera
+        startHeroCtx.strokeStyle = '#1e293b';
+        startHeroCtx.lineWidth = 6;
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(seatTopX + 4, seatTopY + 14);
+        startHeroCtx.lineTo(seatTopX - 4, seatTopY - 8);
+        startHeroCtx.stroke();
+
+        startHeroCtx.fillStyle = '#090d16';
+        startHeroCtx.beginPath();
+        startHeroCtx.roundRect(seatTopX - 18, seatTopY - 12, 26, 6.5, 3);
+        startHeroCtx.fill();
+
+        // Guarnitura, pedivella e catena
+        startHeroCtx.strokeStyle = '#334155';
+        startHeroCtx.lineWidth = 2.5;
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(rearWX, wheelY + 3);
+        startHeroCtx.lineTo(bbX, bbY + 3);
+        startHeroCtx.stroke();
+
+        startHeroCtx.fillStyle = '#1e293b';
+        startHeroCtx.beginPath();
+        startHeroCtx.arc(bbX, bbY, 8.5, 0, Math.PI * 2);
+        startHeroCtx.fill();
+
+        startHeroCtx.strokeStyle = '#090d16';
+        startHeroCtx.lineWidth = 4.5;
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(bbX, bbY);
+        startHeroCtx.lineTo(bbX + 12, bbY + 22);
+        startHeroCtx.stroke();
+
+        // Cavo freno curvo sul manubrio
+        startHeroCtx.strokeStyle = '#090d16';
+        startHeroCtx.lineWidth = 1.6;
+        startHeroCtx.beginPath();
+        startHeroCtx.moveTo(handleX, handleY);
+        startHeroCtx.quadraticCurveTo(w * 0.72, h * 0.45, w * 0.73, h * 0.58);
+        startHeroCtx.stroke();
+
+        startHeroCtx.restore();
       }
 
       // =========================================================================
-      // LOOP PRINCIPALE
+      // GESTIONE COOKIE & PRIVACY POLICY
+      // =========================================================================
+      const COOKIE_STORAGE_KEY = 'olmetto_rider_cookie_consent_v1';
+      const cookieConsentModal = document.getElementById('cookieConsentModal');
+      const analyticsCookieCheckbox = document.getElementById('analyticsCookieCheckbox');
+      const cookieRejectBtn = document.getElementById('cookieRejectBtn');
+      const cookieSaveCustomBtn = document.getElementById('cookieSaveCustomBtn');
+      const cookieAcceptAllBtn = document.getElementById('cookieAcceptAllBtn');
+      const policyModal = document.getElementById('policyModal');
+      const openPolicyBtn = document.getElementById('openPolicyBtn');
+      const consentOpenPolicyLink = document.getElementById('consentOpenPolicyLink');
+      const closePolicyBtn = document.getElementById('closePolicyBtn');
+      const closePolicyBottomBtn = document.getElementById('closePolicyBottomBtn');
+      const openCookiePrefsBtn = document.getElementById('openCookiePrefsBtn');
+
+      function getSavedCookieConsent() {
+        try {
+          const raw = window.localStorage.getItem(COOKIE_STORAGE_KEY);
+          return raw ? JSON.parse(raw) : null;
+        } catch (err) {
+          return null;
+        }
+      }
+
+      function saveCookieConsent(analyticsAccepted) {
+        const payload = {
+          necessary: true,
+          analytics: Boolean(analyticsAccepted),
+          timestamp: new Date().toISOString()
+        };
+        try {
+          window.localStorage.setItem(COOKIE_STORAGE_KEY, JSON.stringify(payload));
+        } catch (err) {
+          // Ignora restrizioni storage in modalità privata
+        }
+        if (cookieConsentModal) cookieConsentModal.classList.add('hidden');
+      }
+
+      function initCookieConsent() {
+        const saved = getSavedCookieConsent();
+        if (!saved && cookieConsentModal) {
+          cookieConsentModal.classList.remove('hidden');
+        } else if (saved && analyticsCookieCheckbox) {
+          analyticsCookieCheckbox.checked = Boolean(saved.analytics);
+        }
+      }
+
+      if (cookieRejectBtn) {
+        cookieRejectBtn.addEventListener('click', function () {
+          if (analyticsCookieCheckbox) analyticsCookieCheckbox.checked = false;
+          saveCookieConsent(false);
+        });
+      }
+
+      if (cookieSaveCustomBtn) {
+        cookieSaveCustomBtn.addEventListener('click', function () {
+          saveCookieConsent(analyticsCookieCheckbox ? analyticsCookieCheckbox.checked : false);
+        });
+      }
+
+      if (cookieAcceptAllBtn) {
+        cookieAcceptAllBtn.addEventListener('click', function () {
+          if (analyticsCookieCheckbox) analyticsCookieCheckbox.checked = true;
+          saveCookieConsent(true);
+        });
+      }
+
+      function openPolicy() {
+        if (policyModal) policyModal.classList.remove('hidden');
+      }
+
+      function closePolicy() {
+        if (policyModal) policyModal.classList.add('hidden');
+      }
+
+      if (openPolicyBtn) openPolicyBtn.addEventListener('click', openPolicy);
+      if (consentOpenPolicyLink) consentOpenPolicyLink.addEventListener('click', openPolicy);
+      if (closePolicyBtn) closePolicyBtn.addEventListener('click', closePolicy);
+      if (closePolicyBottomBtn) closePolicyBottomBtn.addEventListener('click', closePolicy);
+
+      if (openCookiePrefsBtn) {
+        openCookiePrefsBtn.addEventListener('click', function () {
+          const saved = getSavedCookieConsent();
+          if (analyticsCookieCheckbox) {
+            analyticsCookieCheckbox.checked = saved ? Boolean(saved.analytics) : false;
+          }
+          if (cookieConsentModal) cookieConsentModal.classList.remove('hidden');
+        });
+      }
+
+      // =========================================================================
+      // GAME LOOP PRINCIPALE
       // =========================================================================
       let lastFrameTime = performance.now();
 
@@ -4870,138 +5299,15 @@
 
         update(dt);
         render();
-        if (startScreen && !startScreen.classList.contains('hidden')) {
-          renderStartHeroPoster();
+        if (state.mode === 'START') {
+          renderStartHero();
         }
 
         requestAnimationFrame(gameLoop);
       }
 
-      // =========================================================================
-      // COOKIE CONSENT & PRIVACY POLICY MODAL
-      // =========================================================================
-      (function initCookieAndPolicy() {
-        const STORAGE_KEY = 'olmetto_rider_cookie_consent_v1';
-        const consentModal = document.getElementById('cookieConsentModal');
-        const policyModal = document.getElementById('policyModal');
-        const analyticsCheckbox = document.getElementById('analyticsCookieCheckbox');
-        const rejectBtn = document.getElementById('cookieRejectBtn');
-        const saveCustomBtn = document.getElementById('cookieSaveCustomBtn');
-        const acceptAllBtn = document.getElementById('cookieAcceptAllBtn');
-        const openPolicyBtn = document.getElementById('openPolicyBtn');
-        const consentOpenPolicyLink = document.getElementById('consentOpenPolicyLink');
-        const openCookiePrefsBtn = document.getElementById('openCookiePrefsBtn');
-        const closePolicyBtn = document.getElementById('closePolicyBtn');
-        const closePolicyBottomBtn = document.getElementById('closePolicyBottomBtn');
-
-        let memoryConsent = null;
-
-        function readSavedConsent() {
-          try {
-            const raw = window.localStorage.getItem(STORAGE_KEY);
-            if (!raw) return null;
-            return JSON.parse(raw);
-          } catch (err) {
-            return memoryConsent;
-          }
-        }
-
-        function writeSavedConsent(analyticsAllowed) {
-          const payload = {
-            necessary: true,
-            analytics: Boolean(analyticsAllowed),
-            updatedAt: new Date().toISOString()
-          };
-          memoryConsent = payload;
-          try {
-            window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-          } catch (err) {
-            // Ignora errori storage in ambienti restrittivi
-          }
-          if (consentModal) {
-            consentModal.classList.add('hidden');
-          }
-        }
-
-        function openConsentBanner() {
-          const current = readSavedConsent();
-          if (analyticsCheckbox) {
-            analyticsCheckbox.checked = Boolean(current && current.analytics);
-          }
-          if (consentModal) {
-            consentModal.classList.remove('hidden');
-          }
-        }
-
-        function openPolicyModal() {
-          if (policyModal) {
-            policyModal.classList.remove('hidden');
-          }
-        }
-
-        function closePolicyModal() {
-          if (policyModal) {
-            policyModal.classList.add('hidden');
-          }
-        }
-
-        if (rejectBtn) {
-          rejectBtn.addEventListener('click', function () {
-            writeSavedConsent(false);
-          });
-        }
-
-        if (saveCustomBtn) {
-          saveCustomBtn.addEventListener('click', function () {
-            writeSavedConsent(Boolean(analyticsCheckbox && analyticsCheckbox.checked));
-          });
-        }
-
-        if (acceptAllBtn) {
-          acceptAllBtn.addEventListener('click', function () {
-            writeSavedConsent(true);
-          });
-        }
-
-        if (openPolicyBtn) {
-          openPolicyBtn.addEventListener('click', openPolicyModal);
-        }
-
-        if (consentOpenPolicyLink) {
-          consentOpenPolicyLink.addEventListener('click', openPolicyModal);
-        }
-
-        if (openCookiePrefsBtn) {
-          openCookiePrefsBtn.addEventListener('click', openConsentBanner);
-        }
-
-        if (closePolicyBtn) {
-          closePolicyBtn.addEventListener('click', closePolicyModal);
-        }
-
-        if (closePolicyBottomBtn) {
-          closePolicyBottomBtn.addEventListener('click', closePolicyModal);
-        }
-
-        if (policyModal) {
-          policyModal.addEventListener('click', function (e) {
-            if (e.target === policyModal) {
-              closePolicyModal();
-            }
-          });
-        }
-
-        const existing = readSavedConsent();
-        if (!existing) {
-          openConsentBanner();
-        }
-      })();
-
       populateWorld();
-      state.bike.y = getGroundY(state.bike.x);
-      state.cameraBaseY = state.bike.y;
-      updateHud();
-      renderStartHeroPoster();
+      initCookieConsent();
       requestAnimationFrame(gameLoop);
     })();
   </script>
