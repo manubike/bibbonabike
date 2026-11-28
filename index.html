@@ -1947,8 +1947,8 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
         <div class="footer-bar">
           <img src="img/fulllogo_transparent_nobuffer.webp" alt="Magona Bike Garage" />
           <p>
-            <a href="https://www.google.com/maps/place/Via+del+Mandorlo,+1,+57020+Bibbona+LI" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none;">
-              <i class="fas fa-map-marker-alt animated-icon"></i> <span data-i18n="footer_address">Via del Mandorlo 1, Bibbona 57020</span>
+            <a href="https://www.google.com/maps/search/?api=1&query=Via+del+Mandorlo+1%2C+Bibbona%2C+Livorno" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none;">
+              <i class="fas fa-map-marker-alt animated-icon"></i> <span data-i18n="footer_address">Via del Mandorlo 1, Bibbona, Livorno</span>
             </a>
           </p>
           <p><span data-i18n="footer_copyright">&copy; 2026 Magona Bike Garage – BibbonaBike.com</span> · <a href="#privacy-policy" id="footerPrivacyLink" role="button" style="color: #ff9442; text-decoration: underline;" data-i18n="footer_policy_link">Privacy &amp; Cookie Policy</a></p>
@@ -2017,7 +2017,7 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
       </div>
 
       <div id="privacyModalBody" style="font-size:0.93rem; line-height:1.55; color:#b0b8c2;">
-        <p><strong style="color:#f4f6f8;" data-i18n="pp_controller_lbl">Titolare del trattamento:</strong> <span data-i18n="pp_controller_body">Magona Bike Garage – BibbonaBike.com, Via del Mandorlo 1, 57020 Bibbona (LI), Italia · P.IVA: 02075750493 · Email: magonabikegarage@gmail.com · Tel./WhatsApp: +39 331 345 3207.</span></p>
+        <p><strong style="color:#f4f6f8;" data-i18n="pp_controller_lbl">Titolare del trattamento:</strong> <span data-i18n="pp_controller_body">Magona Bike Garage – BibbonaBike.com, Via del Mandorlo 1, Bibbona, Livorno, Italia · P.IVA: 02075750493 · Email: magonabikegarage@gmail.com · Tel./WhatsApp: +39 331 345 3207.</span></p>
 
         <h3 style="color:#f4f6f8; font-size:1.05rem; margin-top:16px; margin-bottom:6px;" data-i18n="pp_sec1_title">1. Dati raccolti e finalità del trattamento</h3>
         <p data-i18n="pp_sec1_body">Raccogliamo i dati inseriti nel modulo di prenotazione (nome e cognome, email, numero di telefono, modello di bici scelto, data, durata, quantità, accessori, codice sconto ed eventuali note) esclusivamente per gestire preventivi, noleggi, tour, eventi e richieste di assistenza officina, oltre che per adempiere a obblighi amministrativi o di legge.</p>
@@ -2683,7 +2683,7 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
             "mahle", "oli", "panasonic", "hyena", "polini", "noleggio", "officina", "tour", "prenota", "prezzi"
           ],
           answer:
-            "**Magona Bike Garage – BibbonaBike.com** (**Via del Mandorlo 1, Bibbona (LI)** · Tel./WhatsApp **+39 331 345 3207** · **magonabikegarage@gmail.com**) offre **noleggio E-MTB** (**E-MTB 29** e **E-MTB 24**), **tour con guide certificate** e **officina specializzata** su bici, sospensioni/forcelle (es. RockShox) e motori E-Bike (**Bosch, Shimano, Yamaha, Avinox, TQ, Bafang, Brose, Fazua, FSA, Mahle, OLI, Panasonic, Hyena, Polini** e altri)."
+            "**Magona Bike Garage – BibbonaBike.com** (**Via del Mandorlo 1, Bibbona, Livorno** · Tel./WhatsApp **+39 331 345 3207** · **magonabikegarage@gmail.com**) offre **noleggio E-MTB** (**E-MTB 29** e **E-MTB 24**), **tour con guide certificate** e **officina specializzata** su bici, sospensioni/forcelle (es. RockShox) e motori E-Bike (**Bosch, Shimano, Yamaha, Avinox, TQ, Bafang, Brose, Fazua, FSA, Mahle, OLI, Panasonic, Hyena, Polini** e altri)."
         }
       ];
 
@@ -2913,6 +2913,37 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
   <script src="js/weather.js"></script>
   <script src="js/contactButton.js"></script>
   <script src="js/slideshow_my.js"></script>
+
+  <!-- Allineamento tasto Indicazioni su Via del Mandorlo 1, Bibbona, Livorno -->
+  <script>
+    (function () {
+      const DIRECTIONS_ADDRESS = "Via del Mandorlo 1, Bibbona, Livorno";
+      const DIRECTIONS_URL = "https://www.google.com/maps/search/?api=1&query=Via+del+Mandorlo+1%2C+Bibbona%2C+Livorno";
+
+      function applyDirectionsLink() {
+        const mapEl = document.getElementById("mapLink");
+        if (!mapEl) return;
+
+        const targetLink = mapEl.tagName === "A" ? mapEl : mapEl.querySelector("a");
+        if (targetLink) {
+          targetLink.href = DIRECTIONS_URL;
+          targetLink.target = "_blank";
+          targetLink.rel = "noopener noreferrer";
+          targetLink.title = DIRECTIONS_ADDRESS;
+          targetLink.setAttribute("aria-label", "Indicazioni: " + DIRECTIONS_ADDRESS);
+        } else {
+          mapEl.dataset.address = DIRECTIONS_ADDRESS;
+          mapEl.dataset.mapUrl = DIRECTIONS_URL;
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", applyDirectionsLink);
+      window.addEventListener("load", () => {
+        applyDirectionsLink();
+        setTimeout(applyDirectionsLink, 250);
+      });
+    })();
+  </script>
 
   <!-- Verifica Email OTP & Invio Prenotazione diretto via Gmail (Google Apps Script) -->
   <script>
@@ -3217,7 +3248,7 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
           cookie_accept_all: "Accetta Tutto",
           pp_title: "Privacy e Cookie Policy – BibbonaBike.com",
           pp_controller_lbl: "Titolare del trattamento:",
-          pp_controller_body: "Magona Bike Garage – BibbonaBike.com, Via del Mandorlo 1, 57020 Bibbona (LI), Italia · P.IVA: 02075750493 · Email: magonabikegarage@gmail.com · Tel./WhatsApp: +39 331 345 3207.",
+          pp_controller_body: "Magona Bike Garage – BibbonaBike.com, Via del Mandorlo 1, Bibbona, Livorno, Italia · P.IVA: 02075750493 · Email: magonabikegarage@gmail.com · Tel./WhatsApp: +39 331 345 3207.",
           pp_sec1_title: "1. Dati raccolti e finalità del trattamento",
           pp_sec1_body: "Raccogliamo i dati inseriti nel modulo di prenotazione (nome e cognome, email, numero di telefono, modello di bici scelto, data, durata, quantità, accessori, codice sconto ed eventuali note) esclusivamente per gestire preventivi, noleggi, tour, eventi e richieste di assistenza officina, oltre che per adempiere a obblighi amministrativi o di legge.",
           pp_sec2_title: "2. Sicurezza, hCaptcha e conservazione dati",
@@ -3245,7 +3276,7 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
           cookie_accept_all: "Accept All",
           pp_title: "Privacy & Cookie Policy – BibbonaBike.com",
           pp_controller_lbl: "Data Controller:",
-          pp_controller_body: "Magona Bike Garage – BibbonaBike.com, Via del Mandorlo 1, 57020 Bibbona (LI), Italy · VAT: 02075750493 · Email: magonabikegarage@gmail.com · Tel./WhatsApp: +39 331 345 3207.",
+          pp_controller_body: "Magona Bike Garage – BibbonaBike.com, Via del Mandorlo 1, Bibbona, Livorno, Italy · VAT: 02075750493 · Email: magonabikegarage@gmail.com · Tel./WhatsApp: +39 331 345 3207.",
           pp_sec1_title: "1. Data Collected & Purposes",
           pp_sec1_body: "We collect the information entered in the booking form (full name, email, phone number, selected bike model, date, duration, quantity, accessories, promo code, and notes) solely to handle quotes, rentals, tours, events, and workshop requests, as well as legal or administrative obligations.",
           pp_sec2_title: "2. Security, hCaptcha & Retention",
@@ -3273,7 +3304,7 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
           cookie_accept_all: "Alle akzeptieren",
           pp_title: "Datenschutz- & Cookie-Richtlinie – BibbonaBike.com",
           pp_controller_lbl: "Verantwortlicher:",
-          pp_controller_body: "Magona Bike Garage – BibbonaBike.com, Via del Mandorlo 1, 57020 Bibbona (LI), Italien · USt-IdNr.: 02075750493 · E-Mail: magonabikegarage@gmail.com · Tel./WhatsApp: +39 331 345 3207.",
+          pp_controller_body: "Magona Bike Garage – BibbonaBike.com, Via del Mandorlo 1, Bibbona, Livorno, Italien · USt-IdNr.: 02075750493 · E-Mail: magonabikegarage@gmail.com · Tel./WhatsApp: +39 331 345 3207.",
           pp_sec1_title: "1. Erhobene Daten & Zwecke",
           pp_sec1_body: "Wir verarbeiten die im Buchungsformular angegebenen Daten (Name, E-Mail, Telefonnummer, E-Bike-Modell, Datum, Dauer, Anzahl, Zubehör, Rabattcode und Hinweise) ausschließlich zur Bearbeitung von Anfragen, Verleih, Touren, Events und Werkstattservices sowie gesetzlicher Pflichten.",
           pp_sec2_title: "2. Sicherheit, hCaptcha & Speicherdauer",
@@ -3301,7 +3332,7 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
           cookie_accept_all: "Alles accepteren",
           pp_title: "Privacy- & Cookiebeleid – BibbonaBike.com",
           pp_controller_lbl: "Verwerkingsverantwoordelijke:",
-          pp_controller_body: "Magona Bike Garage – BibbonaBike.com, Via del Mandorlo 1, 57020 Bibbona (LI), Italië · BTW: 02075750493 · E-mail: magonabikegarage@gmail.com · Tel./WhatsApp: +39 331 345 3207.",
+          pp_controller_body: "Magona Bike Garage – BibbonaBike.com, Via del Mandorlo 1, Bibbona, Livorno, Italië · BTW: 02075750493 · E-mail: magonabikegarage@gmail.com · Tel./WhatsApp: +39 331 345 3207.",
           pp_sec1_title: "1. Verzamelde gegevens & doeleinden",
           pp_sec1_body: "We verwerken gegevens uit het boekingsformulier (naam, e-mail, telefoonnummer, fietsmodel, datum, duur, aantal, accessoires, kortingscode en opmerkingen) uitsluitend voor offertes, verhuur, tours, evenementen, werkplaats en wettelijke verplichtingen.",
           pp_sec2_title: "2. Beveiliging, hCaptcha & bewaartermijn",
@@ -3329,7 +3360,7 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
           cookie_accept_all: "Aceptar todo",
           pp_title: "Política de Privacidad y Cookies – BibbonaBike.com",
           pp_controller_lbl: "Responsable del tratamiento:",
-          pp_controller_body: "Magona Bike Garage – BibbonaBike.com, Via del Mandorlo 1, 57020 Bibbona (LI), Italia · NIF/IVA: 02075750493 · Correo: magonabikegarage@gmail.com · Tel./WhatsApp: +39 331 345 3207.",
+          pp_controller_body: "Magona Bike Garage – BibbonaBike.com, Via del Mandorlo 1, Bibbona, Livorno, Italia · NIF/IVA: 02075750493 · Correo: magonabikegarage@gmail.com · Tel./WhatsApp: +39 331 345 3207.",
           pp_sec1_title: "1. Datos recopilados y finalidades",
           pp_sec1_body: "Recopilamos los datos del formulario de reserva (nombre y apellidos, correo, teléfono, modelo de bici, fecha, duración, cantidad, accesorios, código de descuento y notas) únicamente para gestionar presupuestos, alquileres, tours, eventos, taller y obligaciones legales.",
           pp_sec2_title: "2. Seguridad, hCaptcha y conservación",
@@ -3357,7 +3388,7 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
           cookie_accept_all: "Tout accepter",
           pp_title: "Politique de Confidentialité et Cookies – BibbonaBike.com",
           pp_controller_lbl: "Responsable du traitement :",
-          pp_controller_body: "Magona Bike Garage – BibbonaBike.com, Via del Mandorlo 1, 57020 Bibbona (LI), Italie · N° TVA : 02075750493 · E-mail : magonabikegarage@gmail.com · Tél./WhatsApp : +39 331 345 3207.",
+          pp_controller_body: "Magona Bike Garage – BibbonaBike.com, Via del Mandorlo 1, Bibbona, Livorno, Italie · N° TVA : 02075750493 · E-mail : magonabikegarage@gmail.com · Tél./WhatsApp : +39 331 345 3207.",
           pp_sec1_title: "1. Données collectées et finalités",
           pp_sec1_body: "Nous recueillons les données du formulaire de réservation (nom et prénom, e-mail, téléphone, modèle de vélo, date, durée, quantité, accessoires, code promo et remarques) uniquement pour gérer devis, locations, circuits, événements, atelier et obligations légales.",
           pp_sec2_title: "2. Sécurité, hCaptcha et conservation",
@@ -3385,7 +3416,7 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
           cookie_accept_all: "Aceitar tudo",
           pp_title: "Política de Privacidade e Cookies – BibbonaBike.com",
           pp_controller_lbl: "Responsável pelo tratamento:",
-          pp_controller_body: "Magona Bike Garage – BibbonaBike.com, Via del Mandorlo 1, 57020 Bibbona (LI), Itália · NIF/IVA: 02075750493 · Email: magonabikegarage@gmail.com · Tel./WhatsApp: +39 331 345 3207.",
+          pp_controller_body: "Magona Bike Garage – BibbonaBike.com, Via del Mandorlo 1, Bibbona, Livorno, Itália · NIF/IVA: 02075750493 · Email: magonabikegarage@gmail.com · Tel./WhatsApp: +39 331 345 3207.",
           pp_sec1_title: "1. Dados recolhidos e finalidades",
           pp_sec1_body: "Recolhemos os dados do formulário de reserva (nome e apelido, email, telefone, modelo de bicicleta, data, duração, quantidade, acessórios, código de desconto e notas) exclusivamente para gerir orçamentos, alugueres, passeios, eventos, oficina e obrigações legais.",
           pp_sec2_title: "2. Segurança, hCaptcha e conservação",
@@ -3413,7 +3444,7 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
           cookie_accept_all: "全部接受",
           pp_title: "隐私与 Cookie 政策 – BibbonaBike.com",
           pp_controller_lbl: "数据处理控制方：",
-          pp_controller_body: "Magona Bike Garage – BibbonaBike.com, Via del Mandorlo 1, 57020 Bibbona (LI), 意大利 · 税号: 02075750493 · 邮箱: magonabikegarage@gmail.com · 电话/WhatsApp: +39 331 345 3207。",
+          pp_controller_body: "Magona Bike Garage – BibbonaBike.com, Via del Mandorlo 1, Bibbona, Livorno, 意大利 · 税号: 02075750493 · 邮箱: magonabikegarage@gmail.com · 电话/WhatsApp: +39 331 345 3207。",
           pp_sec1_title: "1. 收集的数据与处理目的",
           pp_sec1_body: "我们收集预约表单中的信息（姓名、邮箱、电话、车型、日期、时长、数量、配件、优惠码及备注），仅用于处理报价、租车、骑行团、活动、维修服务以及履行法定或行政义务。",
           pp_sec2_title: "2. 安全、hCaptcha 与数据留存",
