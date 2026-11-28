@@ -807,8 +807,13 @@
       color: var(--accent-orange-bright) !important;
     }
 
-    /* Garantisce apertura/chiusura affidabile del box chat AI */
-    #chatWidget {
+
+    /* Apertura e visibilità garantita del widget e del box chat AI */
+    #chatWidget,
+    #chatWidget.visible {
+      opacity: 1 !important;
+      visibility: visible !important;
+      pointer-events: auto !important;
       z-index: 9990 !important;
     }
 
@@ -816,20 +821,52 @@
       position: relative !important;
       z-index: 9992 !important;
       cursor: pointer !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      pointer-events: auto !important;
     }
 
     #chatToggle * {
-      pointer-events: none;
+      pointer-events: none !important;
     }
 
     #chatBox.hidden {
       display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
     }
 
-    #chatBox:not(.hidden) {
+    #chatBox:not(.hidden),
+    #chatBox.open,
+    #chatBox.active {
       display: flex !important;
       flex-direction: column !important;
-      z-index: 9991 !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      pointer-events: auto !important;
+      position: fixed !important;
+      right: 16px !important;
+      bottom: 84px !important;
+      left: auto !important;
+      top: auto !important;
+      width: min(350px, calc(100vw - 32px)) !important;
+      max-height: min(440px, calc(100vh - 120px)) !important;
+      z-index: 9995 !important;
+      background-color: var(--bg-elevated) !important;
+      color: var(--text-primary) !important;
+      border: 1px solid var(--border-strong) !important;
+      border-radius: 14px !important;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85) !important;
+      overflow: hidden !important;
+    }
+
+    #chatMessages {
+      flex: 1 1 auto !important;
+      overflow-y: auto !important;
+      padding: 12px !important;
+      display: flex !important;
+      flex-direction: column !important;
     }
 
   </style>
@@ -2029,15 +2066,7 @@
           chiSiamoObserver.observe(message);
         }
       }
-
-      const chatWidgetEl = document.getElementById('chatWidget');
-      const footerEl = document.querySelector('footer');
-      if (chatWidgetEl && footerEl && 'IntersectionObserver' in window) {
-        const chatFooterObserver = new IntersectionObserver(entries => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              chatWidgetEl.classList.add('visible');
-            } else {
+else {
               chatWidgetEl.classList.remove('visible');
             }
           });
@@ -2910,30 +2939,50 @@
           );
         }
 
-        const toggleChatBox = () => {
+        let lastToggleTs = 0;
+        const setChatOpenState = (open) => {
           const box = document.getElementById("chatBox");
+          const widget = document.getElementById("chatWidget");
           const inp = document.getElementById("chatInput");
+          if (widget) {
+            widget.classList.add("visible");
+            widget.style.opacity = "1";
+            widget.style.visibility = "visible";
+          }
           if (!box) return;
-          const willOpen = box.classList.contains("hidden");
-          if (willOpen) {
+          if (open) {
             box.classList.remove("hidden");
-            box.style.display = "flex";
+            box.classList.add("open");
+            box.style.setProperty("display", "flex", "important");
+            box.style.setProperty("opacity", "1", "important");
+            box.style.setProperty("visibility", "visible", "important");
             if (inp) {
-              setTimeout(() => inp.focus(), 40);
+              setTimeout(() => inp.focus(), 50);
             }
           } else {
             box.classList.add("hidden");
-            box.style.display = "none";
+            box.classList.remove("open");
+            box.style.setProperty("display", "none", "important");
+            box.style.setProperty("opacity", "0", "important");
+            box.style.setProperty("visibility", "hidden", "important");
           }
         };
 
-        document.addEventListener("click", (e) => {
+        const handleChatToggle = (e) => {
           const btn = e.target && e.target.closest ? e.target.closest("#chatToggle") : null;
-          if (btn) {
-            e.preventDefault();
-            toggleChatBox();
-          }
-        }, true);
+          if (!btn) return;
+          const now = Date.now();
+          if (now - lastToggleTs < 250) return;
+          lastToggleTs = now;
+          e.preventDefault();
+          e.stopPropagation();
+          const box = document.getElementById("chatBox");
+          const isClosed = !box || box.classList.contains("hidden") || window.getComputedStyle(box).display === "none";
+          setChatOpenState(isClosed);
+        };
+
+        document.addEventListener("touchend", handleChatToggle, { passive: false, capture: true });
+        document.addEventListener("click", handleChatToggle, { passive: false, capture: true });
 
         if (sendBtn) {
           sendBtn.addEventListener("click", sendChatMessage);
