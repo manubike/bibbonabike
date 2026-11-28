@@ -54,6 +54,69 @@
     .animate-float {
       animation: floatSoft 2.4s ease-in-out infinite;
     }
+
+    #visitCounterWidget {
+      position: fixed;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 24;
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 16px;
+      background: rgba(15, 23, 42, 0.80);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.45);
+      max-width: calc(100vw - 24px);
+    }
+    @media (min-width: 640px) {
+      #visitCounterWidget {
+        top: 10px;
+        gap: 10px;
+        padding: 7px 12px;
+      }
+    }
+    #hudContainer {
+      margin-top: 48px;
+    }
+    @media (min-width: 640px) {
+      #hudContainer {
+        margin-top: 52px;
+      }
+    }
+    .visit-counter-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      line-height: 1.05;
+    }
+    .visit-counter-label {
+      font-size: 8px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #94a3b8;
+    }
+    .visit-counter-value {
+      font-size: 11px;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+    }
+    @media (min-width: 640px) {
+      .visit-counter-value {
+        font-size: 12px;
+      }
+    }
+    .visit-counter-sep {
+      width: 1px;
+      height: 22px;
+      background: rgba(255, 255, 255, 0.14);
+    }
   </style>
 </head>
 <body class="relative text-white">
@@ -96,12 +159,12 @@
           🌲 Lv.2
         </button>
         <button id="audioToggleBtn" type="button" class="w-9 h-9 rounded-xl bg-slate-800/90 hover:bg-slate-700 border border-slate-600/60 flex items-center justify-center text-slate-200 transition cursor-pointer" title="Audio">
-          <svg id="audioIconOn" class="w-4 h-4 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg id="audioIconOn" class="w-4 h-4 text-lime-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
             <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
             <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
           </svg>
-          <svg id="audioIconOff" class="w-4 h-4 text-rose-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg id="audioIconOff" class="w-4 h-4 text-rose-400 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
             <line x1="23" y1="9" x2="17" y2="15"></line>
             <line x1="17" y1="9" x2="23" y2="15"></line>
@@ -126,6 +189,34 @@
       </div>
     </div>
   </div>
+
+
+  <!-- WIDGET CONTATORE VISITE IN ALTO A DESTRA -->
+  <aside id="visitCounterWidget" aria-label="Contatore visite">
+    <div class="visit-counter-item" title="Visite totali (Foglie)">
+      <svg class="w-5 h-5 shrink-0" viewBox="0 0 32 32" aria-hidden="true">
+        <path d="M16 3 L18.4 12.5 L24.5 7.5 L21.2 15.5 L29.5 14.5 L22.2 19.8 L27 25.5 L18.2 22.8 L16 29.5 L13.8 22.8 L5 25.5 L9.8 19.8 L2.5 14.5 L10.8 15.5 L7.5 7.5 L13.6 12.5 Z" fill="#84cc16" stroke="#14532d" stroke-width="1.3" stroke-linejoin="round"/>
+        <line x1="16" y1="10" x2="16" y2="27" stroke="#14532d" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <div class="visit-counter-label">Foglie</div>
+        <div id="leavesCounterValue" class="visit-counter-value text-lime-300">0</div>
+      </div>
+    </div>
+    <div class="visit-counter-sep" aria-hidden="true"></div>
+    <div class="visit-counter-item" title="Panetti di hashish (1 panetto ogni 1.000 foglie)">
+      <svg class="w-5 h-5 shrink-0" viewBox="0 0 32 24" aria-hidden="true">
+        <rect x="2" y="4" width="28" height="16" rx="4" fill="#5c3317" stroke="#d97706" stroke-width="1.5"/>
+        <rect x="4" y="6" width="24" height="12" rx="2.5" fill="#7c441e" stroke="rgba(251,191,36,0.35)" stroke-width="0.8"/>
+        <line x1="7" y1="9" x2="25" y2="9" stroke="#3e200c" stroke-width="1.1" stroke-linecap="round"/>
+        <line x1="7" y1="15" x2="25" y2="15" stroke="#3e200c" stroke-width="1.1" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <div class="visit-counter-label">Panetti</div>
+        <div id="blocksCounterValue" class="visit-counter-value text-amber-300">0</div>
+      </div>
+    </div>
+  </aside>
 
   <!-- MODALE DIALOGO CON NPC (LIVELLO 1) -->
   <div id="dialogueModal" class="hidden fixed top-24 right-3 sm:right-5 z-30 w-80 sm:w-96 pointer-events-auto">
@@ -655,39 +746,140 @@
       ];
 
       // =========================================================================
-      // AUDIO SYNTH
+      // AUDIO SYNTH (ATTIVO DI DEFAULT + SBLOCCO AUTOPLAY BROWSER)
       // =========================================================================
-      let audioEnabled = false;
+      let audioEnabled = true;
       let audioCtx = null;
+      let audioUnlocked = false;
+      let lastPedalSoundTime = 0;
+      let lastBrakeSoundTime = 0;
+      let lastTurboSoundTime = 0;
+
+      function syncAudioIconState() {
+        if (audioEnabled) {
+          if (audioIconOn) audioIconOn.classList.remove('hidden');
+          if (audioIconOff) audioIconOff.classList.add('hidden');
+        } else {
+          if (audioIconOn) audioIconOn.classList.add('hidden');
+          if (audioIconOff) audioIconOff.classList.remove('hidden');
+        }
+      }
 
       function ensureAudio() {
-        if (!audioEnabled) return;
+        if (!audioEnabled) return null;
         try {
           if (!audioCtx) {
             const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
             if (AudioCtxClass) audioCtx = new AudioCtxClass();
           }
           if (audioCtx && audioCtx.state === 'suspended') {
-            audioCtx.resume().catch(function () {});
+            audioCtx.resume().then(function () {
+              audioUnlocked = true;
+            }).catch(function () {});
+          } else if (audioCtx && audioCtx.state === 'running') {
+            audioUnlocked = true;
           }
         } catch (err) {
           audioCtx = null;
         }
+        return audioCtx;
       }
+
+      function unlockAudioOnFirstInteraction() {
+        if (!audioEnabled) return;
+        const ctxNow = ensureAudio();
+        if (!ctxNow) return;
+        if (ctxNow.state === 'suspended') {
+          ctxNow.resume().then(function () {
+            audioUnlocked = true;
+          }).catch(function () {});
+        } else if (!audioUnlocked) {
+          try {
+            const silentOsc = ctxNow.createOscillator();
+            const silentGain = ctxNow.createGain();
+            silentGain.gain.setValueAtTime(0.0001, ctxNow.currentTime);
+            silentOsc.connect(silentGain);
+            silentGain.connect(ctxNow.destination);
+            silentOsc.start();
+            silentOsc.stop(ctxNow.currentTime + 0.02);
+            audioUnlocked = true;
+          } catch (err) {}
+        }
+      }
+
+      ['pointerdown', 'touchstart', 'mousedown', 'keydown'].forEach(function (evName) {
+        window.addEventListener(evName, unlockAudioOnFirstInteraction, { passive: true });
+      });
 
       function playSound(type) {
         if (!audioEnabled) return;
-        ensureAudio();
-        if (!audioCtx) return;
+        const ctxNow = ensureAudio();
+        if (!ctxNow) return;
+        if (ctxNow.state === 'suspended') {
+          ctxNow.resume().catch(function () {});
+        }
 
         try {
-          const now = audioCtx.currentTime;
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-          osc.connect(gain);
-          gain.connect(audioCtx.destination);
+          const now = ctxNow.currentTime;
 
-          if (type === 'jump') {
+          if (type === 'pedal') {
+            const osc = ctxNow.createOscillator();
+            const gain = ctxNow.createGain();
+            osc.connect(gain);
+            gain.connect(ctxNow.destination);
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(135, now);
+            osc.frequency.exponentialRampToValueAtTime(215, now + 0.055);
+            gain.gain.setValueAtTime(0.055, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.065);
+            osc.start(now);
+            osc.stop(now + 0.07);
+          } else if (type === 'brake') {
+            const osc = ctxNow.createOscillator();
+            const filter = ctxNow.createBiquadFilter();
+            const gain = ctxNow.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(240, now);
+            osc.frequency.exponentialRampToValueAtTime(105, now + 0.11);
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(680, now);
+            filter.frequency.exponentialRampToValueAtTime(220, now + 0.11);
+            gain.gain.setValueAtTime(0.065, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(ctxNow.destination);
+            osc.start(now);
+            osc.stop(now + 0.125);
+          } else if (type === 'turbo') {
+            const osc = ctxNow.createOscillator();
+            const gain = ctxNow.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(220, now);
+            osc.frequency.exponentialRampToValueAtTime(590, now + 0.13);
+            gain.gain.setValueAtTime(0.07, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+            osc.connect(gain);
+            gain.connect(ctxNow.destination);
+            osc.start(now);
+            osc.stop(now + 0.15);
+          } else if (type === 'ui') {
+            const osc = ctxNow.createOscillator();
+            const gain = ctxNow.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(620, now);
+            osc.frequency.exponentialRampToValueAtTime(840, now + 0.045);
+            gain.gain.setValueAtTime(0.06, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+            osc.connect(gain);
+            gain.connect(ctxNow.destination);
+            osc.start(now);
+            osc.stop(now + 0.055);
+          } else if (type === 'jump') {
+            const osc = ctxNow.createOscillator();
+            const gain = ctxNow.createGain();
+            osc.connect(gain);
+            gain.connect(ctxNow.destination);
             osc.type = 'triangle';
             osc.frequency.setValueAtTime(190, now);
             osc.frequency.exponentialRampToValueAtTime(480, now + 0.18);
@@ -696,6 +888,10 @@
             osc.start(now);
             osc.stop(now + 0.21);
           } else if (type === 'camera') {
+            const osc = ctxNow.createOscillator();
+            const gain = ctxNow.createGain();
+            osc.connect(gain);
+            gain.connect(ctxNow.destination);
             osc.type = 'square';
             osc.frequency.setValueAtTime(950, now);
             osc.frequency.setValueAtTime(1400, now + 0.05);
@@ -704,6 +900,10 @@
             osc.start(now);
             osc.stop(now + 0.15);
           } else if (type === 'npc') {
+            const osc = ctxNow.createOscillator();
+            const gain = ctxNow.createGain();
+            osc.connect(gain);
+            gain.connect(ctxNow.destination);
             osc.type = 'sine';
             osc.frequency.setValueAtTime(440, now);
             osc.frequency.setValueAtTime(554, now + 0.08);
@@ -713,6 +913,10 @@
             osc.start(now);
             osc.stop(now + 0.29);
           } else if (type === 'escape') {
+            const osc = ctxNow.createOscillator();
+            const gain = ctxNow.createGain();
+            osc.connect(gain);
+            gain.connect(ctxNow.destination);
             osc.type = 'sawtooth';
             osc.frequency.setValueAtTime(320, now);
             osc.frequency.exponentialRampToValueAtTime(760, now + 0.22);
@@ -721,6 +925,10 @@
             osc.start(now);
             osc.stop(now + 0.25);
           } else if (type === 'dizzy') {
+            const osc = ctxNow.createOscillator();
+            const gain = ctxNow.createGain();
+            osc.connect(gain);
+            gain.connect(ctxNow.destination);
             osc.type = 'sine';
             osc.frequency.setValueAtTime(280, now);
             osc.frequency.linearRampToValueAtTime(150, now + 0.25);
@@ -729,6 +937,10 @@
             osc.start(now);
             osc.stop(now + 0.29);
           } else if (type === 'gelato') {
+            const osc = ctxNow.createOscillator();
+            const gain = ctxNow.createGain();
+            osc.connect(gain);
+            gain.connect(ctxNow.destination);
             osc.type = 'triangle';
             osc.frequency.setValueAtTime(523.25, now);
             osc.frequency.setValueAtTime(659.25, now + 0.12);
@@ -744,17 +956,18 @@
         }
       }
 
+      syncAudioIconState();
+      setTimeout(function () {
+        ensureAudio();
+      }, 0);
+
       if (audioToggleBtn) {
         audioToggleBtn.addEventListener('click', function () {
           audioEnabled = !audioEnabled;
+          syncAudioIconState();
           if (audioEnabled) {
             ensureAudio();
-            if (audioIconOn) audioIconOn.classList.remove('hidden');
-            if (audioIconOff) audioIconOff.classList.add('hidden');
-            playSound('npc');
-          } else {
-            if (audioIconOn) audioIconOn.classList.add('hidden');
-            if (audioIconOff) audioIconOff.classList.remove('hidden');
+            playSound('ui');
           }
         });
       }
@@ -1316,37 +1529,44 @@
 
       if (startBtn) {
         startBtn.addEventListener('click', function () {
+          playSound('ui');
           startGame(1);
         });
       }
       if (startLv2Btn) {
         startLv2Btn.addEventListener('click', function () {
+          playSound('ui');
           startGame(2);
         });
       }
       if (startLv3Btn) {
         startLv3Btn.addEventListener('click', function () {
+          playSound('ui');
           startGame(3);
         });
       }
       if (startLv4Btn) {
         startLv4Btn.addEventListener('click', function () {
+          playSound('ui');
           startGame(4);
         });
       }
       if (restartBtn) {
         restartBtn.addEventListener('click', function () {
+          playSound('ui');
           startGame(state.level);
         });
       }
       if (nextLevelBtn) {
         nextLevelBtn.addEventListener('click', function () {
+          playSound('ui');
           const nextLv = state.level === 1 ? 2 : (state.level === 2 ? 3 : (state.level === 3 ? 4 : 1));
           startGame(nextLv);
         });
       }
       if (switchLevelHudBtn) {
         switchLevelHudBtn.addEventListener('click', function () {
+          playSound('ui');
           const nextLv = state.level === 1 ? 2 : (state.level === 2 ? 3 : (state.level === 3 ? 4 : 1));
           startGame(nextLv);
         });
@@ -1517,7 +1737,10 @@
       }
 
       if (continuePanoramaBtn) {
-        continuePanoramaBtn.addEventListener('click', closeBelvederePanorama);
+        continuePanoramaBtn.addEventListener('click', function () {
+          playSound('ui');
+          closeBelvederePanorama();
+        });
       }
 
       function showVictoryScreen() {
@@ -2081,8 +2304,16 @@
 
         if (keys.right) {
           state.bike.vx += accel * dt;
+          if (state.bike.onGround && state.time - lastPedalSoundTime > 0.24) {
+            lastPedalSoundTime = state.time;
+            playSound('pedal');
+          }
         } else if (keys.left) {
           state.bike.vx -= 860 * dt;
+          if (state.bike.onGround && Math.abs(state.bike.vx) > 60 && state.time - lastBrakeSoundTime > 0.16) {
+            lastBrakeSoundTime = state.time;
+            playSound('brake');
+          }
         } else {
           const drag = isTrail ? 0.56 : 0.25;
           state.bike.vx *= Math.pow(drag, dt);
@@ -2120,6 +2351,10 @@
         const targetPitch = state.bike.onGround ? slope : Math.max(-0.42, Math.min(0.42, state.bike.vy * 0.0007));
         state.bike.pitch += (targetPitch - state.bike.pitch) * Math.min(1, dt * 12);
 
+        if (keys.turbo && Math.abs(state.bike.vx) > 80 && state.time - lastTurboSoundTime > 0.18) {
+          lastTurboSoundTime = state.time;
+          playSound('turbo');
+        }
         if (state.quipTimer <= 0 && state.bike.vx > 410 && Math.random() < dt * 0.24) {
           const quipPool = isLv3 ? RIDER_QUIPS_LV3 : (isLv2 ? RIDER_QUIPS_LV2 : RIDER_QUIPS_LV1);
           state.quipText = quipPool[Math.floor(Math.random() * quipPool.length)];
@@ -5306,7 +5541,71 @@
         requestAnimationFrame(gameLoop);
       }
 
+
+      // =========================================================================
+      // CONTATORE VISITE (FOGLIE & PANETTI IN LOCALSTORAGE)
+      // =========================================================================
+      const LEAVES_STORAGE_KEY = 'olmetto_rider_leaves_count_v1';
+      const leavesCounterValueEl = document.getElementById('leavesCounterValue');
+      const blocksCounterValueEl = document.getElementById('blocksCounterValue');
+      let memoryLeavesFallback = 0;
+
+      function formatReadableCount(num) {
+        const safe = Math.max(0, Math.floor(Number(num) || 0));
+        try {
+          return safe.toLocaleString('it-IT');
+        } catch (err) {
+          return String(safe).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+      }
+
+      function computeHashBlocks(leavesCount) {
+        const safeLeaves = Math.max(0, Math.floor(Number(leavesCount) || 0));
+        return Math.floor(safeLeaves / 1000);
+      }
+
+      function readStoredLeaves() {
+        try {
+          const raw = window.localStorage.getItem(LEAVES_STORAGE_KEY);
+          if (raw === null) return 0;
+          const parsed = parseInt(raw, 10);
+          return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
+        } catch (err) {
+          return memoryLeavesFallback;
+        }
+      }
+
+      function writeStoredLeaves(leavesCount) {
+        const safe = Math.max(0, Math.floor(Number(leavesCount) || 0));
+        memoryLeavesFallback = safe;
+        try {
+          window.localStorage.setItem(LEAVES_STORAGE_KEY, String(safe));
+        } catch (err) {
+          // Ignora se localStorage non è disponibile
+        }
+      }
+
+      function renderVisitCounter(leavesCount) {
+        const safeLeaves = Math.max(0, Math.floor(Number(leavesCount) || 0));
+        const blocksCount = computeHashBlocks(safeLeaves);
+        if (leavesCounterValueEl) {
+          leavesCounterValueEl.textContent = formatReadableCount(safeLeaves);
+        }
+        if (blocksCounterValueEl) {
+          blocksCounterValueEl.textContent = formatReadableCount(blocksCount);
+        }
+      }
+
+      function recordVisitAndUpdateCounter() {
+        const currentLeaves = readStoredLeaves();
+        const nextLeaves = currentLeaves + 1;
+        writeStoredLeaves(nextLeaves);
+        renderVisitCounter(nextLeaves);
+        return nextLeaves;
+      }
+
       populateWorld();
+      recordVisitAndUpdateCounter();
       initCookieConsent();
       requestAnimationFrame(gameLoop);
     })();
