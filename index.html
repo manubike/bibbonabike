@@ -425,6 +425,29 @@
       border: 1px solid var(--border-strong) !important;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
     }
+
+
+    /* Fix overflow orizzontale casella Data nel form di prenotazione */
+    .form-card,
+    .form-card *,
+    .form-group,
+    .icon-input {
+      box-sizing: border-box !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+    }
+
+    #noleggioForm .form-group {
+      overflow-x: clip !important;
+    }
+
+    #noleggioForm input[type="date"] {
+      display: block !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      box-sizing: border-box !important;
+    }
   </style>
 
   <!-- Favicon -->
