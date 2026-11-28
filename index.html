@@ -1990,14 +1990,77 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
             <input type="tel" id="phone" name="phone" autocomplete="tel" placeholder="+39 333 1234567" data-i18n-placeholder="ph_phone" required />
           </div>
 
-          <div class="form-group icon-input">
-            <label for="bikeType" data-i18n="lbl_bike">Tipo di bici *</label>
-            <i class="fa fa-bicycle"></i>
-            <select id="bikeType" name="bikeType" required>
-              <option value="" data-i18n="opt_select">Seleziona</option>
-              <option value="E-MTB 29" data-price-day="50" data-price-half="35" data-i18n="opt_bike_29">E-MTB 29 (50€/giorno · 35€ mezza giornata)</option>
-              <option value="E-MTB 24" data-price-day="40" data-price-half="25" data-i18n="opt_bike_24">E-MTB 24 (40€/giorno · 25€ mezza giornata)</option>
-            </select>
+          <!-- Selezione combinata E-MTB 29" e E-MTB 24" (più bici insieme) -->
+          <div class="form-group">
+            <label style="display:block; margin-bottom:8px; font-weight:600;" data-i18n="lbl_bike">
+              Seleziona le bici (puoi scegliere più 29”, più 24” o combinarle insieme) *
+            </label>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); gap:12px;">
+              <!-- Box E-MTB 29" -->
+              <div style="padding:12px; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,123,28,0.35);">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:6px;">
+                  <strong style="color:#f4f6f8; font-size:0.95rem;">
+                    <i class="fa fa-bicycle" style="color:#ff7b1c; margin-right:6px;"></i>E-MTB 29”
+                  </strong>
+                  <span style="font-size:0.8rem; color:#ff9442; font-weight:600;">50€/gg · 35€ ½gg</span>
+                </div>
+                <label for="qty29" style="display:block; font-size:0.8rem; color:#b0b8c2; margin-bottom:6px;">
+                  Quantità E-MTB 29”
+                </label>
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <button type="button" class="qty-step-btn" data-target="qty29" data-delta="-1" aria-label="Diminuisci quantità E-MTB 29" style="width:36px; height:38px; border-radius:8px; border:1px solid rgba(255,123,28,0.42); background:#14171c; color:#f4f6f8; font-size:1.1rem; font-weight:700; cursor:pointer; flex-shrink:0;">−</button>
+                  <input
+                    type="number"
+                    id="qty29"
+                    name="qty29"
+                    value="0"
+                    min="0"
+                    max="20"
+                    step="1"
+                    inputmode="numeric"
+                    style="flex:1 1 auto; width:100%; padding:8px 10px; text-align:center; font-weight:700;"
+                  />
+                  <button type="button" class="qty-step-btn" data-target="qty29" data-delta="1" aria-label="Aumenta quantità E-MTB 29" style="width:36px; height:38px; border-radius:8px; border:1px solid rgba(255,123,28,0.42); background:#14171c; color:#ff9442; font-size:1.1rem; font-weight:700; cursor:pointer; flex-shrink:0;">+</button>
+                </div>
+              </div>
+
+              <!-- Box E-MTB 24" -->
+              <div style="padding:12px; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,123,28,0.35);">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:6px;">
+                  <strong style="color:#f4f6f8; font-size:0.95rem;">
+                    <i class="fa fa-bicycle" style="color:#ff7b1c; margin-right:6px;"></i>E-MTB 24”
+                  </strong>
+                  <span style="font-size:0.8rem; color:#ff9442; font-weight:600;">40€/gg · 25€ ½gg</span>
+                </div>
+                <label for="qty24" style="display:block; font-size:0.8rem; color:#b0b8c2; margin-bottom:6px;">
+                  Quantità E-MTB 24” (Junior)
+                </label>
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <button type="button" class="qty-step-btn" data-target="qty24" data-delta="-1" aria-label="Diminuisci quantità E-MTB 24" style="width:36px; height:38px; border-radius:8px; border:1px solid rgba(255,123,28,0.42); background:#14171c; color:#f4f6f8; font-size:1.1rem; font-weight:700; cursor:pointer; flex-shrink:0;">−</button>
+                  <input
+                    type="number"
+                    id="qty24"
+                    name="qty24"
+                    value="0"
+                    min="0"
+                    max="20"
+                    step="1"
+                    inputmode="numeric"
+                    style="flex:1 1 auto; width:100%; padding:8px 10px; text-align:center; font-weight:700;"
+                  />
+                  <button type="button" class="qty-step-btn" data-target="qty24" data-delta="1" aria-label="Aumenta quantità E-MTB 24" style="width:36px; height:38px; border-radius:8px; border:1px solid rgba(255,123,28,0.42); background:#14171c; color:#ff9442; font-size:1.1rem; font-weight:700; cursor:pointer; flex-shrink:0;">+</button>
+                </div>
+              </div>
+            </div>
+
+            <div id="selectedBikesSummary" style="margin-top:8px; font-size:0.85rem; color:#ff9442; font-weight:600;">
+              Nessuna bici selezionata (totale bici: 0)
+            </div>
+
+            <!-- Campi nascosti per retrocompatibilità con js/booking.js e Google Apps Script -->
+            <input type="hidden" id="bikeType" name="bikeType" value="" />
+            <input type="hidden" id="quantity" name="quantity" value="0" />
           </div>
 
           <div id="accessoriesGroup" style="display: none; margin-top: 1rem;">
@@ -2018,12 +2081,6 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
                 <span data-i18n="acc_shotgun_lbl">Seggiolino Shotgun (+15€)</span>
               </label>
             </div>
-          </div>
-
-          <div class="form-group icon-input">
-            <label for="quantity" data-i18n="lbl_qty">Quantità *</label>
-            <i class="fa fa-plus"></i>
-            <input type="number" id="quantity" name="quantity" value="1" min="1" required />
           </div>
 
           <div class="form-group icon-input date-field-group">
@@ -2391,12 +2448,15 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
     });
   </script>
 
-  <!-- Calcolo Totale Prenotazione Live (Bici, Accessori e Codici Sconto) -->
+  <!-- Calcolo Totale Prenotazione Live (Bici 29" + 24", Accessori e Codici Sconto) -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const form = document.getElementById('noleggioForm');
-      const bikeSelect = document.getElementById('bikeType');
-      const quantityInput = document.getElementById('quantity');
+      const qty29Input = document.getElementById('qty29');
+      const qty24Input = document.getElementById('qty24');
+      const bikeTypeHidden = document.getElementById('bikeType');
+      const quantityHidden = document.getElementById('quantity');
+      const accessoriesGroup = document.getElementById('accessoriesGroup');
       const durationSelect = document.getElementById('duration');
       const discountInput = document.getElementById('codiceSconto');
       const discountFeedback = document.getElementById('discountFeedback');
@@ -2404,15 +2464,71 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
       const totalHiddenInput = document.getElementById('totalHidden');
       const selectButtons = document.querySelectorAll('.bike-select');
 
+      const PRICES = {
+        29: { day: 50, half: 35 },
+        24: { day: 40, half: 25 }
+      };
+
       const VALID_DISCOUNTS = {
         MAGONA10: 10,
         BIBBONA10: 10
       };
 
+      function getSanitizedQty(inputEl) {
+        if (!inputEl) return 0;
+        const val = parseInt(inputEl.value, 10);
+        return Number.isFinite(val) && val > 0 ? val : 0;
+      }
+
+      const summaryEl = document.getElementById('selectedBikesSummary');
+
+      function syncHiddenBikeFields(q29, q24) {
+        const totalBikes = q29 + q24;
+        if (quantityHidden) {
+          quantityHidden.value = String(totalBikes);
+        }
+        if (bikeTypeHidden) {
+          if (q29 > 0 && q24 > 0) {
+            bikeTypeHidden.value = `${q29}x E-MTB 29 + ${q24}x E-MTB 24`;
+          } else if (q29 > 0) {
+            bikeTypeHidden.value = q29 > 1 ? `${q29}x E-MTB 29` : 'E-MTB 29';
+          } else if (q24 > 0) {
+            bikeTypeHidden.value = q24 > 1 ? `${q24}x E-MTB 24` : 'E-MTB 24';
+          } else {
+            bikeTypeHidden.value = '';
+          }
+        }
+        if (summaryEl) {
+          if (totalBikes === 0) {
+            summaryEl.textContent = 'Nessuna bici selezionata (totale bici: 0)';
+          } else {
+            const parts = [];
+            if (q29 > 0) parts.push(`${q29}x E-MTB 29”`);
+            if (q24 > 0) parts.push(`${q24}x E-MTB 24”`);
+            summaryEl.textContent = `Bici selezionate: ${parts.join(' + ')} (totale bici: ${totalBikes})`;
+          }
+        }
+
+        if (accessoriesGroup) {
+          if (q29 > 0) {
+            accessoriesGroup.style.display = 'block';
+          } else {
+            accessoriesGroup.style.display = 'none';
+            accessoriesGroup.querySelectorAll('input[name="accessories"]:checked').forEach((cb) => {
+              cb.checked = false;
+            });
+          }
+        }
+      }
+
       function computeRentalTotal() {
-        if (!bikeSelect || !quantityInput || !durationSelect || !totalAmountSpan || !totalHiddenInput) {
+        if (!durationSelect || !totalAmountSpan || !totalHiddenInput) {
           return;
         }
+
+        const q29 = getSanitizedQty(qty29Input);
+        const q24 = getSanitizedQty(qty24Input);
+        syncHiddenBikeFields(q29, q24);
 
         const codeRaw = discountInput ? discountInput.value.trim().toUpperCase() : '';
         const discountPct = Object.prototype.hasOwnProperty.call(VALID_DISCOUNTS, codeRaw) ? VALID_DISCOUNTS[codeRaw] : 0;
@@ -2429,8 +2545,7 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
           }
         }
 
-        const selectedOption = bikeSelect.options[bikeSelect.selectedIndex];
-        if (!selectedOption || !selectedOption.value) {
+        if (q29 === 0 && q24 === 0) {
           totalAmountSpan.textContent = '0.00';
           totalHiddenInput.value = '0.00';
           return;
@@ -2438,21 +2553,19 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
 
         const parsedDays = parseFloat(durationSelect.value);
         const days = Number.isFinite(parsedDays) && parsedDays > 0 ? parsedDays : 1;
-        const parsedQty = parseInt(quantityInput.value, 10);
-        const qty = Number.isFinite(parsedQty) && parsedQty >= 1 ? parsedQty : 1;
-        const priceDay = parseFloat(selectedOption.dataset.priceDay) || 35;
-        const priceHalf = parseFloat(selectedOption.dataset.priceHalf) || (priceDay / 2);
 
-        const unitPrice = days === 0.5 ? priceHalf : priceDay * days;
+        const unit29 = days === 0.5 ? PRICES[29].half : PRICES[29].day * days;
+        const unit24 = days === 0.5 ? PRICES[24].half : PRICES[24].day * days;
 
         let accessoriesTotal = 0;
-        const checkedAccessories = form ? form.querySelectorAll('input[name="accessories"]:checked') : [];
-        checkedAccessories.forEach((acc) => {
-          if (acc.value === 'carrello') accessoriesTotal += 7;
-          if (acc.value === 'shotgun') accessoriesTotal += 15;
-        });
+        if (q29 > 0 && form) {
+          form.querySelectorAll('input[name="accessories"]:checked').forEach((acc) => {
+            if (acc.value === 'carrello') accessoriesTotal += 7;
+            if (acc.value === 'shotgun') accessoriesTotal += 15;
+          });
+        }
 
-        let grandTotal = (unitPrice * qty) + accessoriesTotal;
+        let grandTotal = (unit29 * q29) + (unit24 * q24) + accessoriesTotal;
         if (discountPct > 0) {
           grandTotal = grandTotal * (1 - discountPct / 100);
         }
@@ -2464,29 +2577,27 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
 
       window.recomputeBibbonaTotal = computeRentalTotal;
 
-
-      // Compatibilità selezione bici (anche se chiamata con valore legacy "E-MTB 29")
-      if (bikeSelect) {
-        const originalDescriptor = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value');
-        if (originalDescriptor && originalDescriptor.set) {
-          Object.defineProperty(bikeSelect, 'value', {
-            get: function () {
-              return originalDescriptor.get.call(this);
-            },
-            set: function (val) {
-              const mapped = val === 'E-MTB 29' ? 'E-MTB Full 29' : val;
-              originalDescriptor.set.call(this, mapped);
-            }
-          });
-        }
-      }
+      document.querySelectorAll('.qty-step-btn').forEach((stepBtn) => {
+        stepBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const targetId = stepBtn.getAttribute('data-target');
+          const delta = parseInt(stepBtn.getAttribute('data-delta') || '0', 10);
+          const targetInput = targetId ? document.getElementById(targetId) : null;
+          if (!targetInput) return;
+          const current = getSanitizedQty(targetInput);
+          const next = Math.max(0, Math.min(20, current + delta));
+          targetInput.value = String(next);
+          computeRentalTotal();
+        });
+      });
 
       selectButtons.forEach((btn) => {
         btn.addEventListener('click', () => {
-          const bikeVal = btn.getAttribute('data-bike');
-          if (bikeSelect && bikeVal) {
-            bikeSelect.value = bikeVal;
-            bikeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+          const bikeVal = btn.getAttribute('data-bike') || '';
+          if (bikeVal.includes('29') && qty29Input) {
+            if (getSanitizedQty(qty29Input) === 0) qty29Input.value = '1';
+          } else if (bikeVal.includes('24') && qty24Input) {
+            if (getSanitizedQty(qty24Input) === 0) qty24Input.value = '1';
           }
           computeRentalTotal();
         });
@@ -2500,16 +2611,18 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
         });
       }
 
-      const accGroup = document.getElementById('accessoriesGroup');
-      if (accGroup && 'MutationObserver' in window) {
+      if (accessoriesGroup && 'MutationObserver' in window) {
         new MutationObserver(() => {
-          if (accGroup.style.display === 'none') {
-            accGroup.querySelectorAll('input[name="accessories"]:checked').forEach((cb) => {
+          const q29 = getSanitizedQty(qty29Input);
+          if (q29 > 0 && accessoriesGroup.style.display === 'none') {
+            accessoriesGroup.style.display = 'block';
+          } else if (q29 === 0 && accessoriesGroup.style.display !== 'none') {
+            accessoriesGroup.style.display = 'none';
+            accessoriesGroup.querySelectorAll('input[name="accessories"]:checked').forEach((cb) => {
               cb.checked = false;
             });
           }
-          computeRentalTotal();
-        }).observe(accGroup, { attributes: true, attributeFilter: ['style'] });
+        }).observe(accessoriesGroup, { attributes: true, attributeFilter: ['style'] });
       }
 
       computeRentalTotal();
@@ -3089,33 +3202,62 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
   <script src="js/contactButton.js"></script>
   <script src="js/slideshow_my.js"></script>
 
-  <!-- Allineamento tasto Indicazioni su Via del Mandorlo 1, Bibbona, Livorno -->
+  <!-- Allineamento tasto Indicazioni su Via del Mandorlo 1, Bibbona (senza testo indirizzo sul tasto) -->
   <script>
     (function () {
-      const DIRECTIONS_ADDRESS = "Via del Mandorlo 1, Bibbona, Livorno";
-      const DIRECTIONS_URL = "https://www.google.com/maps/search/?api=1&query=Via+del+Mandorlo+1%2C+Bibbona%2C+Livorno";
+      const DIRECTIONS_QUERY = "Via del Mandorlo 1, 57020 Bibbona LI, Italia";
+      const DIRECTIONS_URL = "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(DIRECTIONS_QUERY);
+
+      function cleanButtonText(el) {
+        if (!el) return;
+        const raw = (el.textContent || "").trim();
+        if (/mandorlo|bibbona|livorno/i.test(raw)) {
+          const icon = el.querySelector("i, svg");
+          el.textContent = "";
+          if (icon) {
+            el.appendChild(icon);
+            el.appendChild(document.createTextNode(" Indicazioni"));
+          } else {
+            el.textContent = "Indicazioni";
+          }
+        }
+      }
 
       function applyDirectionsLink() {
         const mapEl = document.getElementById("mapLink");
         if (!mapEl) return;
+
+        mapEl.removeAttribute("data-address");
+        mapEl.dataset.mapUrl = DIRECTIONS_URL;
 
         const targetLink = mapEl.tagName === "A" ? mapEl : mapEl.querySelector("a");
         if (targetLink) {
           targetLink.href = DIRECTIONS_URL;
           targetLink.target = "_blank";
           targetLink.rel = "noopener noreferrer";
-          targetLink.title = DIRECTIONS_ADDRESS;
-          targetLink.setAttribute("aria-label", "Indicazioni: " + DIRECTIONS_ADDRESS);
+          targetLink.removeAttribute("title");
+          targetLink.setAttribute("aria-label", "Indicazioni");
+          cleanButtonText(targetLink);
         } else {
-          mapEl.dataset.address = DIRECTIONS_ADDRESS;
-          mapEl.dataset.mapUrl = DIRECTIONS_URL;
+          cleanButtonText(mapEl);
         }
       }
 
-      document.addEventListener("DOMContentLoaded", applyDirectionsLink);
+      document.addEventListener("DOMContentLoaded", () => {
+        applyDirectionsLink();
+        const mapEl = document.getElementById("mapLink");
+        if (mapEl && "MutationObserver" in window) {
+          new MutationObserver(() => applyDirectionsLink()).observe(mapEl, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            attributeFilter: ["href", "title"]
+          });
+        }
+      });
       window.addEventListener("load", () => {
         applyDirectionsLink();
-        setTimeout(applyDirectionsLink, 250);
+        setTimeout(applyDirectionsLink, 300);
       });
     })();
   </script>
@@ -3213,9 +3355,12 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
         const nameVal = (document.getElementById("name")?.value || "").trim();
         const emailVal = (document.getElementById("email")?.value || "").trim();
         const phoneVal = (document.getElementById("phone")?.value || "").trim();
+        const q29Raw = parseInt(document.getElementById("qty29")?.value || "0", 10);
+        const q24Raw = parseInt(document.getElementById("qty24")?.value || "0", 10);
+        const qty29Val = Number.isFinite(q29Raw) && q29Raw > 0 ? q29Raw : 0;
+        const qty24Val = Number.isFinite(q24Raw) && q24Raw > 0 ? q24Raw : 0;
+        const qtyVal = qty29Val + qty24Val;
         const bikeVal = (document.getElementById("bikeType")?.value || "").trim();
-        const qtyRaw = parseInt(document.getElementById("quantity")?.value || "1", 10);
-        const qtyVal = Number.isFinite(qtyRaw) && qtyRaw > 0 ? qtyRaw : 1;
         const dateVal = (document.getElementById("date")?.value || "").trim();
         const durationRaw = (document.getElementById("duration")?.value || "1").trim();
         const durationNum = parseFloat(durationRaw);
@@ -3236,8 +3381,8 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
           } catch (_) {}
         }
 
-        if (!nameVal || !emailVal || !phoneVal || !bikeVal || !dateVal) {
-          setFeedback("Compila tutti i campi obbligatori: Nome e Cognome, Email, Telefono, Tipo di bici e Data.", false);
+        if (!nameVal || !emailVal || !phoneVal || qtyVal < 1 || !bikeVal || !dateVal) {
+          setFeedback("Compila tutti i campi obbligatori: Nome e Cognome, Email, Telefono, almeno una bici (29” o 24”) e Data.", false);
           return;
         }
 
@@ -3275,6 +3420,8 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
           phone: phoneVal,
           bikeType: bikeVal,
           quantity: qtyVal,
+          qty29: qty29Val,
+          qty24: qty24Val,
           date: dateVal,
           duration: durationVal,
           accessories: accessories,
@@ -3299,6 +3446,9 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
           if (resp.ok && data && data.ok) {
             setFeedback(data.message || "Richiesta inviata! Controlla la tua casella email per il riepilogo.", true);
             form.reset();
+            if (typeof window.recomputeBibbonaTotal === "function") {
+              window.recomputeBibbonaTotal();
+            }
             resetVerificationState("");
             const stepRow = document.getElementById("otpStepRow");
             if (stepRow) stepRow.style.display = "none";
