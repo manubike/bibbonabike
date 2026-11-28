@@ -63,13 +63,13 @@
   <link rel="stylesheet" href="css/ssg.min.css" media="print" onload="this.media='all'" />
   <link rel="stylesheet" href="style.css" />
 
-  <!-- Stile Grafico Dark / Nero & Arancio Magona Bike Garage (Compatibile con tutti i CSS del progetto) -->
-  
-<!-- Favicon -->
+  <!-- Favicon -->
   <link rel="icon" href="img/icononly.png" type="image/png" />
 
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<style>
+
+  <!-- Stile Grafico Dark / Nero & Arancio Magona Bike Garage (Compatibile con tutti i CSS del progetto) -->
+  <style>
     :root {
       --bg-void: #070809;
       --bg-surface: #0c0e11;
@@ -87,10 +87,18 @@
       --header-height: 76px;
     }
 
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
     html {
       background-color: var(--bg-void);
       color: var(--text-primary);
       scroll-behavior: smooth;
+      max-width: 100%;
+      overflow-x: clip;
     }
 
     body {
@@ -98,6 +106,8 @@
       color: var(--text-primary) !important;
       font-family: 'Inter', Arial, sans-serif;
       margin: 0;
+      width: 100%;
+      max-width: 100%;
       overflow-x: clip;
     }
 
@@ -113,6 +123,7 @@
       justify-content: center;
       align-items: center;
       z-index: 9999;
+      padding: 16px;
       font-family: 'Inter', Arial, sans-serif;
     }
 
@@ -124,7 +135,7 @@
       border: 1px solid var(--border-strong);
       box-shadow: 0 24px 60px rgba(0, 0, 0, 0.88);
       max-width: 520px;
-      width: 92%;
+      width: 100%;
       max-height: 85vh;
       overflow-y: auto;
       box-sizing: border-box;
@@ -164,6 +175,7 @@
       margin-right: 10px;
       transform: scale(1.2);
       accent-color: var(--accent-orange);
+      flex-shrink: 0;
     }
 
     .cookie-category .description {
@@ -222,10 +234,11 @@
 
     /* Header, Navigazione Dark Glass & Selettore Lingua */
     .site-header {
-      background: rgba(7, 8, 9, 0.9) !important;
+      background: rgba(7, 8, 9, 0.92) !important;
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border-subtle);
       z-index: 1000;
+      width: 100%;
     }
 
     .site-header .container {
@@ -234,6 +247,8 @@
       flex-wrap: wrap !important;
       gap: 8px 12px !important;
       position: relative !important;
+      width: 100% !important;
+      max-width: 100% !important;
       box-sizing: border-box !important;
     }
 
@@ -275,6 +290,9 @@
       position: relative !important;
       z-index: 1001 !important;
       flex-shrink: 0 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 10px !important;
     }
 
     .site-header nav,
@@ -324,7 +342,7 @@
     .hero {
       position: relative !important;
       width: 100% !important;
-      max-width: 100vw !important;
+      max-width: 100% !important;
       overflow: hidden !important;
       background-color: var(--bg-void) !important;
     }
@@ -358,7 +376,7 @@
       z-index: 2 !important;
       width: 100% !important;
       margin: 0 auto !important;
-      padding: 2rem 1.25rem !important;
+      padding: 2.25rem 1.25rem 2.75rem !important;
       display: flex !important;
       flex-direction: column !important;
       align-items: center !important;
@@ -379,7 +397,7 @@
       text-align: center !important;
       margin-left: auto !important;
       margin-right: auto !important;
-      text-shadow: 0 2px 14px rgba(0, 0, 0, 0.78) !important;
+      text-shadow: 0 2px 14px rgba(0, 0, 0, 0.82) !important;
     }
 
     .hero-content .btn-primary {
@@ -388,12 +406,14 @@
       display: inline-flex !important;
       align-items: center !important;
       justify-content: center !important;
+      gap: 8px !important;
       margin: 0.75rem auto 0 !important;
     }
 
     .hero-mountain-overlay {
       z-index: 3 !important;
       color: var(--bg-void) !important;
+      pointer-events: none !important;
     }
 
     #weatherWidget,
@@ -706,26 +726,32 @@
     }
 
     .drawer-overlay {
-      background-color: rgba(3, 4, 6, 0.8) !important;
+      background-color: rgba(3, 4, 6, 0.82) !important;
       backdrop-filter: blur(4px);
+      z-index: 1050 !important;
     }
 
-    #chatBox {
-      background-color: var(--bg-elevated) !important;
-      color: var(--text-primary) !important;
-      border: 1px solid var(--border-strong) !important;
-    }
-
-    #chatInput {
-      background-color: var(--bg-void) !important;
-      color: var(--text-primary) !important;
-      border: 1px solid var(--border-subtle) !important;
+    .drawer {
+      z-index: 1060 !important;
     }
 
     #scrollToTop {
+      position: fixed !important;
+      right: 16px !important;
+      bottom: 18px !important;
+      left: auto !important;
+      top: auto !important;
+      z-index: 9985 !important;
+      width: 46px !important;
+      height: 46px !important;
+      border-radius: 999px !important;
+      display: none;
+      align-items: center;
+      justify-content: center;
       background-color: var(--bg-elevated) !important;
       border: 1px solid var(--border-strong) !important;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.75) !important;
+      cursor: pointer;
     }
 
     /* Video YouTube integrato a tema */
@@ -758,6 +784,7 @@
       border: 0;
       display: block;
     }
+
     /* Foto 29" e 24" impilate nella card noleggio con dimensioni identiche */
     .rental-showcase-stack {
       display: flex !important;
@@ -806,7 +833,6 @@
       font-weight: 600 !important;
       color: var(--accent-orange-bright) !important;
     }
-
 
     /* Dimensione e posizione corrette del widget e del box chat AI */
     #chatWidget,
@@ -868,7 +894,7 @@
       bottom: 78px !important;
       top: auto !important;
       width: calc(100vw - 28px) !important;
-      min-width: 280px !important;
+      min-width: 260px !important;
       max-width: 420px !important;
       height: auto !important;
       max-height: min(440px, 62vh) !important;
@@ -917,6 +943,7 @@
       flex-shrink: 0 !important;
       box-sizing: border-box !important;
     }
+
     #chatSend {
       width: 100% !important;
       min-width: 0 !important;
@@ -942,8 +969,8 @@
       z-index: 9998 !important;
       box-sizing: border-box !important;
     }
-    #chatBox.keyboard-open,
-    #chatBox:focus-within {
+
+    #chatBox.keyboard-open {
       top: 84px !important;
       bottom: auto !important;
       max-height: calc(100dvh - 360px) !important;
@@ -952,23 +979,22 @@
       gap: 6px !important;
     }
 
-    #chatBox.keyboard-open #chatMessages,
-    #chatBox:focus-within #chatMessages {
+    #chatBox.keyboard-open #chatMessages {
       min-height: 48px !important;
       max-height: 82px !important;
       flex: 1 1 auto !important;
       padding: 6px !important;
     }
-    #chatBox.keyboard-open #chatInput,
-    #chatBox:focus-within #chatInput {
+
+    #chatBox.keyboard-open #chatInput {
       min-height: 36px !important;
       max-height: 44px !important;
       height: 38px !important;
       padding: 6px 8px !important;
       font-size: 0.85rem !important;
     }
-    #chatBox.keyboard-open #chatSend,
-    #chatBox:focus-within #chatSend {
+
+    #chatBox.keyboard-open #chatSend {
       height: 40px !important;
       min-height: 40px !important;
       padding: 6px 12px !important;
@@ -978,8 +1004,7 @@
       visibility: visible !important;
       opacity: 1 !important;
     }
-</style>
-
+  </style>
 </head>
 
 <body>
@@ -1064,6 +1089,7 @@
           <option value="sv">🇸🇪 SV</option>
         </select>
       </div>
+
       <div class="social-header" id="socialIcons">
         <a href="https://wa.me/393313453207" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
           <i class="fab fa-whatsapp"></i>
@@ -1096,7 +1122,7 @@
       <div class="hero-text">
         <h1 id="slideshow-title" class="fade-text" data-i18n="hero_title">Pedala e goditi la splendida natura incontaminata tra i sentieri della ValdiCecina</h1>
         <p>
-<span data-i18n="hero_desc">Officina specializzata per E-Bike, diagnosi riparazione e aggiornamento per i motori dei marchi più conosciuti, noleggio E-MTB e ristoro a Bibbona, in provincia di Livorno.</span>
+          <span data-i18n="hero_desc">Officina specializzata per E-Bike, diagnosi riparazione e aggiornamento per i motori dei marchi più conosciuti, noleggio E-MTB e ristoro a Bibbona, in provincia di Livorno.</span>
         </p>
         <a href="#noleggio" class="btn-primary scroll-btn">
           <span class="icon-bike">🚴‍♂️</span> <span data-i18n="hero_cta">Prenota la tua E-MTB</span>
@@ -1328,7 +1354,9 @@
           </div>
         </div>
       </div>
-    </section>    <!-- Sezione Noleggio -->
+    </section>
+
+    <!-- Sezione Noleggio -->
     <section class="rental-section" id="sezione-noleggio">
       <h2 class="section-title"><i class="fas fa-bicycle"></i> <span data-i18n="rental_section_title">Noleggio E-MTB</span></h2>
       <div class="bike-grid">
@@ -1383,23 +1411,25 @@
           <i class="fas fa-chevron-down rotate-icon rotate-down"></i> Mostra altri tour
         </button>
       </div>
-    </section>    <!-- Magona Section -->
+    </section>
+
+    <!-- Magona Section -->
     <section id="magona" class="magona-section">
       <h2 class="section-title">
         <i class="fas fa-route"></i> <span data-i18n="magona_section_title">Macchia Della Magona Trail Area</span>
       </h2>
       <div id="video" class="video-section magona-video-above-map" style="margin: 1rem auto 1.25rem;">
         <div class="yt-video-card">
-        <div class="yt-video-frame">
-          <iframe
-            src="https://www.youtube.com/embed/91DWUESxctI?rel=0&modestbranding=1"
-            title="Video YouTube – Magona Bike Garage"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerpolicy="strict-origin-when-cross-origin"
-            allowfullscreen
-          ></iframe>
+          <div class="yt-video-frame">
+            <iframe
+              src="https://www.youtube.com/embed/91DWUESxctI?rel=0&modestbranding=1"
+              title="Video YouTube – Magona Bike Garage"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen
+            ></iframe>
+          </div>
         </div>
-      </div>
       </div>
       <div class="trailforks-map-wrapper" style="max-width: 1120px; margin: 1.5rem auto 0; padding: 0 1rem; box-sizing: border-box;">
         <div style="position: relative; width: 100%; padding-bottom: 62%; min-height: 420px; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255, 123, 28, 0.35); background: #0e1013; box-shadow: 0 18px 42px rgba(0, 0, 0, 0.72);">
@@ -1417,7 +1447,9 @@
           </a>
         </p>
       </div>
-    </section>    <!-- Trails Section -->
+    </section>
+
+    <!-- Trails Section -->
     <section id="trails" class="trails-section">
       <div class="magona-trails-card">
         <div class="magona-trails-header">
@@ -1627,7 +1659,6 @@
         </div>
       </div>
     </div>
-    </div>
 
     <!-- Galleria Foto -->
     <section class="photo-slideshow" id="galleria">
@@ -1642,7 +1673,8 @@
         </button>
       </div>
     </section>
-      <!-- Form Noleggio / Prenotazione -->
+
+    <!-- Form Noleggio / Prenotazione -->
     <section class="form-section" id="noleggio">
       <div class="container-full">
         <h2 class="section-title"><i class="fas fa-calendar-check"></i> <span data-i18n="booking_section_title">Prenota ora</span></h2>
@@ -1858,28 +1890,26 @@
     </div>
   </div>
 
-  <!-- Script Gestione Cookie -->
+  <!-- Script Gestione Cookie, Header & Video -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-
       const weatherWidgetEl = document.getElementById('weatherWidget');
       if (weatherWidgetEl) {
         weatherWidgetEl.classList.remove('hidden');
       }
 
       const syncWeatherHeaderOffset = () => {
-        const hdr = document.getElementById("header");
+        const hdr = document.getElementById('header');
         if (hdr) {
-          document.documentElement.style.setProperty("--header-height", hdr.offsetHeight + "px");
+          document.documentElement.style.setProperty('--header-height', hdr.offsetHeight + 'px');
         }
       };
       syncWeatherHeaderOffset();
-      window.addEventListener("resize", syncWeatherHeaderOffset);
-      window.addEventListener("bibbonabike:langchange", syncWeatherHeaderOffset);
-      if ("ResizeObserver" in window && document.getElementById("header")) {
-        new ResizeObserver(syncWeatherHeaderOffset).observe(document.getElementById("header"));
+      window.addEventListener('resize', syncWeatherHeaderOffset);
+      window.addEventListener('bibbonabike:langchange', syncWeatherHeaderOffset);
+      if ('ResizeObserver' in window && document.getElementById('header')) {
+        new ResizeObserver(syncWeatherHeaderOffset).observe(document.getElementById('header'));
       }
-
 
       const heroVideo = document.querySelector('.hero-video');
       if (heroVideo) {
@@ -1931,21 +1961,8 @@
       }
 
       function applyConsent(prefs) {
-        console.log('Stato Consenso Applicato:', prefs);
-
-        if (prefs.analytics) {
-          console.log('ANALISI: Consenso analytics attivo.');
-        } else {
-          console.log('ANALISI: Consenso analytics negato.');
-        }
-
-        if (prefs.marketing) {
-          console.log('MARKETING: Consenso marketing attivo.');
-        } else {
-          console.log('MARKETING: Consenso marketing negato.');
-        }
-
-        console.log('NECESSARI: Funzionalità tecniche e di prenotazione sempre attive.');
+        if (analyticsCheckbox) analyticsCheckbox.checked = Boolean(prefs.analytics);
+        if (marketingCheckbox) marketingCheckbox.checked = Boolean(prefs.marketing);
       }
 
       const existingConsent = getConsent();
@@ -2025,7 +2042,7 @@
     });
   </script>
 
-  <!-- Calcolo Totale Prenotazione (E-MTB 24: 40€/giorno, 25€ mezza giornata) -->
+  <!-- Calcolo Totale Prenotazione (E-MTB 29: 50€/giorno, 35€ mezza giornata · E-MTB 24: 40€/giorno, 25€ mezza giornata) -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const form = document.getElementById('noleggioForm');
@@ -2049,20 +2066,16 @@
         }
 
         const days = parseFloat(durationSelect.value) || 1;
-        const qty = Math.max(1, parseInt(quantityInput.value, 10) || 1);
+        const parsedQty = parseInt(quantityInput.value, 10);
+        const qty = Number.isFinite(parsedQty) && parsedQty >= 1 ? parsedQty : 1;
         const priceDay = parseFloat(selectedOption.dataset.priceDay) || 40;
         const priceHalf = parseFloat(selectedOption.dataset.priceHalf) || (priceDay / 2);
 
-        let unitPrice;
-        if (days === 0.5) {
-          unitPrice = priceHalf;
-        } else {
-          unitPrice = priceDay * days;
-        }
+        const unitPrice = days === 0.5 ? priceHalf : priceDay * days;
 
         let accessoriesTotal = 0;
         const checkedAccessories = form ? form.querySelectorAll('input[name="accessories"]:checked') : [];
-        checkedAccessories.forEach(acc => {
+        checkedAccessories.forEach((acc) => {
           if (acc.value === 'carrello') accessoriesTotal += 7;
           if (acc.value === 'shotgun') accessoriesTotal += 15;
         });
@@ -2073,7 +2086,9 @@
         totalHiddenInput.value = formatted;
       }
 
-      selectButtons.forEach(btn => {
+      window.recomputeBibbonaTotal = computeRentalTotal;
+
+      selectButtons.forEach((btn) => {
         btn.addEventListener('click', () => {
           const bikeVal = btn.getAttribute('data-bike');
           if (bikeSelect && bikeVal) {
@@ -2093,14 +2108,16 @@
     });
   </script>
 
-  <!-- Script Scroll to Top, Reveal Footer, Lazy hCaptcha, Chat e Titoli -->
+  <!-- Script Scroll to Top, Reveal Footer, Lazy hCaptcha e Animazione Titoli -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const scrollBtn = document.getElementById('scrollToTop');
       if (scrollBtn) {
-        window.addEventListener('scroll', () => {
-          scrollBtn.style.display = window.scrollY > 300 ? 'block' : 'none';
-        });
+        const updateScrollBtn = () => {
+          scrollBtn.style.display = window.scrollY > 300 ? 'inline-flex' : 'none';
+        };
+        updateScrollBtn();
+        window.addEventListener('scroll', updateScrollBtn, { passive: true });
 
         scrollBtn.addEventListener('click', () => {
           window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -2109,8 +2126,8 @@
 
       const footerOverlay = document.querySelector('.footer-overlay');
       if (footerOverlay && 'IntersectionObserver' in window) {
-        const footerRevealObserver = new IntersectionObserver(entries => {
-          entries.forEach(entry => {
+        const footerRevealObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
             if (entry.isIntersecting) {
               entry.target.classList.remove('hidden');
               entry.target.classList.add('visible');
@@ -2123,8 +2140,8 @@
 
       const hcaptchaContainer = document.getElementById('hcaptcha');
       if (hcaptchaContainer && 'IntersectionObserver' in window) {
-        const captchaObserver = new IntersectionObserver(entries => {
-          entries.forEach(entry => {
+        const captchaObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
             if (entry.isIntersecting && !document.getElementById('hcaptcha-script')) {
               const script = document.createElement('script');
               script.src = 'https://js.hcaptcha.com/1/api.js';
@@ -2141,8 +2158,8 @@
 
       const formCard = document.querySelector('.form-card');
       if (formCard && 'IntersectionObserver' in window) {
-        const formObserver = new IntersectionObserver(entries => {
-          entries.forEach(entry => {
+        const formObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
             if (entry.isIntersecting) {
               entry.target.classList.add('visible');
             }
@@ -2165,8 +2182,8 @@
       if (message) {
         message.style.animationPlayState = 'paused';
         if ('IntersectionObserver' in window) {
-          const chiSiamoObserver = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
+          const chiSiamoObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
               if (entry.isIntersecting) {
                 message.style.animationPlayState = 'running';
               }
@@ -2177,7 +2194,7 @@
       }
 
       const h2List = document.querySelectorAll('h2.section-title');
-      h2List.forEach(h2 => {
+      h2List.forEach((h2) => {
         if (!h2.parentElement || !h2.parentElement.classList.contains('section-title-wrapper')) {
           const wrapper = document.createElement('div');
           wrapper.classList.add('section-title-wrapper');
@@ -2194,8 +2211,8 @@
       });
 
       if ('IntersectionObserver' in window) {
-        const titleObserver = new IntersectionObserver(entries => {
-          entries.forEach(entry => {
+        const titleObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
             if (entry.isIntersecting) {
               const h2 = entry.target;
               const wrapper = h2.parentElement;
@@ -2221,12 +2238,12 @@
           });
         }, { threshold: 0.5 });
 
-        h2List.forEach(h2 => titleObserver.observe(h2));
+        h2List.forEach((h2) => titleObserver.observe(h2));
       }
     });
   </script>
 
-  <!-- Traduzione Sito in 8 Lingue (IT, EN, FR, DE, ES, NL, PT, SV) -->
+  <!-- Traduzione Sito in 8 Lingue (IT, EN, FR, DE, ES, NL, PT, SV) & Gestione Tastiera Chat Mobile -->
   <script>
     (function () {
       const SUPPORTED_LANGS = ["it", "en", "fr", "de", "es", "nl", "pt", "sv"];
@@ -2449,7 +2466,7 @@
           pp_sec2_title: '2. Sicherheit, hCaptcha und Speicherdauer',
           pp_sec2_body: 'Das Formular nutzt hCaptcha zum Schutz vor automatisierten Anfragen und Spam. Buchungsdaten werden sicher zur Bearbeitung übermittelt und so lange gespeichert, wie es für die Leistungserbringung und gesetzliche Vorgaben erforderlich ist.',
           pp_sec3_title: '3. Cookie-Kategorien und Einstellungen',
-          pp_sec3_body: 'Die Website unterscheidet zwischen technisch notwendigen Cookies (stets aktiv für Funktion und EinstellungsSPEICHERUNG), Statistik-Cookies sowie Marketing-/Profilierungs-Cookies, die nur nach ausdrücklicher Zustimmung über das Banner aktiviert werden.',
+          pp_sec3_body: 'Die Website unterscheidet zwischen technisch notwendigen Cookies (stets aktiv für Funktion und Einstellungsspeicherung), Statistik-Cookies sowie Marketing-/Profilierungs-Cookies, die nur nach ausdrücklicher Zustimmung über das Banner aktiviert werden.',
           pp_sec4_title: '4. Rechte betroffener Personen (DSGVO)',
           pp_sec4_body: 'Gemäß der EU-Verordnung 2016/679 (DSGVO) kannst du jederzeit Auskunft, Berichtigung, Löschung oder Einschränkung deiner Daten verlangen, deine Einwilligung für optionale Cookies widerrufen oder dich an die zuständige Aufsichtsbehörde wenden.',
           pp_manage_cookies: 'Cookie-Einstellungen verwalten',
@@ -2827,6 +2844,16 @@
             navEl.style.clear = "both";
           }
         });
+
+        const resetChatBoxLayout = (box) => {
+          if (!box) return;
+          box.classList.remove("keyboard-open");
+          box.style.setProperty("top", "auto", "important");
+          box.style.setProperty("bottom", "78px", "important");
+          box.style.setProperty("height", "auto", "important");
+          box.style.setProperty("max-height", "min(440px, 62vh)", "important");
+        };
+
         const syncChatKeyboardPosition = () => {
           const box = document.getElementById("chatBox");
           const inp = document.getElementById("chatInput");
@@ -2850,35 +2877,28 @@
             box.style.setProperty("height", boxHeight + "px", "important");
             box.style.setProperty("max-height", boxHeight + "px", "important");
           } else {
-            box.classList.remove("keyboard-open");
-            box.style.setProperty("top", "auto", "important");
-            box.style.setProperty("bottom", "78px", "important");
-            box.style.setProperty("height", "auto", "important");
-            box.style.setProperty("max-height", "min(440px, 62vh)", "important");
+            resetChatBoxLayout(box);
           }
         };
-if (window.visualViewport) {
+
+        if (window.visualViewport) {
           window.visualViewport.addEventListener("resize", syncChatKeyboardPosition);
           window.visualViewport.addEventListener("scroll", syncChatKeyboardPosition);
         }
+
         document.addEventListener("focusin", (e) => {
           if (e.target && e.target.id === "chatInput") {
             setTimeout(syncChatKeyboardPosition, 60);
           }
         }, true);
+
         document.addEventListener("focusout", (e) => {
           if (e.target && e.target.id === "chatInput") {
             setTimeout(() => {
-              const box = document.getElementById("chatBox");
-              if (box) {
-                box.classList.remove("keyboard-open");
-                box.style.setProperty("bottom", "78px", "important");
-                box.style.setProperty("max-height", "min(440px, 62vh)", "important");
-              }
+              resetChatBoxLayout(document.getElementById("chatBox"));
             }, 120);
           }
         }, true);
-
       });
     })();
   </script>
@@ -2890,12 +2910,13 @@ if (window.visualViewport) {
   <script src="js/slogan.js"></script>
   <script src="js/tour.js"></script>
   <script src="js/booking.js"></script>
-
   <script src="js/event.js"></script>
   <script src="js/slideshow.js"></script>
   <script src="js/typewrite.js"></script>
   <script src="js/bike.js"></script>
-  <script src="js/chat.js"></script>  <!-- Assistente AI Locale Val di Cecina & BibbonaBike -->
+  <script src="js/chat.js"></script>
+
+  <!-- Assistente AI Locale Val di Cecina & BibbonaBike -->
   <script>
     (function () {
       const MAGONA_TRAILS_DETAIL = [
@@ -3065,20 +3086,20 @@ if (window.visualViewport) {
             "13 bis", "13bis", "percorso 14", "immaginetta", "percorso 17", "difficolta", "dislivello", "lunghezza"
           ],
           getAnswer: function (norm) {
-            for (const tr of MAGONA_TRAILS_DETAIL) {
-              const cleanName = normalizeText(tr.name);
-              const numMatch = norm.match(/\b(?:percorso\s*)?(1\s*bis|1b|3|4|5|6|7\s*bis|7|8|9\s*bis|9b|9|10\s*bis|10|11|12|13\s*bis|13bis|13|14|17)\b/);
-              if (numMatch) {
-                const tag = numMatch[1].replace(/\s+/g, "");
-                const trTag = normalizeText(tr.name).replace(/\s+/g, "");
+            const numMatch = norm.match(/\b(?:percorso\s*)?(1\s*bis|1b|3|4|5|6|7\s*bis|7|8|9\s*bis|9b|9|10\s*bis|10|11|12|13\s*bis|13bis|13|14|17)\b/);
+            if (numMatch) {
+              const tag = numMatch[1].replace(/\s+/g, "");
+              for (const tr of MAGONA_TRAILS_DETAIL) {
+                const cleanName = normalizeText(tr.name);
+                const trTag = cleanName.replace(/\s+/g, "");
+                const exactBaseMatch = new RegExp("\\bpercorso\\s*" + tag + "\\b").test(cleanName) && !cleanName.includes("bis");
                 if (
-                  (tag === "1bis" || tag === "1b") && trTag.includes("1bis") ||
-                  (tag === "7bis") && trTag.includes("7bis") ||
-                  (tag === "9bis" || tag === "9b") && trTag.includes("9bis") ||
-                  (tag === "10bis") && trTag.includes("10bis") ||
-                  (tag === "13bis") && trTag.includes("13bis") ||
-                  (["3","4","5","6","7","8","9","10","11","12","13","14","17"].includes(tag) &&
-                    new RegExp(`\bpercorso\s*${tag}\b`).test(cleanName) && !cleanName.includes("bis"))
+                  ((tag === "1bis" || tag === "1b") && trTag.includes("1bis")) ||
+                  (tag === "7bis" && trTag.includes("7bis")) ||
+                  ((tag === "9bis" || tag === "9b") && trTag.includes("9bis")) ||
+                  (tag === "10bis" && trTag.includes("10bis")) ||
+                  (tag === "13bis" && trTag.includes("13bis")) ||
+                  (["3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "17"].includes(tag) && exactBaseMatch)
                 ) {
                   return (
                     `**${tr.name}** (Macchia Della Magona Trail Area – Trailforks)\n` +
@@ -3286,9 +3307,13 @@ if (window.visualViewport) {
           }
           if (!box) return;
           if (open) {
-            box.classList.remove("hidden");
+            box.classList.remove("hidden", "keyboard-open");
             box.classList.add("open");
             box.style.setProperty("display", "flex", "important");
+            box.style.setProperty("top", "auto", "important");
+            box.style.setProperty("bottom", "78px", "important");
+            box.style.setProperty("height", "auto", "important");
+            box.style.setProperty("max-height", "min(440px, 62vh)", "important");
             box.style.setProperty("opacity", "1", "important");
             box.style.setProperty("visibility", "visible", "important");
             if (inp) {
@@ -3296,7 +3321,7 @@ if (window.visualViewport) {
             }
           } else {
             box.classList.add("hidden");
-            box.classList.remove("open");
+            box.classList.remove("open", "keyboard-open");
             box.style.setProperty("display", "none", "important");
             box.style.setProperty("opacity", "0", "important");
             box.style.setProperty("visibility", "hidden", "important");
@@ -3348,9 +3373,11 @@ if (window.visualViewport) {
       });
     })();
   </script>
+
   <script src="js/weather.js"></script>
   <script src="js/contactButton.js"></script>
   <script src="js/slideshow_my.js"></script>
+
   <!-- Invio Prenotazione verso Cloudflare Worker (/submit) -->
   <script>
     (function () {
@@ -3373,6 +3400,10 @@ if (window.visualViewport) {
         }
 
         if (form.dataset.sending === "1") return;
+
+        if (typeof window.recomputeBibbonaTotal === "function") {
+          window.recomputeBibbonaTotal();
+        }
 
         const nameVal = (document.getElementById("name")?.value || "").trim();
         const emailVal = (document.getElementById("email")?.value || "").trim();
@@ -3402,6 +3433,12 @@ if (window.visualViewport) {
 
         if (!nameVal || !emailVal || !phoneVal || !bikeVal || !dateVal) {
           setFeedback("Compila tutti i campi obbligatori: Nome e Cognome, Email, Telefono, Tipo di bici e Data.", false);
+          return;
+        }
+
+        const hcaptchaRendered = Boolean(document.querySelector("#hcaptcha iframe"));
+        if (hcaptchaRendered && !captchaToken) {
+          setFeedback("Completa la verifica di sicurezza hCaptcha prima di inviare la richiesta.", false);
           return;
         }
 
@@ -3479,6 +3516,5 @@ if (window.visualViewport) {
       });
     })();
   </script>
-
 </body>
 </html>
