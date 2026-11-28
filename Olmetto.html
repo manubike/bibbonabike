@@ -1768,7 +1768,7 @@
             resetKeys();
             playSound('gelato');
           }
-        } else {
+        } else if (isLv2) {
           for (let o = 0; o < trailObstacles.length; o++) {
             const obs = trailObstacles[o];
             if (obs.cleared || obs.hit) continue;
@@ -3482,7 +3482,7 @@
               drawNpc(npc, nx, baseRoadScreenY + getGroundY(npc.x));
             }
           }
-        } else {
+        } else if (isLv2) {
           for (let o = 0; o < trailObstacles.length; o++) {
             const obs = trailObstacles[o];
             const ox = obs.x - state.cameraX;
@@ -3629,7 +3629,7 @@
       }
 
       // =========================================================================
-      // ILLUSTRAZIONE ANIMATA SCHERMATA START
+      // ILLUSTRAZIONE ANIMATA SCHERMATA START (FEDELE ALLA FOTO)
       // =========================================================================
       function renderStartHeroAnimation(t) {
         if (!startHeroCtx || !startHeroCanvas || !startScreen || startScreen.classList.contains('hidden')) return;
@@ -3640,23 +3640,23 @@
           startHeroCanvas.height = h;
         }
         const c = startHeroCtx;
+        c.save();
 
-        // 1. CIELO AZZURRO CON CIRRI E NUVOLE SFILACCIATE COME NELLA FOTO
+        // 1. CIELO AZZURRO CON CIRRI E NUVOLE SFILACCIATE
         const skyGrad = c.createLinearGradient(0, 0, 0, h * 0.28);
-        skyGrad.addColorStop(0, '#1d4ed8');
+        skyGrad.addColorStop(0, '#1e40af');
         skyGrad.addColorStop(0.55, '#3b82f6');
         skyGrad.addColorStop(1, '#93c5fd');
         c.fillStyle = skyGrad;
         c.fillRect(0, 0, w, h * 0.28);
 
-        // Nuvole bianche sfilacciate in diagonale
-        const drift = Math.sin(t * 0.35) * 6;
-        c.fillStyle = 'rgba(255, 255, 255, 0.78)';
+        const drift = Math.sin(t * 0.35) * 5;
+        c.fillStyle = 'rgba(255, 255, 255, 0.82)';
         const cirrusClouds = [
-          [18 + drift, 26, 28, 6], [52 + drift, 22, 34, 7], [90 + drift, 18, 30, 6],
-          [135 + drift, 14, 24, 5], [295 - drift * 0.6, 28, 32, 6], [335 - drift * 0.6, 23, 38, 7],
-          [382 - drift * 0.6, 17, 35, 6], [428 - drift * 0.6, 12, 30, 5],
-          [24 + drift * 0.5, 48, 26, 4], [360 - drift * 0.5, 44, 28, 5]
+          [16 + drift, 26, 30, 6], [52 + drift, 22, 36, 7], [92 + drift, 17, 32, 6],
+          [138 + drift, 13, 25, 5], [292 - drift * 0.6, 28, 34, 6], [334 - drift * 0.6, 22, 40, 7],
+          [382 - drift * 0.6, 16, 36, 6], [428 - drift * 0.6, 11, 30, 5],
+          [22 + drift * 0.5, 48, 28, 4], [358 - drift * 0.5, 44, 30, 5]
         ];
         for (let i = 0; i < cirrusClouds.length; i++) {
           c.beginPath();
@@ -3664,7 +3664,19 @@
           c.fill();
         }
 
-        // Promontorio all'orizzonte a sinistra (esattamente come nella foto)
+        // Scritta "RIDE AND CHILL" in alto come nella foto
+        c.save();
+        const titlePulse = 1 + Math.sin(t * 2.2) * 0.015;
+        c.translate(w * 0.51, 13);
+        c.scale(titlePulse, titlePulse);
+        c.font = '900 18px Inter, sans-serif';
+        c.textAlign = 'center';
+        c.textBaseline = 'middle';
+        c.fillStyle = 'rgba(255, 255, 255, 0.92)';
+        c.fillText('RIDE AND CHILL', 0, 0);
+        c.restore();
+
+        // Promontorio all'orizzonte a sinistra
         c.fillStyle = '#3b6cb7';
         c.beginPath();
         c.moveTo(0, h * 0.225);
@@ -3673,7 +3685,7 @@
         c.closePath();
         c.fill();
 
-        // 2. MARE BLU INTENSO CON RIFLESSO SOLARE SCINTILLANTE A SINISTRA E TURCHESE SULLA SCOGLIERA
+        // 2. MARE BLU INTENSO CON SCINTILLII D'ACQUA ANIMATI
         const horizonY = h * 0.275;
         const seaGrad = c.createLinearGradient(0, horizonY, 0, h * 0.78);
         seaGrad.addColorStop(0, '#1e40af');
@@ -3683,10 +3695,9 @@
         c.fillStyle = seaGrad;
         c.fillRect(0, horizonY, w, h * 0.52);
 
-        // Riflessi d'acqua scintillanti animati (concentrati a sinistra e centro-sinistra come nella foto)
-        for (let i = 0; i < 115; i++) {
-          const band = (i % 19) / 19;
-          const sx = 8 + ((i * 37) % Math.floor(w * (0.48 + band * 0.45)));
+        for (let i = 0; i < 120; i++) {
+          const band = (i % 20) / 20;
+          const sx = 12 + ((i * 37) % Math.floor(w * (0.46 + band * 0.46)));
           const sy = horizonY + 5 + band * (h * 0.45);
           const twinkle = 0.22 + 0.72 * Math.max(0, Math.sin(t * 4.5 + i * 1.9));
           c.fillStyle = 'rgba(255, 255, 255, ' + twinkle.toFixed(2) + ')';
@@ -3694,13 +3705,12 @@
           c.fillRect(sx, sy, len, 1.5);
         }
 
-        // Acqua turchese trasparente tra gli scogli in basso
         c.fillStyle = 'rgba(56, 189, 248, 0.55)';
         c.beginPath();
         c.ellipse(w * 0.62, h * 0.75, 115, 18, 0.08, 0, Math.PI * 2);
         c.fill();
 
-        // 3. SCOGLIERA ROCCIOSA CHIARA IN PRIMO PIANO (PIATTAFORMA DI ROCCIA CHIARA COME NELLA FOTO)
+        // 3. SCOGLIERA ROCCIOSA CHIARA IN PRIMO PIANO E MACCHIA LATERALE
         const rockBaseGrad = c.createLinearGradient(0, h * 0.64, 0, h);
         rockBaseGrad.addColorStop(0, '#e7dcc8');
         rockBaseGrad.addColorStop(0.45, '#cbbba0');
@@ -3716,7 +3726,6 @@
         c.closePath();
         c.fill();
 
-        // Gradini e fenditure della roccia chiara
         c.fillStyle = '#dfd2bc';
         c.beginPath();
         c.moveTo(0, h * 0.86);
@@ -3737,7 +3746,6 @@
         c.lineTo(315, h * 0.96);
         c.stroke();
 
-        // Macchia mediterranea / cespugli sul bordo roccioso (come a sinistra e a destra nella foto)
         const bushes = [
           [22, h * 0.71, 24, 11, '#3f6212'],
           [55, h * 0.74, 28, 12, '#4d7c0f'],
@@ -3753,22 +3761,17 @@
           c.fill();
         }
 
-        // =====================================================================
-        // 4. RIDER IN PIEDI DIETRO LA BICI (POSA ESATTA DELLA FOTO)
-        // =====================================================================
+        // 4. RIDER IN PIEDI DIETRO LA BICI (POSA DELLA FOTO + SHAKA ANIMATO)
         const rx = w * 0.495;
         const groundFootY = h * 0.835;
         const breathe = Math.sin(t * 2.5) * 1.8;
 
-        // Ombra proiettata sulla roccia sotto bici e rider
         c.fillStyle = 'rgba(41, 37, 36, 0.38)';
         c.beginPath();
         c.ellipse(rx + 6, groundFootY + 26, 175, 13, 0.05, 0, Math.PI * 2);
         c.fill();
 
-        // Gambe con pantaloni lunghi neri (gamba destra leggermente divaricata a sx, gamba sinistra centrale)
         c.fillStyle = '#111827';
-        // Gamba destra (a sinistra nell'immagine, dietro la ruota posteriore)
         c.beginPath();
         c.moveTo(rx - 32, groundFootY - 125 + breathe);
         c.lineTo(rx - 4, groundFootY - 125 + breathe);
@@ -3777,7 +3780,6 @@
         c.closePath();
         c.fill();
 
-        // Gamba sinistra (più dritta al centro dietro il movimento centrale)
         c.beginPath();
         c.moveTo(rx - 4, groundFootY - 125 + breathe);
         c.lineTo(rx + 26, groundFootY - 125 + breathe);
@@ -3786,7 +3788,6 @@
         c.closePath();
         c.fill();
 
-        // Scarpe MTB nere con suola chiara
         c.fillStyle = '#090d16';
         c.beginPath();
         c.ellipse(rx - 52, groundFootY - 18, 15, 7, -0.15, 0, Math.PI * 2);
@@ -3801,7 +3802,6 @@
         c.lineTo(rx + 15, groundFootY + 4);
         c.stroke();
 
-        // Maglia FOX con fasce orizzontali: NERO -> VIOLA SCURO -> LILLA -> BIANCO
         const torsoTopY = groundFootY - 208 + breathe;
         const torsoH = 88;
         const torsoW = 64;
@@ -3810,25 +3810,19 @@
         c.roundRect(rx - torsoW / 2, torsoTopY, torsoW, torsoH, 10);
         c.clip();
 
-        // Fascia 1: Nero superiore
         c.fillStyle = '#090d16';
         c.fillRect(rx - torsoW / 2, torsoTopY, torsoW, torsoH * 0.34);
-        // Fascia 2: Viola scuro
         c.fillStyle = '#4c1d95';
         c.fillRect(rx - torsoW / 2, torsoTopY + torsoH * 0.34, torsoW, torsoH * 0.21);
-        // Fascia 3: Lilla chiaro
         c.fillStyle = '#c4b5fd';
         c.fillRect(rx - torsoW / 2, torsoTopY + torsoH * 0.55, torsoW, torsoH * 0.23);
-        // Fascia 4: Bianco inferiore
         c.fillStyle = '#f8fafc';
         c.fillRect(rx - torsoW / 2, torsoTopY + torsoH * 0.78, torsoW, torsoH * 0.22);
 
-        // Pannelli laterali neri della maglia
         c.fillStyle = '#090d16';
         c.fillRect(rx - torsoW / 2, torsoTopY, 8, torsoH);
         c.fillRect(rx + torsoW / 2 - 8, torsoTopY, 8, torsoH);
 
-        // Logo testa di volpe FOX verde lime al centro del petto
         c.fillStyle = '#84cc16';
         c.beginPath();
         c.moveTo(rx - 10, torsoTopY + 10);
@@ -3841,7 +3835,6 @@
         c.closePath();
         c.fill();
 
-        // Bretelle zaino/marsupio nero sulle spalle
         c.strokeStyle = '#1e293b';
         c.lineWidth = 6.5;
         c.beginPath();
@@ -3850,10 +3843,8 @@
         c.moveTo(rx + 18, torsoTopY);
         c.lineTo(rx + 20, torsoTopY + 42);
         c.stroke();
-
         c.restore();
 
-        // Spalle nere con loghi FOX lime sulle maniche
         c.fillStyle = '#090d16';
         c.beginPath();
         c.arc(rx - 33, torsoTopY + 12, 12, 0, Math.PI * 2);
@@ -3865,7 +3856,6 @@
         c.arc(rx + 37, torsoTopY + 12, 5, 0, Math.PI * 2);
         c.fill();
 
-        // Braccio destro (a sinistra): manica nera -> viola -> bianco + guanto giallo ocra che fa SHAKA 🤙
         const shakaWave = Math.sin(t * 6.0) * 0.14;
         c.lineCap = 'round';
         c.lineJoin = 'round';
@@ -3890,7 +3880,6 @@
         c.lineTo(rx - 30, torsoTopY + 56);
         c.stroke();
 
-        // Guanto giallo ocra che fa il segno Shaka (pollice e mignolo aperti)
         c.save();
         c.translate(rx - 28, torsoTopY + 56);
         c.rotate(shakaWave);
@@ -3901,16 +3890,13 @@
         c.strokeStyle = '#d97706';
         c.lineWidth = 3.8;
         c.beginPath();
-        // Pollice verso l'alto
         c.moveTo(-2, -5);
         c.lineTo(-4, -15);
-        // Mignolo verso destra
         c.moveTo(7, -1);
         c.lineTo(18, -3);
         c.stroke();
         c.restore();
 
-        // Braccio sinistro (a destra): manica nera -> viola -> bianco + guanto che tiene la manopola del manubrio
         const barHandX = rx + 68;
         const barHandY = torsoTopY + 72;
         c.strokeStyle = '#090d16';
@@ -3934,7 +3920,6 @@
         c.lineTo(barHandX, barHandY);
         c.stroke();
 
-        // Guanto sinistro sul manubrio
         c.fillStyle = '#d97706';
         c.beginPath();
         c.arc(barHandX, barHandY, 7, 0, Math.PI * 2);
@@ -3942,26 +3927,22 @@
         c.fillStyle = '#090d16';
         c.fillRect(barHandX - 5, barHandY - 6, 10, 4);
 
-        // Casco integrale nero + maschera specchiata iridium + pizzetto/bocca visibile nella mentoniera
         const headY = torsoTopY - 23;
         c.save();
         c.translate(rx, headY);
         c.rotate(Math.sin(t * 2.0) * 0.025);
 
-        // Calotta casco integrale nero
         c.fillStyle = '#090d16';
         c.beginPath();
         c.arc(0, 0, 21, 0, Math.PI * 2);
         c.fill();
 
-        // Grafiche grigio/argento sul casco
         c.strokeStyle = '#64748b';
         c.lineWidth = 2;
         c.beginPath();
         c.arc(0, -3, 18, Math.PI * 1.15, Math.PI * 1.85);
         c.stroke();
 
-        // Visiera superiore del casco
         c.fillStyle = '#1e293b';
         c.beginPath();
         c.moveTo(-16, -11);
@@ -3971,7 +3952,6 @@
         c.closePath();
         c.fill();
 
-        // Mentoniera aperta con viso/bocca e pizzetto al centro
         c.fillStyle = '#090d16';
         c.beginPath();
         c.moveTo(-17, 4);
@@ -3990,7 +3970,6 @@
         c.fillStyle = '#1e293b';
         c.fillRect(-3, 13, 6, 3);
 
-        // Maschera da downhill specchiata verde/azzurro/arancio
         const shimmer = Math.sin(t * 3.5) * 0.25;
         const gGrad = c.createLinearGradient(-14, -6, 14, 4);
         gGrad.addColorStop(0, '#84cc16');
@@ -4003,12 +3982,9 @@
         c.strokeStyle = '#0f172a';
         c.lineWidth = 1.6;
         c.stroke();
-
         c.restore();
 
-        // =====================================================================
-        // 5. MTB ORBEA VIOLA IN PRIMO PIANO (FEDELISSIMA ALLA FOTO)
-        // =====================================================================
+        // 5. MTB ORBEA VIOLA IN PRIMO PIANO
         const rearWX = rx - 118;
         const rearWY = groundFootY - 12;
         const frontWX = rx + 132;
@@ -4019,21 +3995,18 @@
           c.save();
           c.translate(wx, wy);
 
-          // Copertone tassellato nero
           c.strokeStyle = '#090d16';
           c.lineWidth = 10;
           c.beginPath();
           c.arc(0, 0, wR - 4, 0, Math.PI * 2);
           c.stroke();
 
-          // Cerchio interno
           c.strokeStyle = '#334155';
           c.lineWidth = 2.4;
           c.beginPath();
           c.arc(0, 0, wR - 9.5, 0, Math.PI * 2);
           c.stroke();
 
-          // Raggi
           c.strokeStyle = 'rgba(203, 213, 225, 0.45)';
           c.lineWidth = 1.1;
           for (let r = 0; r < 12; r++) {
@@ -4044,21 +4017,18 @@
             c.stroke();
           }
 
-          // Disco freno
           c.strokeStyle = '#cbd5e1';
           c.lineWidth = 1.6;
           c.beginPath();
           c.arc(0, 0, 14, 0, Math.PI * 2);
           c.stroke();
 
-          // Scritte gialle PIRELLI SCORPION sul fianco del copertone
           c.fillStyle = '#facc15';
           c.font = '900 6.5px Inter, sans-serif';
           c.textAlign = 'center';
           c.fillText('PIRELLI', 0, -(wR - 6.2));
           c.fillText('SCORPION', 0, wR - 2.2);
 
-          // Pacco pignoni nero grande sulla ruota posteriore
           if (isRear) {
             c.fillStyle = '#1e293b';
             c.beginPath();
@@ -4073,21 +4043,18 @@
           c.beginPath();
           c.arc(0, 0, 5, 0, Math.PI * 2);
           c.fill();
-
           c.restore();
         }
 
         drawPhotoWheel(rearWX, rearWY, true);
         drawPhotoWheel(frontWX, frontWY, false);
 
-        // Parafango anteriore nero sopra la ruota davanti
         c.strokeStyle = '#090d16';
         c.lineWidth = 4.5;
         c.beginPath();
         c.arc(frontWX, frontWY, wR + 4, -Math.PI * 0.78, -Math.PI * 0.34);
         c.stroke();
 
-        // Forcella FOX 38: steli dorati Kashima + foderi neri con scritta bianca FOX 38
         const crownX = rx + 76;
         const crownY = frontWY - 76;
         const midForkX = rx + 97;
@@ -4117,7 +4084,6 @@
         c.fillText('FOX 38', 0, 0);
         c.restore();
 
-        // Carro posteriore viola
         const bbX = rx - 18;
         const bbY = rearWY + 6;
         const seatX = rx - 34;
@@ -4135,7 +4101,6 @@
         c.lineTo(rearWX, rearWY);
         c.stroke();
 
-        // Ammortizzatore centrale nero
         c.strokeStyle = '#1e293b';
         c.lineWidth = 6.5;
         c.beginPath();
@@ -4143,7 +4108,6 @@
         c.lineTo(bbX + 10, bbY - 18);
         c.stroke();
 
-        // Triangolo principale ORBEA viola metallizzato
         const fGrad = c.createLinearGradient(seatX, headYFrame, bbX, bbY);
         fGrad.addColorStop(0, '#9333ea');
         fGrad.addColorStop(0.5, '#6d28d9');
@@ -4157,7 +4121,6 @@
         c.closePath();
         c.stroke();
 
-        // Scritta bianca ORBEA sul tubo obliquo
         c.save();
         c.translate(rx + 28, rearWY - 30);
         c.rotate(-0.82);
@@ -4167,7 +4130,6 @@
         c.fillText('ORBEA', 0, 0);
         c.restore();
 
-        // Borraccia scura sul tubo obliquo
         c.save();
         c.translate(rx + 21, rearWY - 40);
         c.rotate(-0.82);
@@ -4179,7 +4141,6 @@
         c.fillRect(10, -11, 4, 5);
         c.restore();
 
-        // Corona, catena e pedivella
         c.fillStyle = '#090d16';
         c.beginPath();
         c.arc(bbX, bbY, 11, 0, Math.PI * 2);
@@ -4193,7 +4154,6 @@
         c.lineTo(bbX, bbY + 9);
         c.stroke();
 
-        // Pedivella scesa verso il basso
         c.strokeStyle = '#1e293b';
         c.lineWidth = 5;
         c.beginPath();
@@ -4201,7 +4161,6 @@
         c.lineTo(bbX - 14, bbY + 26);
         c.stroke();
 
-        // Reggisella e sella nera
         c.strokeStyle = '#090d16';
         c.lineWidth = 5;
         c.beginPath();
@@ -4213,7 +4172,6 @@
         c.roundRect(seatX - 18, seatY - 18, 28, 7, 3);
         c.fill();
 
-        // Attacco manubrio, manubrio e cavo freno curvo verso la forcella
         c.strokeStyle = '#090d16';
         c.lineWidth = 5;
         c.beginPath();
@@ -4227,8 +4185,9 @@
         c.moveTo(barHandX + 4, barHandY + 2);
         c.quadraticCurveTo(frontWX - 24, frontWY - 65, midForkX + 4, midForkY + 4);
         c.stroke();
-      }
 
+        c.restore();
+      }
       let lastTimestamp = performance.now();
       function gameLoop(now) {
         try {
