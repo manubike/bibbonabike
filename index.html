@@ -681,6 +681,13 @@
       color: var(--accent-orange) !important;
     }
 
+    /* Allinea l'icona busta esattamente dentro il campo input Email (evitando lo slittamento dovuto al box OTP sottostante) */
+    #noleggioForm .form-group.icon-input:has(#email) > i.fa-envelope,
+    #noleggioForm .email-field-group > i.fa-envelope {
+      top: 47px !important;
+      transform: translateY(-50%) !important;
+    }
+
     /* Pulsante Verifica Email in stile coerente con bordo arancione */
     #sendEmailOtpBtn {
       background: linear-gradient(165deg, #1a1e26 0%, #11141a 100%) !important;
@@ -1746,7 +1753,7 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
             <input type="text" id="name" name="name" autocomplete="name" required />
           </div>
 
-          <div class="form-group icon-input">
+          <div class="form-group icon-input email-field-group">
             <label for="email" data-i18n="lbl_email">Email *</label>
             <i class="fa fa-envelope"></i>
             <input type="email" id="email" name="email" autocomplete="email" required />
