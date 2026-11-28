@@ -917,25 +917,52 @@
       flex-shrink: 0 !important;
       box-sizing: border-box !important;
     }
-
     #chatSend {
       width: 100% !important;
       min-width: 0 !important;
       max-width: 100% !important;
-      min-height: 38px !important;
+      height: 44px !important;
+      min-height: 44px !important;
       padding: 8px 14px !important;
+      margin-top: 2px !important;
+      margin-bottom: 2px !important;
       border-radius: 8px !important;
       background: linear-gradient(135deg, #ff7b1c 0%, #d95300 100%) !important;
       color: #090a0c !important;
-      border: none !important;
+      border: 1px solid rgba(255, 196, 145, 0.5) !important;
       font-weight: 700 !important;
-      font-size: 0.9rem !important;
+      font-size: 0.95rem !important;
       cursor: pointer !important;
       flex-shrink: 0 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      z-index: 9998 !important;
       box-sizing: border-box !important;
     }
 
-  </style>
+    #chatBox.keyboard-open #chatMessages,
+    #chatBox:focus-within #chatMessages {
+      min-height: 64px !important;
+      max-height: 108px !important;
+      flex: 0 1 108px !important;
+    }
+
+    #chatBox.keyboard-open #chatInput,
+    #chatBox:focus-within #chatInput {
+      min-height: 40px !important;
+      max-height: 56px !important;
+    }
+
+    #chatBox.keyboard-open #chatSend,
+    #chatBox:focus-within #chatSend {
+      height: 44px !important;
+      min-height: 44px !important;
+      margin-top: 4px !important;
+    }
+</style>
 
 </head>
 
@@ -2784,6 +2811,56 @@
             navEl.style.clear = "both";
           }
         });
+
+
+        const syncChatKeyboardPosition = () => {
+          const box = document.getElementById("chatBox");
+          const inp = document.getElementById("chatInput");
+          if (!box) return;
+          const isFocused = Boolean(inp && document.activeElement === inp);
+          let kbOffset = 78;
+          if (window.visualViewport) {
+            const occluded = Math.max(0, window.innerHeight - window.visualViewport.height - window.visualViewport.offsetTop);
+            if (occluded > 80) {
+              kbOffset = Math.round(occluded + 12);
+              box.classList.add("keyboard-open");
+            } else if (!isFocused) {
+              box.classList.remove("keyboard-open");
+            }
+          }
+          if (isFocused) {
+            box.classList.add("keyboard-open");
+            if (kbOffset < 90) {
+              kbOffset = 280;
+            }
+          }
+          if (!box.classList.contains("hidden")) {
+            box.style.setProperty("bottom", kbOffset + "px", "important");
+            box.style.setProperty("max-height", "calc(100vh - " + (kbOffset + 24) + "px)", "important");
+          }
+        };
+
+        if (window.visualViewport) {
+          window.visualViewport.addEventListener("resize", syncChatKeyboardPosition);
+          window.visualViewport.addEventListener("scroll", syncChatKeyboardPosition);
+        }
+        document.addEventListener("focusin", (e) => {
+          if (e.target && e.target.id === "chatInput") {
+            setTimeout(syncChatKeyboardPosition, 60);
+          }
+        }, true);
+        document.addEventListener("focusout", (e) => {
+          if (e.target && e.target.id === "chatInput") {
+            setTimeout(() => {
+              const box = document.getElementById("chatBox");
+              if (box) {
+                box.classList.remove("keyboard-open");
+                box.style.setProperty("bottom", "78px", "important");
+                box.style.setProperty("max-height", "min(440px, 62vh)", "important");
+              }
+            }, 120);
+          }
+        }, true);
 
       });
     })();
