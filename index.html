@@ -1544,8 +1544,7 @@
         </button>
       </div>
     </section>
-
-    <!-- Form Noleggio / Prenotazione -->
+      <!-- Form Noleggio / Prenotazione -->
     <section class="form-section" id="noleggio">
       <div class="container-full">
         <h2 class="section-title"><i class="fas fa-calendar-check"></i> <span data-i18n="booking_section_title">Prenota ora</span></h2>
@@ -1580,7 +1579,7 @@
           </div>
 
           <div id="accessoriesGroup" style="display: none; margin-top: 1rem;">
-            <h4 style="margin-bottom: 0.8rem; color: #333; font-weight: bold;">Accessori disponibili:</h4>
+            <h4 style="margin-bottom: 0.8rem; color: #b0b8c2; font-weight: bold;">Accessori disponibili:</h4>
 
             <div class="form-group accessory-option">
               <label>
@@ -1633,7 +1632,8 @@
               <input type="text" id="tourSelected" name="tourSelected" readonly />
             </div>
           </div>
-<div class="form-group icon-input">
+
+          <div class="form-group icon-input">
             <label for="notes" data-i18n="lbl_notes">Note (altezza, attrezzature richieste)</label>
             <i class="fa fa-pen"></i>
             <textarea id="notes" name="notes"></textarea>
@@ -2076,13 +2076,6 @@
           }, { threshold: 0.5 });
           chiSiamoObserver.observe(message);
         }
-      }
-else {
-              chatWidgetEl.classList.remove('visible');
-            }
-          });
-        }, { threshold: 0.3 });
-        chatFooterObserver.observe(footerEl);
       }
 
       const h2List = document.querySelectorAll('h2.section-title');
