@@ -513,9 +513,45 @@
       color: var(--text-primary) !important;
     }
 
-    .section-title {
-      color: var(--text-primary) !important;
+    .section-title,
+    h2.section-title,
+    .services .section-title,
+    .officina-section .section-title,
+    .rental-section .section-title,
+    .tour-section .section-title,
+    .magona-section .section-title,
+    .form-section .section-title {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 10px !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      color: #ffffff !important;
       letter-spacing: -0.02em;
+      font-size: clamp(1.55rem, 3.2vw, 2.35rem) !important;
+      font-weight: 700 !important;
+      line-height: 1.2 !important;
+      margin: 0 auto 1.5rem !important;
+      padding: 0.25rem 0.5rem !important;
+      text-align: center !important;
+      position: relative !important;
+      z-index: 5 !important;
+      transform: none !important;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.85) !important;
+    }
+
+    .section-title i,
+    .section-title span {
+      display: inline-flex !important;
+      align-items: center !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      color: inherit !important;
+    }
+
+    .section-title i {
+      color: var(--accent-orange-bright) !important;
     }
 
     .slash-anim {
@@ -2079,6 +2115,13 @@ Lavoriamo con passione, precisione e attenzione per garantirti una bici sempre e
   <!-- Script Gestione Cookie, Header, Video & Picker Data PC -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.section-title').forEach((titleEl) => {
+        titleEl.style.setProperty('display', 'flex', 'important');
+        titleEl.style.setProperty('visibility', 'visible', 'important');
+        titleEl.style.setProperty('opacity', '1', 'important');
+        titleEl.style.setProperty('color', '#ffffff', 'important');
+      });
+
       const weatherWidgetEl = document.getElementById('weatherWidget');
       if (weatherWidgetEl) {
         weatherWidgetEl.classList.remove('hidden');
