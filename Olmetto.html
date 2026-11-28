@@ -174,6 +174,9 @@
         <button id="startLv2Btn" type="button" class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 via-lime-400 to-amber-400 hover:brightness-110 active:scale-95 text-slate-950 font-black text-sm sm:text-base uppercase tracking-wider shadow-xl transition cursor-pointer">
           🌲 Livello 2 · Discesa nel Bosco &amp; Torbobikers
         </button>
+        <button id="startLv3Btn" type="button" class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-purple-600 hover:brightness-110 active:scale-95 text-white font-black text-sm sm:text-base uppercase tracking-wider shadow-xl transition cursor-pointer">
+          🚵‍♂️ Livello 3 · Macchia della Magona &amp; Magona Bike Garage
+        </button>
       </div>
     </div>
   </div>
@@ -286,6 +289,7 @@
       const startHeroCtx = startHeroCanvas ? startHeroCanvas.getContext('2d') : null;
       const startBtn = document.getElementById('startBtn');
       const startLv2Btn = document.getElementById('startLv2Btn');
+      const startLv3Btn = document.getElementById('startLv3Btn');
 
       const victoryScreen = document.getElementById('victoryScreen');
       const victoryCard = document.getElementById('victoryCard');
@@ -326,6 +330,7 @@
       // =========================================================================
       const COURSE_LENGTH_LV1 = 25000;
       const COURSE_LENGTH_LV2 = 28000;
+      const COURSE_LENGTH_LV3 = 30000;
       const END_STOP_DURATION = 10.0;
       const BELVEDERE_PAUSE_DURATION = 5.0;
 
@@ -343,6 +348,53 @@
         { id: 2, x: 16800, name: 'Bivio dei Torbobikers', passed: false },
         { id: 3, x: 22400, name: 'Discesa delle Sughere', passed: false },
         { id: 4, x: 28000, name: 'Baracchina del Bosco & Mare', passed: false }
+      ];
+
+      const MAGONA_SECTORS = [
+        { id: 0, x: 6000, name: 'Campo di Sasso · Sponde Alte', passed: false },
+        { id: 1, x: 12000, name: 'Curvoni del Botro', passed: false },
+        { id: 2, x: 18000, name: 'Paraboliche delle Sughere', passed: false },
+        { id: 3, x: 24000, name: 'Sponde Veloci per Bibbona', passed: false },
+        { id: 4, x: 30000, name: 'Magona Bike Garage · Birra!', passed: false }
+      ];
+
+      const MAGONA_BERM_NAMES = [
+        'Sponda Campo di Sasso',
+        'Curva Parabolica del Botro',
+        'Tornante delle Sughere',
+        'Sponda Alta Poggio al Pruno',
+        'Curvone del Leccio',
+        'Parabolica Sentiero 14',
+        'Sponda del Torrente Acquerta',
+        'Curva in Contropendenza',
+        'Sponda Velox Macchia',
+        'Parabolica Finale Bibbona'
+      ];
+
+      const RIDER_QUIPS_LV3 = [
+        'Boia dé, che piega in sponda!',
+        'O sveglia, guarda che parabolica alla Magona!',
+        'Gasse aperto tra le sughere, dé!',
+        'Via su verso il Magona Bike Garage a bere ‘na birra!'
+      ];
+
+      const LIVORNESE_BOAR_HITS = [
+        '“Boia dé, ma che tu sei un cinghiale o ‘na ruspa, grullo?!”',
+        '“O maiale d’un cinghiale, levati dar sentiero, dé!”',
+        '“Allora un ci siamo, o bestia! Ti mando a fare in sugo!”'
+      ];
+
+      const LIVORNESE_CONTROSENSO_INSULTS = [
+        '“Ma tu sei grullo fritto, o ciclista d’un cazzo?! Vai controsenso, boia dé!”',
+        '“O coglione, ma un tu lo vedi che tu sei controsenso?! Levati di ‘ulo, dé!”',
+        '“Ma che tu c’hai i’ cervello ne’ ‘ulo a venì controsenso così, grullo?!”',
+        '“Boia dé, o rincoglionito, gira la bici che qui si scende, un si sale controsenso!”'
+      ];
+
+      const LIVORNESE_PANINO_QUIPS = [
+        '“Boia dé, che panino ripieno! Ora si ragiona!”',
+        '“O sveglia, ripieno da paura! Gasse per la birra!”',
+        '“Che bomba di panino, dé! Si va dritti a Bibbona!”'
       ];
 
       // =========================================================================
@@ -624,6 +676,8 @@
         score: 0,
         belvedereCount: 0,
         torboEscapedCount: 0,
+        bermCarvedCount: 0,
+        paniniCount: 0,
         panoramaTimer: 0,
         currentBelvedere: null,
         endStopTimer: 0,
@@ -663,16 +717,46 @@
 
       let npcs = [];
       let torbobikers = [];
+      let magonaBerms = [];
+      let magonaBoars = [];
+      let wrongWayCyclists = [];
+      let paniniItems = [];
       let trailObstacles = [];
       let sceneryItems = [];
       let leaves = [];
       let dustParticles = [];
 
       function getCourseLength() {
+        if (state.level === 3) return COURSE_LENGTH_LV3;
         return state.level === 2 ? COURSE_LENGTH_LV2 : COURSE_LENGTH_LV1;
       }
 
       function getGroundY(worldX) {
+        if (state.level === 3) {
+          const clampedX = Math.max(0, Math.min(COURSE_LENGTH_LV3, worldX));
+          const downhill = clampedX * 0.088;
+          const flowWaves = Math.sin(clampedX * 0.0031) * 24 + Math.cos(clampedX * 0.0012) * 32;
+          const trailChatter = Math.sin(clampedX * 0.0085) * 6;
+          let y = downhill + flowWaves + trailChatter;
+
+          for (let b = 0; b < magonaBerms.length; b++) {
+            const berm = magonaBerms[b];
+            const dx = clampedX - berm.x;
+            if (Math.abs(dx) < 230) {
+              const norm = dx / 230;
+              y -= Math.pow(Math.cos(norm * Math.PI * 0.5), 2) * 28;
+            }
+          }
+
+          if (worldX > COURSE_LENGTH_LV3 - 720) {
+            const flatY = COURSE_LENGTH_LV3 * 0.088;
+            const t = Math.min(1, Math.max(0, (worldX - (COURSE_LENGTH_LV3 - 720)) / 560));
+            const smooth = t * t * (3 - 2 * t);
+            y = y * (1 - smooth) + flatY * smooth;
+          }
+          return y;
+        }
+
         if (state.level === 2) {
           const clampedX = Math.max(0, Math.min(COURSE_LENGTH_LV2, worldX));
           const downhill = clampedX * 0.095;
@@ -712,36 +796,58 @@
       }
 
       function configureHudForLevel() {
-        const isLv2 = state.level === 2;
+        const lv = state.level;
         if (hudLevelPill) {
-          hudLevelPill.textContent = isLv2 ? 'LV 2' : 'LV 1';
-          hudLevelPill.className = isLv2
-            ? 'px-1.5 py-0.5 rounded-md bg-emerald-500/25 border border-emerald-400/40 text-[9px] font-black text-emerald-300 uppercase'
-            : 'px-1.5 py-0.5 rounded-md bg-sky-500/25 border border-sky-400/40 text-[9px] font-black text-sky-300 uppercase';
+          hudLevelPill.textContent = 'LV ' + lv;
+          if (lv === 3) {
+            hudLevelPill.className = 'px-1.5 py-0.5 rounded-md bg-amber-500/25 border border-amber-400/40 text-[9px] font-black text-amber-300 uppercase';
+          } else if (lv === 2) {
+            hudLevelPill.className = 'px-1.5 py-0.5 rounded-md bg-emerald-500/25 border border-emerald-400/40 text-[9px] font-black text-emerald-300 uppercase';
+          } else {
+            hudLevelPill.className = 'px-1.5 py-0.5 rounded-md bg-sky-500/25 border border-sky-400/40 text-[9px] font-black text-sky-300 uppercase';
+          }
         }
         if (hudLocationLabel) {
-          hudLocationLabel.textContent = isLv2 ? 'Bosco · Discesa Torbobikers' : 'Livorno · Viale Italia';
+          if (lv === 3) {
+            hudLocationLabel.textContent = 'Macchia della Magona · Bibbona';
+          } else if (lv === 2) {
+            hudLocationLabel.textContent = 'Bosco · Discesa Torbobikers';
+          } else {
+            hudLocationLabel.textContent = 'Livorno · Viale Italia';
+          }
         }
         if (switchLevelHudBtn) {
-          switchLevelHudBtn.textContent = isLv2 ? '🌊 Lv.1' : '🌲 Lv.2';
-          switchLevelHudBtn.title = isLv2 ? 'Passa al Livello 1 (Lungomare)' : 'Passa al Livello 2 (Bosco)';
+          if (lv === 1) {
+            switchLevelHudBtn.textContent = '🌲 Lv.2';
+            switchLevelHudBtn.title = 'Passa al Livello 2 (Bosco)';
+          } else if (lv === 2) {
+            switchLevelHudBtn.textContent = '🚵 Lv.3';
+            switchLevelHudBtn.title = 'Passa al Livello 3 (Macchia della Magona)';
+          } else {
+            switchLevelHudBtn.textContent = '🌊 Lv.1';
+            switchLevelHudBtn.title = 'Passa al Livello 1 (Lungomare)';
+          }
         }
 
         for (let m = 0; m < 4; m++) {
           const mBadge = document.getElementById('milestone' + m);
           if (mBadge) {
-            mBadge.textContent = isLv2 ? '🌲' : String(m + 1);
+            mBadge.textContent = lv === 3 ? '🥖' : (lv === 2 ? '🌲' : String(m + 1));
           }
         }
         const endBadge = document.getElementById('milestone4');
         if (endBadge) {
-          endBadge.textContent = isLv2 ? '🍹' : '🍦';
+          endBadge.textContent = lv === 3 ? '🍺' : (lv === 2 ? '🍹' : '🍦');
         }
       }
 
       function populateWorld() {
         npcs = [];
         torbobikers = [];
+        magonaBerms = [];
+        magonaBoars = [];
+        wrongWayCyclists = [];
+        paniniItems = [];
         trailObstacles = [];
         sceneryItems = [];
         leaves = [];
@@ -789,17 +895,17 @@
             });
           }
 
-          for (let x = 1100; x < COURSE_LENGTH_LV1 - 900; x += 1450) {
+          for (let x = 950; x < COURSE_LENGTH_LV1 - 800; x += 1100) {
             let tooClose = false;
             for (let n = 0; n < npcs.length; n++) {
-              if (Math.abs(npcs[n].x - x) < 340) tooClose = true;
+              if (Math.abs(npcs[n].x - x) < 320) tooClose = true;
             }
             for (let b = 0; b < BELVEDERE_SPOTS.length; b++) {
-              if (Math.abs(BELVEDERE_SPOTS[b].x - x) < 420) tooClose = true;
+              if (Math.abs(BELVEDERE_SPOTS[b].x - x) < 380) tooClose = true;
             }
-            if (!tooClose) leaves.push({ x: x, yOffset: -26, collected: false, phase: (x % 7) * 0.5 });
+            if (!tooClose) leaves.push({ x: x, yOffset: -84, collected: false, phase: (x % 7) * 0.5 });
           }
-        } else {
+        } else if (state.level === 2) {
           for (let i = 0; i < FOREST_SECTORS.length; i++) {
             FOREST_SECTORS[i].passed = false;
           }
@@ -850,6 +956,84 @@
               scale: 0.88 + ((x * 13) % 35) / 100
             });
           }
+
+          for (let x = 1050; x < COURSE_LENGTH_LV2 - 900; x += 1150) {
+            let nearTorbo = false;
+            for (let t = 0; t < torbobikers.length; t++) {
+              if (Math.abs(torbobikers[t].baseX - x) < 340) nearTorbo = true;
+            }
+            if (!nearTorbo) {
+              leaves.push({ x: x, yOffset: -86, collected: false, phase: (x % 7) * 0.5 });
+            }
+          }
+        } else {
+          // LIVELLO 3: Macchia della Magona · Curve e sponde · Cinghiali e ciclisti controsenso · Panini ripieni · Birra al Magona Bike Garage
+          for (let i = 0; i < MAGONA_SECTORS.length; i++) {
+            MAGONA_SECTORS[i].passed = false;
+          }
+
+          const bermPositions = [2600, 5600, 8600, 11600, 14600, 17600, 20600, 23600, 26500];
+          for (let b = 0; b < bermPositions.length; b++) {
+            magonaBerms.push({
+              id: b,
+              x: bermPositions[b],
+              name: MAGONA_BERM_NAMES[b % MAGONA_BERM_NAMES.length],
+              direction: b % 2 === 0 ? 'DESTRA' : 'SINISTRA',
+              carved: false,
+              missed: false
+            });
+          }
+
+          // Cinghiali della Macchia della Magona
+          const boarPositions = [1900, 4600, 7400, 10400, 13400, 16400, 19400, 22400, 25400];
+          for (let i = 0; i < boarPositions.length; i++) {
+            magonaBoars.push({
+              id: i,
+              x: boarPositions[i],
+              vx: -95 - (i % 3) * 25,
+              legPhase: i * 1.2,
+              cleared: false,
+              hit: false
+            });
+          }
+
+          // Ciclisti controsenso che salgono contromano verso Olmetto
+          const wrongWayPositions = [3800, 6800, 9800, 12800, 15800, 18800, 21800, 24800];
+          const jerseyPalette = ['#e11d48', '#2563eb', '#d97706', '#9333ea', '#0d9488'];
+          for (let c = 0; c < wrongWayPositions.length; c++) {
+            wrongWayCyclists.push({
+              id: c,
+              x: wrongWayPositions[c],
+              vx: -210 - (c % 3) * 35,
+              wheelAngle: c * 0.6,
+              pedalPhase: c * 1.1,
+              jersey: jerseyPalette[c % jerseyPalette.length],
+              insult: LIVORNESE_CONTROSENSO_INSULTS[c % LIVORNESE_CONTROSENSO_INSULTS.length],
+              resolved: false
+            });
+          }
+
+          // Panini ripieni sospesi in aria da prendere saltando
+          const fillings = ['PORCHETTA & CIPOLLA', 'SALAME & PECORINO', 'FRITTATA & VERDURE', 'COPPA & CARCIOFI'];
+          for (let x = 1350; x < COURSE_LENGTH_LV3 - 1000; x += 1200) {
+            paniniItems.push({
+              x: x,
+              yOffset: -84,
+              filling: fillings[Math.floor(x / 1200) % fillings.length],
+              collected: false,
+              phase: (x % 7) * 0.5
+            });
+          }
+
+          // Vegetazione della Macchia della Magona
+          for (let x = 200; x < COURSE_LENGTH_LV3 + 500; x += 250) {
+            const mod = Math.floor(x / 250) % 3;
+            sceneryItems.push({
+              x: x,
+              type: mod === 0 ? 'oak' : (mod === 1 ? 'forestPine' : 'bush'),
+              scale: 0.90 + ((x * 17) % 35) / 100
+            });
+          }
         }
       }
 
@@ -866,22 +1050,26 @@
         state.score = 0;
         state.belvedereCount = 0;
         state.torboEscapedCount = 0;
+        state.bermCarvedCount = 0;
+        state.paniniCount = 0;
         state.panoramaTimer = 0;
         state.currentBelvedere = null;
         state.endStopTimer = 0;
         state.activeNpc = null;
         state.vortexTimer = 0;
 
-        if (state.level === 2) {
+        if (state.level === 3) {
+          state.quipText = 'Macchia della Magona! Salta pe’ i panini e occhio ai grulli controsenso!';
+        } else if (state.level === 2) {
           state.quipText = 'Giù nel bosco! Scappa dai Torbobikers!';
         } else {
           state.quipText = 'Boia dé, si parte verso l’Orizzonte!';
         }
-        state.quipTimer = 2.8;
+        state.quipTimer = 3.0;
 
         state.bike.x = 200;
         state.bike.y = getGroundY(200);
-        state.bike.vx = state.level === 2 ? 220 : 0;
+        state.bike.vx = (state.level === 2 || state.level === 3) ? 230 : 0;
         state.bike.vy = 0;
         state.bike.onGround = true;
         state.bike.wheelAngle = 0;
@@ -908,6 +1096,11 @@
           startGame(2);
         });
       }
+      if (startLv3Btn) {
+        startLv3Btn.addEventListener('click', function () {
+          startGame(3);
+        });
+      }
       if (restartBtn) {
         restartBtn.addEventListener('click', function () {
           startGame(state.level);
@@ -915,12 +1108,14 @@
       }
       if (nextLevelBtn) {
         nextLevelBtn.addEventListener('click', function () {
-          startGame(state.level === 1 ? 2 : 1);
+          const nextLv = state.level === 1 ? 2 : (state.level === 2 ? 3 : 1);
+          startGame(nextLv);
         });
       }
       if (switchLevelHudBtn) {
         switchLevelHudBtn.addEventListener('click', function () {
-          startGame(state.level === 1 ? 2 : 1);
+          const nextLv = state.level === 1 ? 2 : (state.level === 2 ? 3 : 1);
+          startGame(nextLv);
         });
       }
 
@@ -1092,7 +1287,7 @@
           if (finalMetricLabel) finalMetricLabel.textContent = 'Belvedere';
           if (finalBelvedereEl) finalBelvedereEl.textContent = state.belvedereCount + ' / 5';
           if (nextLevelBtn) nextLevelBtn.textContent = '🌲 Vai al Livello 2 · Discesa nel Bosco!';
-        } else {
+        } else if (state.level === 2) {
           if (victoryCard) victoryCard.className = 'glass-hud rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl border-2 border-emerald-400/75';
           if (victoryEmoji) victoryEmoji.textContent = '🍹🌅🏆';
           if (victoryBadge) {
@@ -1103,6 +1298,18 @@
           if (victoryDesc) victoryDesc.textContent = 'Sei sceso a foho dal bosco, hai seminato i Torbobikers senza farti venire i vortici e ti godi l’aperitivo in baracchina!';
           if (finalMetricLabel) finalMetricLabel.textContent = 'Torbo Seminati';
           if (finalBelvedereEl) finalBelvedereEl.textContent = state.torboEscapedCount + ' / ' + torbobikers.length;
+          if (nextLevelBtn) nextLevelBtn.textContent = '🚵 Vai al Livello 3 · Macchia della Magona!';
+        } else {
+          if (victoryCard) victoryCard.className = 'glass-hud rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl border-2 border-amber-400/80';
+          if (victoryEmoji) victoryEmoji.textContent = '🍺🚵‍♂️🏆';
+          if (victoryBadge) {
+            victoryBadge.className = 'inline-block px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-[11px] font-black uppercase tracking-wider mb-2';
+            victoryBadge.textContent = 'Magona Bike Garage · Bibbona!';
+          }
+          if (victoryTitle) victoryTitle.textContent = 'BIRRA AL GARAGE, DÉ!';
+          if (victoryDesc) victoryDesc.textContent = 'Hai fatto le curve e le sponde della Macchia della Magona, saltato i cinghiali e i grulli controsenso, presi i panini e brindato con una birra al Magona Bike Garage di Bibbona!';
+          if (finalMetricLabel) finalMetricLabel.textContent = 'Panini Presi';
+          if (finalBelvedereEl) finalBelvedereEl.textContent = state.paniniCount + ' / ' + paniniItems.length;
           if (nextLevelBtn) nextLevelBtn.textContent = '🌊 Torna al Livello 1 · Lungomare';
         }
 
@@ -1373,7 +1580,7 @@
             if (nextLandmarkText) nextLandmarkText.textContent = '🍦 Traguardo: Gelateria L’Orizzonte';
             if (nextLandmarkDist) nextLandmarkDist.textContent = distGelato + ' m';
           }
-        } else {
+        } else if (state.level === 2) {
           let nextTorbo = null;
           for (let t = 0; t < torbobikers.length; t++) {
             if (torbobikers[t].status === 'WAITING' || torbobikers[t].status === 'CHASING') {
@@ -1390,6 +1597,12 @@
             if (nextLandmarkText) nextLandmarkText.textContent = '🍹 Traguardo: Aperitivo in Baracchina';
             if (nextLandmarkDist) nextLandmarkDist.textContent = distBar + ' m';
           }
+        } else {
+          const distGarage = Math.max(0, Math.round((COURSE_LENGTH_LV3 - state.bike.x) / 10));
+          if (nextLandmarkText) {
+            nextLandmarkText.textContent = '🥖 Panini: ' + state.paniniCount + '/' + paniniItems.length + ' · Sponde: ' + state.bermCarvedCount + '/' + magonaBerms.length + ' · Birra Garage';
+          }
+          if (nextLandmarkDist) nextLandmarkDist.textContent = distGarage + ' m';
         }
       }
 
@@ -1447,8 +1660,10 @@
         if (state.mode !== 'PLAYING') return;
 
         const isLv2 = state.level === 2;
+        const isLv3 = state.level === 3;
+        const isTrail = isLv2 || isLv3;
         const dizzyFactor = state.vortexTimer > 0 ? 0.62 : 1.0;
-        const maxSpeed = (keys.turbo ? (isLv2 ? 840 : 760) : (isLv2 ? 620 : 510)) * dizzyFactor;
+        const maxSpeed = (keys.turbo ? (isTrail ? 850 : 760) : (isTrail ? 630 : 510)) * dizzyFactor;
         const accel = (keys.turbo ? 1020 : 650) * dizzyFactor;
 
         if (keys.right) {
@@ -1456,13 +1671,13 @@
         } else if (keys.left) {
           state.bike.vx -= 860 * dt;
         } else {
-          const drag = isLv2 ? 0.55 : 0.25;
+          const drag = isTrail ? 0.56 : 0.25;
           state.bike.vx *= Math.pow(drag, dt);
           if (Math.abs(state.bike.vx) < 4) state.bike.vx = 0;
         }
 
         const slope = getGroundSlope(state.bike.x);
-        const gravityAssist = isLv2 ? 320 : 140;
+        const gravityAssist = isTrail ? 315 : 140;
         state.bike.vx += Math.sin(slope) * gravityAssist * dt;
         state.bike.vx = Math.max(-140, Math.min(maxSpeed, state.bike.vx));
 
@@ -1478,11 +1693,11 @@
             state.bike.y = groundY;
             state.bike.vy = 0;
             state.bike.onGround = true;
-            if (isLv2) spawnDust(state.bike.x, groundY, 7, 'rgba(120, 83, 52, 0.7)');
+            if (isTrail) spawnDust(state.bike.x, groundY, 7, 'rgba(120, 83, 52, 0.7)');
           }
         } else {
           state.bike.y = groundY;
-          if (isLv2 && state.bike.vx > 340 && Math.random() < dt * 14) {
+          if (isTrail && state.bike.vx > 340 && Math.random() < dt * 14) {
             spawnDust(state.bike.x, groundY, 1, 'rgba(146, 102, 68, 0.55)');
           }
         }
@@ -1493,23 +1708,32 @@
         state.bike.pitch += (targetPitch - state.bike.pitch) * Math.min(1, dt * 12);
 
         if (state.quipTimer <= 0 && state.bike.vx > 410 && Math.random() < dt * 0.24) {
-          const quipPool = isLv2 ? RIDER_QUIPS_LV2 : RIDER_QUIPS_LV1;
+          const quipPool = isLv3 ? RIDER_QUIPS_LV3 : (isLv2 ? RIDER_QUIPS_LV2 : RIDER_QUIPS_LV1);
           state.quipText = quipPool[Math.floor(Math.random() * quipPool.length)];
           state.quipTimer = 2.2;
         }
 
-        if (!isLv2) {
+        if (!isLv3) {
+          // Raccolta foglioline di cannabis in volo saltando (attiva su Livello 1 e Livello 2)
           for (let c = 0; c < leaves.length; c++) {
             const leaf = leaves[c];
-            const leafY = getGroundY(leaf.x) + leaf.yOffset;
-            if (!leaf.collected && Math.abs(state.bike.x - leaf.x) < 38 && Math.abs(state.bike.y - leafY) < 42) {
+            if (leaf.collected) continue;
+            const groundAtLeaf = getGroundY(leaf.x);
+            const leafY = groundAtLeaf + leaf.yOffset;
+            const riderCenterY = state.bike.y - 45;
+            const isJumpingHighEnough = !state.bike.onGround && (groundAtLeaf - state.bike.y) > 22;
+            if (isJumpingHighEnough && Math.abs(state.bike.x - leaf.x) < 44 && Math.abs(riderCenterY - leafY) < 48) {
               leaf.collected = true;
-              state.score += 50;
+              state.score += 100;
               playSound('npc');
-              state.quipText = 'Fogliolina presa! (+50 pts)';
-              state.quipTimer = 1.4;
+              state.quipText = 'Fogliolina presa al volo! (+100 pts)';
+              state.quipTimer = 1.5;
+              updateHud();
             }
           }
+        }
+
+        if (!isLv2 && !isLv3) {
 
           for (let i = 0; i < npcs.length; i++) {
             const npc = npcs[i];
@@ -1642,6 +1866,149 @@
             if (endBadge) {
               endBadge.classList.remove('bg-slate-900');
               endBadge.classList.add('bg-emerald-400', 'text-slate-950');
+            }
+            resetKeys();
+            playSound('gelato');
+          }
+        } else if (isLv3) {
+          // Settori progress bar Livello 3
+          for (let s = 0; s < MAGONA_SECTORS.length - 1; s++) {
+            const sec = MAGONA_SECTORS[s];
+            if (!sec.passed && state.bike.x >= sec.x) {
+              sec.passed = true;
+              const badge = document.getElementById('milestone' + s);
+              if (badge) {
+                badge.classList.remove('bg-slate-900');
+                badge.classList.add('bg-amber-400', 'text-slate-950');
+              }
+            }
+          }
+
+          // Panini ripieni sospesi da prendere saltando
+          for (let p = 0; p < paniniItems.length; p++) {
+            const panino = paniniItems[p];
+            if (panino.collected) continue;
+            const groundAtPanino = getGroundY(panino.x);
+            const paninoY = groundAtPanino + panino.yOffset;
+            const riderCenterY = state.bike.y - 45;
+            const jumpingForPanino = !state.bike.onGround && (groundAtPanino - state.bike.y) > 22;
+            if (jumpingForPanino && Math.abs(state.bike.x - panino.x) < 46 && Math.abs(riderCenterY - paninoY) < 50) {
+              panino.collected = true;
+              state.paniniCount++;
+              state.score += 150;
+              playSound('npc');
+              state.quipText = LIVORNESE_PANINO_QUIPS[p % LIVORNESE_PANINO_QUIPS.length].replace(/[“”]/g, '');
+              state.quipTimer = 2.0;
+              updateHud();
+            }
+          }
+
+          // Sponde paraboliche nella Macchia della Magona
+          for (let b = 0; b < magonaBerms.length; b++) {
+            const berm = magonaBerms[b];
+            if (berm.carved || berm.missed) continue;
+            const dx = state.bike.x - berm.x;
+            if (Math.abs(dx) < 55) {
+              if (state.bike.onGround && state.bike.vx >= 250 && state.bike.vx <= 680) {
+                berm.carved = true;
+                state.bermCarvedCount++;
+                state.score += 200;
+                state.bike.vx = Math.min(830, state.bike.vx + 150);
+                spawnDust(berm.x, getGroundY(berm.x), 11, 'rgba(180, 115, 62, 0.85)');
+                state.quipText = 'Sponda ' + berm.direction + ' presa, boia dé! (+200 pts)';
+                state.quipTimer = 2.0;
+                playSound('escape');
+              } else if (state.bike.vx > 680 && !keys.left) {
+                berm.missed = true;
+                state.bike.vx *= 0.65;
+                spawnDust(berm.x, getGroundY(berm.x), 9, 'rgba(146, 102, 68, 0.8)');
+                state.quipText = 'Troppo lungo in sponda, o grullo! Frena prima!';
+                state.quipTimer = 2.0;
+                playSound('dizzy');
+              } else if (dx > 45) {
+                berm.carved = true;
+                state.bermCarvedCount++;
+                state.score += 140;
+                state.quipText = 'Curva chiusa, dé! (+140 pts)';
+                state.quipTimer = 1.6;
+              }
+            }
+          }
+
+          // Pericolo 1: Cinghiali (saltabili con SALTA per bonus +150 pts, altrimenti urto con frase/offesa livornese)
+          for (let i = 0; i < magonaBoars.length; i++) {
+            const boar = magonaBoars[i];
+            if (boar.cleared || boar.hit) continue;
+            if (Math.abs(boar.x - state.bike.x) < 420) {
+              boar.x += boar.vx * dt;
+              boar.legPhase += Math.abs(boar.vx) * dt * 0.06;
+            }
+            const dx = Math.abs(state.bike.x - boar.x);
+            if (dx < 34) {
+              const heightAboveGround = getGroundY(boar.x) - state.bike.y;
+              if (!state.bike.onGround && heightAboveGround > 24) {
+                boar.cleared = true;
+                state.score += 150;
+                playSound('escape');
+                state.quipText = 'Saltato il cinghiale, boia dé! (+150 pts)';
+                state.quipTimer = 1.8;
+              } else {
+                boar.hit = true;
+                state.bike.vx = Math.max(140, state.bike.vx * 0.45);
+                spawnDust(boar.x, getGroundY(boar.x), 10, 'rgba(120, 83, 52, 0.9)');
+                playSound('dizzy');
+                state.quipText = LIVORNESE_BOAR_HITS[i % LIVORNESE_BOAR_HITS.length].replace(/[“”]/g, '');
+                state.quipTimer = 2.6;
+              }
+            }
+          }
+
+          // Pericolo 2: Ciclisti controsenso (saltabili con SALTA per +180 pts, altrimenti urto con offese pese livornesi)
+          for (let c = 0; c < wrongWayCyclists.length; c++) {
+            const wc = wrongWayCyclists[c];
+            if (wc.resolved) continue;
+            if (Math.abs(wc.x - state.bike.x) < 520) {
+              wc.x += wc.vx * dt;
+              wc.wheelAngle += (wc.vx * dt) / 28;
+              wc.pedalPhase += (Math.abs(wc.vx) * dt) / 36;
+            }
+            const dx = Math.abs(state.bike.x - wc.x);
+            if (dx < 38) {
+              const heightAboveGround = getGroundY(wc.x) - state.bike.y;
+              if (!state.bike.onGround && heightAboveGround > 28) {
+                wc.resolved = true;
+                state.score += 180;
+                playSound('escape');
+                state.quipText = 'Saltato il grullo controsenso! (+180 pts)';
+                state.quipTimer = 2.0;
+              } else {
+                wc.resolved = true;
+                state.bike.vx = Math.max(130, state.bike.vx * 0.42);
+                spawnDust(wc.x, getGroundY(wc.x), 12, 'rgba(146, 102, 68, 0.9)');
+                playSound('dizzy');
+                state.quipText = wc.insult.replace(/[“”]/g, '');
+                state.quipTimer = 3.2;
+              }
+            } else if (wc.x < state.bike.x - 140) {
+              wc.resolved = true;
+            }
+          }
+
+          // Traguardo: Magona Bike Garage di Bibbona per una Birra
+          if (state.bike.x >= COURSE_LENGTH_LV3) {
+            state.bike.x = COURSE_LENGTH_LV3;
+            state.bike.vx = 0;
+            state.bike.y = getGroundY(COURSE_LENGTH_LV3);
+            state.cameraBaseY = state.bike.y;
+            state.bike.onGround = true;
+            state.bike.pitch = 0;
+            state.score += 500;
+            state.mode = 'END_STOP';
+            state.endStopTimer = END_STOP_DURATION;
+            const endBadge = document.getElementById('milestone4');
+            if (endBadge) {
+              endBadge.classList.remove('bg-slate-900');
+              endBadge.classList.add('bg-amber-400', 'text-slate-950');
             }
             resetKeys();
             playSound('gelato');
@@ -2069,6 +2436,327 @@
         ctx.restore();
       }
 
+      function drawPaninoRipieno(panino, screenX, screenY) {
+        ctx.save();
+        const bob = Math.sin(state.time * 4 + panino.phase) * 4;
+        ctx.translate(screenX, screenY + bob);
+
+        // Alone caldo intorno al panino ripieno sospeso in aria
+        const glowGrad = ctx.createRadialGradient(0, -4, 2, 0, -4, 24);
+        glowGrad.addColorStop(0, 'rgba(253, 224, 71, 0.55)');
+        glowGrad.addColorStop(1, 'rgba(245, 158, 11, 0)');
+        ctx.fillStyle = glowGrad;
+        ctx.beginPath();
+        ctx.arc(0, -4, 24, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Calotta inferiore del panino
+        ctx.fillStyle = '#d97706';
+        ctx.beginPath();
+        ctx.roundRect(-16, 0, 32, 8, 4);
+        ctx.fill();
+
+        // Ripieno abbondante (affettato/verdura/formaggio)
+        ctx.fillStyle = '#dc2626';
+        ctx.fillRect(-14, -4, 28, 4);
+        ctx.fillStyle = '#22c55e';
+        ctx.fillRect(-14, -7, 28, 3);
+        ctx.fillStyle = '#fef08a';
+        ctx.fillRect(-13, -9, 26, 2.5);
+
+        // Calotta superiore croccante con semi
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath();
+        ctx.ellipse(0, -11, 17, 7, 0, Math.PI, 0);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = '#78350f';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+
+        ctx.fillStyle = '#fef3c7';
+        ctx.fillRect(-6, -15, 2, 1.5);
+        ctx.fillRect(2, -16, 2, 1.5);
+        ctx.fillRect(6, -13, 2, 1.5);
+
+        ctx.restore();
+      }
+
+      function drawMagonaBerm(berm, screenX, screenY) {
+        ctx.save();
+        ctx.translate(screenX, screenY);
+
+        const bermGrad = ctx.createLinearGradient(0, -56, 0, 8);
+        bermGrad.addColorStop(0, berm.carved ? '#d97706' : '#92400e');
+        bermGrad.addColorStop(0.55, '#78350f');
+        bermGrad.addColorStop(1, '#451a03');
+        ctx.fillStyle = bermGrad;
+        ctx.beginPath();
+        ctx.moveTo(-78, 4);
+        ctx.quadraticCurveTo(-24, -56, 26, -52);
+        ctx.quadraticCurveTo(64, -44, 84, 4);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.strokeStyle = berm.carved ? '#facc15' : '#d97706';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(-68, -6);
+        ctx.quadraticCurveTo(-18, -50, 26, -47);
+        ctx.quadraticCurveTo(56, -40, 74, -4);
+        ctx.stroke();
+
+        ctx.fillStyle = '#5c2d16';
+        ctx.fillRect(54, -64, 5, 64);
+        ctx.fillStyle = berm.carved ? '#15803d' : '#f59e0b';
+        ctx.beginPath();
+        ctx.roundRect(30, -82, 54, 22, 5);
+        ctx.fill();
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        ctx.fillStyle = berm.carved ? '#ffffff' : '#0f172a';
+        ctx.font = '900 8px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(berm.direction === 'DESTRA' ? 'CURVA ↱' : 'CURVA ↰', 57, -69);
+
+        ctx.restore();
+      }
+
+      function drawMagonaBoar(boar, screenX, screenY) {
+        ctx.save();
+        ctx.translate(screenX, screenY);
+        ctx.rotate(getGroundSlope(boar.x));
+
+        const legSwing = Math.sin(boar.legPhase) * 5;
+
+        // Ombra
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.35)';
+        ctx.beginPath();
+        ctx.ellipse(0, 2, 24, 5, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Zampe scure
+        ctx.strokeStyle = '#1c1917';
+        ctx.lineWidth = 4.5;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(-10, -10);
+        ctx.lineTo(-12 + legSwing, 0);
+        ctx.moveTo(-3, -10);
+        ctx.lineTo(-1 - legSwing, 0);
+        ctx.moveTo(8, -10);
+        ctx.lineTo(10 - legSwing, 0);
+        ctx.moveTo(14, -10);
+        ctx.lineTo(12 + legSwing, 0);
+        ctx.stroke();
+
+        // Corpo setoloso marrone scuro
+        ctx.fillStyle = '#451a03';
+        ctx.strokeStyle = '#1c1917';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.ellipse(0, -16, 20, 12, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // Cresta dorsale irsuta
+        ctx.fillStyle = '#292524';
+        ctx.beginPath();
+        ctx.moveTo(-14, -25);
+        ctx.lineTo(-4, -30);
+        ctx.lineTo(6, -28);
+        ctx.lineTo(14, -24);
+        ctx.closePath();
+        ctx.fill();
+
+        // Muso rivolto a sinistra e zanna bianca
+        ctx.fillStyle = '#57534e';
+        ctx.beginPath();
+        ctx.ellipse(-20, -15, 8, 6, -0.1, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#f8fafc';
+        ctx.beginPath();
+        ctx.moveTo(-24, -12);
+        ctx.lineTo(-28, -19);
+        ctx.lineTo(-21, -12);
+        ctx.closePath();
+        ctx.fill();
+
+        // Occhio rosso vigile
+        ctx.fillStyle = '#ef4444';
+        ctx.beginPath();
+        ctx.arc(-18, -18, 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+      }
+
+      function drawWrongWayCyclist(wc, screenX, screenY) {
+        ctx.save();
+        ctx.translate(screenX, screenY);
+        ctx.rotate(getGroundSlope(wc.x));
+
+        // Ciclista controsenso rivolto verso sinistra (contro Olmetto)
+        const rearWX = -26;
+        const frontWX = 26;
+        const wY = -17;
+        const wR = 17;
+
+        [rearWX, frontWX].forEach(function (wx) {
+          ctx.save();
+          ctx.translate(wx, wY);
+          ctx.strokeStyle = '#090d16';
+          ctx.lineWidth = 5;
+          ctx.beginPath();
+          ctx.arc(0, 0, wR - 2, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.save();
+          ctx.rotate(wc.wheelAngle);
+          ctx.strokeStyle = '#cbd5e1';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(-10, 0);
+          ctx.lineTo(10, 0);
+          ctx.moveTo(0, -10);
+          ctx.lineTo(0, 10);
+          ctx.stroke();
+          ctx.restore();
+          ctx.restore();
+        });
+
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(rearWX, wY);
+        ctx.lineTo(4, wY);
+        ctx.lineTo(-6, -40);
+        ctx.lineTo(-18, -44);
+        ctx.lineTo(4, wY);
+        ctx.moveTo(-18, -44);
+        ctx.lineTo(frontWX, wY);
+        ctx.stroke();
+
+        // Gamba e busto rivolti a sinistra
+        const pedalX = 4 + Math.cos(wc.pedalPhase) * 7;
+        const pedalY = wY + Math.sin(wc.pedalPhase) * 7;
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 6.5;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(-4, -44);
+        ctx.lineTo(-10, -28);
+        ctx.lineTo(pedalX, pedalY);
+        ctx.stroke();
+
+        ctx.fillStyle = wc.jersey;
+        ctx.beginPath();
+        ctx.roundRect(-8, -70, 16, 26, 5);
+        ctx.fill();
+
+        // Braccia sul manubrio a sinistra
+        ctx.strokeStyle = '#e09668';
+        ctx.lineWidth = 4.5;
+        ctx.beginPath();
+        ctx.moveTo(-4, -64);
+        ctx.lineTo(-20, -52);
+        ctx.stroke();
+
+        // Testa e casco
+        ctx.fillStyle = '#e09668';
+        ctx.beginPath();
+        ctx.arc(-2, -79, 8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#ef4444';
+        ctx.beginPath();
+        ctx.arc(-2, -81, 8.5, Math.PI, 0);
+        ctx.fill();
+
+        // Avviso controsenso sopra la testa
+        if (!wc.resolved) {
+          const bob = Math.sin(state.time * 5 + wc.id) * 3;
+          ctx.fillStyle = 'rgba(127, 29, 29, 0.92)';
+          ctx.beginPath();
+          ctx.roundRect(-38, -108 + bob, 76, 18, 6);
+          ctx.fill();
+          ctx.strokeStyle = '#fca5a5';
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '800 8.5px Inter, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('CONTROSENSO!', 0, -99 + bob);
+        }
+
+        ctx.restore();
+      }
+
+      function drawMagonaBikeGarage(screenX, screenY) {
+        ctx.save();
+        ctx.translate(screenX, screenY);
+
+        ctx.fillStyle = '#1e293b';
+        ctx.beginPath();
+        ctx.roundRect(-105, -132, 210, 132, 10);
+        ctx.fill();
+        ctx.strokeStyle = '#84cc16';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.roundRect(-112, -142, 224, 14, 5);
+        ctx.fill();
+
+        ctx.fillStyle = '#090d16';
+        ctx.beginPath();
+        ctx.roundRect(-94, -168, 188, 28, 8);
+        ctx.fill();
+        ctx.strokeStyle = '#a3e635';
+        ctx.lineWidth = 2.2;
+        ctx.stroke();
+        ctx.fillStyle = '#a3e635';
+        ctx.font = '900 10px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('MAGONA BIKE GARAGE', 0, -155);
+        ctx.fillStyle = '#f8fafc';
+        ctx.font = '700 7.5px Inter, sans-serif';
+        ctx.fillText('BIBBONA · OFFICINA & BIRRA', 0, -145);
+
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(-88, -96, 98, 96);
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(-82, -90, 86, 90);
+
+        ctx.fillStyle = '#dc2626';
+        ctx.fillRect(-76, -34, 74, 34);
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.arc(-58, -66, 12, 0, Math.PI * 2);
+        ctx.arc(-26, -66, 12, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.fillStyle = '#78350f';
+        ctx.fillRect(22, -48, 72, 48);
+        ctx.fillStyle = '#d97706';
+        ctx.fillRect(18, -53, 80, 6);
+
+        const mugsX = [36, 58, 80];
+        for (let m = 0; m < mugsX.length; m++) {
+          const mx = mugsX[m];
+          ctx.fillStyle = '#f59e0b';
+          ctx.fillRect(mx - 5, -69, 10, 16);
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.roundRect(mx - 6, -73, 12, 5, 2);
+          ctx.fill();
+        }
+
+        ctx.restore();
+      }
+
       function drawBaracchinaAperitivo(screenX, screenY) {
         ctx.save();
         ctx.translate(screenX, screenY);
@@ -2415,6 +3103,24 @@
           ctx.arc(5, -4, 3, 0, Math.PI * 2);
           ctx.fill();
           ctx.restore();
+        } else if (celebrationType === 'BIRRA') {
+          const beerBob = Math.sin(state.time * 6) * 4;
+          ctx.save();
+          ctx.translate(headX + 21, headY + 2 + beerBob);
+          ctx.strokeStyle = '#e2e8f0';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(6, 5, 4.5, -Math.PI * 0.5, Math.PI * 0.5);
+          ctx.stroke();
+          ctx.fillStyle = '#f59e0b';
+          ctx.beginPath();
+          ctx.roundRect(-6, -3, 12, 16, 2);
+          ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.roundRect(-7, -7, 14, 5, 2.5);
+          ctx.fill();
+          ctx.restore();
         }
 
         if (state.quipTimer > 0 && state.quipText) {
@@ -2442,9 +3148,19 @@
       function drawWeedLeaf(cx, cy, bob, sway) {
         ctx.save();
         ctx.translate(cx, cy + bob);
+
+        // Alone luminoso morbido per renderla ben visibile in aria (anche nel bosco)
+        const glowGrad = ctx.createRadialGradient(0, -6, 2, 0, -6, 22);
+        glowGrad.addColorStop(0, 'rgba(190, 242, 100, 0.55)');
+        glowGrad.addColorStop(1, 'rgba(34, 197, 94, 0)');
+        ctx.fillStyle = glowGrad;
+        ctx.beginPath();
+        ctx.arc(0, -6, 22, 0, Math.PI * 2);
+        ctx.fill();
+
         ctx.rotate(sway);
-        drawHempLeafShape(1.0, '#22c55e', '#16a34a', '#14532d');
-        ctx.strokeStyle = '#15803d';
+        drawHempLeafShape(1.05, '#4ade80', '#22c55e', '#052e16');
+        ctx.strokeStyle = '#16a34a';
         ctx.lineWidth = 2.2;
         ctx.lineCap = 'round';
         ctx.beginPath();
@@ -2584,7 +3300,7 @@
         const baseRoadScreenY = groundScreenTargetY - state.cameraBaseY;
         const riderScreenY = baseRoadScreenY + state.bike.y;
 
-        if (!isLv2) {
+        if (!isLv2 && !isLv3) {
           const skyGrad = ctx.createLinearGradient(0, 0, 0, height * 0.65);
           skyGrad.addColorStop(0, '#0369a1');
           skyGrad.addColorStop(0.55, '#38bdf8');
@@ -2706,7 +3422,7 @@
           ctx.restore();
         }
 
-        ctx.fillStyle = isLv2 ? '#451a03' : '#1e293b';
+        ctx.fillStyle = (isLv2 || isLv3) ? '#451a03' : '#1e293b';
         ctx.beginPath();
         ctx.moveTo(-20, height + 40);
         for (let sx = -20; sx <= width + 20; sx += 16) {
@@ -2718,8 +3434,8 @@
         ctx.closePath();
         ctx.fill();
 
-        ctx.strokeStyle = isLv2 ? '#92400e' : '#94a3b8';
-        ctx.lineWidth = isLv2 ? 5 : 4;
+        ctx.strokeStyle = (isLv2 || isLv3) ? '#92400e' : '#94a3b8';
+        ctx.lineWidth = (isLv2 || isLv3) ? 5 : 4;
         ctx.beginPath();
         for (let sx = -20; sx <= width + 20; sx += 16) {
           const wx = sx + state.cameraX;
@@ -2729,7 +3445,7 @@
         }
         ctx.stroke();
 
-        ctx.strokeStyle = isLv2 ? 'rgba(217, 119, 6, 0.45)' : 'rgba(255, 255, 255, 0.55)';
+        ctx.strokeStyle = (isLv2 || isLv3) ? 'rgba(217, 119, 6, 0.45)' : 'rgba(255, 255, 255, 0.55)';
         ctx.lineWidth = 2.5;
         ctx.setLineDash([22, 22]);
         ctx.lineDashOffset = state.cameraX % 44;
@@ -2743,7 +3459,7 @@
         ctx.stroke();
         ctx.setLineDash([]);
 
-        if (!isLv2) {
+        if (!isLv2 && !isLv3) {
           for (let b = 0; b < BELVEDERE_SPOTS.length; b++) {
             const spot = BELVEDERE_SPOTS[b];
             const bx = spot.x - state.cameraX;
@@ -2757,16 +3473,7 @@
             drawGelateriaOrizzonte(gelatoX, baseRoadScreenY + getGroundY(COURSE_LENGTH_LV1));
           }
 
-          for (let c = 0; c < leaves.length; c++) {
-            const leaf = leaves[c];
-            if (leaf.collected) continue;
-            const cx = leaf.x - state.cameraX;
-            if (cx < -40 || cx > width + 40) continue;
-            const cy = baseRoadScreenY + getGroundY(leaf.x) + leaf.yOffset;
-            const bob = Math.sin(state.time * 4 + leaf.phase) * 4;
-            const sway = Math.sin(state.time * 3 + leaf.phase) * 0.14;
-            drawWeedLeaf(cx, cy, bob, sway);
-          }
+
 
           for (let i = 0; i < npcs.length; i++) {
             const npc = npcs[i];
@@ -2796,6 +3503,57 @@
               drawTorbobiker(tb, tx, baseRoadScreenY + getGroundY(tb.x));
             }
           }
+        } else if (isLv3) {
+          for (let b = 0; b < magonaBerms.length; b++) {
+            const berm = magonaBerms[b];
+            const bx = berm.x - state.cameraX;
+            if (bx >= -140 && bx <= width + 140) {
+              drawMagonaBerm(berm, bx, baseRoadScreenY + getGroundY(berm.x));
+            }
+          }
+
+          for (let i = 0; i < magonaBoars.length; i++) {
+            const boar = magonaBoars[i];
+            if (boar.hit) continue;
+            const sx = boar.x - state.cameraX;
+            if (sx >= -100 && sx <= width + 100) {
+              drawMagonaBoar(boar, sx, baseRoadScreenY + getGroundY(boar.x));
+            }
+          }
+
+          for (let c = 0; c < wrongWayCyclists.length; c++) {
+            const wc = wrongWayCyclists[c];
+            const sx = wc.x - state.cameraX;
+            if (sx >= -120 && sx <= width + 120) {
+              drawWrongWayCyclist(wc, sx, baseRoadScreenY + getGroundY(wc.x));
+            }
+          }
+
+          for (let p = 0; p < paniniItems.length; p++) {
+            const panino = paniniItems[p];
+            if (panino.collected) continue;
+            const px = panino.x - state.cameraX;
+            if (px < -45 || px > width + 45) continue;
+            const py = baseRoadScreenY + getGroundY(panino.x) + panino.yOffset;
+            drawPaninoRipieno(panino, px, py);
+          }
+
+          const garageX = COURSE_LENGTH_LV3 - state.cameraX;
+          if (garageX >= -220 && garageX <= width + 220) {
+            drawMagonaBikeGarage(garageX, baseRoadScreenY + getGroundY(COURSE_LENGTH_LV3));
+          }
+        }
+
+        // Foglioline di cannabis sospese in aria da prendere saltando (Livello 1 e Livello 2)
+        for (let c = 0; c < leaves.length; c++) {
+          const leaf = leaves[c];
+          if (leaf.collected) continue;
+          const cx = leaf.x - state.cameraX;
+          if (cx < -40 || cx > width + 40) continue;
+          const cy = baseRoadScreenY + getGroundY(leaf.x) + leaf.yOffset;
+          const bob = Math.sin(state.time * 4 + leaf.phase) * 4;
+          const sway = Math.sin(state.time * 3 + leaf.phase) * 0.14;
+          drawWeedLeaf(cx, cy, bob, sway);
         }
 
         for (let d = 0; d < dustParticles.length; d++) {
@@ -2808,7 +3566,7 @@
           ctx.fill();
         }
 
-        const celebration = state.mode === 'END_STOP' ? (isLv2 ? 'APERITIVO' : 'GELATO') : null;
+        const celebration = state.mode === 'END_STOP' ? (isLv3 ? 'BIRRA' : (isLv2 ? 'APERITIVO' : 'GELATO')) : null;
         drawOlmettoRider(
           riderScreenX,
           riderScreenY,
@@ -2829,13 +3587,17 @@
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
 
-          const headline = isLv2 ? 'APERITIVO IN BARACCHINA!' : 'NO… STAI A MILANO!';
+          const headline = isLv3 ? 'BIRRA AL MAGONA BIKE GARAGE!' : (isLv2 ? 'APERITIVO IN BARACCHINA!' : 'NO… STAI A MILANO!');
           ctx.lineWidth = Math.max(5, fontSize * 0.16);
           ctx.strokeStyle = '#0f172a';
           ctx.strokeText(headline, 0, 0);
 
           const textGrad = ctx.createLinearGradient(0, -fontSize * 0.5, 0, fontSize * 0.5);
-          if (isLv2) {
+          if (isLv3) {
+            textGrad.addColorStop(0, '#fef08a');
+            textGrad.addColorStop(0.5, '#f59e0b');
+            textGrad.addColorStop(1, '#84cc16');
+          } else if (isLv2) {
             textGrad.addColorStop(0, '#fef08a');
             textGrad.addColorStop(0.5, '#fb923c');
             textGrad.addColorStop(1, '#34d399');
@@ -2852,9 +3614,11 @@
             ctx.fillStyle = '#ffffff';
             ctx.strokeStyle = 'rgba(15, 23, 42, 0.85)';
             ctx.lineWidth = 4;
-            const subLabel = isLv2
-              ? '🍹 Spritz & Patatine in Baracchina · ' + Math.ceil(state.endStopTimer) + 's'
-              : '🍦 Gelateria L’Orizzonte · ' + Math.ceil(state.endStopTimer) + 's';
+            const subLabel = isLv3
+              ? '🍺 Magona Bike Garage · Bibbona · ' + Math.ceil(state.endStopTimer) + 's'
+              : (isLv2
+                ? '🍹 Spritz & Patatine in Baracchina · ' + Math.ceil(state.endStopTimer) + 's'
+                : '🍦 Gelateria L’Orizzonte · ' + Math.ceil(state.endStopTimer) + 's');
             ctx.strokeText(subLabel, 0, fontSize * 0.85);
             ctx.fillText(subLabel, 0, fontSize * 0.85);
           }
