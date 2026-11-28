@@ -1184,6 +1184,10 @@
           return y;
         }
 
+        if (state.level === 5) {
+          return Math.sin(worldX * 0.0009) * 5 + Math.cos(worldX * 0.0021) * 3;
+        }
+
         let y = Math.sin(worldX * 0.0016) * 14 + Math.cos(worldX * 0.0007) * 10;
         for (let i = 0; i < BELVEDERE_SPOTS.length; i++) {
           const spot = BELVEDERE_SPOTS[i];
@@ -2450,6 +2454,7 @@
         // =====================================================================
         const isLv2 = state.level === 2;
         const isLv3 = state.level === 3;
+        const isLv5 = state.level === 5;
         const isTrail = isLv2 || isLv3;
         const dizzyFactor = state.vortexTimer > 0 ? 0.62 : 1.0;
         const maxSpeed = (keys.turbo ? (isTrail ? 850 : 760) : (isTrail ? 630 : 510)) * dizzyFactor;
@@ -2509,7 +2514,13 @@
           playSound('turbo');
         }
         if (state.quipTimer <= 0 && state.bike.vx > 410 && Math.random() < dt * 0.24) {
-          const quipPool = isLv3 ? RIDER_QUIPS_LV3 : (isLv2 ? RIDER_QUIPS_LV2 : RIDER_QUIPS_LV1);
+          const RIDER_QUIPS_LV5 = [
+            'Boia dé, gasse aperto in centro a Livorno!',
+            'Schiaccia i piccioni e occhio alle macchine, dé!',
+            'Via Grande a foho sull’Orbea, grullo!',
+            'Che stile GTA a Livorno centro, boia dé!'
+          ];
+          const quipPool = isLv5 ? RIDER_QUIPS_LV5 : (isLv3 ? RIDER_QUIPS_LV3 : (isLv2 ? RIDER_QUIPS_LV2 : RIDER_QUIPS_LV1));
           state.quipText = quipPool[Math.floor(Math.random() * quipPool.length)];
           state.quipTimer = 2.2;
         }
