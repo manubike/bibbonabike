@@ -109,7 +109,6 @@
       </div>
       <div class="relative w-full h-2.5 bg-slate-800 rounded-full overflow-visible border border-slate-700">
         <div id="progressBarFill" class="h-full bg-gradient-to-r from-purple-500 via-amber-400 to-emerald-400 rounded-full transition-all duration-150" style="width: 0%;"></div>
-        <!-- 5 Indicatori Belvedere -->
         <div id="milestone0" class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-slate-900 border-2 border-amber-400 flex items-center justify-center text-[8px] font-black text-amber-300" style="left: 20%;">1</div>
         <div id="milestone1" class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-slate-900 border-2 border-amber-400 flex items-center justify-center text-[8px] font-black text-amber-300" style="left: 40%;">2</div>
         <div id="milestone2" class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-slate-900 border-2 border-amber-400 flex items-center justify-center text-[8px] font-black text-amber-300" style="left: 60%;">3</div>
@@ -119,7 +118,7 @@
     </div>
   </div>
 
-  <!-- MODALE DIALOGO CON NPC (PIÙ GRANDE E LEGGIBILE) -->
+  <!-- MODALE DIALOGO CON NPC (NON INVASIVA IN ALTO A DESTRA) -->
   <div id="dialogueModal" class="hidden fixed top-24 right-3 sm:right-5 z-30 w-80 sm:w-96 pointer-events-auto">
     <div class="glass-hud rounded-2xl p-4 sm:p-5 shadow-2xl border border-white/25 animate-float">
       <div class="flex items-center gap-3 mb-3">
@@ -130,14 +129,14 @@
         </div>
       </div>
       <div class="bg-slate-900/80 rounded-xl p-3 border border-slate-700/80 mb-3">
-        <p id="npcQuoteText" class="text-sm sm:text-[15px] font-semibold text-slate-100 leading-relaxed">“Oh bimbo, piano col gasse!”</p>
+        <p id="npcQuoteText" class="text-sm sm:text-[15px] font-semibold text-slate-100 leading-relaxed">“Boia dé, icché tu fai?”</p>
       </div>
       <div class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-amber-300 mb-2">Rispondi a tono:</div>
       <div id="dialogueOptions" class="flex flex-col gap-2"></div>
     </div>
   </div>
 
-  <!-- MODALE CARTOLINA SELFIE BELVEDERE (5 SECONDI, PIÙ GRANDE E CENTRATA) -->
+  <!-- MODALE CARTOLINA SELFIE BELVEDERE -->
   <div id="panoramaModal" class="hidden fixed inset-0 z-30 flex items-center justify-center p-4 bg-slate-950/45 backdrop-blur-[2px] pointer-events-auto">
     <div class="bg-slate-900/95 backdrop-blur-md rounded-3xl p-4 sm:p-5 shadow-2xl border-2 border-amber-400/85 text-center w-full max-w-md sm:max-w-lg">
       <div class="flex items-center justify-between mb-2">
@@ -178,7 +177,7 @@
       </div>
       <h2 class="text-2xl sm:text-3xl font-black text-white mb-1">NO… STAI A MILANO!</h2>
       <p class="text-xs sm:text-sm text-slate-300 mb-5">
-        Hai conquistato tutti e 5 i Belvedere delle collinette, tenuto testa ai 10 livornesi e ti sei gustato il gelato vista mare alla Gelateria L’Orizzonte!
+        Boia dé, hai fatto tutti e 5 i Belvedere delle collinette, risposto per le rime ai 10 livornesi e ti sei gustato il gelato alla Gelateria L’Orizzonte!
       </p>
       <div class="grid grid-cols-3 gap-2 mb-6">
         <div class="bg-slate-900/80 rounded-2xl p-3 border border-slate-700">
@@ -275,208 +274,98 @@
       // =========================================================================
       // CONFIGURAZIONE PERCORSO: 5 BELVEDERE SU COLLINETTE + GELATERIA L'ORIZZONTE
       // =========================================================================
-      const COURSE_LENGTH = 25000; // 2500 metri (10 unità = 1 metro)
-      const GELATO_STOP_DURATION = 10.0; // 10 secondi di gelato + scritta gigante in cielo
-      const BELVEDERE_PAUSE_DURATION = 5.0; // 5 secondi di cartolina al Belvedere
+      const COURSE_LENGTH = 25000;
+      const GELATO_STOP_DURATION = 10.0;
+      const BELVEDERE_PAUSE_DURATION = 5.0;
 
       const BELVEDERE_SPOTS = [
-        {
-          id: 0,
-          x: 5000,
-          name: 'Terrazza Mascagni',
-          subtitle: 'In cima alla prima collinetta vista scacchiera!',
-          visited: false
-        },
-        {
-          id: 1,
-          x: 10000,
-          name: 'Baracchina Bianca',
-          subtitle: 'Seconda collinetta panoramica sul mare!',
-          visited: false
-        },
-        {
-          id: 2,
-          x: 15000,
-          name: 'Rotonda d’Ardenza',
-          subtitle: 'Terza collinetta tra pini marittimi e scogli!',
-          visited: false
-        },
-        {
-          id: 3,
-          x: 20000,
-          name: 'Scogli dell’Accademia',
-          subtitle: 'Quarta collinetta sul Tirreno!',
-          visited: false
-        },
-        {
-          id: 4,
-          x: 24200,
-          name: 'Belvedere Antignano',
-          subtitle: 'Quinta e ultima vetta prima del gelato!',
-          visited: false
-        }
+        { id: 0, x: 5000, name: 'Terrazza Mascagni', subtitle: 'In cima alla prima collinetta vista scacchiera!', visited: false },
+        { id: 1, x: 10000, name: 'Baracchina Bianca', subtitle: 'Seconda collinetta panoramica sul mare!', visited: false },
+        { id: 2, x: 15000, name: 'Rotonda d’Ardenza', subtitle: 'Terza collinetta tra pini marittimi e scogli!', visited: false },
+        { id: 3, x: 20000, name: 'Scogli dell’Accademia', subtitle: 'Quarta collinetta sul Tirreno!', visited: false },
+        { id: 4, x: 24200, name: 'Belvedere Antignano', subtitle: 'Quinta e ultima vetta prima del gelato!', visited: false }
       ];
 
       // =========================================================================
-      // 10 NPC LIVORNESI CON DIALOGHI E RISPOSTE ("Tingiti meno i 'apelli!" SU 2 NPC DISTINTI)
+      // 10 NPC LIVORNESI CON DIALOGHI E RISPOSTE ESCLUSIVAMENTE LIVORNESI
+      // ("Tingiti meno i 'apelli!" presente su 2 NPC distinti)
       // =========================================================================
       const NPC_TEMPLATES = [
         {
-          name: 'Beppe der Porto',
-          role: 'Pescatore',
-          avatar: '🎣',
-          shirt: '#0284c7',
-          pants: '#1e293b',
-          hair: '#94a3b8',
-          quote: '“Oh bimbo, icché tu fai con quella bici viola? Tu pari un razzo der Molo Novo!”',
-          replies: [
-            '“Dé, levati dar mezzo che c’ho er turbo!”',
-            '“Boia dé, o un tu la vedi che è un’Orbea?”'
-          ]
+          name: 'Beppe der Porto', role: 'Pescatore', avatar: '🎣', shirt: '#0284c7', pants: '#1e293b', hair: '#94a3b8',
+          quote: '“Boia dé, icché tu fai con codesta bici viola? Tu pari un razzo der Molo Novo!”',
+          replies: ['“Dé, levati dar mezzo che c’ho er turbo!”', '“Boia dé, o un tu la vedi che è un’Orbea?”']
         },
         {
-          name: 'Gino della Venezia',
-          role: 'Barcaiolo',
-          avatar: '⚓',
-          shirt: '#f59e0b',
-          pants: '#0f172a',
-          hair: '#1e293b',
-          quote: '“Ir mi’ nonno con la Graziella andava più forte di te, bellino!”',
-          replies: [
-            '“Tingiti meno i ’apelli!”',
-            '“Ma icché tu dici, o grullo! Guarda come vola!”'
-          ]
+          name: 'Gino della Venezia', role: 'Barcaiolo', avatar: '⚓', shirt: '#f59e0b', pants: '#0f172a', hair: '#1e293b',
+          quote: '“Ir mi’ nonno con la Graziella andava più forte di te, grullo!”',
+          replies: ['“Tingiti meno i ’apelli!”', '“Ma icché tu dici, o grullo! Guarda come vola!”']
         },
         {
-          name: 'Sora Tosca',
-          role: 'Signora der Lungomare',
-          avatar: '👒',
-          shirt: '#ec4899',
-          pants: '#4c1d95',
-          hair: '#e2e8f0',
-          quote: '“Maremma impestata, tu m’hai spettinato i’ riporto cor vento!”',
-          replies: [
-            '“Scusa sora Tosca, dé, c’è libeccio oggi!”',
-            '“Mettiti la cuffia, vai, che qui si viaggia!”'
-          ]
+          name: 'Sora Tosca', role: 'Signora der Lungomare', avatar: '👒', shirt: '#ec4899', pants: '#4c1d95', hair: '#e2e8f0',
+          quote: '“Allora un ci siamo, dé! Tu m’hai spettinato i’ riporto cor vento!”',
+          replies: ['“Scusa sora Tosca, dé, c’è libeccio oggi!”', '“Mettiti la cuffia, via su, che qui si viaggia!”']
         },
         {
-          name: 'Nando der Cacciucco',
-          role: 'Oste',
-          avatar: '🍲',
-          shirt: '#dc2626',
-          pants: '#1e293b',
-          hair: '#475569',
-          quote: '“O dove tu corri? Fermati a farti un ponce alla livornese!”',
-          replies: [
-            '“Prima vado a piglià er gelato all’Orizzonte, dé!”',
-            '“Dopo er quinto Belvedere torno a sbranà!”'
-          ]
+          name: 'Nando der Cacciucco', role: 'Oste', avatar: '🍲', shirt: '#dc2626', pants: '#1e293b', hair: '#475569',
+          quote: '“O dove tu corri? Fermati a farti un ponce alla livornese, dé!”',
+          replies: ['“Prima vado a fare il gelato all’Orizzonte, boia dé!”', '“Dopo er quinto Belvedere torno a magnà!”']
         },
         {
-          name: 'Il Bischero d’Ardenza',
-          role: 'Ciclista della Domenica',
-          avatar: '🚴',
-          shirt: '#10b981',
-          pants: '#111827',
-          hair: '#78350f',
-          quote: '“Aoh, guarda che la salita della collinetta un tu la reggi!”',
-          replies: [
-            '“O sveglia! Questa c’ha er motore, mica come la tua!”',
-            '“Dé, stammi a ruota se tu ci riesci!”'
-          ]
+          name: 'Il Grullo d’Ardenza', role: 'Ciclista della Domenica', avatar: '🚴', shirt: '#10b981', pants: '#111827', hair: '#78350f',
+          quote: '“Allora un ci siamo! La salita della collinetta un tu la reggi, dé!”',
+          replies: ['“O sveglia! Questa c’ha er motore, un è mica come la tua!”', '“Boia dé, stammi a ruota se tu ci riesci!”']
         },
         {
-          name: 'Tiziano der Bagno Pancaldi',
-          role: 'Bagnino',
-          avatar: '🛟',
-          shirt: '#eab308',
-          pants: '#991b1b',
-          hair: '#0f172a',
-          quote: '“Oh fenomenoooo, guarda che qui un si fanno le impennate!”',
-          replies: [
-            '“Tingiti meno i ’apelli!”',
-            '“Boia dé, guarda e impara, fenomeno!”'
-          ]
+          name: 'Tiziano der Bagno Pancaldi', role: 'Bagnino', avatar: '🛟', shirt: '#eab308', pants: '#991b1b', hair: '#0f172a',
+          quote: '“Oh fenomenoooo, guarda che qui un si fanno le impennate, dé!”',
+          replies: ['“Tingiti meno i ’apelli!”', '“Boia dé, guarda e impara, grullo!”']
         },
         {
-          name: 'Lillo der Mercato',
-          role: 'Fruttivendolo',
-          avatar: '🍉',
-          shirt: '#16a34a',
-          pants: '#1e293b',
-          hair: '#64748b',
+          name: 'Lillo der Mercato', role: 'Fruttivendolo', avatar: '🍉', shirt: '#16a34a', pants: '#1e293b', hair: '#64748b',
           quote: '“Icché tu c’hai nella borraccia, l’acqua der fosso Reale?”',
-          replies: [
-            '“C’ho la benzina der livornese vero, dé!”',
-            '“Pensa a pesà i cocomeri, vai!”'
-          ]
+          replies: ['“C’ho la benzina der livornese vero, boia dé!”', '“Pensa a pesà i cocomeri, via su!”']
         },
         {
-          name: 'Mirella d’Antignano',
-          role: 'Turista Scettica',
-          avatar: '🕶️',
-          shirt: '#8b5cf6',
-          pants: '#1e1b4b',
-          hair: '#facc15',
+          name: 'Mirella d’Antignano', role: 'Turista Scettica', avatar: '🕶️', shirt: '#8b5cf6', pants: '#1e1b4b', hair: '#facc15',
           quote: '“Scusi, ma questo lungomare sembra quasi l’Idroscalo di Milano…”',
-          replies: [
-            '“NO… STAI A MILANO! Ma vattene a vedé er mare, dé!”',
-            '“Boia dé, questa è bestemmia pura a Livorno!”'
-          ]
+          replies: ['“NO… STAI A MILANO! Ma vattene a vedé er mare, boia dé!”', '“Allora un ci siamo! Qui è Livorno, dé!”']
         },
         {
-          name: 'Cesare der Calambrone',
-          role: 'Surfista',
-          avatar: '🏄',
-          shirt: '#06b6d4',
-          pants: '#0f172a',
-          hair: '#d97706',
-          quote: '“Bella pe’ te Olmetto! Che stile co’ quei guanti gialli!”',
-          replies: [
-            '“Grande dé, ci si becca alla Gelateria L’Orizzonte!”',
-            '“Spacca tutto fratello, oggi mare forza olio!”'
-          ]
+          name: 'Cesare der Calambrone', role: 'Surfista', avatar: '🏄', shirt: '#06b6d4', pants: '#0f172a', hair: '#d97706',
+          quote: '“Bella pe’ te Olmetto, dé! Che stile co’ quei guanti gialli!”',
+          replies: ['“Grande boia dé, ci si becca alla Gelateria L’Orizzonte!”', '“Via su, oggi mare forza olio!”']
         },
         {
-          name: 'Zio Otello',
-          role: 'Pensionato DOC',
-          avatar: '🧢',
-          shirt: '#64748b',
-          pants: '#0f172a',
-          hair: '#f8fafc',
-          quote: '“Bravo figliolo, però quando tu arrivi all’Orizzonte piglia due gusti!”',
-          replies: [
-            '“Anche tre zio Otello, crema, pistacchio e panna!”',
-            '“Dé, garantito al limone!”'
-          ]
+          name: 'Zio Otello', role: 'Pensionato DOC', avatar: '🧢', shirt: '#64748b', pants: '#0f172a', hair: '#f8fafc',
+          quote: '“Bravo figliolo, dé! Però quando tu arrivi all’Orizzonte fai due gusti!”',
+          replies: ['“Anche tre zio Otello, boia dé, crema, pistacchio e panna!”', '“Garantito al limone, via su!”']
         }
       ];
 
       const RIDER_QUIPS = [
-        'Dé, che spettacolo!',
-        'Boia dé, che gasse!',
-        'O svegliaaa!',
-        'Che stile l’Orbea!',
-        'Forza Livorno, dé!',
-        'Via verso l’Orizzonte!',
-        'Maremma che vista!'
+        'Boia dé, che spettacolo!', 'Che gasse, dé!', 'O svegliaaa!',
+        'Che stile l’Orbea!', 'Forza Livorno, dé!', 'Via su verso l’Orizzonte!', 'Boia dé, che vista!'
       ];
 
       // =========================================================================
-      // AUDIO SYNTH (EFFETTI SONORI WEB AUDIO API)
+      // AUDIO SYNTH (CON GESTIONE SICURA ERRORI)
       // =========================================================================
       let audioEnabled = false;
       let audioCtx = null;
 
       function ensureAudio() {
         if (!audioEnabled) return;
-        if (!audioCtx) {
-          const AudioContext = window.AudioContext || window.webkitAudioContext;
-          if (AudioContext) audioCtx = new AudioContext();
-        }
-        if (audioCtx && audioCtx.state === 'suspended') {
-          audioCtx.resume().catch(function () {});
+        try {
+          if (!audioCtx) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) audioCtx = new AudioContext();
+          }
+          if (audioCtx && audioCtx.state === 'suspended') {
+            audioCtx.resume().catch(function () {});
+          }
+        } catch (err) {
+          audioCtx = null;
         }
       }
 
@@ -528,27 +417,31 @@
             osc.start(now);
             osc.stop(now + 0.66);
           }
-        } catch (e) {}
+        } catch (err) {
+          // Ignora errori audio su browser restrittivi
+        }
       }
 
-      audioToggleBtn.addEventListener('click', function () {
-        audioEnabled = !audioEnabled;
-        if (audioEnabled) {
-          ensureAudio();
-          audioIconOn.classList.remove('hidden');
-          audioIconOff.classList.add('hidden');
-          playSound('npc');
-        } else {
-          audioIconOn.classList.add('hidden');
-          audioIconOff.classList.remove('hidden');
-        }
-      });
+      if (audioToggleBtn) {
+        audioToggleBtn.addEventListener('click', function () {
+          audioEnabled = !audioEnabled;
+          if (audioEnabled) {
+            ensureAudio();
+            if (audioIconOn) audioIconOn.classList.remove('hidden');
+            if (audioIconOff) audioIconOff.classList.add('hidden');
+            playSound('npc');
+          } else {
+            if (audioIconOn) audioIconOn.classList.add('hidden');
+            if (audioIconOff) audioIconOff.classList.remove('hidden');
+          }
+        });
+      }
 
       // =========================================================================
       // STATO DEL GIOCO & INPUT
       // =========================================================================
       const state = {
-        mode: 'START', // START, PLAYING, DIALOGUE, PANORAMA, GELATO_STOP, VICTORY
+        mode: 'START',
         time: 0,
         startTime: 0,
         score: 0,
@@ -572,56 +465,35 @@
         cameraX: 0
       };
 
-      const keys = {
-        right: false,
-        left: false,
-        up: false,
-        turbo: false
-      };
+      const keys = { right: false, left: false, up: false, turbo: false };
 
       let npcs = [];
       let sceneryItems = [];
       let cones = [];
 
-      // =========================================================================
-      // GEOMETRIA DEL TERRENO CON COLLINETTE SOTTO CIASCUNO DEI 5 BELVEDERE
-      // =========================================================================
       function getGroundY(worldX) {
-        // Ondulazione dolce base del lungomare
         let y = Math.sin(worldX * 0.0016) * 14 + Math.cos(worldX * 0.0007) * 10;
-
-        // Ciascuno dei 5 Belvedere si trova in cima a una collinetta panoramica
         for (let i = 0; i < BELVEDERE_SPOTS.length; i++) {
           const spot = BELVEDERE_SPOTS[i];
           const dx = worldX - spot.x;
           const hillRadius = 780;
           if (Math.abs(dx) < hillRadius) {
             const norm = dx / hillRadius;
-            // Profilo a campana morbida verso l'alto (y negativo = più in alto sullo schermo)
-            const hillLift = Math.pow(Math.cos(norm * Math.PI * 0.5), 2) * 125;
-            y -= hillLift;
+            y -= Math.pow(Math.cos(norm * Math.PI * 0.5), 2) * 125;
           }
         }
-
-        // Tratto pianeggiante accogliente davanti alla Gelateria L'Orizzonte (24600..25300)
         if (worldX > 24600) {
           const t = Math.min(1, (worldX - 24600) / 300);
           y = y * (1 - t);
         }
-
         return y;
       }
 
       function getGroundSlope(worldX) {
         const eps = 8;
-        const y1 = getGroundY(worldX - eps);
-        const y2 = getGroundY(worldX + eps);
-        return Math.atan2(y2 - y1, eps * 2);
+        return Math.atan2(getGroundY(worldX + eps) - getGroundY(worldX - eps), eps * 2);
       }
 
-      // =========================================================================
-      // POPOLAMENTO MONDO: 10 NPC LIVORNESI, PINI MARITTIMI, BIRILLI, BELVEDERE
-      // =========================================================================
       function populateWorld() {
         npcs = [];
         sceneryItems = [];
@@ -636,7 +508,6 @@
           }
         }
 
-        // Posizionamento dei 10 NPC lungo i 2500 metri
         const npcPositions = [1800, 3600, 6500, 8600, 11600, 13600, 16500, 18600, 21400, 23100];
         for (let i = 0; i < NPC_TEMPLATES.length; i++) {
           const tpl = NPC_TEMPLATES[i];
@@ -656,7 +527,6 @@
           });
         }
 
-        // Pini marittimi, lampioni e panchine lungo il percorso
         for (let x = 350; x < COURSE_LENGTH + 400; x += 420) {
           sceneryItems.push({
             x: x,
@@ -665,7 +535,6 @@
           });
         }
 
-        // Birilli arancioni saltabili (lontano da NPC e Belvedere)
         for (let x = 1100; x < COURSE_LENGTH - 900; x += 1450) {
           let tooClose = false;
           for (let n = 0; n < npcs.length; n++) {
@@ -674,15 +543,10 @@
           for (let b = 0; b < BELVEDERE_SPOTS.length; b++) {
             if (Math.abs(BELVEDERE_SPOTS[b].x - x) < 420) tooClose = true;
           }
-          if (!tooClose) {
-            cones.push({ x: x, jumped: false });
-          }
+          if (!tooClose) cones.push({ x: x, jumped: false });
         }
       }
 
-      // =========================================================================
-      // AVVIO / RESET PARTITA
-      // =========================================================================
       function startGame() {
         ensureAudio();
         populateWorld();
@@ -695,7 +559,7 @@
         state.currentBelvedere = null;
         state.gelatoTimer = 0;
         state.activeNpc = null;
-        state.quipText = 'Dé, si parte verso l’Orizzonte!';
+        state.quipText = 'Boia dé, si parte verso l’Orizzonte!';
         state.quipTimer = 2.6;
 
         state.bike.x = 200;
@@ -708,20 +572,17 @@
         state.bike.pitch = 0;
         state.cameraX = 0;
 
-        startScreen.classList.add('hidden');
-        victoryScreen.classList.add('hidden');
-        dialogueModal.classList.add('hidden');
-        panoramaModal.classList.add('hidden');
+        if (startScreen) startScreen.classList.add('hidden');
+        if (victoryScreen) victoryScreen.classList.add('hidden');
+        if (dialogueModal) dialogueModal.classList.add('hidden');
+        if (panoramaModal) panoramaModal.classList.add('hidden');
 
         updateHud();
       }
 
-      startBtn.addEventListener('click', startGame);
-      restartBtn.addEventListener('click', startGame);
+      if (startBtn) startBtn.addEventListener('click', startGame);
+      if (restartBtn) restartBtn.addEventListener('click', startGame);
 
-      // =========================================================================
-      // CONTROLLI TASTIERA E TOUCH
-      // =========================================================================
       function triggerJump() {
         if (state.mode !== 'PLAYING') return;
         if (state.bike.onGround) {
@@ -749,6 +610,7 @@
       });
 
       function bindHoldButton(btn, keyName) {
+        if (!btn) return;
         const press = function (e) {
           e.preventDefault();
           keys[keyName] = true;
@@ -771,26 +633,25 @@
       bindHoldButton(btnBrake, 'left');
       bindHoldButton(btnTurbo, 'turbo');
 
-      btnJump.addEventListener('touchstart', function (e) {
-        e.preventDefault();
-        btnJump.classList.add('pressed');
-        triggerJump();
-      }, { passive: false });
-      btnJump.addEventListener('touchend', function (e) {
-        e.preventDefault();
-        btnJump.classList.remove('pressed');
-      }, { passive: false });
-      btnJump.addEventListener('mousedown', function () {
-        btnJump.classList.add('pressed');
-        triggerJump();
-      });
-      btnJump.addEventListener('mouseup', function () {
-        btnJump.classList.remove('pressed');
-      });
+      if (btnJump) {
+        btnJump.addEventListener('touchstart', function (e) {
+          e.preventDefault();
+          btnJump.classList.add('pressed');
+          triggerJump();
+        }, { passive: false });
+        btnJump.addEventListener('touchend', function (e) {
+          e.preventDefault();
+          btnJump.classList.remove('pressed');
+        }, { passive: false });
+        btnJump.addEventListener('mousedown', function () {
+          btnJump.classList.add('pressed');
+          triggerJump();
+        });
+        btnJump.addEventListener('mouseup', function () {
+          btnJump.classList.remove('pressed');
+        });
+      }
 
-      // =========================================================================
-      // DIALOGHI NPC & SELFIE BELVEDERE
-      // =========================================================================
       function openNpcDialogue(npc) {
         state.mode = 'DIALOGUE';
         state.activeNpc = npc;
@@ -799,31 +660,33 @@
         keys.turbo = false;
         playSound('npc');
 
-        npcAvatarBadge.textContent = npc.avatar;
-        npcRoleBadge.textContent = npc.role + ' · Livorno';
-        npcNameTitle.textContent = npc.name;
-        npcQuoteText.textContent = npc.quote;
+        if (npcAvatarBadge) npcAvatarBadge.textContent = npc.avatar;
+        if (npcRoleBadge) npcRoleBadge.textContent = npc.role + ' · Livorno';
+        if (npcNameTitle) npcNameTitle.textContent = npc.name;
+        if (npcQuoteText) npcQuoteText.textContent = npc.quote;
 
-        dialogueOptions.innerHTML = '';
-        npc.replies.forEach(function (replyText) {
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.className = 'w-full text-left px-3.5 py-2.5 rounded-xl bg-slate-800/90 hover:bg-purple-600/80 active:scale-98 border border-slate-600/80 text-xs sm:text-sm font-bold text-white leading-snug transition cursor-pointer';
-          btn.textContent = replyText;
-          btn.addEventListener('click', function () {
-            npc.talked = true;
-            state.score += 150;
-            state.quipText = replyText.replace(/[“”]/g, '');
-            state.quipTimer = 3.0;
-            dialogueModal.classList.add('hidden');
-            state.activeNpc = null;
-            state.mode = 'PLAYING';
-            updateHud();
+        if (dialogueOptions) {
+          dialogueOptions.innerHTML = '';
+          npc.replies.forEach(function (replyText) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'w-full text-left px-3.5 py-2.5 rounded-xl bg-slate-800/90 hover:bg-purple-600/80 active:scale-98 border border-slate-600/80 text-xs sm:text-sm font-bold text-white leading-snug transition cursor-pointer';
+            btn.textContent = replyText;
+            btn.addEventListener('click', function () {
+              npc.talked = true;
+              state.score += 150;
+              state.quipText = replyText.replace(/[“”]/g, '');
+              state.quipTimer = 3.0;
+              if (dialogueModal) dialogueModal.classList.add('hidden');
+              state.activeNpc = null;
+              state.mode = 'PLAYING';
+              updateHud();
+            });
+            dialogueOptions.appendChild(btn);
           });
-          dialogueOptions.appendChild(btn);
-        });
+        }
 
-        dialogueModal.classList.remove('hidden');
+        if (dialogueModal) dialogueModal.classList.remove('hidden');
       }
 
       function openBelvederePanorama(spot) {
@@ -843,22 +706,22 @@
           badge.classList.add('bg-amber-400', 'text-slate-950');
         }
 
-        panoramaTitle.textContent = 'Belvedere #' + (spot.id + 1) + ': ' + spot.name;
-        panoramaSubtitle.textContent = spot.subtitle + ' (+250 pts)';
-        panoramaCountdown.textContent = state.panoramaTimer.toFixed(1) + 's';
+        if (panoramaTitle) panoramaTitle.textContent = 'Belvedere #' + (spot.id + 1) + ': ' + spot.name;
+        if (panoramaSubtitle) panoramaSubtitle.textContent = spot.subtitle + ' (+250 pts)';
+        if (panoramaCountdown) panoramaCountdown.textContent = state.panoramaTimer.toFixed(1) + 's';
 
         playSound('camera');
-        renderPanoramaSelfie(spot);
-        panoramaModal.classList.remove('hidden');
+        renderPanoramaSelfie();
+        if (panoramaModal) panoramaModal.classList.remove('hidden');
         updateHud();
       }
 
       function closeBelvederePanorama() {
         if (state.mode !== 'PANORAMA') return;
         state.panoramaTimer = 0;
-        panoramaModal.classList.add('hidden');
+        if (panoramaModal) panoramaModal.classList.add('hidden');
         state.mode = 'PLAYING';
-        state.quipText = 'Che foto da paura, dé!';
+        state.quipText = 'Boia dé, che foto da paura!';
         state.quipTimer = 2.4;
       }
 
@@ -866,14 +729,13 @@
         continuePanoramaBtn.addEventListener('click', closeBelvederePanorama);
       }
 
-      // Disegno della cartolina selfie al Belvedere (fedele alla foto a torso nudo al mare)
-      function renderPanoramaSelfie(spot) {
+      function renderPanoramaSelfie() {
+        if (!pCtx || !panoramaCanvas) return;
         const w = 400;
         const h = 300;
         panoramaCanvas.width = w;
         panoramaCanvas.height = h;
 
-        // Cielo azzurro terso con nuvolette leggere
         const skyGrad = pCtx.createLinearGradient(0, 0, 0, h * 0.36);
         skyGrad.addColorStop(0, '#0284c7');
         skyGrad.addColorStop(1, '#7dd3fc');
@@ -889,7 +751,6 @@
         pCtx.arc(w * 0.26, h * 0.27, 15, 0, Math.PI * 2);
         pCtx.fill();
 
-        // Promontorio roccioso all'orizzonte (a destra e sinistra come nella foto)
         pCtx.fillStyle = '#57534e';
         pCtx.beginPath();
         pCtx.moveTo(w * 0.14, h * 0.36);
@@ -905,7 +766,6 @@
         pCtx.closePath();
         pCtx.fill();
 
-        // Mare turchese cristallino caraibico come nella foto
         const seaGrad = pCtx.createLinearGradient(0, h * 0.36, 0, h * 0.84);
         seaGrad.addColorStop(0, '#0369a1');
         seaGrad.addColorStop(0.28, '#0284c7');
@@ -914,7 +774,6 @@
         pCtx.fillStyle = seaGrad;
         pCtx.fillRect(0, h * 0.36, w, h * 0.50);
 
-        // Scogli scuri affioranti in mare e sulla riva destra (come nella foto)
         pCtx.fillStyle = '#292524';
         const seaRocks = [
           [72, h * 0.45, 16, 7],
@@ -929,7 +788,6 @@
           pCtx.fill();
         });
 
-        // Riflessi luminosi sull'acqua turchese
         pCtx.fillStyle = 'rgba(255, 255, 255, 0.42)';
         for (let i = 0; i < 34; i++) {
           const sx = (i * 47) % (w * 0.75);
@@ -937,7 +795,6 @@
           pCtx.fillRect(sx, sy, 12 + (i % 12), 1.8);
         }
 
-        // Spiaggia sabbiosa chiara in basso e cespugli mediterranei verdi
         pCtx.fillStyle = '#e7d7be';
         pCtx.beginPath();
         pCtx.moveTo(0, h * 0.88);
@@ -947,7 +804,6 @@
         pCtx.closePath();
         pCtx.fill();
 
-        // Macchia mediterranea verde sulla destra e in basso a sinistra
         pCtx.fillStyle = '#3f6212';
         pCtx.beginPath();
         pCtx.ellipse(w * 0.86, h * 0.78, 56, 22, -0.25, 0, Math.PI * 2);
@@ -958,9 +814,6 @@
         pCtx.ellipse(w * 0.82, h * 0.80, 38, 14, -0.2, 0, Math.PI * 2);
         pCtx.fill();
 
-        // =====================================================================
-        // PROTAGONISTA IDENTICO ALLA FOTO (in piedi, torso nudo, boardshorts neri)
-        // =====================================================================
         const cx = w * 0.43;
         const feetY = h * 0.99;
 
@@ -969,7 +822,6 @@
         pCtx.scale(1.13, 1.13);
         pCtx.translate(-cx, -feetY);
 
-        // Gambe abbronzate leggermente divaricate come nella foto
         pCtx.fillStyle = '#d48456';
         pCtx.beginPath();
         pCtx.moveTo(cx - 24, feetY - 72);
@@ -987,9 +839,7 @@
         pCtx.closePath();
         pCtx.fill();
 
-        // Boardshorts neri lunghi fino al ginocchio con inserti bianchi curvi in basso e profili bianchi
         pCtx.fillStyle = '#111827';
-        // Gamba sinistra pantaloncino
         pCtx.beginPath();
         pCtx.moveTo(cx - 28, feetY - 134);
         pCtx.lineTo(cx - 1, feetY - 134);
@@ -997,7 +847,7 @@
         pCtx.lineTo(cx - 30, feetY - 68);
         pCtx.closePath();
         pCtx.fill();
-        // Gamba destra pantaloncino
+
         pCtx.beginPath();
         pCtx.moveTo(cx + 1, feetY - 134);
         pCtx.lineTo(cx + 28, feetY - 134);
@@ -1006,7 +856,6 @@
         pCtx.closePath();
         pCtx.fill();
 
-        // Filetti bianchi verticali lungo i fianchi e lunette bianche curve in basso (identici ai suoi shorts!)
         pCtx.strokeStyle = '#f8fafc';
         pCtx.lineWidth = 1.6;
         pCtx.beginPath();
@@ -1016,7 +865,6 @@
         pCtx.lineTo(cx + 29, feetY - 69);
         pCtx.stroke();
 
-        // Scritta bianca verticale sul fianco destro come nella foto
         pCtx.save();
         pCtx.translate(cx - 25, feetY - 104);
         pCtx.rotate(-Math.PI / 2);
@@ -1038,7 +886,6 @@
         pCtx.closePath();
         pCtx.fill();
 
-        // Laccetto nero in vita
         pCtx.strokeStyle = '#030712';
         pCtx.lineWidth = 2;
         pCtx.beginPath();
@@ -1048,7 +895,6 @@
         pCtx.lineTo(cx + 4, feetY - 123);
         pCtx.stroke();
 
-        // Torso nudo abbronzato con spalle larghe e vita asciutta
         const torsoGrad = pCtx.createLinearGradient(cx - 34, feetY - 205, cx + 34, feetY - 134);
         torsoGrad.addColorStop(0, '#e39668');
         torsoGrad.addColorStop(0.55, '#d98859');
@@ -1062,7 +908,6 @@
         pCtx.closePath();
         pCtx.fill();
 
-        // Definizione pettorali, sterno, capezzoli e ombelico
         pCtx.strokeStyle = 'rgba(124, 45, 18, 0.28)';
         pCtx.lineWidth = 1.6;
         pCtx.beginPath();
@@ -1081,32 +926,25 @@
         pCtx.arc(cx, feetY - 150, 1.8, 0, Math.PI * 2);
         pCtx.fill();
 
-        // Collanina bianca/argento al collo (identica alla foto)
         pCtx.strokeStyle = '#f8fafc';
         pCtx.lineWidth = 2.6;
         pCtx.beginPath();
         pCtx.arc(cx, feetY - 203, 13, 0.14 * Math.PI, 0.86 * Math.PI);
         pCtx.stroke();
 
-        // Braccia piegate in fuori con mani "shaka" davanti al petto (identiche alla foto!)
         pCtx.strokeStyle = '#dc8c5d';
         pCtx.lineWidth = 12.5;
         pCtx.lineCap = 'round';
         pCtx.lineJoin = 'round';
-        // Braccio sinistro (alla sinistra dell'immagine)
         pCtx.beginPath();
         pCtx.moveTo(cx - 32, feetY - 193);
         pCtx.lineTo(cx - 56, feetY - 168);
         pCtx.lineTo(cx - 35, feetY - 171);
-        pCtx.stroke();
-        // Braccio destro (alla destra dell'immagine)
-        pCtx.beginPath();
         pCtx.moveTo(cx + 32, feetY - 193);
         pCtx.lineTo(cx + 56, feetY - 168);
         pCtx.lineTo(cx + 35, feetY - 171);
         pCtx.stroke();
 
-        // Braccialetto/orologio nero sul polso destro della foto (braccio sinistro del soggetto)
         pCtx.strokeStyle = '#0f172a';
         pCtx.lineWidth = 4;
         pCtx.beginPath();
@@ -1114,25 +952,19 @@
         pCtx.lineTo(cx + 45, feetY - 167);
         pCtx.stroke();
 
-        // Mani con gesto "Shaka" (pollice in alto e mignolo verso l'interno)
         pCtx.strokeStyle = '#e39668';
         pCtx.lineWidth = 3.2;
-        // Mano sinistra
         pCtx.beginPath();
         pCtx.moveTo(cx - 35, feetY - 171);
-        pCtx.lineTo(cx - 37, feetY - 183); // pollice su
+        pCtx.lineTo(cx - 37, feetY - 183);
         pCtx.moveTo(cx - 35, feetY - 171);
-        pCtx.lineTo(cx - 22, feetY - 168); // mignolo verso il petto
-        pCtx.stroke();
-        // Mano destra
-        pCtx.beginPath();
+        pCtx.lineTo(cx - 22, feetY - 168);
         pCtx.moveTo(cx + 35, feetY - 171);
-        pCtx.lineTo(cx + 37, feetY - 183); // pollice su
+        pCtx.lineTo(cx + 37, feetY - 183);
         pCtx.moveTo(cx + 35, feetY - 171);
-        pCtx.lineTo(cx + 22, feetY - 168); // mignolo verso il petto
+        pCtx.lineTo(cx + 22, feetY - 168);
         pCtx.stroke();
 
-        // Collo e Testa
         const headY = feetY - 228;
         pCtx.fillStyle = '#d48456';
         pCtx.fillRect(cx - 9, feetY - 210, 18, 13);
@@ -1142,7 +974,6 @@
         pCtx.ellipse(cx, headY, 16.5, 21.5, 0, 0, Math.PI * 2);
         pCtx.fill();
 
-        // Capelli corti sale e pepe brizzolati (identici alla foto)
         pCtx.fillStyle = '#475569';
         pCtx.beginPath();
         pCtx.arc(cx, headY - 10, 16.8, Math.PI, 0);
@@ -1154,7 +985,6 @@
         pCtx.fillStyle = '#334155';
         pCtx.fillRect(cx - 6, headY - 22, 13, 4);
 
-        // Occhiali da sole tartarugati scuri con astine laterali
         pCtx.fillStyle = '#1c1917';
         pCtx.beginPath();
         pCtx.roundRect(cx - 15, headY - 7, 13, 8, 2);
@@ -1164,7 +994,6 @@
         pCtx.fillRect(cx - 17, headY - 5, 2, 2);
         pCtx.fillRect(cx + 15, headY - 5, 2, 2);
 
-        // Naso, baffi e pizzetto brizzolati intorno alla bocca spalancata a "O"
         pCtx.strokeStyle = '#9a4d2c';
         pCtx.lineWidth = 1.8;
         pCtx.beginPath();
@@ -1172,19 +1001,16 @@
         pCtx.lineTo(cx - 1.5, headY + 5);
         pCtx.stroke();
 
-        // Baffi sale e pepe
         pCtx.fillStyle = '#475569';
         pCtx.beginPath();
         pCtx.roundRect(cx - 6.5, headY + 6.5, 13, 3.2, 1.5);
         pCtx.fill();
 
-        // Pizzetto sotto il labbro
         pCtx.fillStyle = '#64748b';
         pCtx.beginPath();
         pCtx.arc(cx, headY + 18, 4, 0, Math.PI);
         pCtx.fill();
 
-        // Bocca spalancata a "O" verticale come nella foto
         pCtx.fillStyle = '#2b0909';
         pCtx.beginPath();
         pCtx.ellipse(cx, headY + 12.5, 3.6, 5.4, 0, 0, Math.PI * 2);
@@ -1193,18 +1019,14 @@
         pCtx.restore();
       }
 
-      // =========================================================================
-      // AGGIORNAMENTO HUD
-      // =========================================================================
       function updateHud() {
         const meters = Math.min(2500, Math.max(0, Math.floor(state.bike.x / 10)));
-        distanceDisplay.textContent = meters + ' m';
-        scoreDisplay.textContent = state.score + ' pts';
+        if (distanceDisplay) distanceDisplay.textContent = meters + ' m';
+        if (scoreDisplay) scoreDisplay.textContent = state.score + ' pts';
 
         const pct = Math.min(100, Math.max(0, (state.bike.x / COURSE_LENGTH) * 100));
-        progressBarFill.style.width = pct.toFixed(1) + '%';
+        if (progressBarFill) progressBarFill.style.width = pct.toFixed(1) + '%';
 
-        // Trova prossimo Belvedere non visitato o Gelateria L'Orizzonte
         let nextSpot = null;
         for (let i = 0; i < BELVEDERE_SPOTS.length; i++) {
           if (!BELVEDERE_SPOTS[i].visited) {
@@ -1215,18 +1037,15 @@
 
         if (nextSpot) {
           const distM = Math.max(0, Math.round((nextSpot.x - state.bike.x) / 10));
-          nextLandmarkText.textContent = '📸 Belvedere #' + (nextSpot.id + 1) + ': ' + nextSpot.name;
-          nextLandmarkDist.textContent = distM + ' m';
+          if (nextLandmarkText) nextLandmarkText.textContent = '📸 Belvedere #' + (nextSpot.id + 1) + ': ' + nextSpot.name;
+          if (nextLandmarkDist) nextLandmarkDist.textContent = distM + ' m';
         } else {
           const distGelato = Math.max(0, Math.round((COURSE_LENGTH - state.bike.x) / 10));
-          nextLandmarkText.textContent = '🍦 Traguardo: Gelateria L’Orizzonte';
-          nextLandmarkDist.textContent = distGelato + ' m';
+          if (nextLandmarkText) nextLandmarkText.textContent = '🍦 Traguardo: Gelateria L’Orizzonte';
+          if (nextLandmarkDist) nextLandmarkDist.textContent = distGelato + ' m';
         }
       }
 
-      // =========================================================================
-      // FISICA E LOGICA DI GIOCO
-      // =========================================================================
       function update(dt) {
         state.time += dt;
 
@@ -1236,7 +1055,7 @@
 
         if (state.mode === 'PANORAMA') {
           state.panoramaTimer -= dt;
-          panoramaCountdown.textContent = Math.max(0, state.panoramaTimer).toFixed(1) + 's';
+          if (panoramaCountdown) panoramaCountdown.textContent = Math.max(0, state.panoramaTimer).toFixed(1) + 's';
           if (state.panoramaTimer <= 0) {
             closeBelvederePanorama();
           }
@@ -1248,17 +1067,19 @@
           if (state.gelatoTimer <= 0) {
             state.mode = 'VICTORY';
             const totalSec = Math.max(1, Math.round((performance.now() - state.startTime) / 1000));
-            document.getElementById('finalScore').textContent = state.score + ' pts';
-            document.getElementById('finalBelvedere').textContent = state.belvedereCount + ' / 5';
-            document.getElementById('finalTime').textContent = totalSec + 's';
-            victoryScreen.classList.remove('hidden');
+            const finalScoreEl = document.getElementById('finalScore');
+            const finalBelvedereEl = document.getElementById('finalBelvedere');
+            const finalTimeEl = document.getElementById('finalTime');
+            if (finalScoreEl) finalScoreEl.textContent = state.score + ' pts';
+            if (finalBelvedereEl) finalBelvedereEl.textContent = state.belvedereCount + ' / 5';
+            if (finalTimeEl) finalTimeEl.textContent = totalSec + 's';
+            if (victoryScreen) victoryScreen.classList.remove('hidden');
           }
           return;
         }
 
         if (state.mode !== 'PLAYING') return;
 
-        // Accelerazione, turbo e frenata
         const maxSpeed = keys.turbo ? 760 : 510;
         const accel = keys.turbo ? 950 : 620;
 
@@ -1267,12 +1088,10 @@
         } else if (keys.left) {
           state.bike.vx -= 820 * dt;
         } else {
-          // Attrito dolce
           state.bike.vx *= Math.pow(0.25, dt);
           if (Math.abs(state.bike.vx) < 4) state.bike.vx = 0;
         }
 
-        // Influenza lieve della pendenza della collinetta
         const slope = getGroundSlope(state.bike.x);
         state.bike.vx += Math.sin(slope) * 140 * dt;
         state.bike.vx = Math.max(-140, Math.min(maxSpeed, state.bike.vx));
@@ -1281,7 +1100,6 @@
         state.bike.wheelAngle += (state.bike.vx * dt) / 28;
         state.bike.pedalPhase += (Math.abs(state.bike.vx) * dt) / 36;
 
-        // Salto e gravità rispetto al profilo del terreno
         const groundY = getGroundY(state.bike.x);
         if (!state.bike.onGround) {
           state.bike.vy += 1450 * dt;
@@ -1295,17 +1113,14 @@
           state.bike.y = groundY;
         }
 
-        // Inclinazione fluida della bici
         const targetPitch = state.bike.onGround ? slope : Math.max(-0.4, Math.min(0.4, state.bike.vy * 0.0007));
         state.bike.pitch += (targetPitch - state.bike.pitch) * Math.min(1, dt * 12);
 
-        // Frasi spontanee occasionali del rider
         if (state.quipTimer <= 0 && state.bike.vx > 380 && Math.random() < dt * 0.25) {
           state.quipText = RIDER_QUIPS[Math.floor(Math.random() * RIDER_QUIPS.length)];
           state.quipTimer = 2.2;
         }
 
-        // Controllo birilli saltati
         for (let c = 0; c < cones.length; c++) {
           const cone = cones[c];
           if (!cone.jumped && Math.abs(state.bike.x - cone.x) < 32 && !state.bike.onGround && state.bike.y < getGroundY(cone.x) - 24) {
@@ -1316,7 +1131,6 @@
           }
         }
 
-        // Controllo incontro con i 10 NPC
         for (let i = 0; i < npcs.length; i++) {
           const npc = npcs[i];
           if (!npc.talked && Math.abs(state.bike.x - npc.x) < 48) {
@@ -1325,7 +1139,6 @@
           }
         }
 
-        // Controllo arrivo ai 5 Belvedere in cima alle collinette
         for (let b = 0; b < BELVEDERE_SPOTS.length; b++) {
           const spot = BELVEDERE_SPOTS[b];
           if (!spot.visited && state.bike.x >= spot.x) {
@@ -1337,7 +1150,6 @@
           }
         }
 
-        // Controllo arrivo alla Gelateria L'Orizzonte (25.000 = 2500m)
         if (state.bike.x >= COURSE_LENGTH) {
           state.bike.x = COURSE_LENGTH;
           state.bike.vx = 0;
@@ -1356,28 +1168,21 @@
         updateHud();
       }
 
-      // =========================================================================
-      // DISEGNO DEL RIDER E DELLA ORBEA WILD e-MTB (IDENTICI ALLA FOTO IN BICI)
-      // =========================================================================
       function drawOlmettoRider(screenX, screenY, pitch, wheelAngle, pedalPhase, eatingGelato) {
-        // Quando si ferma ai Belvedere (mode === 'PANORAMA'), scende dalla bici in costume identico alla foto (ingrandito)
         if (state.mode === 'PANORAMA') {
           ctx.save();
           ctx.translate(screenX, screenY);
           ctx.scale(1.38, 1.38);
 
-          // Ombra a terra
           ctx.fillStyle = 'rgba(15, 23, 42, 0.35)';
           ctx.beginPath();
           ctx.ellipse(0, 1, 24, 5, 0, 0, Math.PI * 2);
           ctx.fill();
 
-          // Gambe abbronzate
           ctx.fillStyle = '#d48456';
           ctx.fillRect(-13, -34, 8, 34);
           ctx.fillRect(5, -34, 8, 34);
 
-          // Boardshorts neri con righe laterali e lunette curve bianche
           ctx.fillStyle = '#111827';
           ctx.beginPath();
           ctx.roundRect(-15, -62, 30, 31, 4);
@@ -1390,7 +1195,6 @@
           ctx.arc(11, -31, 4.2, Math.PI, 0);
           ctx.fill();
 
-          // Laccetto nero in vita
           ctx.strokeStyle = '#030712';
           ctx.lineWidth = 1.4;
           ctx.beginPath();
@@ -1400,7 +1204,6 @@
           ctx.lineTo(2, -55);
           ctx.stroke();
 
-          // Torso nudo abbronzato con definizione pettorali/addominali
           ctx.fillStyle = '#e39668';
           ctx.beginPath();
           ctx.roundRect(-17, -96, 34, 36, 8);
@@ -1424,14 +1227,12 @@
           ctx.arc(0, -70, 1.1, 0, Math.PI * 2);
           ctx.fill();
 
-          // Collanina bianca
           ctx.strokeStyle = '#f8fafc';
           ctx.lineWidth = 1.8;
           ctx.beginPath();
           ctx.arc(0, -96, 7, 0.15 * Math.PI, 0.85 * Math.PI);
           ctx.stroke();
 
-          // Braccia piegate in posa "Shaka"
           ctx.strokeStyle = '#dc8c5d';
           ctx.lineWidth = 6.5;
           ctx.lineCap = 'round';
@@ -1445,7 +1246,6 @@
           ctx.lineTo(18, -79);
           ctx.stroke();
 
-          // Braccialetto nero al polso sinistro (a destra nello schermo)
           ctx.strokeStyle = '#0f172a';
           ctx.lineWidth = 2.4;
           ctx.beginPath();
@@ -1453,7 +1253,6 @@
           ctx.lineTo(23, -77);
           ctx.stroke();
 
-          // Dita Shaka
           ctx.strokeStyle = '#e39668';
           ctx.lineWidth = 2;
           ctx.beginPath();
@@ -1467,7 +1266,6 @@
           ctx.lineTo(11, -77);
           ctx.stroke();
 
-          // Testa, capelli sale e pepe brizzolati, occhiali tartarugati, baffetti e bocca a "O"
           const hy = -109;
           ctx.fillStyle = '#e39668';
           ctx.beginPath();
@@ -1483,7 +1281,6 @@
           ctx.fillRect(-9, hy - 7, 2, 6);
           ctx.fillRect(7, hy - 7, 2, 6);
 
-          // Occhiali tartarugati scuri
           ctx.fillStyle = '#1c1917';
           ctx.beginPath();
           ctx.roundRect(-8, hy - 3.5, 7, 4.2, 1.2);
@@ -1491,7 +1288,6 @@
           ctx.fill();
           ctx.fillRect(-1, hy - 2.5, 2, 1.4);
 
-          // Baffetti, pizzetto e bocca a "O"
           ctx.fillStyle = '#475569';
           ctx.fillRect(-3.5, hy + 3, 7, 1.8);
           ctx.fillStyle = '#64748b';
@@ -1507,9 +1303,6 @@
           return;
         }
 
-        // =====================================================================
-        // RIDER IN BICI + ORBEA WILD e-MTB IDENTICI ALLA FOTO
-        // =====================================================================
         ctx.save();
         ctx.translate(screenX, screenY);
         ctx.rotate(pitch);
@@ -1519,32 +1312,27 @@
         const wheelY = -24;
         const wheelR = 24;
 
-        // Ombra sotto la bici
         ctx.fillStyle = 'rgba(15, 23, 42, 0.35)';
         ctx.beginPath();
         ctx.ellipse(0, 2, 58, 6, 0, 0, Math.PI * 2);
         ctx.fill();
 
-        // Funzione ruota con pneumatici Pirelli Scorpion (scritte gialle) e raggi
         function drawWheel(wx, wy, isRear) {
           ctx.save();
           ctx.translate(wx, wy);
 
-          // Pneumatico tassellato nero
           ctx.strokeStyle = '#090d16';
           ctx.lineWidth = 6.5;
           ctx.beginPath();
           ctx.arc(0, 0, wheelR - 3, 0, Math.PI * 2);
           ctx.stroke();
 
-          // Cerchio interno
           ctx.strokeStyle = '#1e293b';
           ctx.lineWidth = 2;
           ctx.beginPath();
           ctx.arc(0, 0, wheelR - 6.5, 0, Math.PI * 2);
           ctx.stroke();
 
-          // Raggi rotanti
           ctx.save();
           ctx.rotate(wheelAngle);
           ctx.strokeStyle = 'rgba(203, 213, 225, 0.55)';
@@ -1557,7 +1345,6 @@
             ctx.stroke();
           }
 
-          // Scritte gialle PIRELLI / SCORPION sul copertone
           ctx.fillStyle = '#facc15';
           ctx.font = '900 4.5px Inter, sans-serif';
           ctx.textAlign = 'center';
@@ -1565,7 +1352,6 @@
           ctx.fillText('SCORPION', 0, wheelR - 1.5);
           ctx.restore();
 
-          // Cassetta pignoni posteriore o disco freno
           ctx.fillStyle = isRear ? '#334155' : '#94a3b8';
           ctx.beginPath();
           ctx.arc(0, 0, isRear ? 8.5 : 6.5, 0, Math.PI * 2);
@@ -1581,17 +1367,14 @@
         drawWheel(rearWheelX, wheelY, true);
         drawWheel(frontWheelX, wheelY, false);
 
-        // Parafango anteriore nero sopra la ruota
         ctx.strokeStyle = '#0f172a';
         ctx.lineWidth = 3;
         ctx.beginPath();
         ctx.arc(frontWheelX, wheelY, wheelR + 3, -Math.PI * 0.78, -Math.PI * 0.36);
         ctx.stroke();
 
-        // Forcella FOX 38 (steli dorati Kashima + foderi neri)
         const crownX = 25;
         const crownY = -62;
-        // Steli dorati superiori
         ctx.strokeStyle = '#d97706';
         ctx.lineWidth = 4.5;
         ctx.lineCap = 'round';
@@ -1599,14 +1382,14 @@
         ctx.moveTo(crownX, crownY);
         ctx.lineTo(31, -46);
         ctx.stroke();
-        // Foderi inferiori neri FOX 38
+
         ctx.strokeStyle = '#090d16';
         ctx.lineWidth = 5.5;
         ctx.beginPath();
         ctx.moveTo(31, -46);
         ctx.lineTo(frontWheelX, wheelY);
         ctx.stroke();
-        // Scritta bianca FOX sulla forcella
+
         ctx.save();
         ctx.translate(35, -36);
         ctx.rotate(1.18);
@@ -1616,7 +1399,6 @@
         ctx.fillText('FOX 38', 0, 0);
         ctx.restore();
 
-        // Telaio ORBEA WILD e-MTB viola metallizzato
         const bbX = -5;
         const bbY = -24;
         const seatTopX = -15;
@@ -1624,7 +1406,6 @@
         const headTopX = 23;
         const headTopY = -66;
 
-        // Carro posteriore viola
         ctx.strokeStyle = '#6d28d9';
         ctx.lineWidth = 4.5;
         ctx.lineJoin = 'round';
@@ -1635,7 +1416,6 @@
         ctx.lineTo(rearWheelX, wheelY);
         ctx.stroke();
 
-        // Ammortizzatore centrale nero
         ctx.strokeStyle = '#1e293b';
         ctx.lineWidth = 4;
         ctx.beginPath();
@@ -1643,7 +1423,6 @@
         ctx.lineTo(2, -36);
         ctx.stroke();
 
-        // Triangolo principale viola metallizzato scolpito
         const frameGrad = ctx.createLinearGradient(seatTopX, headTopY, bbX, bbY);
         frameGrad.addColorStop(0, '#8b5cf6');
         frameGrad.addColorStop(0.5, '#6d28d9');
@@ -1657,7 +1436,6 @@
         ctx.closePath();
         ctx.stroke();
 
-        // Scritta bianca ORBEA sul tubo obliquo
         ctx.save();
         ctx.translate(10, -45);
         ctx.rotate(-0.98);
@@ -1667,7 +1445,6 @@
         ctx.fillText('ORBEA', 0, 0);
         ctx.restore();
 
-        // Borraccia nera sul tubo obliquo
         ctx.save();
         ctx.translate(5, -49);
         ctx.rotate(-0.98);
@@ -1677,7 +1454,6 @@
         ctx.fill();
         ctx.restore();
 
-        // Reggisella e sella nera
         ctx.strokeStyle = '#0f172a';
         ctx.lineWidth = 3.5;
         ctx.beginPath();
@@ -1689,7 +1465,6 @@
         ctx.roundRect(seatTopX - 12, seatTopY - 12, 18, 4.5, 2);
         ctx.fill();
 
-        // Attacco manubrio e manubrio
         ctx.strokeStyle = '#0f172a';
         ctx.lineWidth = 3.5;
         ctx.beginPath();
@@ -1698,21 +1473,16 @@
         ctx.lineTo(21, -74);
         ctx.stroke();
 
-        // =====================================================================
-        // CORPO DEL RIDER (Maglia Fox nera/viola/lilla/bianco + casco integrale)
-        // =====================================================================
         const hipX = -15;
         const hipY = -66;
         const shoulderX = 3;
         const shoulderY = -98;
 
-        // Gamba & scarpa MTB nera che pedala
         const pedalX = bbX + Math.cos(pedalPhase) * 9;
         const pedalY = bbY + Math.sin(pedalPhase) * 9;
         const kneeX = (hipX + pedalX) * 0.5 + 10;
         const kneeY = (hipY + pedalY) * 0.5 - 3;
 
-        // Pedivella
         ctx.strokeStyle = '#1e293b';
         ctx.lineWidth = 3;
         ctx.beginPath();
@@ -1720,7 +1490,6 @@
         ctx.lineTo(pedalX, pedalY);
         ctx.stroke();
 
-        // Pantaloni MTB neri
         ctx.strokeStyle = '#0f172a';
         ctx.lineWidth = 8.5;
         ctx.lineCap = 'round';
@@ -1731,13 +1500,11 @@
         ctx.lineTo(pedalX, pedalY - 3);
         ctx.stroke();
 
-        // Scarpa MTB nera
         ctx.fillStyle = '#1e293b';
         ctx.beginPath();
         ctx.roundRect(pedalX - 5, pedalY - 5, 13, 6, 2.5);
         ctx.fill();
 
-        // Busto con maglia Fox (fasce orizzontali: nero in alto, viola, lilla, bianco)
         ctx.save();
         const torsoAngle = Math.atan2(shoulderY - hipY, shoulderX - hipX) + Math.PI / 2;
         ctx.translate((hipX + shoulderX) * 0.5, (hipY + shoulderY) * 0.5);
@@ -1749,20 +1516,15 @@
         ctx.roundRect(-tw / 2, -th / 2, tw, th, 6);
         ctx.clip();
 
-        // Fascia superiore nera
         ctx.fillStyle = '#090d16';
         ctx.fillRect(-tw / 2, -th / 2, tw, th * 0.34);
-        // Fascia viola scuro
         ctx.fillStyle = '#5b21b6';
         ctx.fillRect(-tw / 2, -th / 2 + th * 0.34, tw, th * 0.22);
-        // Fascia lilla chiaro
         ctx.fillStyle = '#c4b5fd';
         ctx.fillRect(-tw / 2, -th / 2 + th * 0.56, tw, th * 0.22);
-        // Fascia inferiore bianca
         ctx.fillStyle = '#f8fafc';
         ctx.fillRect(-tw / 2, -th / 2 + th * 0.78, tw, th * 0.22);
 
-        // Logo Fox verde lime neon sul petto
         ctx.fillStyle = '#84cc16';
         ctx.beginPath();
         ctx.moveTo(-4, -th / 2 + 4);
@@ -1773,7 +1535,6 @@
         ctx.closePath();
         ctx.fill();
 
-        // Spallaccio zainetto idrico nero
         ctx.strokeStyle = '#1e293b';
         ctx.lineWidth = 3.2;
         ctx.beginPath();
@@ -1783,13 +1544,11 @@
 
         ctx.restore();
 
-        // Zainetto nero sulla schiena
         ctx.fillStyle = '#0f172a';
         ctx.beginPath();
         ctx.roundRect(hipX - 7, shoulderY + 4, 8, 24, 4);
         ctx.fill();
 
-        // Braccio (nero/viola/lilla) + guanto giallo ocra/senape sul manubrio
         const handX = 22;
         const handY = -74;
         const elbowX = (shoulderX + handX) * 0.5 - 2;
@@ -1803,13 +1562,11 @@
         ctx.lineTo(elbowX, elbowY);
         ctx.stroke();
 
-        // Dettaglio logo Fox verde lime sulla spalla
         ctx.fillStyle = '#84cc16';
         ctx.beginPath();
         ctx.arc(shoulderX, shoulderY + 4, 3, 0, Math.PI * 2);
         ctx.fill();
 
-        // Avambraccio viola/lilla
         ctx.strokeStyle = '#7c3aed';
         ctx.lineWidth = 6.2;
         ctx.beginPath();
@@ -1817,26 +1574,22 @@
         ctx.lineTo(handX, handY);
         ctx.stroke();
 
-        // Guanto giallo ocra/senape (identico alla foto!)
         ctx.fillStyle = '#d97706';
         ctx.beginPath();
         ctx.arc(handX, handY, 4.5, 0, Math.PI * 2);
         ctx.fill();
 
-        // Casco integrale nero Fox + maschera MX iridescente
         const headX = shoulderX + 4;
         const headY = shoulderY - 14;
 
         ctx.save();
         ctx.translate(headX, headY);
 
-        // Calotta casco integrale nero
         ctx.fillStyle = '#090d16';
         ctx.beginPath();
         ctx.arc(0, 0, 13.5, 0, Math.PI * 2);
         ctx.fill();
 
-        // Visiera superiore casco
         ctx.fillStyle = '#1e293b';
         ctx.beginPath();
         ctx.moveTo(3, -10);
@@ -1846,7 +1599,6 @@
         ctx.closePath();
         ctx.fill();
 
-        // Mentoniera protettiva integrale
         ctx.fillStyle = '#090d16';
         ctx.beginPath();
         ctx.moveTo(2, 3);
@@ -1856,7 +1608,6 @@
         ctx.closePath();
         ctx.fill();
 
-        // Maschera MX con lente specchiata iridescente (verde lime/azzurro/arancio)
         const goggleGrad = ctx.createLinearGradient(2, -5, 13, 3);
         goggleGrad.addColorStop(0, '#84cc16');
         goggleGrad.addColorStop(0.5, '#38bdf8');
@@ -1866,7 +1617,6 @@
         ctx.roundRect(3, -5, 10.5, 7, 2);
         ctx.fill();
 
-        // Fascia elastica maschera con accento verde lime
         ctx.strokeStyle = '#84cc16';
         ctx.lineWidth = 2.5;
         ctx.beginPath();
@@ -1876,7 +1626,6 @@
 
         ctx.restore();
 
-        // Gelato in mano durante i 10 secondi finali alla Gelateria L'Orizzonte
         if (eatingGelato) {
           const lickBob = Math.sin(state.time * 8) * 3;
           ctx.save();
@@ -1899,7 +1648,6 @@
           ctx.restore();
         }
 
-        // Fumetto leggero del rider sopra il casco
         if (state.quipTimer > 0 && state.quipText) {
           ctx.save();
           ctx.translate(headX, headY - 26);
@@ -1928,24 +1676,20 @@
 
         const wave = Math.sin(state.time * 5 + npc.wavePhase) * 3;
 
-        // Ombra
         ctx.fillStyle = 'rgba(15, 23, 42, 0.32)';
         ctx.beginPath();
         ctx.ellipse(0, 1, 16, 4, 0, 0, Math.PI * 2);
         ctx.fill();
 
-        // Gambe
         ctx.fillStyle = npc.pants;
         ctx.fillRect(-7, -24, 5, 24);
         ctx.fillRect(2, -24, 5, 24);
 
-        // Maglietta
         ctx.fillStyle = npc.shirt;
         ctx.beginPath();
         ctx.roundRect(-10, -48, 20, 26, 5);
         ctx.fill();
 
-        // Braccio che saluta
         ctx.strokeStyle = npc.shirt;
         ctx.lineWidth = 4.5;
         ctx.lineCap = 'round';
@@ -1954,19 +1698,16 @@
         ctx.lineTo(-18, -52 + wave);
         ctx.stroke();
 
-        // Testa
         ctx.fillStyle = '#e09668';
         ctx.beginPath();
         ctx.arc(0, -56, 8, 0, Math.PI * 2);
         ctx.fill();
 
-        // Capelli
         ctx.fillStyle = npc.hair;
         ctx.beginPath();
         ctx.arc(0, -58, 8, Math.PI, 0);
         ctx.fill();
 
-        // Fumetto invito se non ancora parlato
         if (!npc.talked) {
           const bob = Math.sin(state.time * 4 + npc.id) * 3;
           ctx.fillStyle = '#ffffff';
@@ -1991,7 +1732,6 @@
         ctx.save();
         ctx.translate(screenX, screenY);
 
-        // Balustrata in pietra bianca stile Terrazza Mascagni
         ctx.fillStyle = '#f8fafc';
         ctx.fillRect(-48, -18, 96, 4);
         ctx.fillRect(-48, -4, 96, 4);
@@ -1999,7 +1739,6 @@
           ctx.fillRect(bx - 2, -15, 4, 11);
         }
 
-        // Cartello panoramico Belvedere
         ctx.fillStyle = '#78350f';
         ctx.fillRect(-2, -56, 4, 56);
 
@@ -2026,7 +1765,6 @@
         ctx.save();
         ctx.translate(screenX, screenY);
 
-        // Chiosco Gelateria L'Orizzonte
         ctx.fillStyle = '#fdf2f8';
         ctx.beginPath();
         ctx.roundRect(-70, -108, 140, 108, 10);
@@ -2035,14 +1773,12 @@
         ctx.lineWidth = 3;
         ctx.stroke();
 
-        // Tendone a righe rosa e bianco
         const stripeW = 14;
         for (let i = 0; i < 10; i++) {
           ctx.fillStyle = i % 2 === 0 ? '#ec4899' : '#ffffff';
           ctx.fillRect(-70 + i * stripeW, -84, stripeW, 16);
         }
 
-        // Insegna luminosa
         ctx.fillStyle = '#831843';
         ctx.beginPath();
         ctx.roundRect(-64, -132, 128, 24, 8);
@@ -2052,7 +1788,6 @@
         ctx.textAlign = 'center';
         ctx.fillText("GELATERIA L'ORIZZONTE", 0, -117);
 
-        // Bancone con vaschette gelato colorate
         ctx.fillStyle = '#0284c7';
         ctx.fillRect(-54, -44, 108, 44);
         const flavors = ['#f472b6', '#a3e635', '#fef08a', '#38bdf8', '#c084fc'];
@@ -2063,7 +1798,6 @@
           ctx.fill();
         }
 
-        // Cono gelato gigante decorativo sul tetto
         ctx.fillStyle = '#d97706';
         ctx.beginPath();
         ctx.moveTo(46, -132);
@@ -2079,10 +1813,8 @@
         ctx.restore();
       }
 
-      // =========================================================================
-      // RENDERING PRINCIPALE DELLA SCENA
-      // =========================================================================
       function render() {
+        if (!ctx || !canvas) return;
         const dpr = window.devicePixelRatio || 1;
         const width = window.innerWidth;
         const height = window.innerHeight;
@@ -2094,7 +1826,6 @@
         ctx.save();
         ctx.scale(dpr, dpr);
 
-        // Cielo mediterraneo di Livorno
         const skyGrad = ctx.createLinearGradient(0, 0, 0, height * 0.65);
         skyGrad.addColorStop(0, '#0369a1');
         skyGrad.addColorStop(0.55, '#38bdf8');
@@ -2102,13 +1833,11 @@
         ctx.fillStyle = skyGrad;
         ctx.fillRect(0, 0, width, height);
 
-        // Sole sul Tirreno
         ctx.fillStyle = '#fef08a';
         ctx.beginPath();
         ctx.arc(width * 0.82, height * 0.2, 34, 0, Math.PI * 2);
         ctx.fill();
 
-        // Nuvole morbide
         ctx.fillStyle = 'rgba(255, 255, 255, 0.72)';
         for (let c = 0; c < 5; c++) {
           const cx = ((c * 340 - state.cameraX * 0.08) % (width + 260) + (width + 260)) % (width + 260) - 130;
@@ -2120,7 +1849,6 @@
           ctx.fill();
         }
 
-        // Mare Tirreno sullo sfondo con onde scintillanti
         const horizonY = height * 0.60;
         const seaGrad = ctx.createLinearGradient(0, horizonY, 0, height);
         seaGrad.addColorStop(0, '#0284c7');
@@ -2129,7 +1857,6 @@
         ctx.fillStyle = seaGrad;
         ctx.fillRect(0, horizonY, width, height - horizonY);
 
-        // Riflessi onde del mare
         ctx.fillStyle = 'rgba(255, 255, 255, 0.28)';
         for (let wRow = 0; wRow < 6; wRow++) {
           const wy = horizonY + 12 + wRow * 16;
@@ -2139,13 +1866,11 @@
           }
         }
 
-        // Camera centrata orizzontalmente sul rider e abbassata per mostrare meno asfalto e più panorama
         const riderScreenX = width * 0.5;
         state.cameraX = state.bike.x - riderScreenX;
         const centerScreenY = height * 0.73;
         const baseRoadScreenY = centerScreenY - state.bike.y;
 
-        // Elementi decorativi (Pini marittimi e lampioni)
         for (let s = 0; s < sceneryItems.length; s++) {
           const item = sceneryItems[s];
           const sx = item.x - state.cameraX;
@@ -2177,7 +1902,6 @@
           ctx.restore();
         }
 
-        // Strada asfaltata del Lungomare con profilo collinette
         ctx.fillStyle = '#1e293b';
         ctx.beginPath();
         ctx.moveTo(-20, height + 20);
@@ -2190,7 +1914,6 @@
         ctx.closePath();
         ctx.fill();
 
-        // Cordolo bianco e striscia centrale tratteggiata
         ctx.strokeStyle = '#94a3b8';
         ctx.lineWidth = 4;
         ctx.beginPath();
@@ -2216,7 +1939,6 @@
         ctx.stroke();
         ctx.setLineDash([]);
 
-        // Disegno dei 5 Belvedere in cima alle collinette
         for (let b = 0; b < BELVEDERE_SPOTS.length; b++) {
           const spot = BELVEDERE_SPOTS[b];
           const bx = spot.x - state.cameraX;
@@ -2225,13 +1947,11 @@
           }
         }
 
-        // Disegno della Gelateria L'Orizzonte al traguardo
         const gelatoX = COURSE_LENGTH - state.cameraX;
         if (gelatoX >= -180 && gelatoX <= width + 180) {
           drawGelateriaOrizzonte(gelatoX, baseRoadScreenY + getGroundY(COURSE_LENGTH));
         }
 
-        // Birilli saltabili
         for (let c = 0; c < cones.length; c++) {
           const cone = cones[c];
           const cx = cone.x - state.cameraX;
@@ -2249,7 +1969,6 @@
           ctx.fillRect(cx - 5, cy - 11, 10, 3.5);
         }
 
-        // 10 NPC Livornesi
         for (let i = 0; i < npcs.length; i++) {
           const npc = npcs[i];
           const nx = npc.x - state.cameraX;
@@ -2258,7 +1977,6 @@
           }
         }
 
-        // Protagonista Olmetto Rider (sempre centrato in width * 0.5)
         drawOlmettoRider(
           riderScreenX,
           centerScreenY,
@@ -2268,7 +1986,6 @@
           state.mode === 'GELATO_STOP'
         );
 
-        // Scritta gigante in cielo durante i 10 secondi alla Gelateria L'Orizzonte
         if (state.mode === 'GELATO_STOP' || state.mode === 'VICTORY') {
           ctx.save();
           const pulse = 1 + Math.sin(state.time * 4) * 0.04;
@@ -2282,21 +1999,21 @@
 
           ctx.lineWidth = Math.max(5, fontSize * 0.16);
           ctx.strokeStyle = '#0f172a';
-          ctx.strokeText('NO… STAI A MILANO!', 0, 0);
+          ctx.strokeText('NO STAI A MILANO', 0, 0);
 
           const textGrad = ctx.createLinearGradient(0, -fontSize * 0.5, 0, fontSize * 0.5);
           textGrad.addColorStop(0, '#fef08a');
           textGrad.addColorStop(0.5, '#f97316');
           textGrad.addColorStop(1, '#ec4899');
           ctx.fillStyle = textGrad;
-          ctx.fillText('NO… STAI A MILANO!', 0, 0);
+          ctx.fillText('NO STAI A MILANO', 0, 0);
 
           if (state.mode === 'GELATO_STOP') {
             ctx.font = '800 14px Inter, sans-serif';
             ctx.fillStyle = '#ffffff';
             ctx.strokeStyle = 'rgba(15, 23, 42, 0.85)';
             ctx.lineWidth = 4;
-            const subLabel = '🍦 Gelato vista mare · ' + Math.ceil(state.gelatoTimer) + 's';
+            const subLabel = '🍦 Gelateria L’Orizzonte · ' + Math.ceil(state.gelatoTimer) + 's';
             ctx.strokeText(subLabel, 0, fontSize * 0.85);
             ctx.fillText(subLabel, 0, fontSize * 0.85);
           }
@@ -2307,12 +2024,10 @@
       }
 
       // =========================================================================
-      // GAME LOOP PRINCIPALE
-      // =========================================================================
-      // ILLUSTRAZIONE ANIMATA SCHERMATA START (FEDELE ALLA FOTO SULLA SCOGLIERA)
+      // ILLUSTRAZIONE ANIMATA SCHERMATA START
       // =========================================================================
       function renderStartHeroAnimation(t) {
-        if (!startHeroCtx || startScreen.classList.contains('hidden')) return;
+        if (!startHeroCtx || !startHeroCanvas || !startScreen || startScreen.classList.contains('hidden')) return;
         const w = 480;
         const h = 360;
         if (startHeroCanvas.width !== w || startHeroCanvas.height !== h) {
@@ -2321,7 +2036,6 @@
         }
         const c = startHeroCtx;
 
-        // 1. Cielo azzurro terso con nuvolette sparse
         const skyGrad = c.createLinearGradient(0, 0, 0, h * 0.34);
         skyGrad.addColorStop(0, '#0284c7');
         skyGrad.addColorStop(1, '#7dd3fc');
@@ -2341,7 +2055,6 @@
           c.fill();
         }
 
-        // Promontorio costiero all'orizzonte a sinistra (come nella foto)
         c.fillStyle = '#3b82f6';
         c.beginPath();
         c.moveTo(0, h * 0.27);
@@ -2350,7 +2063,6 @@
         c.closePath();
         c.fill();
 
-        // 2. Mare blu intenso con scintillii animati del sole
         const seaGrad = c.createLinearGradient(0, h * 0.34, 0, h * 0.82);
         seaGrad.addColorStop(0, '#0369a1');
         seaGrad.addColorStop(0.5, '#0284c7');
@@ -2366,7 +2078,6 @@
           c.fillRect(sx, sy, 6 + (i % 8), 1.8);
         }
 
-        // 3. Scogliera rocciosa in primo piano e vegetazione mediterranea
         const rockGrad = c.createLinearGradient(0, h * 0.72, 0, h);
         rockGrad.addColorStop(0, '#d6c7b2');
         rockGrad.addColorStop(0.55, '#a89882');
@@ -2381,7 +2092,6 @@
         c.closePath();
         c.fill();
 
-        // Fessure e ombre sulle rocce
         c.strokeStyle = 'rgba(68, 56, 44, 0.45)';
         c.lineWidth = 2;
         c.beginPath();
@@ -2392,7 +2102,6 @@
         c.lineTo(410, h * 0.92);
         c.stroke();
 
-        // Cespugli verdi sulla scogliera
         c.fillStyle = '#3f6212';
         c.beginPath();
         c.ellipse(52, h * 0.79, 34, 11, -0.1, 0, Math.PI * 2);
@@ -2400,18 +2109,15 @@
         c.ellipse(435, h * 0.86, 40, 14, -0.15, 0, Math.PI * 2);
         c.fill();
 
-        // 4. RIDER IN PIEDI IN POSA FRONTALE IDENTICA ALLA FOTO
         const rx = w * 0.49;
         const feetY = h * 0.86;
         const breathe = Math.sin(t * 2.6) * 2.2;
 
-        // Ombra rider e bici sulle rocce
         c.fillStyle = 'rgba(28, 25, 23, 0.35)';
         c.beginPath();
         c.ellipse(rx, feetY + 3, 135, 11, 0, 0, Math.PI * 2);
         c.fill();
 
-        // Gambe con pantaloni MTB neri (gamba destra leggermente divaricata a sinistra, sinistra dritta)
         c.strokeStyle = '#0f172a';
         c.lineWidth = 17;
         c.lineCap = 'round';
@@ -2422,14 +2128,12 @@
         c.lineTo(rx + 6, feetY - 4);
         c.stroke();
 
-        // Scarpe MTB nere Five Ten
         c.fillStyle = '#1e293b';
         c.beginPath();
         c.ellipse(rx - 48, feetY - 3, 13, 6, -0.15, 0, Math.PI * 2);
         c.ellipse(rx + 10, feetY - 2, 13, 6, 0.15, 0, Math.PI * 2);
         c.fill();
 
-        // Busto con maglia Fox identica alla foto (nero sopra, viola, lilla, bianco)
         const torsoTopY = feetY - 156 + breathe;
         const torsoH = 82;
         const torsoW = 54;
@@ -2447,7 +2151,6 @@
         c.fillStyle = '#f8fafc';
         c.fillRect(rx - torsoW / 2, torsoTopY + torsoH * 0.78, torsoW, torsoH * 0.22);
 
-        // Logo Fox verde lime neon al centro del petto
         c.fillStyle = '#84cc16';
         c.beginPath();
         c.moveTo(rx - 9, torsoTopY + 9);
@@ -2458,7 +2161,6 @@
         c.closePath();
         c.fill();
 
-        // Spallacci neri zainetto idrico
         c.strokeStyle = '#1e293b';
         c.lineWidth = 6;
         c.beginPath();
@@ -2469,7 +2171,6 @@
         c.stroke();
         c.restore();
 
-        // Spalle con loghi Fox verde lime neon
         c.fillStyle = '#090d16';
         c.beginPath();
         c.arc(rx - 29, torsoTopY + 10, 11, 0, Math.PI * 2);
@@ -2481,7 +2182,6 @@
         c.arc(rx + 32, torsoTopY + 10, 4.5, 0, Math.PI * 2);
         c.fill();
 
-        // Braccio destro (a sinistra sullo schermo) piegato con saluto hawaiiano "Shaka" animato!
         const shakaWave = Math.sin(t * 6.5) * 0.16;
         c.strokeStyle = '#090d16';
         c.lineWidth = 12;
@@ -2498,7 +2198,6 @@
         c.lineTo(rx - 28, torsoTopY + 46);
         c.stroke();
 
-        // Guanto giallo ocra/senape con saluto hawaiiano "Shaka" animato (pollice + mignolo)
         c.save();
         c.translate(rx - 26, torsoTopY + 46);
         c.rotate(shakaWave);
@@ -2509,16 +2208,13 @@
         c.strokeStyle = '#d97706';
         c.lineWidth = 3.5;
         c.beginPath();
-        // Pollice verso l'alto
         c.moveTo(-2, -5);
         c.lineTo(-4, -15);
-        // Mignolo verso destra
         c.moveTo(6, -1);
         c.lineTo(17, -4);
         c.stroke();
         c.restore();
 
-        // Braccio sinistro (a destra sullo schermo) appoggiato sul manubrio della Orbea
         const barHandX = rx + 58;
         const barHandY = torsoTopY + 66;
         c.strokeStyle = '#090d16';
@@ -2538,18 +2234,15 @@
         c.arc(barHandX, barHandY, 6.5, 0, Math.PI * 2);
         c.fill();
 
-        // Casco integrale nero Fox + maschera MX specchiata iridescente animata
         const headY = torsoTopY - 22;
         c.save();
         c.translate(rx, headY);
         c.rotate(Math.sin(t * 2.2) * 0.03);
 
-        // Calotta casco nero
         c.fillStyle = '#090d16';
         c.beginPath();
         c.arc(0, 0, 21, 0, Math.PI * 2);
         c.fill();
-        // Visiera superiore
         c.fillStyle = '#1e293b';
         c.beginPath();
         c.moveTo(-16, -11);
@@ -2558,7 +2251,6 @@
         c.lineTo(-12, -19);
         c.closePath();
         c.fill();
-        // Mentoniera protettiva integrale
         c.fillStyle = '#090d16';
         c.beginPath();
         c.moveTo(-17, 4);
@@ -2567,7 +2259,6 @@
         c.lineTo(-11, 21);
         c.closePath();
         c.fill();
-        // Volto / naso e baffetti visibili sotto la maschera
         c.fillStyle = '#d48456';
         c.beginPath();
         c.arc(0, 7, 7, 0, Math.PI * 2);
@@ -2575,7 +2266,6 @@
         c.fillStyle = '#475569';
         c.fillRect(-4, 8, 8, 2.5);
 
-        // Maschera MX iridescente con riflesso animato
         const shimmer = Math.sin(t * 3.5) * 0.25;
         const gGrad = c.createLinearGradient(-14, -6, 14, 4);
         gGrad.addColorStop(0, '#84cc16');
@@ -2587,7 +2277,6 @@
         c.fill();
         c.restore();
 
-        // 5. ORBEA WILD e-MTB VIOLA METALLIZZATO IN PRIMO PIANO DAVANTI AL RIDER
         const rearWX = rx - 102;
         const frontWX = rx + 114;
         const wY = feetY - 34;
@@ -2608,7 +2297,6 @@
           c.arc(0, 0, wR - 9, 0, Math.PI * 2);
           c.stroke();
 
-          // Raggi
           c.strokeStyle = 'rgba(203, 213, 225, 0.45)';
           c.lineWidth = 1.1;
           for (let r = 0; r < 10; r++) {
@@ -2619,14 +2307,12 @@
             c.stroke();
           }
 
-          // Scritte gialle PIRELLI SCORPION
           c.fillStyle = '#facc15';
           c.font = '900 6.5px Inter, sans-serif';
           c.textAlign = 'center';
           c.fillText('PIRELLI', 0, -(wR - 6));
           c.fillText('SCORPION', 0, wR - 2.5);
 
-          // Cassetta / disco freno
           c.fillStyle = isRear ? '#334155' : '#94a3b8';
           c.beginPath();
           c.arc(0, 0, isRear ? 13 : 10, 0, Math.PI * 2);
@@ -2641,14 +2327,12 @@
         drawHeroWheel(rearWX, wY, true);
         drawHeroWheel(frontWX, wY, false);
 
-        // Parafango anteriore nero
         c.strokeStyle = '#090d16';
         c.lineWidth = 4;
         c.beginPath();
         c.arc(frontWX, wY, wR + 4, -Math.PI * 0.78, -Math.PI * 0.35);
         c.stroke();
 
-        // Forcella FOX 38 (steli dorati Kashima + foderi neri)
         c.strokeStyle = '#d97706';
         c.lineWidth = 7;
         c.lineCap = 'round';
@@ -2673,7 +2357,6 @@
         c.fillText('FOX 38', 0, 0);
         c.restore();
 
-        // Telaio ORBEA Wild viola metallizzato
         const bbX = rx - 14;
         const bbY = wY + 2;
         const seatX = rx - 32;
@@ -2681,7 +2364,6 @@
         const headX = rx + 62;
         const headYFrame = wY - 76;
 
-        // Carro posteriore
         c.strokeStyle = '#6d28d9';
         c.lineWidth = 7;
         c.lineJoin = 'round';
@@ -2692,7 +2374,6 @@
         c.lineTo(rearWX, wY);
         c.stroke();
 
-        // Triangolo principale viola
         const fGrad = c.createLinearGradient(seatX, headYFrame, bbX, bbY);
         fGrad.addColorStop(0, '#8b5cf6');
         fGrad.addColorStop(0.5, '#6d28d9');
@@ -2706,7 +2387,6 @@
         c.closePath();
         c.stroke();
 
-        // Scritta bianca ORBEA sul tubo obliquo
         c.save();
         c.translate(rx + 25, wY - 36);
         c.rotate(-0.82);
@@ -2716,7 +2396,6 @@
         c.fillText('ORBEA', 0, 0);
         c.restore();
 
-        // Borraccia nera sul tubo obliquo
         c.save();
         c.translate(rx + 18, wY - 45);
         c.rotate(-0.82);
@@ -2726,7 +2405,6 @@
         c.fill();
         c.restore();
 
-        // Sella nera e manubrio tenuto dalla mano sinistra
         c.strokeStyle = '#090d16';
         c.lineWidth = 5;
         c.beginPath();
@@ -2742,22 +2420,22 @@
         c.fill();
       }
 
-      // =========================================================================
-      // GAME LOOP PRINCIPALE
-      // =========================================================================
       let lastTimestamp = performance.now();
       function gameLoop(now) {
-        const dt = Math.min(0.05, Math.max(0.001, (now - lastTimestamp) / 1000));
-        lastTimestamp = now;
-        update(dt);
-        render();
-        if (state.mode === 'START') {
-          renderStartHeroAnimation(now / 1000);
+        try {
+          const dt = Math.min(0.05, Math.max(0.001, (now - lastTimestamp) / 1000));
+          lastTimestamp = now;
+          update(dt);
+          render();
+          if (state.mode === 'START') {
+            renderStartHeroAnimation(now / 1000);
+          }
+        } catch (err) {
+          // Mantiene vivo il loop anche in caso di errori imprevisti
         }
         requestAnimationFrame(gameLoop);
       }
 
-      // Inizializzazione immediata al caricamento
       populateWorld();
       state.bike.y = getGroundY(state.bike.x);
       updateHud();
